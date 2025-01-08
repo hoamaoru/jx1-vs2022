@@ -1,8 +1,8 @@
 #ifndef __BASEINCLUDE_H__
 #define __BASEINCLUDE_H__
 
-#define DEFAULT_SCREENWIDTH		1600//800//			// ȱʡ��Ļ����
-#define DEFAULT_SCREENHEIGHT	900//600//			// ȱʡ��Ļ�߶�
+#define DEFAULT_SCREENWIDTH		800//			// ȱʡ��Ļ����
+#define DEFAULT_SCREENHEIGHT	600//			// ȱʡ��Ļ�߶�
 
 #define DEFAULT_BITDEPTH		16				// ȱʡλ���
 
