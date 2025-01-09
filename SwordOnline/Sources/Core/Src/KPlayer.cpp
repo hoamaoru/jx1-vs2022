@@ -3300,8 +3300,8 @@ BOOL	KPlayer::ApplyUseItem(int nItemID, ItemPos SrcPos)
 				if (m_ItemList.m_EquipItem[7] > 0 && m_ItemList.m_EquipItem[8] == 0)
 				{
 					DesPos.nX = 8;
+					strcpy(sMsg.szMessage, "Mang nh…n d≠Ìi...");
 				}
-				strcpy(sMsg.szMessage, "Mang nh…n d≠Ìi...");
 				break;
 			case equip_amulet:
 				DesPos.nPlace = 2;
