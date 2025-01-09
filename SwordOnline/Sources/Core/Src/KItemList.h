@@ -163,6 +163,7 @@ public:
 #ifndef	_SERVER
 	int			UseItem(int nIdx);					// nIdx指游戏世界中道具数组的编号
 	BOOL		SearchEquipment(int nWidth, int nHeight);
+	int 		ChangeItemInPlayer(int nIdx);//edit by phong kieu mac trang bi vao nguoi
 	BOOL		SearchStoreBox(int nRepositoryNum, int nWidth, int nHeight, ItemPos* pPos);
 	BOOL		AutoMoveItem(ItemPos SrcPos,ItemPos DesPos);
 	void		MenuSetMouseItem();
