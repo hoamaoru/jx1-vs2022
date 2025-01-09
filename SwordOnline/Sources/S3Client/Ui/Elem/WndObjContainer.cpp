@@ -1,5 +1,5 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
-//	½çÃæ´°¿ÚÌåÏµ½á¹¹--ÈİÄÉÓÎÏ·¶ÔÏóµÄ´°¿Ú
+ï»¿/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+//	Â½Ã§ÃƒÃ¦Â´Â°Â¿ÃšÃŒÃ¥ÃÂµÂ½Ã¡Â¹Â¹--ÃˆÃÃ„Ã‰Ã“ÃÃÂ·Â¶Ã”ÃÃ³ÂµÃ„Â´Â°Â¿Ãš
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
 //	CreateTime:	2002-9-25
@@ -27,11 +27,11 @@ extern iRepresentShell* g_pRepresentShell;
 
 unsigned int l_BgColors[] =
 {
-	0x0a001e13,		//IIEP_NORMAL Ò»°ã/Õı³£/¿ÉÓÃ 0,30,19
-	0x0a2c0000,		//IIEP_NOT_USEABLE ²»¿ÉÓÃ/²»¿É×°Åä 44,0,0
-	0x0a654915,		//IIEP_SPECIAL ÌØ¶¨µÄ²»Í¬Çé¿ö 101£¬73£¬21
+	0x0a001e13,		//IIEP_NORMAL Ã’Â»Â°Ã£/Ã•Ã½Â³Â£/Â¿Ã‰Ã“Ãƒ 0,30,19
+	0x0a2c0000,		//IIEP_NOT_USEABLE Â²Â»Â¿Ã‰Ã“Ãƒ/Â²Â»Â¿Ã‰Ã—Â°Ã…Ã¤ 44,0,0
+	0x0a654915,		//IIEP_SPECIAL ÃŒÃ˜Â¶Â¨ÂµÃ„Â²Â»ÃÂ¬Ã‡Ã©Â¿Ã¶ 101Â£Â¬73Â£Â¬21
 	0x0a000636,		//mouse over 0,6,54
-	0x0a0000ff,		//·ÅÏÂÎïÆ·µÄÎ»ÖÃµÄÑÕÉ«
+	0x0a0000ff,		//Â·Ã…ÃÃ‚ÃÃ¯Ã†Â·ÂµÃ„ÃÂ»Ã–ÃƒÂµÃ„Ã‘Ã•Ã‰Â«
 };
 
 void WndObjContainerInit(KIniFile* pIni)
@@ -63,7 +63,7 @@ void WndObjContainerInit(KIniFile* pIni)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º¹¹Ôìº¯Êı
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ¹Â¹Ã”Ã¬ÂºÂ¯ÃŠÃ½
 //--------------------------------------------------------------------------
 KWndObjectBox::KWndObjectBox()
 {
@@ -85,7 +85,7 @@ void KWndObjectBox::SetContainerId(int nId)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£ºÉèÖÃ¿ÉÒÔÈİÄÉµÄ¶ÔÏóµÄÀàĞÍ
+//	Â¹Â¦Ã„ÃœÂ£ÂºÃ‰Ã¨Ã–ÃƒÂ¿Ã‰Ã’Ã”ÃˆÃÃ„Ã‰ÂµÃ„Â¶Ã”ÃÃ³ÂµÃ„Ã€Ã ÃÃ
 //--------------------------------------------------------------------------
 void KWndObjectBox::SetObjectGenre(unsigned int uGenre)
 {
@@ -93,7 +93,7 @@ void KWndObjectBox::SetObjectGenre(unsigned int uGenre)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£ºÇå³ı¶ÔÏóÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÃ‡Ã¥Â³Ã½Â¶Ã”ÃÃ³ÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 void KWndObjectBox::Celar()
 {
@@ -101,7 +101,7 @@ void KWndObjectBox::Celar()
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º»ñÈ¡ÈİÄÉµÄ¶ÔÏóĞÅÏ¢
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ»Ã±ÃˆÂ¡ÃˆÃÃ„Ã‰ÂµÃ„Â¶Ã”ÃÃ³ÃÃ…ÃÂ¢
 //--------------------------------------------------------------------------
 int KWndObjectBox::GetObject(KUiDraggedObject& Obj) const
 {
@@ -114,7 +114,7 @@ int KWndObjectBox::GetObject(KUiDraggedObject& Obj) const
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£ºÉèÖÃÈİÄÉµÄ¶ÔÏó
+//	Â¹Â¦Ã„ÃœÂ£ÂºÃ‰Ã¨Ã–ÃƒÃˆÃÃ„Ã‰ÂµÃ„Â¶Ã”ÃÃ³
 //--------------------------------------------------------------------------
 void KWndObjectBox::HoldObject(unsigned int uGenre, unsigned int uId, int nDataW, int nDataH)
 {
@@ -139,7 +139,7 @@ void KWndObjectBox::HoldObject(unsigned int uGenre, unsigned int uId, int nDataW
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º´°Ìå»æÖÆ
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ´Â°ÃŒÃ¥Â»Ã¦Ã–Ã†
 //--------------------------------------------------------------------------
 void KWndObjectBox::PaintWindow()
 {
@@ -216,7 +216,7 @@ void KWndObjectBox::Clone(KWndObjectBox* pCopy)
 	}
 }
 
-//³õÊ¼»¯
+//Â³ÃµÃŠÂ¼Â»Â¯
 int	KWndObjectBox::Init(KIniFile* pIniFile, const char* pSection)
 {
 	if (KWndWindow::Init(pIniFile, pSection))
@@ -254,13 +254,13 @@ void KWndObjectBox::EnableMouseHover(bool bEnable)
 		m_Style &= ~OBJCONT_F_DISABLE_MOUSE_HOVER;
 }
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º´°¿Úº¯Êı
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ´Â°Â¿ÃšÂºÂ¯ÃŠÃ½
 //--------------------------------------------------------------------------
 int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
 	switch (uMsg)
 	{
-	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDOWN://MrChuBo: click chuá»™t trÃ¡i vÃ o Ä‘á»“ Ä‘áº¡c Ä‘ang máº·c
 		if (m_pParentWnd)
 		{
 			if ((m_Style & OBJCONT_S_DISABLE_PICKPUT) == 0)
@@ -275,9 +275,9 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				}
 				if (Wnd_GetDragObj(NULL))
 				{
-					DropObject(false);
+					DropObject(false);//MrChuBo: click chuá»™t trÃ¡i mang Ä‘á»“
 				}
-				else if (m_Object.uGenre != CGOG_NOTHING)
+				else if (m_Object.uGenre != CGOG_NOTHING)//MrChuBo: click chuá»™t trÃ¡i thÃ¡o Ä‘á»“
 				{
 					ITEM_PICKDROP_PLACE	Pick;
 					Pick.pWnd = this;
@@ -302,10 +302,10 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			}
 		}
 		break;
-	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDOWN://MrChuBo: click chuá»™t pháº£i vÃ o trang bá»‹ nhÃ¢n váº­t
 		if (m_pParentWnd)
 		{
-			if (m_Object.uGenre != CGOG_NOTHING)
+			if (m_Object.uGenre != CGOG_NOTHING)//MrChuBo: click chuá»™t pháº£i vÃ o Ä‘á»“ Ä‘ang máº·c
 			{
 				KUiDraggedObject	Obj;
 				Obj = m_Object;
@@ -314,7 +314,7 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			}
 			else if (m_Style & OBJCONT_S_ENABLE_CLICK_EMPTY)
 			{
-				m_pParentWnd->WndProc(WND_N_LEFT_CLICK_ITEM,
+				m_pParentWnd->WndProc(WND_N_LEFT_CLICK_ITEM,//MrChuBo: click chuá»™t pháº£i Ã´ trang bá»‹ trá»‘ng
 					NULL, (int)(KWndWindow*)this);
 			}
 		}
@@ -339,7 +339,7 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º·ÅÖÃÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ·Ã…Ã–ÃƒÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 int KWndObjectBox::DropObject(bool bTestOnly)
 {
@@ -377,7 +377,7 @@ int KWndObjectBox::DropObject(bool bTestOnly)
 #define	REPLACE_ITEM_INDEX(iPos)	((-iPos) - 1)
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º¹¹Ôìº¯Êı
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ¹Â¹Ã”Ã¬ÂºÂ¯ÃŠÃ½
 //--------------------------------------------------------------------------
 KWndObjectMatrix::KWndObjectMatrix()
 {
@@ -415,7 +415,7 @@ void KWndObjectMatrix::Clone(KWndObjectMatrix* pCopy)
 }
 
 // -------------------------------------------------------------------------
-//	¹¦ÄÜ£º³õÊ¼»¯´°¿Ú
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ³ÃµÃŠÂ¼Â»Â¯Â´Â°Â¿Ãš
 // -------------------------------------------------------------------------
 int KWndObjectMatrix::Init(KIniFile* pIniFile, const char* pSection)
 {
@@ -549,7 +549,7 @@ void KWndObjectMatrix::PaintWindow()
 }
 
 // -------------------------------------------------------------------------
-// ¹¦ÄÜ	: Ôö¼ÓÒ»¸ö¶ÔÏóÎïÆ·
+// Â¹Â¦Ã„Ãœ	: Ã”Ã¶Â¼Ã“Ã’Â»Â¸Ã¶Â¶Ã”ÃÃ³ÃÃ¯Ã†Â·
 // -------------------------------------------------------------------------
 int KWndObjectMatrix::AddObject(KUiDraggedObject* pObject, int nCount)
 {
@@ -589,7 +589,7 @@ int KWndObjectMatrix::AddObject(KUiDraggedObject* pObject, int nCount)
 }
 
 // -------------------------------------------------------------------------
-// ¹¦ÄÜ	: ¼õÉÙÒ»¸ö¶ÔÏóÎïÆ·
+// Â¹Â¦Ã„Ãœ	: Â¼ÃµÃ‰Ã™Ã’Â»Â¸Ã¶Â¶Ã”ÃÃ³ÃÃ¯Ã†Â·
 // -------------------------------------------------------------------------
 int KWndObjectMatrix::RemoveObject(KUiDraggedObject* pObject)
 {
@@ -616,8 +616,8 @@ int KWndObjectMatrix::RemoveObject(KUiDraggedObject* pObject)
 }
 
 // -------------------------------------------------------------------------
-// ¹¦ÄÜ	: »ñÈ¡ÈİÄÉµÄÄ³¸ö¶ÔÏóĞÅÏ¢
-//	·µ»Ø£º¶ÔÏóµÄÊıÄ¿
+// Â¹Â¦Ã„Ãœ	: Â»Ã±ÃˆÂ¡ÃˆÃÃ„Ã‰ÂµÃ„Ã„Â³Â¸Ã¶Â¶Ã”ÃÃ³ÃÃ…ÃÂ¢
+//	Â·ÂµÂ»Ã˜Â£ÂºÂ¶Ã”ÃÃ³ÂµÃ„ÃŠÃ½Ã„Â¿
 // -------------------------------------------------------------------------
 int	KWndObjectMatrix::GetObject(KUiDraggedObject& Obj, int x, int y) const
 {
@@ -634,8 +634,8 @@ int	KWndObjectMatrix::GetObject(KUiDraggedObject& Obj, int x, int y) const
 }
 
 // -------------------------------------------------------------------------
-// ¹¦ÄÜ	: »ñÈ¡ÈİÄÉµÄ¶ÔÏóĞÅÏ¢
-//	·µ»Ø£º¶ÔÏóµÄÊıÄ¿
+// Â¹Â¦Ã„Ãœ	: Â»Ã±ÃˆÂ¡ÃˆÃÃ„Ã‰ÂµÃ„Â¶Ã”ÃÃ³ÃÃ…ÃÂ¢
+//	Â·ÂµÂ»Ã˜Â£ÂºÂ¶Ã”ÃÃ³ÂµÃ„ÃŠÃ½Ã„Â¿
 // -------------------------------------------------------------------------
 /*int KWndObjectMatrix::GetObjects(KUiGameObject* pObjects, int nCount) const
 {
@@ -652,7 +652,7 @@ int	KWndObjectMatrix::GetObject(KUiDraggedObject& Obj, int x, int y) const
 }*/
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£ºÇå³ıÈ«²¿µÄ¶ÔÏóÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÃ‡Ã¥Â³Ã½ÃˆÂ«Â²Â¿ÂµÃ„Â¶Ã”ÃÃ³ÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 void KWndObjectMatrix::Clear()
 {
@@ -666,7 +666,7 @@ void KWndObjectMatrix::Clear()
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º´°¿Úº¯Êı
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ´Â°Â¿ÃšÂºÂ¯ÃŠÃ½
 //--------------------------------------------------------------------------
 int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
@@ -756,7 +756,7 @@ int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º»ñµÃÄ³¸öÎ»ÖÃÉÏµÄÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ»Ã±ÂµÃƒÃ„Â³Â¸Ã¶ÃÂ»Ã–ÃƒÃ‰ÃÂµÃ„ÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 int KWndObjectMatrix::GetObjectAt(int x, int y)
 {
@@ -775,7 +775,7 @@ int KWndObjectMatrix::GetObjectAt(int x, int y)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º¼ñÆğÄ³¸öÎ»ÖÃÉÏµÄ¶ÔÏó
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ¼Ã±Ã†Ã°Ã„Â³Â¸Ã¶ÃÂ»Ã–ÃƒÃ‰ÃÂµÃ„Â¶Ã”ÃÃ³
 //--------------------------------------------------------------------------
 int KWndObjectMatrix::PickUpObjectAt(int x, int y)
 {
@@ -794,7 +794,7 @@ int KWndObjectMatrix::PickUpObjectAt(int x, int y)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º·ÅÖÃÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ·Ã…Ã–ÃƒÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 int KWndObjectMatrix::DropObject(int x, int y, bool bTestOnly)
 {
@@ -812,7 +812,7 @@ int KWndObjectMatrix::DropObject(int x, int y, bool bTestOnly)
 	if (DragObj.DataW > m_nNumUnitHori || DragObj.DataH > m_nNUmUnitVert)
 		return false;
 
-	//×ª»»³É¸ñ×Ó×ø±ê
+	//Ã—ÂªÂ»Â»Â³Ã‰Â¸Ã±Ã—Ã“Ã—Ã¸Â±Ãª
 	RECT or ;
 	KUiDraggedObject* pOverlaped = NULL;
 
@@ -884,7 +884,7 @@ int KWndObjectMatrix::DropObject(int x, int y, bool bTestOnly)
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º³¢ÊÔ·ÅÖÃÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ³Â¢ÃŠÃ”Â·Ã…Ã–ÃƒÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 int KWndObjectMatrix::TryDropObjAtPos(const RECT& dor, KUiDraggedObject*& pOverlaped)
 {
@@ -905,7 +905,7 @@ int KWndObjectMatrix::TryDropObjAtPos(const RECT& dor, KUiDraggedObject*& pOverl
 }
 
 //--------------------------------------------------------------------------
-//	¹¦ÄÜ£º·ÅÏÂÎïÆ·
+//	Â¹Â¦Ã„ÃœÂ£ÂºÂ·Ã…ÃÃ‚ÃÃ¯Ã†Â·
 //--------------------------------------------------------------------------
 void KWndObjectMatrix::DropObject(int x, int y, KUiDraggedObject* pToPickUpObj)
 {
