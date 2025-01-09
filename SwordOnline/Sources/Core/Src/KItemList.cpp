@@ -1747,14 +1747,67 @@ int KItemList::UseItem(int nIdx)
 		return 0;
 
 	int		nRet = 0;
-	switch(Item[nIdx].GetGenre())
+	switch (Item[nIdx].GetGenre())
 	{
+	case item_equip:
+		break;
+		/*		if (Equip(nNpcIdx, nIdx))
+					nRet = REQUEST_EQUIP_ITEM;*/
+		break;
+		//	case item_townportal:
+		//	case item_task:
 	case item_medicine:
 		if (NowEatItem(nIdx))
 			nRet = REQUEST_EAT_MEDICINE;
 		break;
 	default:
 		nRet = REQUEST_EAT_OTHER;
+		break;
+	}
+	return nRet;
+}
+
+int KItemList::ChangeItemInPlayer(int nIdx)
+{
+	if (m_PlayerIdx <= 0)
+		return FALSE;
+
+	int nNpcIdx = Player[m_PlayerIdx].m_nIndex;
+
+	if (0 == FindSame(nIdx))
+	{
+		return 0;
+	}
+	int		nRet = Item[nIdx].GetDetailType();
+	switch (nRet)
+	{
+	case itempart_head:
+		break;
+	case itempart_body:
+		break;
+	case itempart_belt:
+		break;
+	case itempart_weapon:
+		break;
+	case itempart_foot:
+		break;
+	case itempart_cuff:
+		break;
+	case itempart_amulet:
+		break;
+	case itempart_ring1:
+		break;
+	case itempart_ring2:
+		break;
+	case itempart_pendant:
+		break;
+	case itempart_mask:
+		break;
+	case itempart_num:
+		break;
+	case itempart_horse:
+		break;
+	default:
 		break;
 	}
 	return nRet;

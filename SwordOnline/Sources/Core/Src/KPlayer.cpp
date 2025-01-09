@@ -3259,14 +3259,124 @@ BOOL	KPlayer::ApplyAddSkillLevel(int nSkillID, int nAddPoint)
 //-------------------------------------------------------------------------
 BOOL	KPlayer::ApplyUseItem(int nItemID, ItemPos SrcPos)
 {
+	ItemPos DesPos;
+	DesPos.nPlace = DesPos.nX = DesPos.nY = -1;
+	KSystemMessage	sMsg;
+
 	if (this->CheckTrading())
 		return FALSE;
-
-	if (m_dwRightMouse && m_dwRightMouse > g_SubWorldSet.GetGameTime())
-		return FALSE;
-
 	int nRet = this->m_ItemList.UseItem(nItemID);
 	if (nRet == 0)
+	{
+
+		nRet = m_ItemList.ChangeItemInPlayer(nItemID);//edit by phong kieu mac trang bi vao nguoi
+		switch (nRet)
+		{
+		case equip_horse:
+			DesPos.nPlace = 2;
+			DesPos.nX = 10;
+			strcpy(sMsg.szMessage, "Mang ngùa ...");
+			break;
+		case equip_meleeweapon:
+			DesPos.nPlace = 2;
+			DesPos.nX = 3;
+			strcpy(sMsg.szMessage, "Mang vò khÝ cËn chiÕn ...");
+			break;
+		case equip_rangeweapon:
+			DesPos.nPlace = 2;
+			DesPos.nX = 3;
+			strcpy(sMsg.szMessage, "Mang vò khÝ tÇm xa ...");
+			break;
+		case equip_armor:
+			DesPos.nPlace = 2;
+			DesPos.nX = 1;
+			strcpy(sMsg.szMessage, "Mang y phôc ...");
+			break;
+		case equip_ring:
+			DesPos.nPlace = 2;
+			DesPos.nX = 7;
+			strcpy(sMsg.szMessage, "Mang nhÉn 1...");
+
+			if (m_ItemList.m_EquipItem[7] > 0 && m_ItemList.m_EquipItem[8] == 0)
+			{
+				DesPos.nX = 8;
+			}
+			strcpy(sMsg.szMessage, "Mang nhÉn 2...");
+			break;
+		case equip_amulet:
+			DesPos.nPlace = 2;
+			DesPos.nX = 6;
+			strcpy(sMsg.szMessage, "Mang d©y chuyÒn ...");
+			break;
+		case equip_boots:
+			DesPos.nPlace = 2;
+			DesPos.nX = 4;
+			strcpy(sMsg.szMessage, "Mang giµy ...");
+			break;
+		case equip_belt:
+			DesPos.nPlace = 2;
+			DesPos.nX = 2;
+			strcpy(sMsg.szMessage, "Mang ®ai l­ng ...");
+			break;
+		case equip_helm:
+			DesPos.nPlace = 2;
+			DesPos.nX = 0;
+			strcpy(sMsg.szMessage, "Mang mò ...");
+			break;
+		case equip_cuff:
+			DesPos.nPlace = 2;
+			DesPos.nX = 5;
+			strcpy(sMsg.szMessage, "Mang bao tay ...");
+			break;
+		case equip_pendant:
+			DesPos.nPlace = 2;
+			DesPos.nX = 9;
+			strcpy(sMsg.szMessage, "Mang ngäc béi ...");
+			break;
+		}
+		if (DesPos.nPlace < 0)
+		{
+			return FALSE;
+		}
+
+		PLAYER_MOVE_ITEM_COMMAND	sMove;
+		sMove.ProtocolType = c2s_playermoveitem;
+		sMove.m_btDownPos = SrcPos.nPlace;
+		sMove.m_btDownX = SrcPos.nX;
+		sMove.m_btDownY = SrcPos.nY;
+		sMove.m_btUpPos = SrcPos.nPlace;
+		sMove.m_btUpX = SrcPos.nX;
+		sMove.m_btUpY = SrcPos.nY;
+		if (g_pClient)
+			g_pClient->SendPackToServer(&sMove, sizeof(PLAYER_MOVE_ITEM_COMMAND));
+
+		PLAYER_MOVE_ITEM_COMMAND	sMove2;
+		sMove2.ProtocolType = c2s_playermoveitem;
+		sMove2.m_btDownPos = DesPos.nPlace;
+		sMove2.m_btDownX = DesPos.nX;
+		sMove2.m_btDownY = DesPos.nY;
+		sMove2.m_btUpPos = DesPos.nPlace;
+		sMove2.m_btUpX = DesPos.nX;
+		sMove2.m_btUpY = DesPos.nY;
+		if (g_pClient)
+			g_pClient->SendPackToServer(&sMove2, sizeof(PLAYER_MOVE_ITEM_COMMAND));
+
+		if (g_pClient)
+			g_pClient->SendPackToServer(&sMove, sizeof(PLAYER_MOVE_ITEM_COMMAND));
+
+		sMsg.byConfirmType = SMCT_NONE;
+		sMsg.eType = SMT_NORMAL;
+		sMsg.byParamSize = 0;
+		sMsg.byPriority = 0;
+		CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
+
+		m_ItemList.LockOperation();
+
+		return FALSE;
+	}
+
+
+	if (m_dwRightMouse && m_dwRightMouse > g_SubWorldSet.GetGameTime())
 		return FALSE;
 
 	m_dwRightMouse = g_SubWorldSet.GetGameTime() + GAME_FPS / 3;
