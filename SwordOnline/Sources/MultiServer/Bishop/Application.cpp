@@ -75,7 +75,7 @@ int CBishopApp::Run()
 
 	m_theNetwork.Create();
 
-	g_theSmartClient.Open(m_theNetwork.GetAccSvrIP(), m_theNetwork.GetAccSvrPort(), 0, "fsjx", "1234");
+	g_theSmartClient.Open(m_theNetwork.GetAccSvrIP(), m_theNetwork.GetAccSvrPort(), 0, "txjx", "1111");
 
 	if (g_theSmartClient.Valid())
 	{

@@ -51,8 +51,8 @@ char				g_szGameName[128] = "11/11/2019";
 
 KClientCallback g_ClientCallback;
 
-#define	SCREEN_WIDTH	1600//800//
-#define SCREEN_HEIGHT	900//600//
+#define	SCREEN_WIDTH	800//
+#define SCREEN_HEIGHT	600//
 
 /*
  * Add this macro by liupeng on 2003.3.20
