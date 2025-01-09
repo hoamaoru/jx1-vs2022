@@ -127,7 +127,11 @@ copy ClientDebug\CoreClient.dll ..\..\..\bin\client\CoreClient.dll
 copy ClientDebug\CoreClient.dll ..\..\..\bin\client\debug\CoreClient.dll
 
 md ..\..\lib\debug
-copy ClientDebug\CoreClient.lib ..\..\lib\debug\CoreClient.lib</Command>
+copy ClientDebug\CoreClient.lib ..\..\lib\debug\CoreClient.lib
+
+copy ClientDebug\CoreClient.lib ..\S3Client\debug\CoreClient.lib
+copy ClientDebug\CoreClient.dll ..\S3Client\CoreClient.dll
+copy ClientDebug\Core.pdb ..\S3Client\debug\Core.pdb</Command>
     </PostBuildEvent>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>

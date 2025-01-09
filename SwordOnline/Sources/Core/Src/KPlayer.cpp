@@ -3275,63 +3275,63 @@ BOOL	KPlayer::ApplyUseItem(int nItemID, ItemPos SrcPos)
 		case equip_horse:
 			DesPos.nPlace = 2;
 			DesPos.nX = 10;
-			strcpy(sMsg.szMessage, "Mang ng√πa ...");
+			strcpy(sMsg.szMessage, "Mang ng˘a ...");
 			break;
 		case equip_meleeweapon:
 			DesPos.nPlace = 2;
 			DesPos.nX = 3;
-			strcpy(sMsg.szMessage, "Mang v√≤ kh√ù c√ãn chi√ïn ...");
+			strcpy(sMsg.szMessage, "Mang vÚ kh› cÀn chi’n ...");
 			break;
 		case equip_rangeweapon:
 			DesPos.nPlace = 2;
 			DesPos.nX = 3;
-			strcpy(sMsg.szMessage, "Mang v√≤ kh√ù t√ám xa ...");
+			strcpy(sMsg.szMessage, "Mang vÚ kh› t«m xa ...");
 			break;
 		case equip_armor:
 			DesPos.nPlace = 2;
 			DesPos.nX = 1;
-			strcpy(sMsg.szMessage, "Mang y ph√¥c ...");
+			strcpy(sMsg.szMessage, "Mang y phÙc ...");
 			break;
 		case equip_ring:
 			DesPos.nPlace = 2;
 			DesPos.nX = 7;
-			strcpy(sMsg.szMessage, "Mang nh√ân 1...");
+			strcpy(sMsg.szMessage, "Mang nh…n tr™n...");
 
 			if (m_ItemList.m_EquipItem[7] > 0 && m_ItemList.m_EquipItem[8] == 0)
 			{
 				DesPos.nX = 8;
 			}
-			strcpy(sMsg.szMessage, "Mang nh√ân 2...");
+			strcpy(sMsg.szMessage, "Mang nh…n d≠Ìi...");
 			break;
 		case equip_amulet:
 			DesPos.nPlace = 2;
 			DesPos.nX = 6;
-			strcpy(sMsg.szMessage, "Mang d¬©y chuy√ín ...");
+			strcpy(sMsg.szMessage, "Mang d©y chuy“n ...");
 			break;
 		case equip_boots:
 			DesPos.nPlace = 2;
 			DesPos.nX = 4;
-			strcpy(sMsg.szMessage, "Mang gi¬µy ...");
+			strcpy(sMsg.szMessage, "Mang giµy ...");
 			break;
 		case equip_belt:
 			DesPos.nPlace = 2;
 			DesPos.nX = 2;
-			strcpy(sMsg.szMessage, "Mang ¬Æai l¬≠ng ...");
+			strcpy(sMsg.szMessage, "Mang thæt l≠ng ...");
 			break;
 		case equip_helm:
 			DesPos.nPlace = 2;
 			DesPos.nX = 0;
-			strcpy(sMsg.szMessage, "Mang m√≤ ...");
+			strcpy(sMsg.szMessage, "Mang m∑o ...");
 			break;
 		case equip_cuff:
 			DesPos.nPlace = 2;
 			DesPos.nX = 5;
-			strcpy(sMsg.szMessage, "Mang bao tay ...");
+			strcpy(sMsg.szMessage, "Mang hÈ uy”n ...");
 			break;
 		case equip_pendant:
 			DesPos.nPlace = 2;
 			DesPos.nX = 9;
-			strcpy(sMsg.szMessage, "Mang ng√§c b√©i ...");
+			strcpy(sMsg.szMessage, "Mang ng‰c bÈi ...");
 			break;
 		}
 		if (DesPos.nPlace < 0)
