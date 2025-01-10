@@ -1,0 +1,13 @@
+SwordOnline/Sources/**/*Debug*/
+SwordOnline/Sources/**/*Release*/
+
+SwordOnline/Sources/S3Client/script/
+SwordOnline/Sources/S3Client/settings/
+SwordOnline/Sources/S3Client/Spr/
+SwordOnline/Sources/S3Client/UserData/
+SwordOnline/Sources/S3Client/font/
+SwordOnline/Sources/S3Client/data/
+SwordOnline/Sources/S3Client/config.ini
+SwordOnline/Sources/S3Client/package.ini
+
+/bin/
