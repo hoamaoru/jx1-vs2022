@@ -482,7 +482,7 @@ int KWndWindow::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		OnLBtnDown(LOWORD(nParam), HIWORD(nParam));
 		nRet = 1;
 		break;
-	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDOWN://MrChuBo: click On UI Window
 		if (m_pParentWnd)
 		{
 			m_pParentWnd->WndProc(WND_M_POPUPMENU, (unsigned int)(KWndWindow*)this, nParam);
@@ -508,7 +508,7 @@ int KWndWindow::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		}
 		nRet = 1;
 		break;
-	case WND_M_CAPTURECHANGED:
+	case WND_M_CAPTURECHANGED://MrChuBo: mouse drag UI
 		m_bMoving = false;
 		nRet = 1;
 		break;

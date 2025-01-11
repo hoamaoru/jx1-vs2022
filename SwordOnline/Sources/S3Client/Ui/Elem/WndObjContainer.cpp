@@ -777,7 +777,7 @@ int KWndObjectMatrix::GetObjectAt(int x, int y)
 //--------------------------------------------------------------------------
 //	¹¦ÄÜ£º¼ñÆðÄ³¸öÎ»ÖÃÉÏµÄ¶ÔÏó
 //--------------------------------------------------------------------------
-int KWndObjectMatrix::PickUpObjectAt(int x, int y)
+int KWndObjectMatrix::PickUpObjectAt(int x, int y)//MrChuBo: đang nhặt đồ (đang trên chuột)
 {
 	int nPicked = GetObjectAt(x, y);
 	if (nPicked >= 0)

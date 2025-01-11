@@ -3275,63 +3275,63 @@ BOOL	KPlayer::ApplyUseItem(int nItemID, ItemPos SrcPos)
 			case equip_horse:
 				DesPos.nPlace = 2;
 				DesPos.nX = 10;
-				strcpy(sMsg.szMessage, "Mang ngùa ...");
+				strcpy(sMsg.szMessage, "Mang ngï¿½a ...");
 				break;
 			case equip_meleeweapon:
 				DesPos.nPlace = 2;
 				DesPos.nX = 3;
-				strcpy(sMsg.szMessage, "Mang vò khÝ cËn chiÕn ...");
+				strcpy(sMsg.szMessage, "Mang vï¿½ khï¿½ cï¿½n chiï¿½n ...");
 				break;
 			case equip_rangeweapon:
 				DesPos.nPlace = 2;
 				DesPos.nX = 3;
-				strcpy(sMsg.szMessage, "Mang vò khÝ tÇm xa ...");
+				strcpy(sMsg.szMessage, "Mang vï¿½ khï¿½ tï¿½m xa ...");
 				break;
 			case equip_armor:
 				DesPos.nPlace = 2;
 				DesPos.nX = 1;
-				strcpy(sMsg.szMessage, "Mang y phôc ...");
+				strcpy(sMsg.szMessage, "Mang y phï¿½c ...");
 				break;
 			case equip_ring:
 				DesPos.nPlace = 2;
 				DesPos.nX = 7;
-				strcpy(sMsg.szMessage, "Mang nhÉn trªn...");
+				strcpy(sMsg.szMessage, "Mang nhï¿½n trï¿½n...");
 
 				if (m_ItemList.m_EquipItem[7] > 0 && m_ItemList.m_EquipItem[8] == 0)
 				{
 					DesPos.nX = 8;
-					strcpy(sMsg.szMessage, "Mang nhÉn d­íi...");
+					strcpy(sMsg.szMessage, "Mang nhï¿½n dï¿½ï¿½i...");
 				}
 				break;
 			case equip_amulet:
 				DesPos.nPlace = 2;
 				DesPos.nX = 6;
-				strcpy(sMsg.szMessage, "Mang d©y chuyÒn ...");
+				strcpy(sMsg.szMessage, "Mang dï¿½y chuyï¿½n ...");
 				break;
 			case equip_boots:
 				DesPos.nPlace = 2;
 				DesPos.nX = 4;
-				strcpy(sMsg.szMessage, "Mang giµy ...");
+				strcpy(sMsg.szMessage, "Mang giï¿½y ...");
 				break;
 			case equip_belt:
 				DesPos.nPlace = 2;
 				DesPos.nX = 2;
-				strcpy(sMsg.szMessage, "Mang th¾t l­ng ...");
+				strcpy(sMsg.szMessage, "Mang thï¿½t lï¿½ng ...");
 				break;
 			case equip_helm:
 				DesPos.nPlace = 2;
 				DesPos.nX = 0;
-				strcpy(sMsg.szMessage, "Mang m·o ...");
+				strcpy(sMsg.szMessage, "Mang mï¿½o ...");
 				break;
 			case equip_cuff:
 				DesPos.nPlace = 2;
 				DesPos.nX = 5;
-				strcpy(sMsg.szMessage, "Mang hé uyÓn ...");
+				strcpy(sMsg.szMessage, "Mang hï¿½ uyï¿½n ...");
 				break;
 			case equip_pendant:
 				DesPos.nPlace = 2;
 				DesPos.nX = 9;
-				strcpy(sMsg.szMessage, "Mang ngäc béi ...");
+				strcpy(sMsg.szMessage, "Mang ngï¿½c bï¿½i ...");
 				break;
 		}
 		if (DesPos.nPlace < 0)
@@ -3425,6 +3425,9 @@ void	KPlayer::PickUpObj(int nObjIndex)
 	else
 	{
 		ItemPos	sItemPos;
+		///MrChuBo: tÃ­nh toÃ¡n xem váº­t pháº©m cÃ³ vá»«a rÆ°Æ¡ng hay khÃ´ng
+		/// TRUE: váº­t pháº©m sáº½ Ä‘Æ°a vÃ o rÆ°Æ¡ng nhÃ¢n váº­t
+		/// FALSE: váº­t pháº©m sáº½ dÃ­nh trÃªn chuá»™t
 		if (FALSE == m_ItemList.SearchPosition(Object[nObjIndex].m_nItemWidth, Object[nObjIndex].m_nItemHeight, &sItemPos))
 		{
 			KSystemMessage	sMsg;

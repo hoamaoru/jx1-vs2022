@@ -1,14 +1,14 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Coreï¿½Ãµï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ÈµÄ¶ï¿½ï¿½ï¿½
+/*****************************************************************************************
+//	Íâ½ç·ÃÎÊCoreÓÃµ½Êý¾Ý½á¹¹µÈµÄ¶¨Òå
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
 //	CreateTime:	2002-9-12
 ------------------------------------------------------------------------------------------
-	Ò»Ð©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½Í·ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½
-ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¹Øµï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
-    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â²¿ï¿½Í»ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Ú´ï¿½ï¿½Ä¼ï¿½
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½å£¬ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½É¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Æ°Ñ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Ä»ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ÚµÄ¶ï¿½ï¿½ï¿½
-Í·ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´Ë½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ä°ï¿½ï¿½ï¿½ï¿½ï¿½
+	Ò»Ð©¶¨Òå¿ÉÄÜ´¦ÓÚÔÚÓÎÏ·ÊÀ½ç¸÷Ä£¿éµÄÍ·ÎÄ¼þÖÐ£¬ÇëÔÚ´Ë´¦°üº¬ÄÇ¸öÍ·ÎÄ¼þ£¬²¢ÇëÄÇÑùµÄÍ·ÎÄ¼þ
+²»Òª°üº¬Ò»Ð©ÓëÓÎÏ·ÊÀ½ç¶ÔÍâÎÞ¹ØµÄÄÚÈÝ¡£
+    ¿ª·¢¹ý³ÌÖÐÓÎÏ·ÊÀ½çµÄÍâ²¿¿Í»§ÔÚÎ´»ñµÃÓÎÏ·ÊÀ½ç½Ó¿ÚÍêÕû¶¨ÒåµÄÇé¿öÏÂ£¬»áÏÖÏÈÖ±½ÓÔÚ´ËÎÄ¼þ
+¶¨ÒåËüÐèÒªµÄÊý¾Ý¶¨Òå£¬ÓÎÏ·ÊÀ½ç¸÷Ä£¿é¿É¸ù¾Ý×ÔÉíÐèÒªÓëÉè¼Æ°Ñ¶¨Òå×÷ÐÞ¸Ä»òÒÆ¶¯µ½Ä£¿éÄÚµÄ¶ÔÍâ
+Í·ÎÄ¼þ£¬²¢ÔÚ´Ë½¨Á¢³äÒªµÄ°üº¬¡£
 *****************************************************************************************/
 #ifndef GAMEDATADEF_H
 #define GAMEDATADEF_H
@@ -22,7 +22,7 @@
 
 #ifdef	_SERVER
 #define	MAX_NPC			48000
-#define	MAX_PLAYER		1200
+#define	MAX_PLAYER		1200 // Max nguoi choi
 #define	MAX_ITEM		160000
 #else
 #define	MAX_NPC			256
@@ -56,8 +56,8 @@
 
 #define		MAX_DEATH_PUNISH_PK_VALUE			10
 
-#define		RESOLUTION_WIDTH				1900
-#define		RESOLUTION_HEIGHT				800
+#define		RESOLUTION_WIDTH				800//1900
+#define		RESOLUTION_HEIGHT				600//800
 
 #define		POISON_DAMAGE_TIME				60
 #define		POISON_DAMAGE_INTERVAL			10
@@ -186,7 +186,7 @@ enum COMPOUND_ACTION
 	CPA_NUM,
 };
 
-enum ENCHASE_ACTION
+enum ENCHASE_ACTION //Do Tim
 {
 	ECA_DISTILL,
 	ECA_FORGE,
@@ -194,7 +194,7 @@ enum ENCHASE_ACTION
 	ECA_ATLAS,
 };
 
-enum COMPOUND_PART
+enum COMPOUND_PART //Box Kham do tim
 {
 	compound_box1 = 0,
 	compound_box2,
@@ -409,11 +409,11 @@ enum PLAYER_INSTANT_STATE
 
 enum OBJ_ATTRIBYTE_TYPE
 {
-	series_metal,			//	ï¿½ï¿½Ïµ
+	series_metal,			//	½ðÏµ
 	series_wood,			//	Ä¾Ïµ
 	series_water,			//	Ë®Ïµ
-	series_fire,			//	ï¿½ï¿½Ïµ
-	series_earth,			//	ï¿½ï¿½Ïµ
+	series_fire,			//	»ðÏµ
+	series_earth,			//	ÍÁÏµ
 	series_nil,
 	series_num = series_nil,
 	series_minus,
@@ -421,8 +421,8 @@ enum OBJ_ATTRIBYTE_TYPE
 
 enum OBJ_GENDER
 {
-	OBJ_G_MALE	= 0,	//ï¿½ï¿½ï¿½Ô£ï¿½ï¿½Ðµï¿½
-	OBJ_G_FEMALE,		//ï¿½ÆµÄ£ï¿½Å®ï¿½ï¿½
+	OBJ_G_MALE	= 0,	//ÐÛÐÔ£¬ÄÐµÄ
+	OBJ_G_FEMALE,		//´ÆµÄ£¬Å®µÄ
 };
 
 enum NPCCAMP
@@ -442,48 +442,48 @@ enum NPCCAMP
 enum NPCBOSS
 {
 	npc_normal,
-	npc_blue,				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ò£ï¿½
-	npc_gold,			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óª
-	npcboss_num,				// ï¿½ï¿½Óªï¿½ï¿½
+	npc_blue,				// ÐÂÊÖÕóÓª£¨¼ÓÈëÃÅÅÉÇ°µÄÍæ¼Ò£©
+	npc_gold,			// ÕýÅÉÕóÓª
+	npcboss_num,				// ÕóÓªÊý
 };
 
 enum ITEM_IN_ENVIRO_PROP
 {
-	IIEP_NORMAL = 0,	//Ò»ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
-	IIEP_NOT_USEABLE,	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½
-	IIEP_SPECIAL,		//ï¿½Ø¶ï¿½ï¿½Ä²ï¿½Í¬ï¿½ï¿½ï¿½
+	IIEP_NORMAL = 0,	//Ò»°ã/Õý³£/¿ÉÓÃ
+	IIEP_NOT_USEABLE,	//²»¿ÉÓÃ/²»¿É×°Åä
+	IIEP_SPECIAL,		//ÌØ¶¨µÄ²»Í¬Çé¿ö
 };
 
-#define	GOD_MAX_OBJ_TITLE_LEN	2048	//128ï¿½ï¿½Ê±ï¿½ï¿½Îª1024Îªï¿½Ë¼ï¿½ï¿½Ý¾É´ï¿½ï¿½ï¿½ to be modified
+#define	GOD_MAX_OBJ_TITLE_LEN	2048	//128ÁÙÊ±¸ÄÎª1024ÎªÁË¼æÈÝ¾É´úÂë to be modified
 #define	GOD_MAX_OBJ_PROP_LEN	1024
 #define	GOD_MAX_OBJ_DESC_LEN	1024
 
 //==================================
-//	ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	ÓÎÏ·¶ÔÏóµÄÃèÊö
 //==================================
 struct KGameObjDesc
 {
-	char	szTitle[GOD_MAX_OBJ_TITLE_LEN];	//ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½ï¿½
-	char	szProp[GOD_MAX_OBJ_PROP_LEN];	//ï¿½ï¿½ï¿½Ô£ï¿½Ã¿ï¿½Ð¿ï¿½ï¿½ï¿½tabï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ë¿¿ï¿½Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	char	szDesc[GOD_MAX_OBJ_DESC_LEN];	//ï¿½ï¿½ï¿½ï¿½
+	char	szTitle[GOD_MAX_OBJ_TITLE_LEN];	//±êÌâ£¬Ãû³Æ
+	char	szProp[GOD_MAX_OBJ_PROP_LEN];	//ÊôÐÔ£¬Ã¿ÐÐ¿ÉÒÔtab»®·ÖÎª¿¿×óÓë¿¿ÓÒ¶ÔÆëÁ½²¿·Ö
+	char	szDesc[GOD_MAX_OBJ_DESC_LEN];	//ÃèÊö
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+//	ÎÊÌâÓë¿ÉÑ¡´ð°¸
 //==================================
 struct KUiAnswer
 {
-	char	AnswerText[MAX_SENTENCE_LENGTH];	//ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½
-	int		AnswerLen;			//ï¿½ï¿½Ñ¡ï¿½ð°¸´æ´¢ï¿½ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	char	AnswerText[MAX_SENTENCE_LENGTH];	//¿ÉÑ¡´ð°¸ÎÄ×Ö£¨¿ÉÒÔ°üº¬¿ØÖÆ·û£©
+	int		AnswerLen;			//¿ÉÑ¡´ð°¸´æ´¢³¤¶È£¨°üÀ¨¿ØÖÆ·û£¬²»°üº¬½áÊø·û£©
 };
 
 struct KUiQuestionAndAnswer
 {
 	int			LeftTime;
-	char		Question[MAX_QUESTION_LENGTH];	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½
-	int			QuestionLen;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´æ´¢ï¿½ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int			AnswerCount;	//ï¿½ï¿½Ñ¡ï¿½ð°¸µï¿½ï¿½ï¿½Ä¿
-	KUiAnswer	Answer[1];		//ï¿½ï¿½Ñ¡ï¿½ï¿½
+	char		Question[MAX_QUESTION_LENGTH];	//ÎÊÌâÎÄ×Ö£¨¿ÉÒÔ°üº¬¿ØÖÆ·û£©
+	int			QuestionLen;	//ÎÊÌâÎÄ×Ö´æ´¢³¤¶È£¨°üÀ¨¿ØÖÆ·û£¬²»°üº¬½áÊø·û£©
+	int			AnswerCount;	//¿ÉÑ¡´ð°¸µÄÊýÄ¿
+	KUiAnswer	Answer[1];		//ºòÑ¡´ð°¸
 };
 
 struct KUiImage 
@@ -493,100 +493,100 @@ struct KUiImage
 };  
 
 //==================================
-//	ï¿½ï¿½ï¿½Ô±ï¿½Ê¾ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Ä½á¹¹
+//	¼òÂÔ±íÊ¾ÓÎÏ·¶ÔÏóµÄ½á¹¹
 //==================================
 struct KUiGameObject
 {
-	unsigned int uGenre;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	unsigned int uId;		//ï¿½ï¿½ï¿½ï¿½id
-//	int			 nData;		//ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½Øµï¿½Ä³ï¿½ï¿½ï¿½ï¿½
+	unsigned int uGenre;	//¶ÔÏóÀàÊô
+	unsigned int uId;		//¶ÔÏóid
+//	int			 nData;		//Óë¶ÔÏóÊµÀýÏà¹ØµÄÄ³Êý¾Ý
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§
+//	ÒÔ×ø±ê±íÊ¾µÄÒ»¸öÇøÓò·¶Î§
 //==================================
 struct KUiRegion
 {
-	int		h;		//ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		v;		//ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		Width;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		Height;	//ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½
+	int		h;		//×óÉÏ½ÇÆðµãºá×ø±ê
+	int		v;		//×óÉÏ½ÇÆðµã×Ý×ø±ê
+	int		Width;	//ÇøÓòºá¿í
+	int		Height;	//ÇøÓò×Ý¿í
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÉµÄµØ·ï¿½
+//	¿ÉÒÔÓÎÏ·¶ÔÏóÈÝÄÉµÄµØ·½
 //==================================
 enum UIOBJECT_CONTAINER
 {
-	UOC_IN_HAND	= 1,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	UOC_GAMESPACE,			//ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
-	UOC_IMMEDIA_ITEM,		//ï¿½ï¿½ï¿½ï¿½ï¿½Æ·
-	UOC_IMMEDIA_SKILL,		//ï¿½ï¿½ï¿½ï¿½ä¹¦0->ï¿½Ò¼ï¿½ï¿½ä¹¦ï¿½ï¿½1,2...-> F1,F2...ï¿½ï¿½ï¿½ï¿½ä¹¦
-	UOC_ITEM_TAKE_WITH,		//ï¿½ï¿½ï¿½ï¿½Ð¯ï¿½ï¿½
+	UOC_IN_HAND	= 1,		//ÊÖÖÐÄÃ×Å
+	UOC_GAMESPACE,			//ÓÎÏ·´°¿Ú
+	UOC_IMMEDIA_ITEM,		//¿ì½ÝÎïÆ·
+	UOC_IMMEDIA_SKILL,		//¿ì½ÝÎä¹¦0->ÓÒ¼üÎä¹¦£¬1,2...-> F1,F2...¿ì½ÝÎä¹¦
+	UOC_ITEM_TAKE_WITH,		//ËæÉíÐ¯´ø
 	UOC_ITEM_TAKE_WITH_EX,
-	UOC_TO_BE_TRADE,		//Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	UOC_OTHER_TO_BE_TRADE,	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ä£ï¿½
-	UOC_EQUIPTMENT,			//ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½
-	UOC_NPC_SHOP,			//npcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	UOC_TO_BE_TRADE,		//Òª±»ÂòÂô£¬ÂòÂôÃæ°åÉÏ
+	UOC_OTHER_TO_BE_TRADE,	//ÂòÂôÃæ°åÉÏ£¬±ðÈËÒªÂô¸ø×Ô¼ºµÄ£¬
+	UOC_EQUIPTMENT,			//ÉíÉÏ×°±¸
+	UOC_NPC_SHOP,			//npcÂòÂô³¡Ëù
 	UOC_STORE_BOX,
-	UOC_STORE_BOX1,//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	UOC_STORE_BOX1,//´¢ÎïÏä
 	UOC_STORE_BOX2,
 	UOC_STORE_BOX3,
 	UOC_STORE_BOX4,
 	UOC_STORE_BOX5,
-	UOC_SKILL_LIST,			//ï¿½Ð³ï¿½È«ï¿½ï¿½Óµï¿½Ð¼ï¿½ï¿½ÜµÄ´ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½
+	UOC_SKILL_LIST,			//ÁÐ³öÈ«²¿ÓµÓÐ¼¼ÄÜµÄ´°¿Ú£¬¼¼ÄÜ´°¿Ú
 	UOC_SKILL_TREE,
 	UOC_ITEM_GIVE,
 	UOC_COMPOUND,
 	UOC_COMPOUND_BOX,
-	//ï¿½ï¿½ï¿½Ò¿ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	//×ó¡¢ÓÒ¿ÉÓÃ¼¼ÄÜÊ÷
 };
 
 
 enum MONEYUNIT
 {
 	moneyunit_money = 0,	// Í·
-	moneyunit_extpoint,		// ï¿½ï¿½ï¿½ï¿½
-	moneyunit_fuyuan,		// ï¿½ï¿½ï¿½ï¿½
-	moneyunit_repute,	// ï¿½ï¿½ï¿½ï¿½
+	moneyunit_extpoint,		// ÉíÌå
+	moneyunit_fuyuan,		// Ñü´ø
+	moneyunit_repute,	// ÎäÆ÷
 	moneyunit_accum,
 	moneyunit_honor,
 	moneyunit_respect,
 	moneyunit_num,
 };
 //==================================
-// iCoreShell::GetGameDataï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,uDataIdÈ¡ÖµÎªGDI_TRADE_DATAÊ±ï¿½ï¿½
-// uParamï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Öµï¿½Ð±ï¿½
-// ×¢ï¿½ï¿½ï¿½Ðµï¿½Return:ï¿½Ð±ï¿½Ê¾ï¿½ï¿½Øµï¿½GetGameDataï¿½ï¿½ï¿½ÃµÄ·ï¿½ï¿½ï¿½Öµï¿½Äºï¿½ï¿½ï¿½
+// iCoreShell::GetGameDataº¯Êýµ÷ÓÃ,uDataIdÈ¡ÖµÎªGDI_TRADE_DATAÊ±£¬
+// uParamµÄÐí¿ÉÈ¡ÖµÁÐ±í
+// ×¢ÊÍÖÐµÄReturn:ÐÐ±íÊ¾Ïà¹ØµÄGetGameDataµ÷ÓÃµÄ·µ»ØÖµµÄº¬Òå
 //==================================
 enum UI_TRADE_OPER_DATA
 {
-	UTOD_IS_WILLING,		//ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
-	//Return: ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ç·ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ÐµÄ²ï¿½ï¿½ï¿½Öµ
-	UTOD_IS_LOCKED,			//ï¿½Ô¼ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-	//Return: ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Ä²ï¿½ï¿½ï¿½Öµ
-	UTOD_IS_TRADING,		//ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÚµÈ´ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½
-	//Return: ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ÚµÈ´ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½
-	UTOD_IS_OTHER_LOCKED,	//ï¿½Ô·ï¿½ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-	//Return: ï¿½ï¿½ï¿½Ø¶Ô·ï¿½ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Ä²ï¿½ï¿½ï¿½Öµ
+	UTOD_IS_WILLING,		//ÊÇ·ñ½»Ò×ÒâÏò(½ÐÂôÖÐ)
+	//Return: ·µ»Ø×Ô¼ºÊÇ·ñ´¦ÓÚ½ÐÂôÖÐµÄ²¼¶ûÖµ
+	UTOD_IS_LOCKED,			//×Ô¼ºÊÇ·ñ´¦ÓÚÒÑËø¶¨×´Ì¬
+	//Return: ·µ»Ø×Ô¼ºÊÇ·ñ´¦ÓÚÒÑËø¶¨×´Ì¬µÄ²¼¶ûÖµ
+	UTOD_IS_TRADING,		//ÊÇ·ñ¿ÉÒÔÕýÔÚµÈ´ý½»Ò×²Ù×÷£¨½»Ò×ÊÇ·ñÒÑÈ·¶¨£©
+	//Return: ·µ»ØÊÇ·ñÕýÔÚµÈ´ý½»Ò×²Ù×÷£¨½»Ò×ÊÇ·ñÒÑÈ·¶¨£©
+	UTOD_IS_OTHER_LOCKED,	//¶Ô·½ÊÇ·ñÒÑ¾­´¦ÓÚËø¶¨×´Ì¬
+	//Return: ·µ»Ø¶Ô·½ÊÇ·ñÒÑ¾­´¦ÓÚËø¶¨×´Ì¬µÄ²¼¶ûÖµ
 	UTOD_IS_OTHER_TRADING,
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·
+//	ÂòÂôÎïÆ·
 //==================================
 struct KUiItemBuySelInfo
 {
 	int				nItemNature;
-	char			szItemName[64];	//ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
+	char			szItemName[64];	//ÎïÆ·Ãû³Æ
 	int				nOldPrice;
-	int				nCurPrice;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç®ï¿½ï¿½ï¿½ï¿½ÖµÎªï¿½ï¿½ï¿½Û¸ñ£¬¸ï¿½Öµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ä¼Û¸ï¿½Îª(-nPrice)
+	int				nCurPrice;			//ÂòÂô¼ÛÇ®£¬ÕýÖµÎªÂô¼Û¸ñ£¬¸ºÖµ±íÊ¾ÂòÈëµÄ¼Û¸ñÎª(-nPrice)
 	int				nMoneyUnit;
 	bool			bNewArrival;
 };
 
 //==================================
-//	ï¿½ï¿½Ê¾Ä³ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½á¹¹
+//	±íÊ¾Ä³¸öÓÎÏ·¶ÔÏóÔÚ×ø±êÇøÓò·¶Î§µÄÐÅÏ¢½á¹¹
 //==================================
 struct KUiObjAtRegion
 {
@@ -605,7 +605,7 @@ struct KUiObjAtContRegion : public KUiObjAtRegion
 
 struct KUiMsgParam
 {
-	unsigned char	eGenre;	//È¡Öµï¿½ï¿½Î§ÎªÃ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½MSG_GENRE_LIST,ï¿½ï¿½MsgGenreDef.hï¿½Ä¼ï¿½
+	unsigned char	eGenre;	//È¡Öµ·¶Î§ÎªÃ¶¾ÙÀàÐÍMSG_GENRE_LIST,¼ûMsgGenreDef.hÎÄ¼þ
 	unsigned char	cChatPrefixLen;
 	unsigned short	nMsgLength;
 	char			szName[32];
@@ -615,79 +615,79 @@ struct KUiMsgParam
 
 struct KUiInformationParam
 {
-	char	sInformation[MAX_MESSAGE_LENGTH];	//ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	short	nInforLen;			//ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ´æ´¢ï¿½ï¿½ï¿½ï¿½
+	char	sInformation[MAX_MESSAGE_LENGTH];	//ÏûÏ¢ÎÄ×ÖÄÚÈÝ
+	short	nInforLen;			//ÏûÏ¢ÎÄ×ÖÄÚÈÝµÄ´æ´¢³¤¶È
 	BOOL	bNeedConfirmNotify;
 };
 
 enum PLAYER_ACTION_LIST
 {
-	PA_NONE = 0,	//ï¿½Þ¶ï¿½ï¿½ï¿½
-	PA_RUN  = 0x01,	//ï¿½ï¿½
-	PA_SIT  = 0x02,	//ï¿½ï¿½ï¿½ï¿½
-	PA_RIDE = 0x04,	//ï¿½ï£¨ï¿½ï¿½ï¿½ï¿½
+	PA_NONE = 0,	//ÎÞ¶¯×÷
+	PA_RUN  = 0x01,	//ÅÜ
+	PA_SIT  = 0x02,	//´ò×ø
+	PA_RIDE = 0x04,	//Æï£¨Âí£©
 };
 //==================================
-//	ÏµÍ³ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½
+//	ÏµÍ³ÏûÏ¢·ÖÀà
 //==================================
 enum SYS_MESSAGE_TYPE
 {
-	SMT_NORMAL = 0,	//ï¿½ï¿½ï¿½Î¼Ó·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
-	SMT_SYSTEM,		//ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_PLAYER,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_TEAM,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_FRIEND,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_MISSION,	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_CLIQUE,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_TRADE,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMT_WAR,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	SMT_NORMAL = 0,	//²»²Î¼Ó·ÖÀàµÄÏûÏ¢
+	SMT_SYSTEM,		//ÏµÍ³£¬Á¬½ÓÏà¹Ø
+	SMT_PLAYER,		//Íæ¼ÒÏà¹Ø
+	SMT_TEAM,		//×é¶ÓÏà¹Ø
+	SMT_FRIEND,		//ÁÄÌìºÃÓÑÏà¹Ø
+	SMT_MISSION,	//ÈÎÎñÏà¹Ø
+	SMT_CLIQUE,		//°ïÅÉÏà¹Ø
+	SMT_TRADE,		//°ïÅÉÏà¹Ø
+	SMT_WAR,		//°ïÅÉÏà¹Ø
 };
 
 //==================================
-//	ÏµÍ³ï¿½ï¿½Ï¢ï¿½ï¿½Ó¦ï¿½ï¿½Ê½
+//	ÏµÍ³ÏûÏ¢ÏìÓ¦·½Ê½
 //==================================
 enum SYS_MESSAGE_CONFIRM_TYPE
 {
-	SMCT_NONE,				//ï¿½Ú¶Ô»ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ó¦ï¿½ï¿½
-	SMCT_CLICK,				//ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½
-	SMCT_MSG_BOX,			//ï¿½ï¿½ï¿½Í¼ï¿½ï¿½óµ¯³ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½
-	SMCT_UI_RENASCENCE,		//Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMCT_UI_ATTRIBUTE,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½
-	SMCT_UI_SKILLS,			//ï¿½ò¿ª¼ï¿½ï¿½ï¿½Ò³ï¿½ï¿½
-	SMCT_UI_ATTRIBUTE_SKILLS,//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½æ¼¼ï¿½ï¿½Ò³ï¿½ï¿½
-	SMCT_UI_TEAM_INVITE,	//ï¿½ï¿½Ó¦ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,
-	//						pParamBuf Ö¸ï¿½ï¿½Ò»ï¿½ï¿½KUiPlayerItemï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ó³ï¿½)
-	SMCT_UI_TEAM_APPLY,		//ï¿½ï¿½Ó¦ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,
-	//						pParamBuf Ö¸ï¿½ï¿½Ò»ï¿½ï¿½KUiPlayerItemï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMCT_UI_TEAM,			//ï¿½ò¿ª¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMCT_UI_INTERVIEW,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½ï¿½ï¿½,
-	//						pParamBuf Ö¸ï¿½ï¿½Ò»ï¿½ï¿½KUiPlayerItemï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Äºï¿½ï¿½ï¿½
-	SMCT_UI_FRIEND_INVITE,	//ï¿½ï¿½×¼ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½Ë¼ï¿½ï¿½Ô¼ï¿½Îªï¿½ï¿½ï¿½ï¿½
-	//						pParamBuf Ö¸ï¿½ï¿½Ò»ï¿½ï¿½KUiPlayerItemï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMCT_UI_TRADE,			//ï¿½ï¿½Ó¦ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½×µï¿½ï¿½ï¿½ï¿½ï¿½,
+	SMCT_NONE,				//ÔÚ¶Ô»°ÏûÏ¢´°¿ÚÖ±½ÓÂÓ¹ý£¬²»ÐèÒªÏìÓ¦¡£
+	SMCT_CLICK,				//µã»÷Í¼±êºóÁ¢¼´É¾³ý¡£
+	SMCT_MSG_BOX,			//µã»÷Í¼±êºóµ¯³öÏûÏ¢¿ò¡£
+	SMCT_UI_RENASCENCE,		//Ñ¡ÔñÖØÉú
+	SMCT_UI_ATTRIBUTE,		//´ò¿ªÊôÐÔÒ³Ãæ
+	SMCT_UI_SKILLS,			//´ò¿ª¼¼ÄÜÒ³Ãæ
+	SMCT_UI_ATTRIBUTE_SKILLS,//´ò¿ªÊôÐÔÒ³Ãæ¼¼ÄÜÒ³Ãæ
+	SMCT_UI_TEAM_INVITE,	//´ðÓ¦»ò¾Ü¾ø¼ÓÈë¶ÓÎéµÄÑûÇë,
+	//						pParamBuf Ö¸ÏòÒ»¸öKUiPlayerItem½á¹¹µÄÊý¾Ý£¬±íÊ¾ÑûÇéÈË(¶Ó³¤)
+	SMCT_UI_TEAM_APPLY,		//´ðÓ¦»ò¾Ü¾ø¼ÓÈë¶ÓÎéµÄÉêÇë,
+	//						pParamBuf Ö¸ÏòÒ»¸öKUiPlayerItem½á¹¹µÄÊý¾Ý£¬±íÊ¾ÉêÇëÈË
+	SMCT_UI_TEAM,			//´ò¿ª¶ÓÎé¹ÜÀíÃæ°å
+	SMCT_UI_INTERVIEW,		//´ò¿ªÁÄÌì¶Ô»°½çÃæ,
+	//						pParamBuf Ö¸ÏòÒ»¸öKUiPlayerItem½á¹¹µÄÊý¾Ý£¬±íÊ¾·¢À´ÏûÏ¢µÄºÃÓÑ
+	SMCT_UI_FRIEND_INVITE,	//Åú×¼»ò¾Ü¾ø±ðÈË¼Ó×Ô¼ºÎªºÃÓÑ
+	//						pParamBuf Ö¸ÏòÒ»¸öKUiPlayerItem½á¹¹µÄÊý¾Ý£¬±íÊ¾·¢³öºÃÓÑÑûÇëµÄÈË
+	SMCT_UI_TRADE,			//´ðÓ¦»ò¾Ü¾ø½»Ò×µÄÇëÇó,
 	SMCT_UI_TRADE_FOLKGAME,
 	SMCT_UI_SPAR,
-	//						pParamBuf Ö¸ï¿½ï¿½Ò»ï¿½ï¿½KUiPlayerItemï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMCT_DISCONNECT,		//ï¿½ï¿½ï¿½ï¿½
-	SMCT_UI_TONG_JOIN,//ï¿½ï¿½Ó¦ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	SMCT_UI_TONG_JOIN_APPLY,//ï¿½ï¿½Ó¦ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//						pParamBuf Ö¸ÏòÒ»¸öKUiPlayerItem½á¹¹µÄÊý¾Ý£¬±íÊ¾·¢³ö½»Ò×ÑûÇëµÄÈË
+	SMCT_DISCONNECT,		//¶ÏÏß
+	SMCT_UI_TONG_JOIN,//´ðÓ¦»ò¾Ü¾ø¼ÓÈë°ï»áµÄÉêÇë
+	SMCT_UI_TONG_JOIN_APPLY,//´ðÓ¦»ò¾Ü¾ø¼ÓÈë°ï»áµÄÉêÇë
 };
 
 //==================================
-//	ÏµÍ³ï¿½ï¿½Ï¢
+//	ÏµÍ³ÏûÏ¢
 //==================================
 struct KSystemMessage
 {
-	char			szMessage[256];	//ï¿½ï¿½Ï¢ï¿½Ä±ï¿½
-	unsigned int	uReservedForUi;	//ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,coreï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½
-	unsigned char	eType;			//ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½È¡Öµï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SYS_MESSAGE_TYPE
-	unsigned char	byConfirmType;	//ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
-	unsigned char	byPriority;		//ï¿½ï¿½ï¿½È¼ï¿½,ï¿½ï¿½ÖµÔ½ï¿½ó£¬±ï¿½Ê¾ï¿½ï¿½ï¿½È¼ï¿½Ô½ï¿½ï¿½
-	unsigned char	byParamSize;	//ï¿½ï¿½ï¿½ï¿½GDCNI_SYSTEM_MESSAGEï¿½ï¿½Ï¢ï¿½ï¿½pParamBufï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Ä´ï¿½Ð¡ï¿½ï¿½
+	char			szMessage[256];	//ÏûÏ¢ÎÄ±¾
+	unsigned int	uReservedForUi;	//½çÃæÊ¹ÓÃµÄÊý¾ÝÓò,coreÀïÌî0¼´¿É
+	unsigned char	eType;			//ÏûÏ¢·ÖÀàÈ¡ÖµÀ´×ÔÃ¶¾ÙÀàÐÍ SYS_MESSAGE_TYPE
+	unsigned char	byConfirmType;	//ÏìÓ¦ÀàÐÍ
+	unsigned char	byPriority;		//ÓÅÏÈ¼¶,ÊýÖµÔ½´ó£¬±íÊ¾ÓÅÏÈ¼¶Ô½¸ß
+	unsigned char	byParamSize;	//°éËæGDCNI_SYSTEM_MESSAGEÏûÏ¢µÄpParamBufËùÖ¸²ÎÊý»º³åÇø¿Õ¼äµÄ´óÐ¡¡£
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	ÁÄÌìÆµµÀµÄÃèÊö
 //==================================
 struct KUiChatChannel
 {
@@ -696,22 +696,22 @@ struct KUiChatChannel
 	union
 	{
 		int		 nChannelIndex;
-		int		 nIsSubscibed;	//ï¿½Ç·ñ±»¶ï¿½ï¿½ï¿½
+		int		 nIsSubscibed;	//ÊÇ·ñ±»¶©ÔÄ
 	};
 	char		 cTitle[32];
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+//	ÁÄÌìºÃÓÑµÄÒ»¸ö·Ö×éµÄÐÅÏ¢
 //==================================
 struct KUiChatGroupInfo
 {
-	char	szTitle[32];	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nNumFriend;		//ï¿½ï¿½ï¿½Úºï¿½ï¿½Ñµï¿½ï¿½ï¿½Ä¿
+	char	szTitle[32];	//·Ö×éµÄÃû³Æ
+	int		nNumFriend;		//×éÄÚºÃÓÑµÄÊýÄ¿
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½Ñ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì»°ï¿½ï¿½
+//	ºÃÓÑ·¢À´µÄÁÄÌì»°Óï
 //==================================
 struct KUiChatMessage
 {
@@ -721,105 +721,106 @@ struct KUiChatMessage
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½Çµï¿½Ò»Ð©ï¿½ï¿½ï¿½×±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	Ö÷½ÇµÄÒ»Ð©²»Ò×±äµÄÊý¾Ý
 //==================================
 struct KUiPlayerBaseInfo
 {
-	char	Name[32];	//ï¿½ï¿½ï¿½ï¿½
+	char	Name[32];	//Ãû×Ö
 	char	szTongName[32];
 	char	szMateName[32];
-	char	Title[128];	//ï¿½Æºï¿½
-	int		nCurFaction;// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ id ï¿½ï¿½ï¿½ï¿½ï¿½Îª -1 ï¿½ï¿½ï¿½ï¿½Ç°Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nMissionGroup;// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ id ï¿½ï¿½ï¿½ï¿½ï¿½Îª -1 ï¿½ï¿½ï¿½ï¿½Ç°Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	char	Title[128];	//³ÆºÅ
+	int		nCurFaction;// µ±Ç°¼ÓÈëÃÅÅÉ id £¬Èç¹ûÎª -1 £¬µ±Ç°Ã»ÓÐÔÚÃÅÅÉÖÐ
+	int		nMissionGroup;// µ±Ç°¼ÓÈëÃÅÅÉ id £¬Èç¹ûÎª -1 £¬µ±Ç°Ã»ÓÐÔÚÃÅÅÉÖÐ
 	int		nRoomId;
-	int		nRankInWorld;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ,ÖµÎª0ï¿½ï¿½Ê¾Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int		nRankInWorld;//½­ºþÅÅÃûÖµ,ÖµÎª0±íÊ¾Î´ÉÏÅÅÃû°å
 	int		nRankInSect;
 	int		nPKValue;
 	int		nRepute;
 	int		nFuYuan;
 	int		nTranslife;
 
-	char	StatusDesc[16];		//×´Ì¬ï¿½ï¿½ï¿½ï¿½
-	unsigned int nCurTong;// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½name id ï¿½ï¿½ï¿½ï¿½ï¿½Îª 0 ï¿½ï¿½ï¿½ï¿½Ç°Ã»ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ï¿½ï¿½
+	char	StatusDesc[16];		//×´Ì¬ÃèÊö
+	unsigned int nCurTong;// µ±Ç°¼ÓÈë°ïÅÉname id £¬Èç¹ûÎª 0 £¬µ±Ç°Ã»ÓÐÔÚ°ïÅÉÖÐ
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½Çµï¿½Ò»Ð©ï¿½×±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	Ö÷½ÇµÄÒ»Ð©Ò×±äµÄÊý¾Ý
 //==================================
 struct KUiPlayerRuntimeInfo
 {
-	int		nLifeFull;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	int		nLife;				//ï¿½ï¿½ï¿½ï¿½
-	int		nManaFull;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	int		nMana;				//ï¿½ï¿½ï¿½ï¿½
-	int		nStaminaFull;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	int		nStamina;			//ï¿½ï¿½ï¿½ï¿½
-	int		nExperienceFull;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	int		nExperience;		//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Öµ
-	int		nCurLevelExperience;//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ä¾ï¿½ï¿½ï¿½Öµ
+	int		nLifeFull;			//ÉúÃüÂúÖµ
+	int		nLife;				//ÉúÃü
+	int		nManaFull;			//ÄÚÁ¦ÂúÖµ
+	int		nMana;				//ÄÚÁ¦
+	int		nStaminaFull;		//ÌåÁ¦ÂúÖµ
+	int		nStamina;			//ÌåÁ¦
+	int		nExperienceFull;	//¾­ÑéÂúÖµ
+	int		nExperience;		//µ±Ç°¾­ÑéÖµ
+	int		nCurLevelExperience;//µ±Ç°¼¶±ðÉý¼¶ÐèÒªµÄ¾­ÑéÖµ
 
-	unsigned char	byAction;	//ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Ðµï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªÃ¶ï¿½ï¿½PLAYER_ACTION_LISTÈ¡Öµï¿½ï¿½ï¿½ï¿½ï¿½
+	unsigned char	byAction;	//ÕýÔÚ½øÐÐµÄÐÐÎª¶¯×÷£¬ÎªÃ¶¾ÙPLAYER_ACTION_LISTÈ¡ÖµµÄ×éºÏ
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½Çµï¿½Ò»Ð©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	Ö÷½ÇµÄÒ»Ð©ÊôÐÔÊý¾ÝË÷Òý
 //==================================
 enum UI_PLAYER_ATTRIBUTE
 {
-	UIPA_STRENGTH = 0,			//ï¿½ï¿½ï¿½ï¿½
-	UIPA_DEXTERITY,				//ï¿½ï¿½ï¿½ï¿½
-	UIPA_VITALITY,				//ï¿½ï¿½ï¿½ï¿½
-	UIPA_ENERGY,				//ï¿½ï¿½ï¿½ï¿½
+	UIPA_STRENGTH = 0,			//Á¦Á¿
+	UIPA_DEXTERITY,				//Ãô½Ý
+	UIPA_VITALITY,				//»îÁ¦
+	UIPA_ENERGY,				//¾«Á¦
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½Çµï¿½Ò»Ð©ï¿½×±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	Ö÷½ÇµÄÒ»Ð©Ò×±äµÄÊôÐÔÊý¾Ý
 //==================================
 struct KUiPlayerAttribute
 {
-	int		nMoney;				//ï¿½ï¿½ï¿½ï¿½
-	int		nLevel;				//ï¿½È¼ï¿½
-	char	StatusDesc[16];		//×´Ì¬ï¿½ï¿½ï¿½ï¿½
+	int		nMoney;				//ÒøÁ½
+	int		nLevel;				//µÈ¼¶
+	char	StatusDesc[16];		//×´Ì¬ÃèÊö
 
-	int		nBARemainPoint;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê£ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nStrength;			//ï¿½ï¿½ï¿½ï¿½
-	int		nDexterity;			//ï¿½ï¿½ï¿½ï¿½
-	int		nVitality;			//ï¿½ï¿½ï¿½ï¿½
-	int		nEnergy;			//ï¿½ï¿½ï¿½ï¿½
+	int		nBARemainPoint;		//»ù±¾ÊôÐÔÊ£ÓàµãÊý
+	int		nStrength;			//Á¦Á¿
+	int		nDexterity;			//Ãô½Ý
+	int		nVitality;			//»îÁ¦
+	int		nEnergy;			//¾«Á¦
 
-	int		nKillMAX;			//ï¿½ï¿½ï¿½É±ï¿½ï¿½ï¿½ï¿½
-	int		nKillMIN;			//ï¿½ï¿½Ð¡É±ï¿½ï¿½ï¿½ï¿½
-	int		nRightKillMax;		//ï¿½Ò¼ï¿½ï¿½ï¿½ï¿½É±ï¿½ï¿½ï¿½ï¿½
-	int		nRightKillMin;		//ï¿½Ò¼ï¿½ï¿½ï¿½Ð¡É±ï¿½ï¿½ï¿½ï¿½
+	int		nKillMAX;			//×î´óÉ±ÉËÁ¦
+	int		nKillMIN;			//×îÐ¡É±ÉËÁ¦
+	int		nRightKillMax;		//ÓÒ¼ü×î´óÉ±ÉËÁ¦
+	int		nRightKillMin;		//ÓÒ¼ü×îÐ¡É±ÉËÁ¦
 
-	int		nLeftAttack;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nRightAttack;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nDefence;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nMoveSpeed;			//ï¿½Æ¶ï¿½ï¿½Ù¶ï¿½
-	int		nAttackSpeed;		//ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
+	int		nLeftAttack;			//¹¥»÷Á¦
+	int		nRightAttack;			//¹¥»÷Á¦
+	int		nDefence;			//·ÀÓùÁ¦
+	int		nMoveSpeed;			//ÒÆ¶¯ËÙ¶È
+	int		nAttackSpeed;		//¹¥»÷ËÙ¶È
 	int		nCastSpeed;
 
-	int		nPhyDef;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nPhyDefPlus;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nCoolDef;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nCoolDefPlus;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nLightDef;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nLightDefPlus;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nFireDef;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nFireDefPlus;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nPoisonDef;			//ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½
-	int		nPoisonDefPlus;			//ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½
+	//Khang 5 hanh
+	int		nPhyDef;			//ÎïÀí·ÀÓù
+	int		nPhyDefPlus;			//ÎïÀí·ÀÓù
+	int		nCoolDef;			//±ù¶³·ÀÓù
+	int		nCoolDefPlus;			//±ù¶³·ÀÓù
+	int		nLightDef;			//ÉÁµç·ÀÓù
+	int		nLightDefPlus;			//ÉÁµç·ÀÓù
+	int		nFireDef;			//»ðÑæ·ÀÓù
+	int		nFireDefPlus;			//»ðÑæ·ÀÓù
+	int		nPoisonDef;			//¶¾ËØ·ÀÓù
+	int		nPoisonDefPlus;			//¶¾ËØ·ÀÓù
 
 	int		nPKValue;
 	int		nRepute;
 	int		nFuYuan;
 	int		nTranslife;
 	int		nRankInWorld;
-	char	Title[128];	//ï¿½Æºï¿½
+	char	Title[128];	//³ÆºÅ
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ä¹¦
+//	Ö÷½ÇµÄÁ¢¼´Ê¹ÓÃÎïÆ·ÓëÎä¹¦
 //==================================
 struct KUiPlayerImmedItemSkill
 {
@@ -828,7 +829,7 @@ struct KUiPlayerImmedItemSkill
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+//	Ö÷½Ç×°±¸°²»»µÄÎ»ÖÃ
 //==================================
 enum UI_EQUIPMENT_POSITION
 {
@@ -872,7 +873,7 @@ enum PLAYER_SECLECT_UI
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½î¼¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	µ¥Ïî¼¼ÄÜÊý¾Ý
 //==================================
 struct KUiSkillData : public KUiGameObject
 {
@@ -884,34 +885,34 @@ struct KUiSkillData : public KUiGameObject
 };
 
 //==================================
-//	Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ä¿
+//	Ò»¸ö¶ÓÎéÖÐ×î¶à°üº¬³ÉÔ±µÄÊýÄ¿
 //==================================
 #define	PLAYER_TEAM_MAX_MEMBER	8
 
 //==================================
-//	Í³Ë§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+//	Í³Ë§ÄÜÁ¦Ïà¹ØµÄÊý¾Ý
 //==================================
 struct KUiPlayerLeaderShip
 {
-	int		nLeaderShipLevel;			//Í³Ë§ï¿½ï¿½ï¿½È¼ï¿½
-	int		nLeaderShipExperience;		//Í³Ë§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	int		nLeaderShipExperienceFull;	//ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Òªï¿½Ä¾ï¿½ï¿½ï¿½Öµ
+	int		nLeaderShipLevel;			//Í³Ë§Á¦µÈ¼¶
+	int		nLeaderShipExperience;		//Í³Ë§Á¦¾­ÑéÖµ
+	int		nLeaderShipExperienceFull;	//Éýµ½ÏÂ¼¶ÐèÒªµÄ¾­ÑéÖµ
 };
 
 //==================================
-//	Ò»ï¿½ï¿½ï¿½ï¿½Ò½ï¿½É«ï¿½ï¿½
+//	Ò»¸öÍæ¼Ò½ÇÉ«Ïî
 //==================================
 struct KUiPlayerItem
 {
-	char			Name[32];	//ï¿½ï¿½Ò½ï¿½É«ï¿½ï¿½ï¿½ï¿½
-	unsigned int	uId;		//ï¿½ï¿½Ò½ï¿½É«id
-	int				nIndex;		//ï¿½ï¿½Ò½ï¿½É«ï¿½ï¿½ï¿½ï¿½
-	int				nData;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Ò»ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Î»ï¿½ï¿½ï¿½Ð¹ï¿½
+	char			Name[32];	//Íæ¼Ò½ÇÉ«ÐÕÃû
+	unsigned int	uId;		//Íæ¼Ò½ÇÉ«id
+	int				nIndex;		//Íæ¼Ò½ÇÉ«Ë÷Òý
+	int				nData;		//´ËÍæ¼ÒÏà¹ØµÄÒ»ÏîÊýÖµ£¬º¬ÒåÓë¾ßÌåµÄÓ¦ÓÃÎ»ÖÃÓÐ¹Ø
 	int				nTeamID;
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	×é¶ÓÐÅÏ¢µÄÃèÊö
 //==================================
 struct KUiTeamItem
 {
@@ -919,29 +920,29 @@ struct KUiTeamItem
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+//	¶ÓÎéÐÅÏ¢
 //==================================
 struct KUiPlayerTeam
 {
-	bool			bTeamLeader;			//ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ç·ï¿½Ó³ï¿½
-	char			cNumMember;				//ï¿½ï¿½Ô±ï¿½ï¿½Ä¿
-	char			cNumTojoin;				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ä¿
-	bool			bOpened;				//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¼ï¿½ï¿½ï¿½
+	bool			bTeamLeader;			//Íæ¼Ò×Ô¼ºÊÇ·ñ¶Ó³¤
+	char			cNumMember;				//¶ÓÔ±ÊýÄ¿
+	char			cNumTojoin;				//Óû¼ÓÈëµÄÈËÔ±µÄÊýÄ¿
+	bool			bOpened;				//¶ÓÎéÊÇ·ñÔÊÐíÆäËûÈË¼ÓÈë
 	int				nModePick;
-	bool			bPKFollowCaptain;				//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¼ï¿½ï¿½ï¿½
-	int				nTeamServerID;			//ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½idï¿½ï¿½ï¿½ï¿½ï¿½Ú±ï¿½Ê¶ï¿½Ã¶ï¿½ï¿½é£¬-1 Îªï¿½ï¿½
+	bool			bPKFollowCaptain;				//¶ÓÎéÊÇ·ñÔÊÐíÆäËûÈË¼ÓÈë
+	int				nTeamServerID;			//¶ÓÎéÔÚ·þÎñÆ÷ÉÏµÄid£¬ÓÃÓÚ±êÊ¶¸Ã¶ÓÎé£¬-1 Îª¿Õ
 	int				nCaptainPower;
 };
 
 //==================================
-//	Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	Ä§·¨ÊôÐÔ
 //==================================
 #ifndef MAGICATTRIB
 #define MAGICATTRIB
 struct KMagicAttrib
 {
-	int				nAttribType;					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int				nValue[3];						//ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	int				nAttribType;					//ÊôÐÔÀàÐÍ
+	int				nValue[3];						//ÊôÐÔ²ÎÊý
 	KMagicAttrib(){nValue[0] = nValue[1] = nValue[2] = nAttribType = 0;};
 };
 
@@ -949,7 +950,7 @@ struct KMagicAutoSkill
 {
 	int				nSkillId;
 	int				nSkillLevel;
-	int				nRate;						//ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	int				nRate;						//ÊôÐÔ²ÎÊý
 	DWORD			dwNextCastTime;
 	int				nWaitCastTime;
 	KMagicAutoSkill(){nSkillId = nSkillLevel = nRate = dwNextCastTime = nWaitCastTime = 0;};
@@ -977,29 +978,29 @@ struct KMapPos
 };
 
 //==================================
-//	Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	Ñ¡ÏîÉèÖÃÏî
 //==================================
 enum OPTIONS_LIST
 {
-	OPTION_PERSPECTIVE,		//Í¸ï¿½ï¿½Ä£Ê½  nParam = (int)(bool)bEnable ï¿½Ç·ï¿½ï¿½ï¿½
-	OPTION_DYNALIGHT,		//ï¿½ï¿½Ì¬ï¿½ï¿½Ó°	nParam = (int)(bool)bEnable ï¿½Ç·ï¿½ï¿½ï¿½
-	OPTION_MUSIC_VALUE,		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	nParam = ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½È¡ÖµÎª0ï¿½ï¿½-10000ï¿½ï¿½
-	OPTION_SOUND_VALUE,		//ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½	nParam = ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½È¡ÖµÎª0ï¿½ï¿½-10000ï¿½ï¿½
-	OPTION_BRIGHTNESS,		//ï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½	nParam = ï¿½ï¿½ï¿½È´ï¿½Ð¡ï¿½ï¿½È¡ÖµÎª0ï¿½ï¿½-100ï¿½ï¿½
-	OPTION_WEATHER,			//ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ nParam = (int)(bool)bEnable ï¿½Ç·ï¿½ï¿½ï¿½
+	OPTION_PERSPECTIVE,		//Í¸ÊÓÄ£Ê½  nParam = (int)(bool)bEnable ÊÇ·ñ¿ªÆô
+	OPTION_DYNALIGHT,		//¶¯Ì¬¹âÓ°	nParam = (int)(bool)bEnable ÊÇ·ñ¿ªÆô
+	OPTION_MUSIC_VALUE,		//ÒôÀÖÒôÁ¿	nParam = ÒôÁ¿´óÐ¡£¨È¡ÖµÎª0µ½-10000£©
+	OPTION_SOUND_VALUE,		//ÒôÐ§ÒôÁ¿	nParam = ÒôÁ¿´óÐ¡£¨È¡ÖµÎª0µ½-10000£©
+	OPTION_BRIGHTNESS,		//ÁÁ¶Èµ÷½Ú	nParam = ÁÁ¶È´óÐ¡£¨È¡ÖµÎª0µ½-100£©
+	OPTION_WEATHER,			//ÌìÆøÐ§¹û¿ª¹Ø nParam = (int)(bool)bEnable ÊÇ·ñ¿ªÆô
 };
 
 //==================================
-//	ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½Ê±ï¿½ä»·ï¿½ï¿½ï¿½ï¿½Ï¢
+//	Ëù´¦µÄµØÓòÊ±¼ä»·¾³ÐÅÏ¢
 //==================================
 
 struct KUiSceneTimeInfo
 {
-	char	szSceneName[80];		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int		nSceneId;				//ï¿½ï¿½ï¿½ï¿½id
-	int		nScenePos0;				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ê£¨ï¿½ï¿½ï¿½ï¿½
-	int		nScenePos1;				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ê£¨ï¿½Ï£ï¿½
-	int		nGameSpaceTime;			//ï¿½Ô·ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»
+	char	szSceneName[80];		//³¡¾°Ãû
+	int		nSceneId;				//³¡¾°id
+	int		nScenePos0;				//³¡¾°µ±Ç°×ø±ê£¨¶«£©
+	int		nScenePos1;				//³¡¾°µ±Ç°×ø±ê£¨ÄÏ£©
+	int		nGameSpaceTime;			//ÒÔ·ÖÖÓÎªµ¥Î»
 };
 
 
@@ -1021,9 +1022,9 @@ struct KMapTraffic
 	};
 };
 //==================================
-//	ï¿½ï¿½Ô´ï¿½ï¿½Ï¢
+//	¹âÔ´ÐÅÏ¢
 //==================================
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//ÕûÊý±íÊ¾µÄÈýÎ¬µã×ø±ê
 struct KPosition3
 {
 	int nX;
@@ -1033,26 +1034,26 @@ struct KPosition3
 
 struct KLightInfo
 {
-	KPosition3 oPosition;			// ï¿½ï¿½Ô´Î»ï¿½ï¿½
-	DWORD dwColor;					// ï¿½ï¿½Ô´ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	long  nRadius;					// ï¿½ï¿½ï¿½Ã°ë¾¶
+	KPosition3 oPosition;			// ¹âÔ´Î»ÖÃ
+	DWORD dwColor;					// ¹âÔ´ÑÕÉ«¼°ÁÁ¶È
+	long  nRadius;					// ×÷ÓÃ°ë¾¶
 };
 
 
-//Ð¡ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//Ð¡µØÍ¼µÄÏÔÊ¾ÄÚÈÝÏî
 enum SCENE_PLACE_MAP_ELEM
 { 
-	SCENE_PLACE_MAP_ELEM_NONE		= 0x00,		//ï¿½Þ¶ï¿½ï¿½ï¿½
-	SCENE_PLACE_MAP_ELEM_PIC		= 0x01,		//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Í¼
-	SCENE_PLACE_MAP_ELEM_CHARACTER	= 0x02,		//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
-	SCENE_PLACE_MAP_ELEM_PARTNER	= 0x04,		//ï¿½ï¿½Ê¾Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	SCENE_PLACE_MAP_ELEM_NONE		= 0x00,		//ÎÞ¶«Î÷
+	SCENE_PLACE_MAP_ELEM_PIC		= 0x01,		//ÏÔÊ¾ËõÂÔÍ¼
+	SCENE_PLACE_MAP_ELEM_CHARACTER	= 0x02,		//ÏÔÊ¾ÈËÎï
+	SCENE_PLACE_MAP_ELEM_PARTNER	= 0x04,		//ÏÔÊ¾Í¬¶ÓÎéÈË
 };
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Í¼ï¿½ï¿½Ï¢
+//³¡¾°µÄµØÍ¼ÐÅÏ¢
 struct KSceneMapInfo
 {
-	int	nScallH;		//ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Í¼ï¿½Äºï¿½ï¿½ï¿½Å´ï¿½ï¿½ï¿½ï¿½
-	int nScallV;		//ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å´ï¿½ï¿½ï¿½ï¿½
+	int	nScallH;		//ÕæÊµ³¡¾°Ïà¶ÔÓÚµØÍ¼µÄºáÏò·Å´ó±ÈÀý
+	int nScallV;		//ÕæÊµ³¡¾°Ïà¶ÔÓÚµØÍ¼µÄ×ÝÏò·Å´ó±ÈÀý
 	int	nFocusMinH;
 	int nFocusMinV;
 	int nFocusMaxH;
@@ -1066,8 +1067,8 @@ struct KSceneMapInfo
 enum NPC_RELATION
 {
 	relation_none	= 1,
-	relation_self	= 2,
-	relation_ally	= 4,
+	relation_self	= 2, //Chinh minh
+	relation_ally	= 4, //Dong minh team
 	relation_enemy	= 8,
 	relation_dialog	= 16,
 	relation_all	= relation_none | relation_ally | relation_enemy | relation_self | relation_dialog,	
@@ -1079,70 +1080,70 @@ enum NPCKIND
 	kind_normal = 0	,		
 	kind_player,
 	kind_partner,
-	kind_dialoger,	//ï¿½Ô»ï¿½ï¿½ï¿½
+	kind_dialoger,	//¶Ô»°Õß
 	kind_bird,
 	kind_mouse,
     kind_num
 };
 
-enum	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+enum	// Îï¼þÀàÐÍ
 {
-	Obj_Kind_MapObj = 0,		// ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Úµï¿½Í¼ï¿½ï¿½ï¿½ï¿½
-	Obj_Kind_Body,				// npc ï¿½ï¿½Ê¬ï¿½ï¿½
-	Obj_Kind_Box,				// ï¿½ï¿½ï¿½ï¿½
-	Obj_Kind_Item,				// ï¿½ï¿½ï¿½Úµï¿½ï¿½Ïµï¿½×°ï¿½ï¿½
-	Obj_Kind_Money,				// ï¿½ï¿½ï¿½Úµï¿½ï¿½Ïµï¿½Ç®
-	Obj_Kind_LoopSound,			// Ñ­ï¿½ï¿½ï¿½ï¿½Ð§
-	Obj_Kind_RandSound,			// ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
-	Obj_Kind_Light,				// ï¿½ï¿½Ô´ï¿½ï¿½3DÄ£Ê½ï¿½Ð·ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½
-	Obj_Kind_Door,				// ï¿½ï¿½ï¿½ï¿½
-	Obj_Kind_Trap,				// ï¿½ï¿½ï¿½ï¿½
-	Obj_Kind_Prop,				// Ð¡ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	Obj_Kind_MapObj = 0,		// µØÍ¼Îï¼þ£¬Ö÷ÒªÓÃÓÚµØÍ¼¶¯»­
+	Obj_Kind_Body,				// npc µÄÊ¬Ìå
+	Obj_Kind_Box,				// ±¦Ïä
+	Obj_Kind_Item,				// µôÔÚµØÉÏµÄ×°±¸
+	Obj_Kind_Money,				// µôÔÚµØÉÏµÄÇ®
+	Obj_Kind_LoopSound,			// Ñ­»·ÒôÐ§
+	Obj_Kind_RandSound,			// Ëæ»úÒôÐ§
+	Obj_Kind_Light,				// ¹âÔ´£¨3DÄ£Ê½ÖÐ·¢¹âµÄ¶«Î÷£©
+	Obj_Kind_Door,				// ÃÅÀà
+	Obj_Kind_Trap,				// ÏÝÚå
+	Obj_Kind_Prop,				// Ð¡µÀ¾ß£¬¿ÉÖØÉú
 	Obj_Kind_Obstacle,
-	Obj_Kind_Num,				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	Obj_Kind_Num,				// Îï¼þµÄÖÖÀàÊý
 };
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½Î»ï¿½ï¿½Ò»Ð©ï¿½Ø¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//Ö÷½ÇÉí·ÝµØÎ»µÈÒ»Ð©¹Ø¼üÊôÐÔÏî
 enum PLAYER_BRIEF_PROP
 {
-	PBP_LEVEL = 1,	//ï¿½Ç¼ï¿½ï¿½ä»¯	nParamï¿½ï¿½Ê¾ï¿½ï¿½Ç°ï¿½È¼ï¿½
-	PBP_FACTION,	//ï¿½ï¿½ï¿½ï¿½		nParamï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½nParamÎª-1ï¿½ï¿½Ê¾Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	PBP_CLIQUE,		//ï¿½ï¿½ï¿½ï¿½		nParamÎªï¿½ï¿½0Öµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ë°ï¿½ï¿½É£ï¿½0Öµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Ë°ï¿½ï¿½ï¿½
+	PBP_LEVEL = 1,	//µÇ¼¶±ä»¯	nParam±íÊ¾µ±Ç°µÈ¼¶
+	PBP_FACTION,	//ÃÅÅÉ		nParam±íÊ¾ÃÅÅÉÊôÐÔ£¬Èç¹ûnParamÎª-1±íÊ¾Ã»ÓÐÃÅÅÉ
+	PBP_CLIQUE,		//°ïÅÉ		nParamÎª·Ç0Öµ±íÊ¾ÈëÁË°ïÅÉ£¬0Öµ±íÊ¾ÍÑÀëÁË°ïÅÉ
 };
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½Í¶ï¿½ï¿½ï¿½
+//ÐÂÎÅÏûÏ¢µÄÀàÐÍ¶¨Òå
 enum NEWS_MESSAGE_TYPE
 {
-	NEWSMESSAGE_NORMAL,			//Ò»ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ò»ï¿½Î£ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-								//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
-	NEWSMESSAGE_COUNTING,		//ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ë£©ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½
-								//Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½
-	NEWSMESSAGE_TIMEEND,		//ï¿½ï¿½Ê±ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ò»ï¿½Î¡ï¿½
-								//Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ê±ï¿½ä¡£
+	NEWSMESSAGE_NORMAL,			//Ò»°ãÏûÏ¢£¬ÏÔÊ¾£¨Ò»´Î£©¾ÍÏûÏ¢ÏûÍöÁË
+								//ÎÞÊ±¼ä²ÎÊý
+	NEWSMESSAGE_COUNTING,		//µ¹¼Æ£¨Ãë£©ÊýÏûÏ¢£¬¼ÆÊýµ½0Ê±£¬¾ÍÏûÏ¢¾ÍÏûÍöÁË¡£
+								//Ê±¼ä²ÎÊýÖÐµÄÊý¾Ý½á¹¹ÖÐ½öÃëÊý¾ÝÓÐÐ§£¬µ¹¼ÆÊýÒÔÃëÎªµ¥Î»¡£
+	NEWSMESSAGE_TIMEEND,		//¶¨Ê±ÏûÏ¢£¬¶¨Ê±µ½Ê±£¬ÏûÏ¢¾ÍÏûÍêÁË£¬·ñÔòÃ¿°ë·ÖÖÓÏÔÊ¾Ò»´Î¡£
+								//Ê±¼ä²ÎÊý±íÊ¾ÏûÍöµÄÖ¸¶¨Ê±¼ä¡£
 };
 
 struct KNewsMessage
 {
-	int		nType;						//ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½
-	char	sMsg[MAX_MESSAGE_LENGTH];	//ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½
-	int		nMsgLen;					//ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ý´æ´¢ï¿½ï¿½ï¿½ï¿½
+	int		nType;						//ÏûÏ¢ÀàÐÍ
+	char	sMsg[MAX_MESSAGE_LENGTH];	//ÏûÏ¢ÄÚÈÝ
+	int		nMsgLen;					//ÏûÏ¢ÄÚÈÝ´æ´¢³¤¶È
 };
 
 struct KRankIndex
 {
-	bool			bValueAppened;	//Ã¿Ò»ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ã»ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	bool			bSortFlag;		//Ã¿Ò»ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	unsigned short	usIndexId;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IDï¿½ï¿½Öµ
+	bool			bValueAppened;	//Ã¿Ò»ÏîÊÇ·ñÓÐÃ»ÓÐ¶îÍâÊý¾Ý
+	bool			bSortFlag;		//Ã¿Ò»ÏîÊÇ·ñÓÐÃ»ÓÐÉý½µ±ê¼Ç
+	unsigned short	usIndexId;		//ÅÅÃûÏîIDÊýÖµ
 };
 
 #define MAX_RANK_MESSAGE_STRING_LENGTH 128
 
 struct KRankMessage
 {
-	char szMsg[MAX_RANK_MESSAGE_STRING_LENGTH];	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	unsigned short		usMsgLen;				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ³ï¿½ï¿½ï¿½
-	short				cSortFlag;				// ï¿½ï¿½ï¿½Öµï¿½ï¿½QOO_RANK_DATAï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½0Öµï¿½ï¿½Ê¾Î»ï¿½ï¿½Î´ï¿½ï¿½
-	int					nValueAppend;			// ï¿½ï¿½ï¿½î¸½ï¿½ï¿½ï¿½ï¿½Öµ
+	char szMsg[MAX_RANK_MESSAGE_STRING_LENGTH];	// ÎÄ×ÖÄÚÈÝ
+	unsigned short		usMsgLen;				// ÎÄ×ÖÄÚÈÝµÄ³¤¶È
+	short				cSortFlag;				// Æì±êÖµ£¬QOO_RANK_DATAµÄÊ±ºò±íÊ¾³öÉý½µ£¬¸ºÖµ±íÊ¾½µ£¬ÕýÖµ±íÊ¾Éý£¬0Öµ±íÊ¾Î»ÖÃÎ´±ä
+	int					nValueAppend;			// ´ËÏî¸½´øµÄÖµ
 
 };
 
@@ -1151,24 +1152,24 @@ struct KMissionRecord
 	char			szHeader[32];
 	int				nHeaderLen;
 	int				nRecordAct;
-	char			szContent[MAX_SCIRPTACTION_BUFFERNUM];	//ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ï¢ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Æ·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½
-	int				nContentLen;	//sContentï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ÝµÄ³ï¿½ï¿½ï¿½(ï¿½ï¿½Î»ï¿½ï¿½ï¿½Ö½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½256ï¿½Ö½ï¿½
-	unsigned int	uValue;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+	char			szContent[MAX_SCIRPTACTION_BUFFERNUM];	//´æ´¢ÈÎÎñÌáÊ¾ÐÅÏ¢µÄ»º³åÇø£¬£¨×Ö·û´®Îª¿ØÖÆ·ûÒÑ¾­±àÂëµÄ×Ö·û´®£©
+	int				nContentLen;	//sContentÄÚÓÐÐ§ÄÚÈÝµÄ³¤¶È(µ¥Î»£º×Ö½Ú)£¬³¤¶È×î´óÒ»¶¨²»³¬¹ý256×Ö½Ú
+	unsigned int	uValue;			//¹ØÁªÊýÖµ
 };
 
 enum TEAM_FIGURE
 {
-	TEAM_CAPTAIN,				// ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ ï¿½Ó³ï¿½
-	TEAM_MEMBER,				// ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ô±
+	TEAM_CAPTAIN,				// ¶ÓÎé³ÉÔ±Éí·Ý ¶Ó³¤
+	TEAM_MEMBER,				// ¶ÓÎé³ÉÔ±Éí·Ý ¶ÓÔ±
 };
 
 enum CHATROOM_FIGURE
 {
 	CHATROOM_NOTHING,
-	CHATROOM_MEMBER,				// ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ô±
-	CHATROOM_HOST,				// ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ ï¿½Ó³ï¿½
+	CHATROOM_MEMBER,				// ¶ÓÎé³ÉÔ±Éí·Ý ¶ÓÔ±
+	CHATROOM_HOST,				// ¶ÓÎé³ÉÔ±Éí·Ý ¶Ó³¤
 };
-//---------------------------- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ------------------------
+//---------------------------- °ï»áÏà¹Ø ------------------------
 
 #define		defTONG_MAX_DIRECTOR				7
 #define		defTONG_MAX_MANAGER					56
@@ -1182,42 +1183,42 @@ enum CHATROOM_FIGURE
 
 enum TONG_MEMBER_FIGURE
 {
-	enumTONG_FIGURE_MEMBER,				// ï¿½ï¿½ï¿½ï¿½
-	enumTONG_FIGURE_MANAGER,			// ï¿½Ó³ï¿½
-	enumTONG_FIGURE_DIRECTOR,			// ï¿½ï¿½ï¿½ï¿½
-	enumTONG_FIGURE_MASTER,				// ï¿½ï¿½ï¿½ï¿½
+	enumTONG_FIGURE_MEMBER,				// °ïÖÚ
+	enumTONG_FIGURE_MANAGER,			// ¶Ó³¤
+	enumTONG_FIGURE_DIRECTOR,			// ³¤ÀÏ
+	enumTONG_FIGURE_MASTER,				// °ïÖ÷
 	enumTONG_FIGURE_NUM,
 };
 
 enum
 {
-	enumTONG_APPLY_INFO_ID_SELF,		// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
-	enumTONG_APPLY_INFO_ID_MASTER,		// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
-	enumTONG_APPLY_INFO_ID_DIRECTOR,	// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
-	enumTONG_APPLY_INFO_ID_MANAGER,		// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½Ó³ï¿½ï¿½ï¿½Ï¢
-	enumTONG_APPLY_INFO_ID_MEMBER,		// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢(Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
-	enumTONG_APPLY_INFO_ID_ONE,			// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯Ä³ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½Ï¢(Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
-	enumTONG_APPLY_INFO_ID_TONG_HEAD,	// ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯Ä³ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	enumTONG_APPLY_INFO_ID_SELF,		// ÉêÇë²éÑ¯×ÔÉíÐÅÏ¢
+	enumTONG_APPLY_INFO_ID_MASTER,		// ÉêÇë²éÑ¯°ïÖ÷ÐÅÏ¢
+	enumTONG_APPLY_INFO_ID_DIRECTOR,	// ÉêÇë²éÑ¯³¤ÀÏÐÅÏ¢
+	enumTONG_APPLY_INFO_ID_MANAGER,		// ÉêÇë²éÑ¯¶Ó³¤ÐÅÏ¢
+	enumTONG_APPLY_INFO_ID_MEMBER,		// ÉêÇë²éÑ¯°ïÖÚÐÅÏ¢(Ò»Åú°ïÖÚ)
+	enumTONG_APPLY_INFO_ID_ONE,			// ÉêÇë²éÑ¯Ä³°ï»á³ÉÔ±ÐÅÏ¢(Ò»¸ö°ïÖÚ)
+	enumTONG_APPLY_INFO_ID_TONG_HEAD,	// ÉêÇë²éÑ¯Ä³°ï»áÐÅÏ¢£¬ÓÃÓÚÉêÇë¼ÓÈë°ï»á
 	enumTONG_APPLY_INFO_ID_NUM,
 };
 
 enum
 {
 	enumTONG_CREATE_ERROR_ID1,	// Player[m_nPlayerIndex].m_nIndex <= 0
-	enumTONG_CREATE_ERROR_ID2,	// ï¿½ï¿½ï¿½×¹ï¿½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID3,	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID4,	// ï¿½ï¿½ï¿½ï¿½ï¿½Óªï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID5,	// ï¿½Ñ¾ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ô±
-	enumTONG_CREATE_ERROR_ID6,	// ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½Óªï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID7,	// ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½	
-	enumTONG_CREATE_ERROR_ID8,	// Ç®ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID9,	// ï¿½ï¿½Ó²ï¿½ï¿½Ü½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID10,	// ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID11,	// ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID12,	// ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID13,	// ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID14,	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
-	enumTONG_CREATE_ERROR_ID15,	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
+	enumTONG_CREATE_ERROR_ID2,	// ½»Ò×¹ý³ÌÖÐ
+	enumTONG_CREATE_ERROR_ID3,	// °ï»áÃûÎÊÌâ
+	enumTONG_CREATE_ERROR_ID4,	// °ï»áÕóÓªÎÊÌâ
+	enumTONG_CREATE_ERROR_ID5,	// ÒÑ¾­ÊÇ°ï»á³ÉÔ±
+	enumTONG_CREATE_ERROR_ID6,	// ×Ô¼ºµÄÕóÓªÎÊÌâ
+	enumTONG_CREATE_ERROR_ID7,	// µÈ¼¶ÎÊÌâ	
+	enumTONG_CREATE_ERROR_ID8,	// Ç®ÎÊÌâ
+	enumTONG_CREATE_ERROR_ID9,	// ×é¶Ó²»ÄÜ½¨°ï»á
+	enumTONG_CREATE_ERROR_ID10,	// °ï»áÄ£¿é³ö´í
+	enumTONG_CREATE_ERROR_ID11,	// Ãû×Ö×Ö·û´®³ö´í
+	enumTONG_CREATE_ERROR_ID12,	// Ãû×Ö×Ö·û´®¹ý³¤
+	enumTONG_CREATE_ERROR_ID13,	// °ï»áÍ¬Ãû´íÎó
+	enumTONG_CREATE_ERROR_ID14,	// °ï»á²úÉúÊ§°Ü
+	enumTONG_CREATE_ERROR_ID15,	// °ï»á²úÉúÊ§°Ü
 };
 
 enum
@@ -1232,21 +1233,21 @@ enum
 	enumTONG_CHANGE_CAMP_ERROR_ID8,
 };
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+//°ïÅÉÐÅÏ¢
 struct KTongInfo
 {
-	char  szName[defTONG_NAME_LENGTH_32];			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	char  szMasterName[defTONG_NAME_LENGTH_32];		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	char  szName[defTONG_NAME_LENGTH_32];			//°ï»áÃû×Ö
+	char  szMasterName[defTONG_NAME_LENGTH_32];		//°ïÖ÷Ãû×Ö
 	int	  nTongJiyuParam;
 	char  szTongJiyuNotify[defTONG_NOTIFY_LENGTH];
-	int   nFaction;				//ï¿½ï¿½ï¿½ï¿½ï¿½Óª
-	int   nMoney;				//ï¿½ï¿½ï¿½ï¿½Ê½ï¿½
+	int   nFaction;				//°ï»áÕóÓª
+	int   nMoney;				//°ï»á×Ê½ð
 	BYTE  btLevel;
 	DWORD dwTotalEff;
 	int	  nMasterJoinTm;
 	int   nMasterSaveEff;
 	BOOL  bRecruit;
-	int	  nMemberCount;         //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int	  nMemberCount;         //°ïÖÚÊýÁ¿
 	int	  nManagerCount;
 	int	  nDirectorCount;
 };
@@ -1268,15 +1269,15 @@ struct KTongParam
 	int		m_nMoneySaveJiyu;
 };
 
-//ï¿½Ô°ï¿½ï¿½Ú³ï¿½Ô±ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½Ïµï¿½Ä¶ï¿½ï¿½ï¿½
+//¶Ô°ïÄÚ³ÉÔ±×öµÄ¶¯×÷£¬»ò¸Ä±ä×Ô¼ºÓë°ï»áµÄ¹ØÏµµÄ¶¯×÷
 enum TONG_ACTION_TYPE
 {
-	TONG_ACTION_DISMISS,       //ï¿½ï¿½ï¿½ï¿½
-	TONG_ACTION_ASSIGN,        //ï¿½ï¿½ï¿½ï¿½
-	TONG_ACTION_DEMISE,        //ï¿½ï¿½Î»
-	TONG_ACTION_LEAVE,         //ï¿½ï¿½ï¿½
-	TONG_ACTION_RECRUIT,       //ï¿½ï¿½ï¿½ï¿½×´Ì¬
-	TONG_ACTION_APPLY,         //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	TONG_ACTION_DISMISS,       //ÌßÈË
+	TONG_ACTION_ASSIGN,        //ÈÎÃü
+	TONG_ACTION_DEMISE,        //´«Î»
+	TONG_ACTION_LEAVE,         //Àë°ï
+	TONG_ACTION_RECRUIT,       //ÕÐÈË×´Ì¬
+	TONG_ACTION_APPLY,         //ÉêÇë¼ÓÈë
 	TONG_ACTION_CHANGE_AGNAME,
 	TONG_ACTION_CHANGE_MALE_AGNAME,
 	TONG_ACTION_CHANGE_FEMALE_AGNAME,
@@ -1288,35 +1289,35 @@ enum TONG_ACTION_TYPE
 
 enum TONG_MONEY_ACTION_TYPE
 {
-	TONG_ACTION_SAVE,       //ï¿½ï¿½ï¿½ï¿½
-	TONG_ACTION_GET,        //ï¿½ï¿½ï¿½ï¿½
+	TONG_ACTION_SAVE,       //ÌßÈË
+	TONG_ACTION_GET,        //ÈÎÃü
 };
 
-//ï¿½Ô°ï¿½ï¿½Ú³ï¿½Ô±ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½Ïµï¿½Ä¶ï¿½ï¿½ï¿½Ê±ï¿½Ä²ï¿½ï¿½ï¿½
+//¶Ô°ïÄÚ³ÉÔ±×öµÄ¶¯×÷£¬»ò¸Ä±ä×Ô¼ºÓë°ï»áµÄ¹ØÏµµÄ¶¯×÷Ê±µÄ²ÎÊý
 struct KTongOperationParam
 {
-	TONG_ACTION_TYPE	eOper;				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	TONG_ACTION_TYPE	eOper;				//²Ù×÷Ïî
 	int                 nData[4];
-	char				szData[32];		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ä²ï¿½ï¿½ï¿½ï¿½î²»ï¿½ï¿½Òªï¿½ï¿½ï¿½ë£¬ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Õ¡ï¿½
+	char				szData[32];		//²Ù×÷ÏîÐèÒªµÄÃÜÂë£¬Èç¹û¶ÔÓ¦µÄ²Ù×÷Ïî²»ÐèÒªÃÜÂë£¬ÔòÖ±½ÓÌîÃÜÂëÎª¿Õ¡£
 };
 
-//ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
+//°ï»á³ÉÔ±Ïî
 struct KTongMemberItem : public KUiPlayerItem
 {
-	char szAgname[defTONG_NAME_LENGTH_32];	//ï¿½Ú°ï¿½ï¿½Úµï¿½Ö°ï¿½ï¿½/ï¿½Æºï¿½
+	char szAgname[defTONG_NAME_LENGTH_32];	//ÔÚ°ïÄÚµÄÖ°Îñ/³ÆºÅ
 	BOOL bOnline;
 	int  nSaveEff;
 	int	 nJoinTm;
 };
 
-//Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½XXï¿½Ä¹ï¿½Ïµï¿½ï¿½(XXï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½á£¬ï¿½ï¿½ï¿½ï¿½Èµï¿½)
+//Ä³¸öÍæ¼ÒÓëXXµÄ¹ØÏµ£¬(XX¿ÉÒÔÊÇ°ï»á£¬¶ÓÎéµÈµÈ)
 struct KUiPlayerRelationWithOther : KUiPlayerItem
 {
 	int		nRelation;
 	int		nParam;
 };
 
-//Í¨ï¿½ÃµÄ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Ä½á¹¹
+//Í¨ÓÃµÄ´øÃû³ÆÃèÊöÓÎÏ·¶ÔÏóµÄ½á¹¹
 struct KUiGameObjectWithName
 {
 	char			szName[32];
