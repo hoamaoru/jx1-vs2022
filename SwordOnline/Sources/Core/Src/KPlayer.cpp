@@ -1,4 +1,4 @@
-#include "KCore.h"
+﻿#include "KCore.h"
 #ifndef WM_MOUSEHOVER
 #define WM_MOUSEHOVER 0x02A1
 #endif
