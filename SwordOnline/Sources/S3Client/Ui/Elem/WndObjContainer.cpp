@@ -551,7 +551,7 @@ void KWndObjectMatrix::PaintWindow()
 // -------------------------------------------------------------------------
 // ¹¦ÄÜ	: Ôö¼ÓÒ»¸ö¶ÔÏóÎïÆ·
 // -------------------------------------------------------------------------
-int KWndObjectMatrix::AddObject(KUiDraggedObject* pObject, int nCount)
+int KWndObjectMatrix::AddObject(KUiDraggedObject* pObject, int nCount)//MrChuBo: Thêm đồ vào rương
 {
 	if (pObject && nCount > 0)
 	{

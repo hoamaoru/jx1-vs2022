@@ -243,7 +243,11 @@ copy ServerDebug\CoreServer.dll ..\..\..\bin\server\Coreserver.dll
 copy ServerDebug\CoreServer.dll ..\..\..\bin\server\debug\Coreserver.dll
 
 md ..\..\lib\debug
-copy ServerDebug\CoreServer.lib ..\..\lib\debug\CoreServer.lib</Command>
+copy ServerDebug\CoreServer.lib ..\..\lib\debug\CoreServer.lib
+
+copy ServerDebug\CoreServer.lib ..\MultiServer\GameServer\debug\CoreServer.lib
+copy ServerDebug\CoreServer.dll ..\MultiServer\GameServer\debug\CoreServer.dll
+copy ServerDebug\Core.pdb ..\MultiServer\GameServer\debug\Core.pdb</Command>
     </PostBuildEvent>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>

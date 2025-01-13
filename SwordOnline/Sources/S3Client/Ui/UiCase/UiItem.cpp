@@ -207,9 +207,9 @@ void KUiItem::UpdateItem(KUiObjAtRegion* pItem, int bAdd)
 		Obj.DataW = pItem->Region.Width;
 		Obj.DataH = pItem->Region.Height;
 		if (bAdd)
-			m_ItemBox.AddObject(&Obj, 1);//MrChuBo: nhặt đồ
+			m_ItemBox.AddObject(&Obj, 1);//MrChuBo: Add đồ vào rương
 		else
-			m_ItemBox.RemoveObject(&Obj);
+			m_ItemBox.RemoveObject(&Obj);//MrChuBo: xóa item khỏi rương
 
 		UiSoundPlay(UI_SI_PICKPUT_ITEM);
 	}
