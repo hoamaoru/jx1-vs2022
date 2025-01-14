@@ -12,7 +12,7 @@
 #ifdef	_SERVER
 #define	MAX_OBJECT	20000
 #else
-#define	MAX_OBJECT	512
+#define	MAX_OBJECT	256
 #endif
 
 #include "KPolygon.h"
@@ -138,6 +138,9 @@ public:
 	int 		m_nGenre;
 	int 		m_nDetailType;
 	BOOL		m_bOverLook;
+
+	//TamLTM Bang hoi chiem linh
+	BOOL        m_bByPlayer;
 
 #ifdef _SERVER
 	BOOL		m_bPickExecute;

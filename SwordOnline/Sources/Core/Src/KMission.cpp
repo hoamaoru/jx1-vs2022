@@ -11,7 +11,7 @@
 
 BOOL KMissionPlayerArray::SetParam(unsigned long ulIndex, int nParam, int nValue)
 {
-	if (ulIndex >= 1200)
+	if (ulIndex >= ulSize) 
 		return FALSE;
 	
 	m_Data[ulIndex].m_nParam[nParam] =  nValue;
@@ -30,8 +30,7 @@ TMissionLadderInfo* KMission::GetMin(
 {
 	TMissionLadderInfo* tmpData;
 	tmpData = &aMSLDList[0];
-	//int j = 0;
-	//while(true)
+	while(true)
 	{
 		for(int i=0;i<n;++i)
 		{
@@ -43,10 +42,8 @@ TMissionLadderInfo* KMission::GetMin(
 				tmpData = &aMSLDList[i];
 				break;
 			}
-			if (i == n)break;
 		}
-		
-
+		if(i==n)break;
 	}
 	return tmpData;
 }

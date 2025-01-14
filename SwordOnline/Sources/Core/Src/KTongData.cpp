@@ -1,3 +1,6 @@
+
+//TamLTM check code co them file moi nay
+
 //#include <objbase.h>
 //#include <crtdbg.h>
 #include "KCore.h"

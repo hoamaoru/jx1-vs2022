@@ -15,112 +15,70 @@ void g_InitSeries();
 
 //---------------------------------------------------------------------------
 // 正弦表 (将浮点数 *1024 整型化)
-extern int* g_nSin;
+extern int		*g_nSin;
 
 // 余弦表 (将浮点数 *1024 整型化)
-extern int* g_nCos;
+extern int		*g_nCos;
 
 // 正弦余弦的查表函数代码缓冲区
-//extern unsigned char *g_InternalDirSinCosCode;
+extern unsigned char *g_InternalDirSinCosCode;
 
-//typedef int	__cdecl g_InternalDirSinCosFunction(int pSinCosTable[], int nDir, int nMaxDir);
+typedef int	__cdecl g_InternalDirSinCosFunction(int pSinCosTable[], int nDir, int nMaxDir);
 
 inline int g_DirSin(int nDir, int nMaxDir)
 {
-
-	if (nDir < 0)
-		nDir = MaxMissleDir + nDir;
-
-	if (nDir >= MaxMissleDir)
-		nDir -= MaxMissleDir;
-
-	return g_nSin[nDir];// (*(g_InternalDirSinCosFunction *)(&(g_InternalDirSinCosCode[0])))(g_nSin, nDir, nMaxDir);
+    return (*(g_InternalDirSinCosFunction *)(&(g_InternalDirSinCosCode[0])))(g_nSin, nDir, nMaxDir);
 }
+
 
 inline int g_DirCos(int nDir, int nMaxDir)
 {
-	if (nDir < 0)
-		nDir = MaxMissleDir + nDir;
-
-	if (nDir >= MaxMissleDir)
-		nDir -= MaxMissleDir;
-
-	return g_nCos[nDir];// (*(g_InternalDirSinCosFunction *)(&(g_InternalDirSinCosCode[0])))(g_nCos, nDir, nMaxDir);
+    return (*(g_InternalDirSinCosFunction *)(&(g_InternalDirSinCosCode[0])))(g_nCos, nDir, nMaxDir);
 }
 
 //---------------------------------------------------------------------------
 // 五行相生相克
-//extern int		g_nAccrueSeries[series_num];
-//extern int		g_nConquerSeries[series_num];
-
-extern INT	g_nAccrueSeries[series_num];
-extern INT	g_nConquerSeries[series_num];
-extern INT	g_nAccruedSeries[series_num];
-extern INT	g_nConqueredSeries[series_num];
+extern int		g_nAccrueSeries[series_num];
+extern int		g_nConquerSeries[series_num];
 
 // 五行相生相克函数代码缓冲区
-//extern unsigned char *g_InternalIsAccrueConquerCode;
+extern unsigned char *g_InternalIsAccrueConquerCode;
 
-//typedef int __cdecl g_InternalIsAccrueConquerFunction(int pAccrueConquerTable[], int nSrcSeries, int nDesSeries);
+typedef int __cdecl g_InternalIsAccrueConquerFunction(int pAccrueConquerTable[], int nSrcSeries, int nDesSeries);
 
-inline int g_IsAccrue(int nSrcSeries, int nDesSeries)  // 相生
+inline int g_IsAccrue(int nSrcSeries, int nDesSeries)
 {
-	if (nSrcSeries < series_metal || nSrcSeries >= series_num)
-		return FALSE;
-
-	if (g_nAccrueSeries[nSrcSeries] == nDesSeries)
-		return TRUE;
-
-	return FALSE;//(*(g_InternalIsAccrueConquerFunction *)(&(g_InternalIsAccrueConquerCode[0])))(g_nAccrueSeries, nSrcSeries, nDesSeries);
+    return (*(g_InternalIsAccrueConquerFunction *)(&(g_InternalIsAccrueConquerCode[0])))(g_nAccrueSeries, nSrcSeries, nDesSeries);
 }
 
-inline int g_IsConquer(int nSrcSeries, int nDesSeries) //相克
+inline int g_IsConquer(int nSrcSeries, int nDesSeries)
 {
-	if (nSrcSeries < series_metal || nSrcSeries >= series_num)
-		return FALSE;
-
-	if (g_nConquerSeries[nSrcSeries] == nDesSeries)
-		return TRUE;
-
-	return FALSE;//(*(g_InternalIsAccrueConquerFunction *)(&(g_InternalIsAccrueConquerCode[0])))(g_nConquerSeries, nSrcSeries, nDesSeries);
+    return (*(g_InternalIsAccrueConquerFunction *)(&(g_InternalIsAccrueConquerCode[0])))(g_nConquerSeries, nSrcSeries, nDesSeries);
 }
 
-
-//extern INT g_InternalIsAccrueConquer(INT pAccrueConquerTable[], INT nSrcSeries, INT nDesSeries);
-
-/*inline BOOL g_IsAccrue(INT nSrcSeries, INT nDesSeries)
-{
-	return g_InternalIsAccrueConquer(g_nAccrueSeries, nSrcSeries, nDesSeries);
-}
-
-inline BOOL g_IsConquer(INT nSrcSeries, INT nDesSeries)
-{
-	return g_InternalIsAccrueConquer(g_nConquerSeries, nSrcSeries, nDesSeries);
-}*/
 
 //---------------------------------------------------------------------------
 //Add by DNT
 // 优化平方根函数
-/*typedef union
+typedef union
 {
-	int     i;          // as integer
-	float   f;          // as float
-	struct              // as bit fields
-	{
-		unsigned int    sign:1;
-		unsigned int    biasedexponent:8;
-		unsigned int    significand;
-	}bits;
+    int     i;          // as integer
+    float   f;          // as float
+    struct              // as bit fields
+    {
+        unsigned int    sign:1;
+        unsigned int    biasedexponent:8;
+        unsigned int    significand;
+    }bits;
 }INTORFLOAT;
 
- Bias constant used for fast conversions between int and float. First element
-in INTORFLOAT union is integer -- we are storing biased exponent 23, mantissa .1, which
-is equivalent to 1.5 x 2^23. */
-/*
-const  INTORFLOAT  bias = {((23 + 127) << 23) + (1 << 22)};
+/* Bias constant used for fast conversions between int and float. First element
+   in INTORFLOAT union is integer -- we are storing biased exponent 23, mantissa .1, which
+   is equivalent to 1.5 x 2^23. */
+const INTORFLOAT  bias = {((23 + 127) << 23) + (1 << 22)};
 
-#define SQRTTABLESIZE       256
-const unsigned int sqrttable[SQRTTABLESIZE] =
+#define SQRTTABLESIZE       256             /* Note: code below assumes this is 256. */
+const unsigned int sqrttable[SQRTTABLESIZE] = 
 {
 		531980127, 532026288, 532072271, 532118079, 532163712, 532209174, 532254465, 532299589,
 		532344546, 532389339, 532433970, 532478440, 532522750, 532566903, 532610900, 532654744,
@@ -158,155 +116,60 @@ const unsigned int sqrttable[SQRTTABLESIZE] =
 
 inline float qsqrt( float f )
 {
-	INTORFLOAT      fi;
-	unsigned int    e, n;
+    INTORFLOAT      fi;
+    unsigned int    e, n;
 
-	fi.f = f;
-	n = fi.i;
+    /* Get raw bits of floating point f. */
+    fi.f = f;
+    n = fi.i;
 
-	e = (n >> 1) & 0x3f800000;
+    /* Divide exponent by 2 -- this is done in-place, no need to shift all
+       the way down to 0 the least significant bits and then back up again.
+       Note that we are also dividing the exponent bias (127) by 2, this
+       gets corrected when we add in the sqrttable entry. */
+    e = (n >> 1) & 0x3f800000;
 
-	n = (n >> 16) & 0xff;
+    /* n is the table index -- we're using 1 bit from the original exponent
+       (e0) plus 7 bits from the mantissa. */
+    n = (n >> 16) & 0xff;
 
-	fi.i = e + sqrttable[n];
+    /* Add calculated exponent to mantissa + re-biasing constant from table. */
+    fi.i = e + sqrttable[n];
 
-	return fi.f;
+    /* Return floating point result. */
+    return fi.f;
 }
-*/
+
 //---------------------------------------------------------------------------
-inline int	g_GetNewDistance(int nX1, int nY1, int nX2, int nY2)
+
+inline int	g_GetDistance(int nX1, int nY1, int nX2, int nY2)
 {
 	// Fixed By DNT 2012.02.02
-	/*INTORFLOAT tmp;
+	INTORFLOAT tmp;
 	tmp.f = qsqrt((float)((nX1 - nX2) * (nX1 - nX2) + (nY1 - nY2) * (nY1 - nY2)));
 	tmp.f += bias.f;
 	tmp.i -= bias.i;
-	return tmp.i;*/
-	return (int)sqrt(double((nX1 - nX2)) * (nX1 - nX2) + (nY1 - nY2) * (nY1 - nY2));
-}
-
-//---------------------------------------------------------------------------
-inline int	g_GetDistance(int nX1, int nY1, int nX2, int nY2)
-{
-	return (int)sqrt(double((nX1 - nX2)) * (nX1 - nX2) + (nY1 - nY2) * (nY1 - nY2));
-}
-
-inline INT	g_GetLength(INT nDx, INT Dy)
-{
-	return (INT)sqrt((FLOAT)(nDx * nDx + Dy * Dy));
-}
-
-//平方
-inline INT	g_Square(INT n)
-{
-	return n * n;
-}
-// 返回距离的平方(减少开方运算)
-inline INT	g_GetDisSquare(INT nX1, INT nY1, INT nX2, INT nY2)
-{
-	return g_Square(nX1 - nX2) + g_Square(nY1 - nY2);
-}
-//-----------------------------------------------------------------------------
-
-inline INT	g_GetNewDirIndex(INT nDx, INT nDy)
-{
-	INT nRet = -1;
-
-	if (!nDx && !nDy)
-		return -1;
-
-	INT nDistance = g_GetLength(nDx, nDy);
-
-	if (nDistance == 0) return -1;
-
-	INT		nSin = (nDy << 10) / nDistance;	// 放大1024倍
-
-	//find more than me as my dir
-	for (INT i = 0; i < 32; i++)		// 顺时针方向 从270度到90度，sin值递减
-	{
-		if (nSin > g_nSin[i])
-			break;
-		nRet = i;
-	}
-
-	INT nD1, nD2;
-	if (g_nSin[nRet] != nSin)
-	{
-		nD1 = g_nSin[nRet] - nSin;
-		nD2 = nSin - g_nSin[nRet + 1];
-		if (nD1 > nD2)
-			nRet++;
-	}
-
-	if (nDx >= 0 && nRet != 0)
-	{
-		nRet = 64 - nRet;
-	}
-	return nRet;
-}
-
-inline int	g_GetOldDirIndex(int nX1, int nY1, int nX2, int nY2)
-{
-	int		nRet = -1;
-
-	if (nX1 == nX2 && nY1 == nY2)
-		return -1;
-
-	//	int		nDistance = g_GetDistance(nX1, nY1 * 2, nX2, nY2 * 2);
-	int		nDistance = g_GetDistance(nX1, nY1, nX2, nY2);
-
-	if (nDistance == 0)
-		return -1;
-
-	//	int		nYLength = (nY2 - nY1) * 2;
-	int		nYLength = nY2 - nY1;
-	int     nLeghthVal = nYLength << 10;
-	int     nSin = nLeghthVal / nDistance;	// 放大1024倍
-	//			nCha = nLeghthVal%nDistance;
-
-	/*	if (nLeghthVal>0)
-		{
-			   if (nCha>=nDistance/2)
-				  nSin ++;
-		}
-		else
-		{
-			  if (-nCha>=nDistance/2)
-				 nSin --;
-
-		} */
-
-	for (int i = 0; i < 32; i++)		// 顺时针方向 从270度到90度，sin值递减		   左边
-	{
-		if (nSin > g_nSin[i])
-			break;
-		nRet = i;
-	}
-
-	if ((nX2 - nX1) > 0)	//右边
-	{
-		nRet = 63 - nRet;
-	}
-	return nRet;
+	return tmp.i;
+//	return (int)sqrt((nX1 - nX2) * (nX1 - nX2) + (nY1 - nY2) * (nY1 - nY2));
 }
 
 // 下面的函数计算方向有偏差，这里专门写一个特殊版本为给寻路使用
-/*inline int	g_GetDirIdxForFindPath(int nX1, int nY1, int nX2, int nY2)
+inline int	g_GetDirIdxForFindPath(int nX1, int nY1, int nX2, int nY2)
 {
 	int		nRet = -1;
 
 	if (nX1 == nX2 && nY1 == nY2)
 		return -1;
 
-	//	int		nDistance = g_GetDistance(nX1, nY1 * 2, nX2, nY2 * 2);
-	int		nDistance = g_GetNewDistance(nX1, nY1, nX2, nY2);
-
+//	int		nDistance = g_GetDistance(nX1, nY1 * 2, nX2, nY2 * 2);
+	int		nDistance = g_GetDistance(nX1, nY1, nX2, nY2);
+	
 	if (nDistance == 0 ) return -1;
-
-	//	int		nYLength = (nY2 - nY1) * 2;
+	
+//	int		nYLength = (nY2 - nY1) * 2;
 	int		nYLength = nY2 - nY1;
 	int		nSin = (nYLength << 10) / nDistance;	// 放大1024倍
-
+	
 	if(nSin > 1024)
 		nSin = 1024;
 	else if(nSin < -1024)
@@ -325,21 +188,43 @@ inline int	g_GetOldDirIndex(int nX1, int nY1, int nX2, int nY2)
 	}
 
 	return nRet;
-} */
-
-
-//----------------------------------------------------------
-inline INT	g_GetDirIndex(INT nX1, INT nY1, INT nX2, INT nY2)
-{
-
-	return g_GetNewDirIndex(nX2 - nX1, nY2 - nY1);
-
-	//return g_GetDirIdxForFindPath(nX1, nY1, nX2, nY2);
-
-	//return g_GetOldDirIndex(nX1, nY1,nX2,nY2);
 }
+//
 
 
+inline int	g_GetDirIndex(int nX1, int nY1, int nX2, int nY2)
+{
+	return g_GetDirIdxForFindPath(nX1, nY1, nX2, nY2);
+/*
+	int		nRet = -1;
+
+	if (nX1 == nX2 && nY1 == nY2)
+		return -1;
+
+//	int		nDistance = g_GetDistance(nX1, nY1 * 2, nX2, nY2 * 2);
+	int		nDistance = g_GetDistance(nX1, nY1, nX2, nY2);
+	
+	if (nDistance == 0 ) return -1;
+	
+//	int		nYLength = (nY2 - nY1) * 2;
+	int		nYLength = nY2 - nY1;
+	int		nSin = (nYLength << 10) / nDistance;	// 放大1024倍
+	
+
+	for (int i = 0; i < 32; i++)		// 顺时针方向 从270度到90度，sin值递减
+	{
+		if (nSin > g_nSin[i])
+			break;
+		nRet = i;
+	}
+
+	if ((nX2 - nX1) > 0)
+	{
+		nRet = 63 - nRet;
+	}
+	return nRet;
+*/
+}
 
 inline	int g_Dir2DirIndex(int nDir, int nMaxDir)
 {
@@ -366,14 +251,12 @@ inline int	g_DirIndex2Dir(int nDir, int nMaxDir)
 
 inline BOOL g_RandPercent(int nPercent)
 {
-	return ((int)g_Random(100) < nPercent);
-
-	/*	int i = g_Random(100);
-
-		if (i >= nPercent)
-			return FALSE;
-		else
-			return TRUE;*/
+	if(nPercent < 0)
+		return FALSE;
+	srand( (unsigned)time( NULL ) );
+	if ((int)g_Random(100) < nPercent)
+		return TRUE;
+	return FALSE;
 }
 
 #endif //KMathH

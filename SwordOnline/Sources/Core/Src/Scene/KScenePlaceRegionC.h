@@ -1,4 +1,4 @@
-// *****************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+// ***************************************************************************************
 // 场景地图的区域对象的类声明
 // Copyright : Kingsoft 2002
 // Author    : wooy(wu yue)
@@ -153,7 +153,10 @@ class KScenePlaceRegionC
 	BOOL	AddObstacle(int nX, int nY, int nObstacleKind);
 	// nX nY 像素点坐标
 	BOOL	ClearObstacle(int nX, int nY);
+
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
 	void	PaintObstacle();
+#endif
 
   private:
 	
@@ -250,6 +253,8 @@ class KScenePlaceRegionC
 		KPakFile* pDataFile,
 		//## 数据文件的大小
 		unsigned int uSize); 
+
+	void RelaxPoint(int x, int y);
 
 	void AddGrundCoverObj(KSPRCoverGroundObj* pObj);
 

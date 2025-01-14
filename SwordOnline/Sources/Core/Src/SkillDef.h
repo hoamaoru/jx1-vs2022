@@ -138,6 +138,7 @@ enum eMeleeForm
 	Melee_RunAndAttack,
 	Melee_ManyAttack,
 	Melee_MoveWithBlur,
+	Melee_Go, //TamLTM fix auto xy map
 };
 
 

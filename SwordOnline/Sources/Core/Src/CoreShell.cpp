@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //	Íâ½ç·ÃÎÊCore½Ó¿Ú·½·¨
 //	Copyright : Kingsoft 2002
 //	Author	:   
@@ -40,6 +40,7 @@
 #include "KBuySell.h"
 #include "KThiefSkill.h"
 #include "KItemChangeRes.h"
+#include "../S3Client/Ui/UiCase/UiAutoPlay.h"
 
 #define	NPC_TRADE_BOX_WIDTH		6
 #define	NPC_TRADE_BOX_HEIGHT	10
@@ -51,6 +52,7 @@ class KCoreShell : public iCoreShell
 {
 public:
 	int	 GetProtocolSize(BYTE byProtocol);
+	int	 Debug(unsigned int uDataId, unsigned int uParam, int nParam);
 	int	 OperationRequest(unsigned int uOper, unsigned int uParam, int nParam);
 	void ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam);
 	int GetTargetNPC();
@@ -122,7 +124,23 @@ public:
 	int GetDataSuperShop(int nSaleId, unsigned int uParam, int nParam);
 	int GetDataDynamicShop(int nSaleId, unsigned int uParam, int nParam);
 	int GetNextSkill(int nType, int nIndex);
-	BOOL IsSkillAura(int nSkillId);
+//	BOOL IsSkillAura(int nSkillId);
+
+	//TamLTM kham nam xanh
+	int GetKindItem(unsigned int uId );
+	int GetDetailItem(unsigned int uId );
+	int GetParticularItem(unsigned int uId );
+	int GetLevelItem(unsigned int uId );
+	int GetSeriesItem(unsigned int uId );
+	int GetItemColor(unsigned int uItemId);
+	//End code
+
+	//TamLTM Auto run
+	void SetAutoRun(BOOL autoRun);
+	void SetFlagAutoRun(BOOL autoRunFlag, int x, int y);
+	void CheckHoverMouseMiniMap(BOOL hover);
+	//end code
+
 };
 
 static KCoreShell	g_CoreShell;
@@ -627,8 +645,10 @@ case GDI_GAME_OBJ_DESC:
 			if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_SkillList.GetLevel(nLeftSkillId) > 0)
 			{
 				KSkill * pOrdinSkill = (KSkill *)g_SkillManager.GetSkill(nLeftSkillId, Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_SkillList.GetCurrentLevel(nLeftSkillId));
-				if (pOrdinSkill->IsUseAR())
+				if (pOrdinSkill->IsUseAR()) {
 					pInfo->nLeftAttack = pNpc->m_CurrentAttackRating;				//¹¥»÷Á¦
+					Player[CLIENT_PLAYER_INDEX].GetEchoAttack(&pInfo->nLeftAttack,0); //TamLTM Damage attack ho tro chinh xac
+				}
 				else
 					pInfo->nLeftAttack = 0;
 			}
@@ -638,18 +658,23 @@ case GDI_GAME_OBJ_DESC:
 			if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_SkillList.GetLevel(nRightSkillId) > 0)
 			{
 				KSkill * pOrdinSkill = (KSkill *)g_SkillManager.GetSkill(nRightSkillId, Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_SkillList.GetCurrentLevel(nRightSkillId));
-				if (pOrdinSkill->IsUseAR())
+				if (pOrdinSkill->IsUseAR()) {
 					pInfo->nRightAttack = pNpc->m_CurrentAttackRating;				//¹¥»÷Á¦
+					Player[CLIENT_PLAYER_INDEX].GetEchoAttack(&pInfo->nRightAttack,1); //TamLTM Damage attack ho tro chinh xac
+				}
 				else
 					pInfo->nRightAttack = 0;
 			}
 			else
 				pInfo->nRightAttack = 0;
+				
 			pInfo->nDefence = pNpc->m_CurrentDefend;					//·ÀÓùÁ¦
+
 			if (Player[CLIENT_PLAYER_INDEX].m_RunStatus)
 				pInfo->nMoveSpeed = pNpc->m_CurrentRunSpeed;				//ÒÆ¶¯ËÙ¶È
 			else
 				pInfo->nMoveSpeed = pNpc->m_CurrentWalkSpeed;				//ÒÆ¶¯ËÙ¶È
+
 			pInfo->nAttackSpeed = pNpc->m_CurrentAttackSpeed;
 			pInfo->nCastSpeed = pNpc->m_CurrentCastSpeed;//¹¥»÷ËÙ¶È
 			//ÎïÀí·ÀÓù
@@ -775,7 +800,10 @@ case GDI_GAME_OBJ_DESC:
 	//Ö÷½ÇËæÉíÐ¯´øµÄÇ®
 	//nRet = Ö÷½ÇËæÉíÐ¯´øµÄÇ®
 	case GDI_PLAYER_HOLD_MONEY:	
-		nRet = Player[CLIENT_PLAYER_INDEX].m_ItemList.GetMoney(room_equipment);
+		if (uParam == moneyunit_money)
+			nRet = Player[CLIENT_PLAYER_INDEX].m_ItemList.GetMoney(room_equipment);
+		else if (uParam == moneyunit_extpoint) //TamLTM fix xu;
+			nRet = Player[CLIENT_PLAYER_INDEX].GetExtPoint();
 		break;
 	//Ö÷½ÇËæÉíÐ¯´øµÄÎïÆ·µÈ
 	//uParam = (KUiObjAtRegion*) pInfo -> KUiObjAtRegion½á¹¹Êý×éµÄÖ¸Õë£¬KUiObjAtRegion
@@ -854,7 +882,7 @@ case GDI_GAME_OBJ_DESC:
 	// new add
 		//
 	case GDI_EQUIPMENT:
-		nRet = 0;
+		nRet = 0; 
 		if (uParam)
 		{
 			// TODO£ºÔÝÊ±Ã»ÓÐ×öµÚ¶þÌ××°±¸
@@ -1720,6 +1748,16 @@ case GDI_GAME_OBJ_DESC:
 			Item[nParam].GetDesc(pszDescript);
 		}
 		break;
+	case GDI_CHAT_ITEM_IMAGE: // TamLTM fix post item;
+		if (nParam && uParam)
+		{
+			char* pszImage = (char*)uParam;
+			pszImage[0] = 0;
+			strcpy(pszImage, Item[nParam].GetImageName());
+			if (pszImage[0])
+				nRet = 1;
+		}
+		break;
 	case GDI_GET_ITEM_PARAM:
 		if(uParam && nParam)
 		{
@@ -1737,6 +1775,7 @@ case GDI_GAME_OBJ_DESC:
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			if(Item[nParam].GetNature() >= NATURE_GOLD)
 				itoa(Item[nParam].GetRow(), Buffer, 10);
 			else
@@ -1745,47 +1784,55 @@ case GDI_GAME_OBJ_DESC:
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].GetParticular(), Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].GetSeries(), Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].GetLevel(), Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].m_GeneratorParam.nLuck, Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].m_GeneratorParam.uRandomSeed, Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].m_GeneratorParam.nVersion, Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
-			itoa(Item[nParam].GetDurability(), Buffer, 10);
+
+			itoa(Item[nParam].GetDurability(), Buffer, 10); // Do ben trang bi
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
+
 			itoa(Item[nParam].GetExpireTime(), Buffer, 10);
 			strcat(&CIParam[nOffset],Buffer);
 			nOffset += strlen(Buffer);
 			CIParam[nOffset] = ',';
 			nOffset++;
-			for (int j = 0; j < MAX_ITEM_MAGICLEVEL; j++)
+			/*for (int j = 0; j < MAX_ITEM_MAGICLEVEL; j++)
 			{
 				sprintf(Buffer, "%d", Item[nParam].m_GeneratorParam.nGeneratorLevel[j]);
 				strcat(&CIParam[nOffset],Buffer);
@@ -1793,33 +1840,68 @@ case GDI_GAME_OBJ_DESC:
 				if (j == MAX_ITEM_MAGICLEVEL - 1) break;
 				CIParam[nOffset] = ',';
 				nOffset++;
+			}*/ 
+			//TamLTM fix post item;
+			for (int i = 0; i < MAX_ITEM_MAGICATTRIB; i++)
+			{
+				sprintf(Buffer, "%d", Item[nParam].m_aryMagicAttrib[i].nAttribType);
+				strcat(&CIParam[nOffset], Buffer);
+				nOffset += strlen(Buffer);
+				CIParam[nOffset] = ',';
+				nOffset++;
 			}
+
+			for (i = MAX_ITEM_MAGICATTRIB; i < MAX_ITEM_MAGICLEVEL; i++)
+			{
+				sprintf(Buffer, "%d", Item[nParam].m_aryMagicAttrib[i - MAX_ITEM_MAGICATTRIB].nValue[0]);
+				strcat(&CIParam[nOffset], Buffer);
+				nOffset += strlen(Buffer);
+				CIParam[nOffset] = ',';
+				nOffset++;
+			}
+
+			for (i = MAX_ITEM_MAGICLEVEL; i < MAX_ITEM_MAGICATTRIB + MAX_ITEM_MAGICLEVEL; i++)
+			{
+				sprintf(Buffer, "%d", Item[nParam].m_aryMagicAttrib[i - MAX_ITEM_MAGICLEVEL].nValue[2]);
+				strcat(&CIParam[nOffset], Buffer);
+				nOffset += strlen(Buffer);
+				if (i == MAX_ITEM_MAGICATTRIB + MAX_ITEM_MAGICLEVEL - 1) break;
+				CIParam[nOffset] = ',';
+				nOffset++;
+			}
+			//end code
 			CIParam[nOffset] = '\0';
 			nRet = 1;
 		}
 		break;
-	case GDI_ITEM_CHAT:
-		if(uParam)
+	case GDI_ITEM_CHAT: //TamLTM note Post item kenh chat
+		/*if(uParam)
 		{
 			if(nParam)
 			{
+			//	g_DebugLog("ABC DI GDI_ITEM_CHAT coreshell");
 				char *CIParam = (char *)nParam;
 				int CIParamV[11], nMagicParam[MAX_ITEM_MAGICLEVEL];
 				char* cParam = strtok(CIParam, ",");
 				int i = 0, j = 0;
 				while(cParam)
 				{
-					if (i>=10+MAX_ITEM_MAGICLEVEL)break;
+			//		g_DebugLog("ABC DI GDI_ITEM_CHAT coreshell 2");
+					if (i>=10+MAX_ITEM_MAGICLEVEL)
+						break;
 					else if (i>= 11)
 					{
-						if (j>=MAX_ITEM_MAGICLEVEL)break;
+						if (j>=MAX_ITEM_MAGICLEVEL)
+							break;
+
 						nMagicParam[j] = atoi(cParam);
 						j++;
 					}
 					else
 						CIParamV[i] = atoi(cParam);
+
 					cParam = strtok(NULL, ",");
-					i ++;
+					i++;
 				}
 				nRet = ItemSet.Add(
 						CIParamV[0],
@@ -1838,10 +1920,62 @@ case GDI_GAME_OBJ_DESC:
 					Item[nRet].SetExpireTime(CIParamV[10]);
 				}
 			}
+			else
+			{
+				ItemSet.Remove((int)nParam);
+			}
 		}
 		else
+		{
 			ItemSet.Remove((int)nParam);
-		break;
+			//g_DebugLog("ItemSet.Remove((int)nParam);");
+		}
+		break;*/
+		// TamLTM fix post item;
+		if (uParam)
+		{
+			if (nParam)
+			{
+				char* CIParam = (char*)nParam;
+				int CIParamV[11], nMagicParam[MAX_ITEM_MAGICLEVEL];
+				char* cParam = strtok(CIParam, ",");
+				int i = 0, j = 0;
+				while (cParam)
+				{
+					if (i >= 10 + MAX_ITEM_MAGICLEVEL)break;
+					else if (i >= 11)
+					{
+						if (j >= MAX_ITEM_MAGICLEVEL)break;
+						nMagicParam[j] = atoi(cParam);
+						j++;
+					}
+					else
+						CIParamV[i] = atoi(cParam);
+					cParam = strtok(NULL, ",");
+					i++;
+				}
+				nRet = ItemSet.Add(
+					CIParamV[0],
+					CIParamV[1],
+					CIParamV[4],
+					CIParamV[5],
+					CIParamV[6],
+					CIParamV[2],
+					CIParamV[3],
+					nMagicParam,
+					CIParamV[8],
+					CIParamV[7]);
+				if (nRet)
+				{
+					Item[nRet].SetDurability(CIParamV[9]);
+					Item[nRet].SetExpireTime(CIParamV[10]);
+				}
+			}
+		}
+		else
+			ItemSet.Remove(nParam);
+		break; 
+		//end code
 	case GDI_SHOW_OBJ_NAME:
 			nRet = NpcSet.CheckShowObj();
 			break;
@@ -1915,6 +2049,54 @@ case GDI_GAME_OBJ_DESC:
 			nRet = nCount;
 		}
 		break;
+		//TamLTM kham nam
+	case GDI_BUILD_ITEM:
+		nRet = 0;
+		if (uParam)
+		{
+			// TODO?????û????????????
+			if (nParam == 1)
+				break;
+
+			int PartBuildItem[MAX_PART_BUILD] = 
+			{
+				UIEP_BUILDITEM1,
+				UIEP_BUILDITEM2,
+				UIEP_BUILDITEM3,
+				UIEP_BUILDITEM4,
+				UIEP_BUILDITEM5,
+				UIEP_BUILDITEM6,
+				UIEP_BUILDITEM7,
+				UIEP_BUILDITEM8,
+				UIEP_BUILDITEM9,
+			};
+
+			int nCount = 0;
+			KUiObjAtRegion* pInfo = (KUiObjAtRegion*)uParam;
+
+			for (int i = 0; i < MAX_PART_BUILD; i++)
+			{
+				pInfo->Obj.uId = Player[CLIENT_PLAYER_INDEX].m_ItemList.GetBuildItem(i);
+				if (pInfo->Obj.uId)
+				{
+					pInfo->Obj.uGenre = CGOG_ITEM;
+				
+					pInfo->Region.Width = Item[pInfo->Obj.uId].GetWidth();
+					pInfo->Region.Height = Item[pInfo->Obj.uId].GetHeight();
+					pInfo->Region.h = 0;
+					pInfo->Region.v = PartBuildItem[i];
+				}
+				else
+				{
+					pInfo->Obj.uGenre = CGOG_NOTHING;
+				}
+				nCount++;
+				pInfo++;
+			}
+			nRet = nCount;
+		}
+		break;
+		//End code
 	case GDI_COMPOUND_BOX:
 		nRet = 0;
 		if (uParam)
@@ -2044,6 +2226,20 @@ case GDI_GAME_OBJ_DESC:
 	case GDI_IS_CHECK_IMAGE:			//Kiem tra hinh anh nguoi choi da chon
 		nRet = Player[CLIENT_PLAYER_INDEX].m_ImagePlayer;
 		break;
+	//TamTLM Get Version game
+	case GDI_GET_VERSION_GAME:
+		switch (uParam)
+		{
+			case 0:
+			{
+				return Player[CLIENT_PLAYER_INDEX].GetVersionGame();
+			}
+			break;
+			default:
+				break;
+		}
+		break;
+	//end code
 	}
 	return nRet;
 }
@@ -2116,12 +2312,14 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 		}
 		break;
 		//Àë¿ªÓÎÏ·
-	case GOI_EXIT_GAME:
+	case GOI_EXIT_GAME: //TamLTM co the Lam offline for uy thac.
 		g_SubWorldSet.Close();
 		g_ScenePlace.ClosePlace();
+		//Player[CLIENT_PLAYER_INDEX].dacheck = FALSE;//TamLTM fix;
 		break;
 	case GOI_GAMESPACE_DISCONNECTED:
-		g_SubWorldSet.Close();
+		g_SubWorldSet.Close(); //TamLTM fix;
+		//Player[CLIENT_PLAYER_INDEX].dacheck = FALSE;//TamLTM fix;
 		break;
 	case GOI_TRADE_NPC_BUY:
 		{
@@ -2133,7 +2331,8 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 			if (nParam <= 0)
 				break;
 
-			SendClientCmdBuy(Player[CLIENT_PLAYER_INDEX].m_BuyInfo.m_nCurShop, pObject1->Obj.uId, nParam);
+			// TamLTM add bang hoi chiem linh , Pos.nX, Pos.nY);
+			SendClientCmdBuy(Player[CLIENT_PLAYER_INDEX].m_BuyInfo.m_nCurShop, pObject1->Obj.uId, nParam); // TamLTM add bang hoi chiem linh , Pos.nX, Pos.nY);
 		}
 		break;
 	case GOI_TRADE_NPC_SELL:
@@ -2155,7 +2354,7 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 			}
 		}
 		break;
-	case GOI_TRADE_NPC_REPAIR:
+	case GOI_TRADE_NPC_REPAIR: // Sua trang bi do ben
 		{
 			KUiObjAtContRegion* pObject1 = (KUiObjAtContRegion*)uParam;
 
@@ -2213,6 +2412,18 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 				itempart_shipin,	itempart_hoods,
 				itempart_cloak,
 			};
+
+			//TamLTM kham nam
+			int PartBuildItem[MAX_PART_BUILD] = 
+			{ 
+				itempart_build1,	itempart_build2,
+				itempart_build3,	itempart_build4,
+				itempart_build5,	itempart_build6,
+				itempart_build7,	itempart_build8,
+				itempart_build9,
+			};
+			//End code
+
 			int PartCompoundConvert[MAX_COMPOUND_ITEM] = 
 			{ 
 				compound_box1,	compound_box2,
@@ -2300,6 +2511,16 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 						P1.nX = PartCompoundConvert[pObject1->Region.v];
 					}
 					break;
+				//TamLTM kham nam xanh
+				case UOC_BUILD_ITEM:
+					{
+						if (pObject1->Region.h == 1)
+							break;
+						P1.nPlace = pos_builditem;
+						P1.nX = PartBuildItem[pObject1->Region.v];
+					}
+					break;
+				//End code
 				case UOC_COMPOUND_BOX:
 					P1.nPlace = pos_compoundroom;
 					P1.nX = pObject1->Region.h;
@@ -2309,7 +2530,60 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 					if (CGOG_NPCSELLITEM != pObject1->Obj.uGenre)
 						break;
 
-					SendClientCmdBuy(Player[CLIENT_PLAYER_INDEX].m_BuyInfo.m_nCurShop, pObject1->Obj.uId, nParam);
+					// TamLTM add bang hoi chiem linh , Pos.nX, Pos.nY);
+					int nIdx = 0;
+					KItem* pItem = NULL;
+					
+					nIdx = BuySell.GetItemIndex(Player[CLIENT_PLAYER_INDEX].m_BuyInfo.m_nBuyIdx, pObject1->Obj.uId);
+					pItem = BuySell.GetItem(nIdx);
+					
+					int nWidth, nHeight;
+					ItemPos	Pos;
+					
+					nWidth = pItem->GetWidth();
+					nHeight = pItem->GetHeight();
+					if (!Player[CLIENT_PLAYER_INDEX].m_ItemList.SearchPosition(nWidth, nHeight, &Pos))
+					{
+						nRet = 0;
+						KSystemMessage	sMsg;
+						
+						strcpy(sMsg.szMessage, MSG_SHOP_NO_ROOM);
+						sMsg.eType = SMT_SYSTEM;
+						sMsg.byConfirmType = SMCT_CLICK;
+						sMsg.byPriority = 1;
+						sMsg.byParamSize = 0;
+						CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
+						break;
+					}
+					if (Pos.nPlace != pos_equiproom)
+					{
+						nRet = 0;
+						KSystemMessage	sMsg;
+						
+						strcpy(sMsg.szMessage, MSG_SHOP_NO_ROOM);
+						sMsg.eType = SMT_SYSTEM;
+						sMsg.byConfirmType = SMCT_CLICK;
+						sMsg.byPriority = 1;
+						sMsg.byParamSize = 0;
+						CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
+						break;
+					}
+					if (Player[CLIENT_PLAYER_INDEX].m_ItemList.GetEquipmentMoney() < pItem->GetCurPrice())
+					{
+						nRet = 0;
+						KSystemMessage	sMsg;
+						
+						strcpy(sMsg.szMessage, MSG_SHOP_NO_MONEY);
+						sMsg.eType = SMT_SYSTEM;
+						sMsg.byConfirmType = SMCT_CLICK;
+						sMsg.byPriority = 1;
+						sMsg.byParamSize = 0;
+						CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
+						break;
+					}
+					//end code
+
+					SendClientCmdBuy(Player[CLIENT_PLAYER_INDEX].m_BuyInfo.m_nCurShop, pObject1->Obj.uId, nParam); // TamLTM add bang hoi chiem linh , Pos.nX, Pos.nY);
 					break;
 				}
 			}
@@ -2390,6 +2664,17 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 						P2.nX = PartCompoundConvert[pObject2->Region.v];
 					}
 					break;
+				//TamLTM code kham nam xanh
+				case UOC_BUILD_ITEM:
+					{
+						// TODO:check doi tuong region chieu cao cua khung box
+						if (pObject2->Region.h == 1)
+							break;
+						P2.nPlace = pos_builditem;
+						P2.nX = PartBuildItem[pObject2->Region.v];
+					}
+					break;
+				//End code
 				case UOC_COMPOUND_BOX:
 					P2.nPlace = pos_compoundroom;
 					P2.nX = pObject2->Region.h;
@@ -2440,6 +2725,53 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 			Player[CLIENT_PLAYER_INDEX].OnSelectFromUI(&command, UI_SELECTDIALOG);
 		}
 		break;
+
+	//TamLTM Toi uu hinh anh game
+	case GOI_TOI_UU_IMAGE_COMMAND:
+        {
+            switch(uParam)
+            {
+				case 0:
+				{
+					if (nParam == false)
+					{
+						Player[CLIENT_PLAYER_INDEX].m_bIsHideNpc = TRUE;
+					//	g_DebugLog("TRUE");
+						return 1;
+					}
+					else
+					{
+						Player[CLIENT_PLAYER_INDEX].m_bIsHideNpc = FALSE;
+						return 1; 
+					}
+				}	
+				break;
+				case 1:
+				{
+					if (nParam == false)
+					{
+						Player[CLIENT_PLAYER_INDEX].m_bIsHidePlayer = TRUE;
+						return 1;
+					}
+					else
+					{
+						Player[CLIENT_PLAYER_INDEX].m_bIsHidePlayer = FALSE;
+						return 1; 
+					}
+				}	
+					break;
+				case 2:
+				{
+					//Break
+				}	
+				break;
+			default:
+				break;
+			}
+		}
+       break;
+		//end
+
 	//ÉèÖÃÁ¢¼´¼¼ÄÜ
 	//uParam = (KUiGameObject*)pSKill, ¼¼ÄÜÐÅÏ¢
 	//nParam = Á¢¼´Î»ÖÃ£¬0±íÊ¾ÎªÓÒ¼ü¼¼ÄÜ£¬1ÖÁ4±íÊ¾ÎªF1ÖÁF4¼¼ÄÜ
@@ -2823,25 +3155,84 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 			g_pClient->SendPackToServer((BYTE*)&sGv, sizeof(PLAYER_COMMAND));
 		}
 		break;
-	case GOI_LOCKITEM:
+	case GOI_LOCKITEM: //Khoa dinh' item 
 		if (uParam)
 		{
-			KUiObjAtContRegion *pObj = (KUiObjAtContRegion *)uParam;
+			KUiObjAtContRegion *pObj = (KUiObjAtContRegion *)uParam;			
 			if (pObj->Obj.uId > 0 && pObj->Obj.uId < MAX_ITEM)
 			{
 				KItem*	pItem = &Item[pObj->Obj.uId];
 				if (pItem)
 				{
-					PLAYER_COMMAND	sLI;
-					sLI.ProtocolType = c2s_playercommand;
+					int nIdx = pObj->Obj.uId;
+
+					if (pItem -> GetGenre() != item_equip)  
+						return 0;
+
+					if (Item[nIdx].GetLock()->nState == LOCK_STATE_LOCK)
+						return 0;
+
+					PLAYER_LOCK_ITEM	sLI;
+					sLI.ProtocolType = c2s_playerlockitem;
 					sLI.m_wMsgID = enumC2S_PLAYERCOMMAND_ID_LOCKITEM;
-					sLI.m_lpBuf = (void *)MAKELONG(pItem->GetID(), nParam);
+
+					if (pItem->GetID() != 0)
+					{
+						sLI.m_lpBufLockItem = (void *)MAKELONG(pItem->GetID(), nParam); // Bi then nay
+					}
+
+				//	g_DebugLog("pItem->GetID(%d) - %d", (void *)pItem->GetID(), nParam);
 					sLI.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
 					g_pClient->SendPackToServer((BYTE*)&sLI, sLI.m_wLength + 1);
 				}
 			}
+			else
+			{
+				return 0;
+			}
 		}
 		break;
+	//UnLock
+	case GOI_UNLOCKITEM: //Mo Khoa dinh' item 
+		if (uParam)
+		{
+			KUiObjAtContRegion *pObj = (KUiObjAtContRegion *)uParam;		
+			if (pObj->Obj.uId > 0 && pObj->Obj.uId < MAX_ITEM)
+			{
+				KItem*	pItem = &Item[pObj->Obj.uId];
+				if (pItem)
+				{		
+					int nIdx = pObj->Obj.uId;
+
+					if (pItem -> GetGenre() != item_equip)
+						return 0;
+
+					if (Item[nIdx].GetLock()->nState == LOCK_STATE_UNLOCK)
+						return 0;
+
+					if (Item[nIdx].GetLock()->nState == LOCK_STATE_NORMAL)
+						return 0;
+
+					PLAYER_UNLOCK_ITEM	sLI;
+					sLI.ProtocolType = c2s_playerunlockitem;
+					sLI.m_wMsgID = enumC2S_PLAYERCOMMAND_ID_UNLOCKITEM;
+				
+					if (pItem->GetID() != 0)
+					{
+						sLI.m_lpBufUnLockItem = (void *)MAKELONG(pItem->GetID(), nParam); //TamLTM Bi then nay
+					}
+
+					sLI.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
+					g_pClient->SendPackToServer((BYTE*)&sLI, sLI.m_wLength + 1);
+				}
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		break;
+	//end
 	case GOI_SUPERSHOP:
 		{
 			PLAYER_COMMAND	sSS;
@@ -2861,14 +3252,17 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 	case GOI_OPTIMAL:
 		Option.SetLow((int)uParam, (BOOL)nParam);
 		break;
+	//TamLTM uy thac offline
 	case GOI_OFFLINE:
 		{
-			PLAYER_COMMAND	sOffL;
+			SendClientOffline(); // TamLTM Add offline script
+
+		/*	PLAYER_COMMAND	sOffL;
 			sOffL.ProtocolType = c2s_playercommand;
 			sOffL.m_wMsgID = enumC2S_PLAYERCOMMAND_ID_OFFLINE;
 			sOffL.m_lpBuf = 0;
 			sOffL.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-			g_pClient->SendPackToServer((BYTE*)&sOffL, sOffL.m_wLength + 1);
+			g_pClient->SendPackToServer((BYTE*)&sOffL, sOffL.m_wLength + 1);*/
 		}
 		break;
 	case GOI_MASKFEATURE:
@@ -3003,6 +3397,67 @@ int	KCoreShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nP
 	case GOI_CP_SET_IMAGE_PLAYER:
 		SendClientCPSetImageCmd(uParam);
 		break;
+
+	//TamLTM da tau
+	case GOI_CP_LOAD_SCRIPT:// Da Tau nhiem vu
+		SendClientDaTauCmd(uParam);
+		//g_DebugLog("uParam->nScript: %d", uParam);
+	break;
+	//end
+
+	//TamLTM Ma doc
+	case GOI_PLAYER_ACTIONCHAT:
+		SendClientCPActionCheatCmd((char *)uParam);
+	break;
+	//End
+
+	//TamLTM kham nam xanh
+	case GOI_ADD_UI_CMD_SCRIPT:
+		if (uParam)
+		{
+			if (uParam == 12)
+			{
+				SendUiCmdScript(uParam,(char*)nParam);
+			}
+			else
+				SendUiCmdScript(uParam,(char*)nParam);
+		}
+		break;
+	case GOI_RECOVERY_BOX_COMMAND:
+		if (uParam)
+		{
+			DWORD dwID;
+			int nW, nH;		
+			PlayerItem* pItem = Player[CLIENT_PLAYER_INDEX].m_ItemList.GetFirstItem();
+			if (pItem && pItem->nPlace == uParam)
+			{
+				dwID = Item[pItem->nIdx].GetID();
+				nW = Item[pItem->nIdx].GetWidth();
+				nH = Item[pItem->nIdx].GetHeight();
+				
+				SendClientRecoveryBox(dwID, nW, nH);
+			}
+			
+			while(pItem)
+			{
+				pItem = Player[CLIENT_PLAYER_INDEX].m_ItemList.GetNextItem();
+				if (pItem && pItem->nPlace == uParam)
+				{
+					dwID = Item[pItem->nIdx].GetID();
+					nW = Item[pItem->nIdx].GetWidth();
+					nH = Item[pItem->nIdx].GetHeight();
+									
+					SendClientRecoveryBox(dwID, nW, nH);	
+				}
+			}
+		}	
+		break;
+		// end code
+	//TamLTM Open Progress bar
+	case GOI_CP_LOAD_SCRIPT_PROGRESS_BAR:
+		SendClientOpenProgressBarCmd(uParam);
+		break;
+	//end
 	default:
 		nRet = 0;
 		break;
@@ -3038,12 +3493,17 @@ int KCoreShell::FindSelectNPC(int x, int y, int nRelation, bool bSelect, void* p
 			if (bFind && (Npc[nT].Name[0]==0 && (Npc[nT].m_nTeamServerID == -1 || 
 				Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_nTeamServerID != Npc[nT].m_nTeamServerID)))
 				return false;
+
 			KUiPlayerItem* p = (KUiPlayerItem*)pReturn;
 			strncpy(p->Name, Npc[nT].Name, 32);
 			p->nIndex = Npc[nT].m_Index;
 			p->uId = Npc[nT].m_dwID;
 			p->nData = Npc[nT].GetMenuState();
 			p->nTeamID = Npc[nT].m_nTeamServerID;
+
+			Player[CLIENT_PLAYER_INDEX].m_cAI.m_nMovePosX = x;
+			Player[CLIENT_PLAYER_INDEX].m_cAI.m_nMovePosY = y;
+		//	g_DebugLog("FindSelectNPC %d %d", x, y);
 		}
 		nKind = Npc[nT].m_Kind;
 		return true;
@@ -3063,6 +3523,7 @@ int KCoreShell::FindSelectObject(int x, int y, bool bSelect, int& nObjectIdx, in
 	{
 		nObjectIdx = nT;
 		nKind = Object[nT].m_nKind;
+
 		return true;
 	}
 	return false;
@@ -3153,7 +3614,7 @@ int KCoreShell::UseSkill(int x, int y, int nSkillID)
 {
 	if (Player[CLIENT_PLAYER_INDEX].CheckTrading())
 		return 0;
-	
+
 	int nX = x;
 	int nY = y;
 	int nZ = 0;
@@ -3194,6 +3655,8 @@ int KCoreShell::UseSkill(int x, int y, int nSkillID)
 				nTargetIdx = Player[CLIENT_PLAYER_INDEX].GetTargetNpc();
 			}
 		}
+
+		g_DebugLog("nTargetIdx %d", nTargetIdx);
 
 		if (pISkill->IsTargetEnemy())
 		{
@@ -3239,6 +3702,7 @@ int KCoreShell::UseSkill(int x, int y, int nSkillID)
 		//ÎÞ¶ÔÏó£¬Ö±½Ó·¢×ø±ê
 		if (!nTargetIdx)
 		{
+			//Skill thi trien
 			Npc[nIndex].SendCommand(do_skill, Npc[nIndex].m_ActiveSkillID, nX, nY);
 			SendClientCmdSkill(Npc[nIndex].m_ActiveSkillID, nX, nY);
 		}
@@ -3257,6 +3721,7 @@ int KCoreShell::UseSkill(int x, int y, int nSkillID)
 
 			if (NpcSet.GetDistance(nIndex , nTargetIdx) <= nAttackRange)
 			{
+				//Buff team
 				Npc[nIndex].SendCommand(do_skill, Npc[nIndex].m_ActiveSkillID, -1, nTargetIdx);	
 				SendClientCmdSkill(Npc[nIndex].m_ActiveSkillID, -1, Npc[nTargetIdx].m_dwID);
 			}
@@ -3358,6 +3823,8 @@ void KCoreShell::GotoWhere(int x, int y, int mode)
 		int nX = x;
 		int nY = y;
 		int nZ = 0;
+
+	//	g_DebugLog("GotoWhere %d %d", x, y);
 
 		g_ScenePlace.ViewPortCoordToSpaceCoord(nX, nY, nZ);
 		int nIndex = Player[CLIENT_PLAYER_INDEX].m_nIndex;
@@ -3480,7 +3947,7 @@ void KCoreShell::SetRepresentShell(struct iRepresentShell* pRepresent)
 void KCoreShell::SetMusicInterface(void* pMusicInterface)
 {
 	g_pMusic = (KMusic*)pMusicInterface;
-	Option.SetMusicVolume(Option.GetMusicVolume());
+	Option.SetMusicVolume(Option.GetMusicVolume()); 
 }
 
 //ÈÕ³£»î¶¯£¬coreÈç¹ûÒªÊÙÖÕÕýÇÞÔò·µ»Ø0£¬·ñÔò·µ»Ø·Ç0Öµ
@@ -3489,6 +3956,8 @@ int KCoreShell::Breathe()
 	g_SubWorldSet.MessageLoop();
 	g_SubWorldSet.MainLoop();
 	g_ScenePlace.Breathe();
+
+//	Sleep(10); // Chay normal
 	return true;
 }
 
@@ -3498,6 +3967,31 @@ int KCoreShell::GetProtocolSize(BYTE byProtocol)
 		return -1;
 	return g_nProtocolSize[byProtocol - s2c_clientbegin - 1];
 }
+
+//Debug
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
+extern int		g_bShowObstacle;
+extern bool		g_bShowGameInfo;
+#endif
+
+int KCoreShell::Debug(unsigned int uDataId, unsigned int uParam, int nParam)
+{
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
+	switch(uDataId)
+	{
+	case DEBUG_SHOWINFO:
+		Player[CLIENT_PLAYER_INDEX].m_bDebugMode = !Player[CLIENT_PLAYER_INDEX].m_bDebugMode;
+		g_bShowGameInfo = !g_bShowGameInfo;
+		break;
+	case DEBUG_SHOWOBSTACLE:
+		g_bShowObstacle = !g_bShowObstacle;
+		break;
+	}
+#endif
+	return 0;
+}
+
+//end code
 
 DWORD KCoreShell::GetPing()
 {
@@ -3516,6 +4010,8 @@ void KCoreShell::SetClient(LPVOID pClient)
 
 void KCoreShell::SendNewDataToServer(void* pData, int nLength)
 {
+//	if (nLength < 0 || nLength >= 255)
+	//	return;
 	if (g_pClient)
 		g_pClient->SendPackToServer(pData, nLength);
 }
@@ -3533,6 +4029,24 @@ int	KCoreShell::SceneMapOperation(unsigned int uOper, unsigned int uParam, int n
 			g_ScenePlace.GetSceneNameAndFocus(pInfo->szSceneName, pInfo->nSceneId,
 				pInfo->nScenePos0, pInfo->nScenePos1);
 			pInfo->nGameSpaceTime = (SubWorld[0].m_dwCurrentTime / 100) % 1440;
+
+		//	g_DebugLog("SubWorld[0].m_bCheckTong %s", SubWorld[0].m_szTongName);
+			//TamLTM thue suat bang hoi chiem linh bang hoi
+			if (SubWorld[0].m_bCheckTong)
+			{
+			   memcpy(pInfo->szTongName, SubWorld[0].m_szTongName,sizeof(pInfo->szTongName));
+			   memcpy(pInfo->szTongNameBC, SubWorld[0].m_szTongNameBC,sizeof(pInfo->szTongNameBC));
+			   pInfo->szTongT = SubWorld[0].m_nTongT;
+			   pInfo->szTongVG = SubWorld[0].m_nTongVG;
+			}
+			else
+			{
+				memset(pInfo->szTongName, 0, sizeof(pInfo->szTongName));
+				memset(pInfo->szTongNameBC, 0, sizeof(pInfo->szTongNameBC));
+				pInfo->szTongT = 0;
+                pInfo->szTongVG = 0;
+			}
+			//end code
 		}
 		break;
 	case GSMOI_SCENE_TIME_INFO_OFTEN:
@@ -3814,63 +4328,65 @@ int KCoreShell::TeamOperation(unsigned int uOper, unsigned int uParam, int nPara
 	int nRet = 0;
 	switch(uOper)
 	{
-	case TEAM_OI_GD_INFO:		//Ö÷½ÇËùÔÚµÄ¶ÓÎéÐÅÏ¢
+	case TEAM_OI_GD_INFO:
 		if (uParam)
 		{
 			KUiPlayerTeam* pTeam = (KUiPlayerTeam*)uParam;
 			nRet = Player[CLIENT_PLAYER_INDEX].m_cTeam.GetInfo(pTeam);
 		}
 		break;
-	case TEAM_OI_GD_FIGURE:
+	case TEAM_OI_GD_FIGURE: //TamLTM auto pt to doi
 		if (Player[CLIENT_PLAYER_INDEX].m_cTeam.m_nFlag)
 			nRet = Player[CLIENT_PLAYER_INDEX].m_cTeam.m_nFigure;
 		else
 			nRet = -1;
 		break;
-	case TEAM_OI_GD_MEMBER_LIST://»ñÈ¡Ö÷½ÇËùÔÚ¶ÓÎé³ÉÔ±ÁÐ±í
+	case TEAM_OI_GD_MEMBER_LIST:
 		nRet = g_Team[0].GetMemberInfo((KUiPlayerItem *)uParam, nParam);
 		break;
-	case TEAM_OI_GD_REFUSE_INVITE_STATUS://»ñÈ¡¾Ü¾øÑûÇëµÄ×´Ì¬
+	case TEAM_OI_GD_REFUSE_INVITE_STATUS:
 		nRet = Player[CLIENT_PLAYER_INDEX].m_cTeam.GetAutoRefuseState();
 		break;
-	case TEAM_OI_COLLECT_NEARBY_LIST://»ñÈ¡ÖÜÎ§¶ÓÎéµÄÁÐ±í
+	case TEAM_OI_COLLECT_NEARBY_LIST:
 		NpcSet.GetAroundOpenCaptain(Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_Camp);
 		break;
-	case TEAM_OI_APPLY:			//ÉêÇë¼ÓÈëËýÈË¶ÓÎé
+	case TEAM_OI_APPLY:
 		if (uParam)
 			Player[CLIENT_PLAYER_INDEX].ApplyAddTeam(((KUiTeamItem*)uParam)->Leader.nIndex);
 		break;
-	case TEAM_OI_CREATE:		//ÐÂ×é¶ÓÎé
+	case TEAM_OI_CREATE:		//
 		Player[CLIENT_PLAYER_INDEX].ApplyCreateTeam();//(char*)uParam);
 		break;
-	case TEAM_OI_APPOINT:		//ÈÎÃü¶Ó³¤£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	case TEAM_OI_APPOINT:		//
 		Player[CLIENT_PLAYER_INDEX].ApplyTeamChangeCaptain(((KUiPlayerItem*)uParam)->uId);	
 		break;
-	case TEAM_OI_INVITE:		//ÑûÇë±ðÈË¼ÓÈë¶ÓÎé£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	case TEAM_OI_INVITE:		//
 		if (uParam)
 		{
 			Player[CLIENT_PLAYER_INDEX].TeamInviteAdd(((KUiPlayerItem*)uParam)->uId);
 		}
 		break;
-	case TEAM_OI_KICK:			//Ìß³ý¶ÓÀïµÄÒ»¸ö¶ÓÔ±£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	case TEAM_OI_KICK:			//
 		Player[CLIENT_PLAYER_INDEX].TeamKickMember(((KUiPlayerItem*)uParam)->uId);
 		break;
-	case TEAM_OI_LEAVE:			//Àë¿ª¶ÓÎé
+	case TEAM_OI_LEAVE:			//
 		Player[CLIENT_PLAYER_INDEX].LeaveTeam();
 		break;
-	case TEAM_OI_CLOSE:			//¹Ø±Õ×é¶Ó£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	case TEAM_OI_CLOSE:			//
 		Player[CLIENT_PLAYER_INDEX].ApplyTeamOpenClose(nParam);
 		break;
-	case TEAM_OI_PKFOLLOW:			//¹Ø±Õ×é¶Ó£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	case TEAM_OI_PKFOLLOW:			//
 		Player[CLIENT_PLAYER_INDEX].ApplyTeamPKFollow(nParam);
 		break;
-	case TEAM_OI_MODEPICK:			//¹Ø±Õ×é¶Ó£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	//TamLTM auto pt to doi
+	case TEAM_OI_MODEPICK:			//
 		Player[CLIENT_PLAYER_INDEX].ApplyTeamModePick(nParam);
 		break;
-	case TEAM_OI_REFUSE_INVITE:		//¾Ü¾ø±ðÈËÑûÇë×Ô¼º¼ÓÈë¶ÓÎé
+	case TEAM_OI_REFUSE_INVITE:		//
 		Player[CLIENT_PLAYER_INDEX].m_cTeam.SetAutoRefuseInvite(nParam);
 		break;
-	case TEAM_OI_APPLY_RESPONSE:		//Åú×¼ËûÈË¼ÓÈë¶ÓÎé£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
+	//end code
+	case TEAM_OI_APPLY_RESPONSE:		//
 		if (uParam)
 		{
 			if (nParam)
@@ -3880,16 +4396,15 @@ int KCoreShell::TeamOperation(unsigned int uOper, unsigned int uParam, int nPara
 			else
 			{
 				Player[CLIENT_PLAYER_INDEX].m_cTeam.DeleteOneFromApplyList(((KUiPlayerItem*)uParam)->uId);
-//				Player[CLIENT_PLAYER_INDEX].m_cTeam.UpdateInterface();
 			}
 		}
 		break;
-	case TEAM_OI_INVITE_RESPONSE://¶Ô×é¶ÓÑûÇëµÄ»Ø¸´
+	case TEAM_OI_INVITE_RESPONSE://
 		if (uParam)
 			Player[CLIENT_PLAYER_INDEX].m_cTeam.ReplyInvite(((KUiPlayerItem*)uParam)->nIndex, nParam);
 		break;
-	case TEAM_OI_GETUID:		//ÈÎÃü¶Ó³¤£¬Ö»ÓÐ¶Ó³¤µ÷ÓÃ²ÅÓÐÐ§¹û
-			nRet = ((KUiPlayerItem*)uParam)->uId;
+	case TEAM_OI_GETUID:	//TamLTM auto pt to doi / Thu nghiem
+		//	nRet = ((KUiPlayerItem*)uParam)->uId;
 		break;
 	}
 	return nRet;
@@ -3901,13 +4416,38 @@ int KCoreShell::PAIOperation(unsigned int uOper, unsigned int uParam, int nParam
 	int nRet = 0;
 	switch(uOper)
 	{
+	//loc fix
 	case GPI_SWITCH_ACTIVE:
-			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive = !Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive;
+	{
+
+		if (nParam == 1)
+		{
+			if (Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive == 1)
+			{
+				uParam = 0;
+			}
+			else
+			{
+				uParam = 1;
+			}
+		}
+
+		if (uParam == 1)
+		{
+			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive = 1;
 			Player[CLIENT_PLAYER_INDEX].m_cAI.SetSortEquipment(FALSE);
-		break;
+		}
+		else
+		{
+			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive = 0;
+			Player[CLIENT_PLAYER_INDEX].m_cAI.SetSortEquipment(FALSE);
+		}
+	}
+	break;
 	case GPI_ISACTIVE:
-			nRet = Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive;
+		nRet = Player[CLIENT_PLAYER_INDEX].m_cAI.m_bIsActive;
 		break;
+	// loc fix
 	case GPI_PRIORITY_USE_MOUSE:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bPriorityUseMouse = uParam;
 		break;
@@ -3922,6 +4462,9 @@ int KCoreShell::PAIOperation(unsigned int uOper, unsigned int uParam, int nParam
 		break;
 	case GPI_FOLLOW_PEOPLE_RADIUS:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_nFollowRadius = uParam;
+		break;
+	case GPI_FOLLOW_PEOPLE_RADIUS_IS_CHECK:
+		Player[CLIENT_PLAYER_INDEX].m_cAI.m_bFollowRadius = uParam;
 		break;
 	case GPI_FIGHTNEAR_CHECK:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bFightNear = uParam;
@@ -3954,6 +4497,11 @@ int KCoreShell::PAIOperation(unsigned int uOper, unsigned int uParam, int nParam
 	case GPI_RANGER_AUTO:	
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_nRadiusAuto = uParam;
 		break;
+	//Distance 
+	case GPI_DISTANCE_AUTO:	
+		Player[CLIENT_PLAYER_INDEX].m_cAI.m_nRadiusQuanhDiemXY = uParam;
+		break;
+	//end code
 	case GPI_FIGHT_USE_SB:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bFightUseSB = uParam;
 		break;
@@ -3983,6 +4531,10 @@ int KCoreShell::PAIOperation(unsigned int uOper, unsigned int uParam, int nParam
 		break;
 	case GPI_FOLLOW_TARGET:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bFollowTarget = uParam;
+		break;
+	//TamLTM QuanhDiem
+	case GPI_QUANH_DIEM_TARGET:
+			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bQuanhDiem = uParam;
 		break;
 	case GPI_SORT_EQUIPMENT:
 			if (!Player[CLIENT_PLAYER_INDEX].m_cAI.m_bSortEquipment)
@@ -4117,6 +4669,17 @@ int KCoreShell::PAIOperation(unsigned int uOper, unsigned int uParam, int nParam
 	case GPI_RETURNPORTALSEC:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_nReturnPortalSec = uParam;
 		break;
+	//Code rut tien + pass ruong
+	case GPI_WITHDRAWA:
+		Player[CLIENT_PLAYER_INDEX].m_cAI.m_bWithDrawa = uParam; // rut tien;
+		break;
+	case GPI_WITHDRAWA_MONEY:
+		Player[CLIENT_PLAYER_INDEX].m_cAI.m_bWithDrawaMoney = uParam; // so tien;
+		break;
+	case GPI_PASSREPOSITORY:
+		Player[CLIENT_PLAYER_INDEX].m_cAI.m_bPassReposion = (char*)uParam;
+		break;
+		//end code
 	case GPI_OPEN_MEDICINE:
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bOpenMedicine = uParam;					
 		break;
@@ -4149,20 +4712,53 @@ int KCoreShell::PAIOperation(unsigned int uOper, unsigned int uParam, int nParam
 	return nRet;
 }
 
+// TamLTM tim pos tren map mini
 void KCoreShell::DirectFindPos(unsigned int uParam, int nParam, BOOL bSync, BOOL bPaintLine)
 {
+//	g_DebugLog("DirectFindPos %d + %d ", uParam, nParam);
 	g_ScenePlace.DirectFindPos(uParam, nParam, bSync, bPaintLine);
+
+	//TamLTM check lam auto run move mini map
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_nMapX = uParam; // auto run;
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_nMapY = nParam; // auto run;
+	//end code
 }
+
+//TamLTM Check Hover mini map
+void KCoreShell::CheckHoverMouseMiniMap(BOOL hoverM)
+{
+	g_ScenePlace.CheckHoverMouseMiniMap(hoverM);
+}
+//end code
+
+//Nhap box toa do thi set true
+void KCoreShell::SetAutoRun(BOOL autoRun)
+{
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_bAutoRunMap = autoRun; // auto run;
+//	g_DebugLog("%d ", autoRun);
+}
+
+//Cam co toa do thi set true
+void KCoreShell::SetFlagAutoRun(BOOL autoRunFlag, int x, int y)
+{
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_bAutoRunFlagMap = autoRunFlag; // auto run;
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_nFlagMapX = x; // auto run;
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_nFlagMapY = y; // auto run;
+//	g_DebugLog("autoRunFlag %d ", autoRunFlag);
+}
+//end code
 
 BOOL KCoreShell::GetPaintMode()
 {
 	return g_ScenePlace.bPaintMode;
 }
 
+// TamLTM chay khi nhap box
 void KCoreShell::SetPaintMode(BOOL bFlag)
 {
 	g_ScenePlace.DirectFindPos(0, 0, FALSE, FALSE);
 	g_ScenePlace.bPaintMode = bFlag;
+	//g_DebugLog("SetPaintMode"); 
 }
 
 BOOL KCoreShell::GetFlagMode()
@@ -4172,7 +4768,10 @@ BOOL KCoreShell::GetFlagMode()
 
 void KCoreShell::SetFlagMode(BOOL bFlag)
 {
+	//Set cam co map mini
 	g_ScenePlace.bFlagMode = bFlag;
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_bAutoRunMap = FALSE; // auto run;
+	Player[CLIENT_PLAYER_INDEX].m_cAI.m_bAutoRunFlagMap = FALSE;
 }
 
 void KCoreShell::GetSizeItem(unsigned int uItemId, int *nW, int *nH)
@@ -4233,6 +4832,7 @@ int KCoreShell::GetGenreItem(unsigned int uItemId, unsigned int uGenre /* = CGOG
 	return Item[nIndex].GetGenre();
 }
 
+//Tinh Damage lam hu do ben`
 int KCoreShell::IsDamage(unsigned int uItemId)
 {
 	if(Item[uItemId].GetDurability() > 0)
@@ -4508,7 +5108,7 @@ int KCoreShell::GetNextSkill(int nType, int nIndex)
 	return 0;
 }
 
-BOOL KCoreShell::IsSkillAura(int nSkillId)
+/*BOOL KCoreShell::IsSkillAura(int nSkillId)
 {
 	if(nSkillId > 0)
 	{
@@ -4519,4 +5119,37 @@ BOOL KCoreShell::IsSkillAura(int nSkillId)
 		return pOrdinSkill->IsAura();
 	}
 	return FALSE;
+} */
+
+//TamLTM kham nam xanh
+int KCoreShell::GetKindItem(unsigned int uId )
+{
+	return Item[uId].GetKind();
 }
+
+int KCoreShell::GetDetailItem(unsigned int uId )
+{
+	return Item[uId].GetDetailType();
+}
+
+int KCoreShell::GetLevelItem(unsigned int uId )
+{
+	return Item[uId].GetLevel();
+}
+
+int KCoreShell::GetSeriesItem(unsigned int uId )
+{
+	return Item[uId].GetSeries();
+}
+
+int KCoreShell::GetItemColor(unsigned int uItemId)
+{
+	return Item[uItemId].GetColorItem();
+}
+
+int KCoreShell::GetParticularItem(unsigned int uId )
+{
+	return Item[uId].GetParticular();
+}
+
+//end code

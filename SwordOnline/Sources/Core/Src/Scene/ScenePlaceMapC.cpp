@@ -1,5 +1,5 @@
-// *****************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
-// 碌脴脥录碌脛脌脿露篓脪氓脢碌脧脰
+// ***************************************************************************************
+// 地图的类定义实现
 // Copyright : Kingsoft 2003
 // Author    : wooy(wu yue)
 // CreateTime: 2003-7-8
@@ -16,12 +16,14 @@
 #include "SceneDataDef.h"
 #include    "../../Engine/Src/KSG_StringProcess.h"
 #include "KScenePlaceC.h"
+#include "../KNpc.h"
+
 extern KScenePlaceC	g_ScenePlace;
 
 #define	PLACE_MAP_FILE_NAME_APPEND		"24.jpg"
 #define	PLACE_MAP_SAVE_SECTION			"MAIN"
-#define	PLACE_MAP_SYMBOL_SIZE			5
-#define	PLACE_MAP_FLAG_FILE_PATH		"\\spr\\ui3\\脨隆碌脴脥录\\碌脴脥录脨隆脝矛脰脛.spr"
+#define	PLACE_MAP_SYMBOL_SIZE			12
+#define	PLACE_MAP_FLAG_FILE_PATH		"\\spr\\ui3\\小地图\\地图小旗帜.spr"
 #define	MAP_SETTING_FILE				"\\Ui\\Setting.ini"
 #define	TRAFFIC_INI_FILE				"\\Settings\\MapTraffic.ini"
 #define	RIGHT_BOTTOM_NO_LIMIT			0x7fffffff
@@ -31,6 +33,7 @@ KScenePlaceMapC::KScenePlaceMapC()
 	m_bHavePicMap = FALSE;
 	m_bInited = FALSE;
 	m_bPaintLine = FALSE;
+	m_bLineDraw = FALSE;
 	m_szEntireMapFile[0] = 0;
 	m_EntireMapLTPosition.x = m_EntireMapLTPosition.y = 0;
 	m_FocusPosition.x = m_FocusPosition.y = 0;
@@ -50,7 +53,7 @@ KScenePlaceMapC::~KScenePlaceMapC()
 	Terminate();
 }
 
-//鲁玫脢录禄炉
+//初始化
 bool KScenePlaceMapC::Initialize()
 {
 	if (m_bInited == false && g_pRepresent)
@@ -79,7 +82,7 @@ bool KScenePlaceMapC::Initialize()
 			KRColor		Color;
 			Color.Color_dw = 0;
 
-			// 脰梅陆脟脩脮脡芦
+			// 主角颜色
 			ColorSetting.GetString("Map", "SelfColor", "255,255,255", szBuffer, sizeof(szBuffer));
             pcszTemp = szBuffer;
             Color.Color_b.r = KSG_StringGetInt(&pcszTemp, 255);
@@ -89,7 +92,7 @@ bool KScenePlaceMapC::Initialize()
 			Color.Color_b.b = KSG_StringGetInt(&pcszTemp, 255);
 			m_uSelfColor = Color.Color_dw;
 			
-			// 露脫脫脩脩脮脡芦
+			// 队友颜色
 			ColorSetting.GetString("Map", "TeammateColor", "255,255,255", szBuffer, sizeof(szBuffer));
             pcszTemp = szBuffer;
 			Color.Color_b.r = KSG_StringGetInt(&pcszTemp, 255);
@@ -99,7 +102,7 @@ bool KScenePlaceMapC::Initialize()
 			Color.Color_b.b = KSG_StringGetInt(&pcszTemp, 255);
 			m_uTeammateColor = Color.Color_dw;
 
-			// 脝盲脣没脥忙录脪脩脮脡芦
+			// 其他玩家颜色
 			ColorSetting.GetString("Map", "PlayerColor", "255,255,255", szBuffer, sizeof(szBuffer));
             pcszTemp = szBuffer;
 			Color.Color_b.r = KSG_StringGetInt(&pcszTemp, 255);
@@ -109,7 +112,7 @@ bool KScenePlaceMapC::Initialize()
 			Color.Color_b.b = KSG_StringGetInt(&pcszTemp, 255);
 			m_uPlayerColor = Color.Color_dw;
 
-			// 脮陆露路npc脩脮脡芦
+			// 战斗npc颜色
 			ColorSetting.GetString("Map", "FightNpcColor", "255,255,255", szBuffer, sizeof(szBuffer));
             pcszTemp = szBuffer;
 			Color.Color_b.r = KSG_StringGetInt(&pcszTemp, 255);
@@ -119,7 +122,7 @@ bool KScenePlaceMapC::Initialize()
 			Color.Color_b.b = KSG_StringGetInt(&pcszTemp, 255);
 			m_uFightNpcColor = Color.Color_dw;
 
-			// 脝脮脥篓npc脩脮脡芦
+			// 普通npc颜色
 			ColorSetting.GetString("Map", "NormalNpcColor", "255,255,255", szBuffer, sizeof(szBuffer));
             pcszTemp = szBuffer;
 			Color.Color_b.r = KSG_StringGetInt(&pcszTemp, 255);
@@ -188,7 +191,7 @@ bool KScenePlaceMapC::Initialize()
 	return m_bInited;
 }
 
-//陆谩脢酶露脭脧贸鹿娄脛脺隆拢脢脥路脜露脭脧贸碌脛脠芦虏驴脢媒戮脻脫毛露炉脤卢鹿鹿脭矛碌脛脳脢脭麓隆拢
+//结束对象功能。释放对象的全部数据与动态构造的资源。
 void KScenePlaceMapC::Terminate()
 {
 	if (m_bInited && g_pRepresent)
@@ -208,7 +211,7 @@ void KScenePlaceMapC::Terminate()
 	}
 }
 
-//脡猫脰脙鲁隆戮掳碌脴脥录碌脛掳眉潞卢碌脛脭陋脣脴
+//设置场景地图的包含的元素
 void KScenePlaceMapC::SetShowElemsFlag(unsigned int uShowElemsFlag)
 {
 	m_uMapShowElems = uShowElemsFlag;
@@ -216,7 +219,7 @@ void KScenePlaceMapC::SetShowElemsFlag(unsigned int uShowElemsFlag)
 		SetFocusPosition(m_FocusPosition.x, m_FocusPosition.y, true);
 }
 
-//露脕脠隆脡猫脰脙
+//读取设置
 BOOL KScenePlaceMapC::Load(KIniFile* pSetting, const char* pszScenePlaceRootPath)
 {
 	if (Initialize() == FALSE)
@@ -262,7 +265,7 @@ BOOL KScenePlaceMapC::Load(KIniFile* pSetting, const char* pszScenePlaceRootPath
 	return m_bHavePicMap;
 }
 
-//脡猫脰脙鲁隆戮掳碌脴脥录碌脛陆鹿碌茫
+//设置场景地图的焦点
 void KScenePlaceMapC::SetFocusPosition(int nX, int nY, bool bChangedRegion)
 {
 	if (nX < m_FocusLimit.left)
@@ -354,7 +357,7 @@ void KScenePlaceMapC::FillCellsPicInfo()
 		nToY = y + MAP_CELL_MAP_HEIGHT;
 		bool bCleared = false;
 		if (y < 0 || nToY > PicEntireSize.cy)
-		{//脳脻脧貌脙禄脫脨脠芦虏驴脗盲脭脷脥录脛脷
+		{//纵向没有全部落在图内
 			for (h = 0; h < MAP_CELL_MAX_RANGE; h++)
 			{
 				g_pRepresent->ClearImageData(m_ElemsList[v][h].szImageName,
@@ -382,7 +385,7 @@ void KScenePlaceMapC::FillCellsPicInfo()
 			{
 				nToX = x + MAP_CELL_MAP_WIDTH;
 				if (bCleared == false && (x < 0 || nToX > PicEntireSize.cx))
-				{//潞谩脧貌脙禄脫脨脠芦虏驴脗盲脭脷脥录脛脷
+				{//横向没有全部落在图内
 					g_pRepresent->ClearImageData(m_ElemsList[v][h].szImageName,
 						m_ElemsList[v][h].uImageId, m_ElemsList[v][h].sISPosition);
 				}
@@ -450,7 +453,7 @@ void KScenePlaceMapC::CalcPicLayout()
 	m_PaintCell.bottom += m_PaintCell.top;
 }
 
-//脟氓鲁媒
+//清除
 void KScenePlaceMapC::Free()
 {
 	if (m_pEntireMap)
@@ -460,7 +463,7 @@ void KScenePlaceMapC::Free()
 	}
 }
 
-//禄忙脰脝
+//绘制
 void KScenePlaceMapC::PaintMap(int nX, int nY)
 {
 	m_MapPos.left = nX;
@@ -470,14 +473,14 @@ void KScenePlaceMapC::PaintMap(int nX, int nY)
 
 	if (m_bHavePicMap && g_pRepresent)
 	{
-		//----禄忙脰脝脣玫脗脭脥录----
+		//----绘制缩略图----
 		if (m_uMapShowElems & SCENE_PLACE_MAP_ELEM_PIC)
 			PaintMapPic(nX, nY);
 
-		//---禄忙脰脝露脫脫脩脦禄脰脙----
+		//---绘制队友位置----
 		PaintCharacters(nX, nY);
 
-		//---禄忙脰脝脳脭录潞脦禄脰脙----
+		//---绘制自己位置----
 		int nNpcIdx = Player[CLIENT_PLAYER_INDEX].m_nIndex;
 		if (nNpcIdx >= 0 && Npc[nNpcIdx].m_RegionIndex >= 0)
 		{
@@ -513,7 +516,7 @@ void KScenePlaceMapC::LoadSymbol(int nSubWorldID)
 
 	if (g_MapTraffic.IsSectionExist(szSectName))
 	{
-		char szKeyName[128];
+		char szKeyName[10];
 		for(int j = 0; j < defMAX_NUM_SYMBOL; j++)
 		{
 			m_SymbolMap[j].Release();
@@ -662,6 +665,20 @@ void KScenePlaceMapC::PaintSymbol(int nX)
 	}
 }
 
+//TamLTM Point mouse
+POINT pointMouse;
+int mX, mY;
+bool bPaintFlagNextPoint = true;
+bool isCheckFlagNext = false;
+int countIndexSavePoint = 0;
+int countIndexRun = 0;
+//Save point cam plag on mini map
+bool autoRunPlayer = false;
+BOOL hoverMouse = FALSE;
+#include 	"KMath.h"
+int billy[1000];
+int n, result = 0;
+
 void KScenePlaceMapC::PaintFindPos(int nX, int nY, int nDesX, int nDesY)
 {
 	if (!g_ScenePlace.bPaintMode)
@@ -673,7 +690,7 @@ void KScenePlaceMapC::PaintFindPos(int nX, int nY, int nDesX, int nDesY)
 
 	BOOL bPaintFlag = TRUE;
 
-	if (m_bPaintLine && 
+	if (m_bPaintLine &&
 		m_DirectPos.x - nNpcX > -PLACE_MAP_SYMBOL_SIZE && 
 		m_DirectPos.x - nNpcX < PLACE_MAP_SYMBOL_SIZE && 
 		m_DirectPos.y - nNpcY > -PLACE_MAP_SYMBOL_SIZE && 
@@ -711,7 +728,7 @@ void KScenePlaceMapC::PaintFindPos(int nX, int nY, int nDesX, int nDesY)
 			nDesX = m_MapPos.right;
 		if (nDesY > m_MapPos.bottom)
 			nDesY = m_MapPos.bottom;
-				
+
 		if (m_bPaintLine)
 		{
 			KRULine Line;
@@ -722,6 +739,11 @@ void KScenePlaceMapC::PaintFindPos(int nX, int nY, int nDesX, int nDesY)
 			Line.oEndPos.nX = nDesX + 1;
 			Line.oEndPos.nY = nDesY + 1;
 			g_pRepresent->DrawPrimitives(1, &Line, RU_T_LINE, 1);
+
+		//	g_DebugLog("m_bPaintLine %d - %d", nDesX, nDesY);
+
+		//	bPaintFlagNextPoint = false;
+		//	bLineDraw = false;
 		}
 
 		if (bPaintFlag)
@@ -736,15 +758,224 @@ void KScenePlaceMapC::PaintFindPos(int nX, int nY, int nDesX, int nDesY)
 			Image.bRenderFlag = RUIMAGE_RENDER_FLAG_REF_SPOT;
 			strcpy(Image.szImage, PLACE_MAP_FLAG_FILE_PATH);
 			Image.oPosition.nX = nX;
-			Image.oPosition.nY = nY - 12;
+			Image.oPosition.nY = nY - 12; // Remove la co den point
 			Image.oPosition.nZ = 0;
 			g_pRepresent->DrawPrimitives(1, &Image, RU_T_IMAGE, 1);
+
+		//	g_DebugLog("bPaintFlag %d - %d", nX, nY);
+
+			mX = m_DirectPos.x / 16 * 8 * 32;
+			mY = m_DirectPos.y / 16 * 16 * 32;
+
+			char MapPos[80];
+			sprintf(MapPos, "%d,%d", m_DirectPos.x / 16, m_DirectPos.y / 16);
+			g_pRepresent->OutputText(12, MapPos, KRF_ZERO_END, nX - 20, nY, 0xff7a83);
+
+			Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].MiniMapXY(mX, mY);
 		}
+
+		//TamLTM add point for mini map
+	/*	if (hoverMouse)
+		{
+			GetCursorPos(&pointMouse);
+			mX = m_DirectPos.x / 16 * 8 * 32;
+			mY = m_DirectPos.y / 16 * 16 * 32;
+
+			if (GetAsyncKeyState(VK_SHIFT))
+			{
+				//Back point ko muon
+			//	g_DebugLog("VK_SHIFT");
+				//Save file - output file
+				ofstream myfile;
+				//Save in file txt
+				myfile.open("SavePos.txt", ios::app);
+				//Save data file
+				myfile << mX << " " << mY << endl; //Index
+
+			//	g_DebugLog("GetAsyncKeyState VK_LBUTTON %d - %d", mX, mY);
+			}
+		}
+		else
+		{
+			CheckHoverMoveMouse(FALSE);
+
+			if (GetAsyncKeyState(VK_SPACE) & 0x80000000)
+			{
+				// Read file
+				ifstream inFile("SavePos.txt");
+
+				while (inFile >> mX >> mY)
+				{
+				//	Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].MiniMapXY(mX, mY);
+					int distance, oldX1, oldY1;
+					Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].GetMpsPos(&oldX1, &oldY1);
+					distance = sqrt((mX - oldX1) * (mX - oldX1) + (mY - oldY1) * (mY - oldY1));
+
+				//	if (distance > 220)
+				//	{
+						Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].MoveToBarrierPlayer(mX, mY, 0);
+						g_DebugLog("buildVersion: %d + distance: %d", mX, distance);
+						g_DebugLog("updateVersion: %d", mY);
+				//	}
+
+				}
+				//*/
+	/*		}
+			else
+			{
+				//	remove("SavePos.txt");
+				//	const int result = remove("SavePos");
+				//	if (result == 0) {
+					//	g_DebugLog("success");
+				//	}
+				//	else {
+					//	g_DebugLog("No such file or directory");
+				//	}
+			}
+		}
+
+		if (m_bLineDraw)
+		{
+		}
+
+		if (bPaintFlagNextPoint)
+		{
+		//	nFlagPosX1 = m_DirectPos.x / 16;
+		//	nFlagPosY1 = m_DirectPos.y / 16;
+		//	Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].MiniMapXY(nFlagPosX1, nFlagPosY1);
+		}
+
+		if (GetAsyncKeyState(VK_LBUTTON)) { }
+		else{ isCheckFlagNext = false; }
+
+		if (isCheckFlagNext)
+			return;
+
+		//Check click point
+		if (GetAsyncKeyState(VK_LBUTTON) && hoverMouse && autoRunPlayer == false)
+		{
+			m_bLineDraw = TRUE;
+			bPaintFlagNextPoint = true;
+			isCheckFlagNext = true;
+			countIndexSavePoint++;
+		}
+		else
+		{
+			isCheckFlagNext = false;
+		}
+		
+		if (GetAsyncKeyState(VK_SPACE) & 0x80000000 && autoRunPlayer == false)
+		{
+			//Run khi chon diem xong
+			countIndexSavePoint = 0;
+			m_bLineDraw = FALSE;
+			bPaintFlagNextPoint = false;
+			autoRunPlayer = true;
+			g_DebugLog("space");
+		}
+
+		if (autoRunPlayer)
+		{
+			countIndexRun++;
+		} //*/
+
+		//End code
 	}
 }
+
+//TamLTM tim duong di ngan nhat
+void KScenePlaceMapC::Dijkstra(int G[MAX][MAX], int n, int startnode)
+{
+
+/*	int cost[MAX][MAX], distance[MAX], pred[MAX];
+	int visited[MAX], count, mindistance, nextnode, i, j;
+
+	//pred[] luu cac dinh ma khoang cach ngan nhat tu no den dinh nguon
+	//count dem so nut ma di qua den den dich
+	//Tao ma tran trong so
+	for (i = 0; i < n; i++)
+		for (j = 0; j < n; j++)
+			if (G[i][j] == 0)
+				cost[i][j] = INFINITY;
+			else
+				cost[i][j] = G[i][j];
+
+	//Khoi tao mang pred[],distance[] and visited[]
+	for (i = 0; i < n; i++)
+	{
+		distance[i] = cost[startnode][i];
+		pred[i] = startnode;
+		visited[i] = 0;
+	}
+
+	distance[startnode] = 0;
+	visited[startnode] = 1;
+	count = 1;
+
+	while (count < n - 1)
+	{
+		mindistance = INFINITY;
+
+		//Nut ke tiep co khoang cach nho nhat
+		for (i = 0; i < n; i++)
+			if (distance[i] < mindistance && !visited[i])
+			{
+				mindistance = distance[i];
+				nextnode = i;
+			}
+
+		//Kiem tra neu co duong dan tot hon: tinh lai khoang cach cac nut chua duoc tham      
+		visited[nextnode] = 1;
+		for (i = 0; i < n; i++)
+			if (!visited[i])
+				if (mindistance + cost[nextnode][i] < distance[i])
+				{
+					distance[i] = mindistance + cost[nextnode][i];
+					pred[i] = nextnode;
+				}
+		count++;
+	}
+
+	//In ra duong di va khoang cach den moi nut
+	for (i = 0; i < n; i++)
+	{
+		if (i != startnode)
+		{
+	//		g_DebugLog("\nKhoang cac toi nut %d=%d", i, distance[i]);
+	//		g_DebugLog("\nDuong di =%d", i);
+
+			j = i;
+			do
+			{
+				j = pred[j];
+				Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].MoveToBarrierPlayer(
+					nFlagPosX1 * 8 * 32 + 145, nFlagPosY1 * 16 * 32 + 145, 0); //Chay
+		//		printf("<-%d", j);
+			} while (j != startnode);
+		}
+	}*/
+
+//	g_DebugLog("Khoang cac toi nut 2");
+}
+//void dijkstra(int G[MAX][MAX], int n, int startnode);
+// Xuat ket qua ma tran ke cua do thi ra man hinh.
+void XuatMTKe(int G[][MAX], int n) 
+{
+//	printf("\nMa tran ke:\n");
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			//printf("%3d ", G[i][j]);
+		}
+	}
+//		printf("\n");
+}
+//end code
+
 //////////////////////////////////////////////////////////////////////////
 
-//禄忙脰脝露脫脫脩脦禄脰脙
+//绘制队友位置
 void KScenePlaceMapC::PaintCharacters(int nX, int nY)
 {
 	bool bCharacters = (m_uMapShowElems & SCENE_PLACE_MAP_ELEM_CHARACTER) != 0;
@@ -760,7 +991,7 @@ void KScenePlaceMapC::PaintCharacters(int nX, int nY)
 	KRUShadow	FootSpot[MAX_NUM_CHARACTER];
 	int			nNumSpot = 0;
 
-	// 脧脭脢戮脝盲脣没脥忙录脪潞脥脝脮脥篓npc
+	// 显示其他玩家和普通npc
 	int nNpcIdx = 0;
 	while (nNpcIdx = NpcSet.GetNextIdx(nNpcIdx))
 	{
@@ -802,10 +1033,10 @@ void KScenePlaceMapC::PaintCharacters(int nX, int nY)
 		}
 		else if (Npc[nNpcIdx].m_Kind == kind_player && nNpcIdx != Player[CLIENT_PLAYER_INDEX].m_nIndex)
 		{
-			if (bPartners && //脪陋脧脭脢戮露脫脫脩
-				bIsInTeam && //脰梅陆脟脢脟脳茅露脫脳麓脤卢
-				((DWORD)g_Team[0].m_nCaptain == Npc[nNpcIdx].m_dwID ||	//脢脟脰梅陆脟脣霉脭脷露脫脦茅碌脛露脫鲁陇
-					g_Team[0].FindMemberID(Npc[nNpcIdx].m_dwID) >= 0) &&	//脢脟脰梅陆脟脣霉脭脷露脫脦茅碌脛露脫脭卤
+			if (bPartners && //要显示队友
+				bIsInTeam && //主角是组队状态
+				((DWORD)g_Team[0].m_nCaptain == Npc[nNpcIdx].m_dwID ||	//是主角所在队伍的队长
+					g_Team[0].FindMemberID(Npc[nNpcIdx].m_dwID) >= 0) &&	//是主角所在队伍的队员
 				nNumPartner < MAX_NUM_PARTNER)	
 			{
 				oPartnerPos[nNumPartner].x = nNpcX;
@@ -870,7 +1101,7 @@ void KScenePlaceMapC::PaintCharacters(int nX, int nY)
 	}
 }
 
-//禄忙脰脝脣玫脗脭脥录
+//绘制缩略图
 void KScenePlaceMapC::PaintMapPic(int nX, int nY)
 {
 	//_ASSERT(g_pRepresent);
@@ -919,7 +1150,7 @@ void KScenePlaceMapC::PaintMapPic(int nX, int nY)
 	};
 }
 
-//脡猫脰脙脨隆碌脴脥录碌脛麓贸脨隆拢篓碌楼脦禄拢潞脧帽脣脴碌茫拢漏
+//设置小地图的大小（单位：像素点）
 void KScenePlaceMapC::SetSize(int cx, int cy)
 {
 	if (m_Size.cx != cx || m_Size.cy != cy)
@@ -955,7 +1186,7 @@ void KScenePlaceMapC::SetSize(int cx, int cy)
 	}
 }
 
-//路碌禄脴脰碌卤铆脢戮脢脟路帽脫脨碌脴脥录
+//返回值表示是否有地图
 int KScenePlaceMapC::GetMapRect(RECT* pRect)
 {
 	if (pRect)
@@ -1041,7 +1272,16 @@ void KScenePlaceMapC::DirectFindPos(int nX, int nY, BOOL bSync, BOOL bPaintLine)
 	m_DirectPos.x = nDesX;
 	m_DirectPos.y = nDesY;
 	m_bPaintLine = bPaintLine;
+//	m_bLineDraw = bPaintLine;
 }
+
+//Check hover move map mini
+BOOL KScenePlaceMapC::CheckHoverMoveMouse(BOOL bCheckMoveMouse)
+{
+	hoverMouse = bCheckMoveMouse;
+	return bCheckMoveMouse;
+}
+//end code
 
 void KScenePlaceMapC::AutoRunTo(int nX, int nY)
 {

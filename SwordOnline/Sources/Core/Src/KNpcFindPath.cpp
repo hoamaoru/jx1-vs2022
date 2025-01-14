@@ -54,6 +54,8 @@ void KNpcFindPath::Init(int nNpc)
 #define		defFIND_PATH_STOP_DISTANCE		/*0*/64
 int	KNpcFindPath::GetDir(int nXpos,int nYpos, int nDir, int nDestX, int nDestY, int nMoveSpeed, int *pnGetDir)
 {
+//	g_DebugLog("GetDir(int nXpos,int nYpos, int nDir, int nDestX, int nDestY, int nMoveSpeed, int *pnGetDir)");
+
 	// 如果距离接近，认为已经走到了
 	if ( !CheckDistance(nXpos >> 10, nYpos >> 10, nDestX, nDestY, nMoveSpeed))
 	{

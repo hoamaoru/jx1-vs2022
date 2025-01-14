@@ -58,6 +58,16 @@ public:
 	KWorldMsg	m_WorldMessage;					//	消息
 	KList		m_NoneRegionNpcList;			//	不在地图上的NPC
 
+	//TamLTM bang hoi chiem linh
+	DWORD		m_dwTongName;
+	char        m_szTongName[32];
+	char        m_szTongNameBC[32];
+	DWORD		m_dwTongNameBC;
+	int         m_nTongT;
+	int         m_nTongVG;
+	BOOL        m_bCheckTong;
+	//end code
+
 #ifdef _SERVER
 	KWeatherMgr *m_pWeatherMgr;
 #endif
@@ -86,6 +96,11 @@ public:
 	void		MessageLoop();
 	int			FindRegion(int RegionID);													// 找到某ID的Region的索引
 	int			FindFreeRegion(int nX = 0, int nY = 0);
+
+	//TamLTM Bang hoi chiem linh thanh thi thon
+	void		LoadTong(char* szMapTongName,int nMapTongId,int nMapTongT,int nMapTongVG,char* szMapTongNameBC,int nMapTongBCId,int nCheckMap);
+	//end code
+
 #ifdef _SERVER
 	int			RevivalAllNpc();//将地图上所有的Npc包括已死亡的Npc全部恢复成原始状态
 	void		BroadCast(const char* pBuffer, size_t uSize);

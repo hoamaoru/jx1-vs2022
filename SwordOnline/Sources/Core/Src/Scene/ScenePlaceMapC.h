@@ -1,4 +1,4 @@
-// *****************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+// ***************************************************************************************
 // 场景地图的小地图
 // Copyright : Kingsoft 2003
 // Author    : wooy(wu yue)
@@ -18,6 +18,10 @@ enum SYMBOL_KIND
 };
 
 #define	defMAX_NUM_SYMBOL				58
+
+//TamLTM
+#define INFINITY 999999
+#define MAX 100
 
 class KScenePlaceMapC
 {
@@ -57,11 +61,17 @@ public:
 	BOOL OnDirectMap(int nX, int nY);
 	void DoDirectMap(int nX, int nY);
 	void AutoRunTo(int nX, int nY);
+	BOOL CheckHoverMoveMouse(BOOL bCheckMoveMouse);
 	//////////////////////////////////////////////////////////////////////////
 	//获取地图覆盖的范围,返回值表示是否有地图
 	int	GetMapRect(RECT* pRect);
 	BOOL GetHavePicMap() {return m_bHavePicMap;};
-	POINT m_DirectPos; 
+	POINT m_DirectPos;
+
+	//TamLTM tim dg di ngan nhat
+	void Dijkstra(int G[MAX][MAX], int n, int startnode);
+	void XuatMTKe(int G[][MAX], int n);
+	//end cdoe
 
 private:
 	bool	Initialize();	//初始化
@@ -109,6 +119,7 @@ private:
 	BOOL bSearch;
 	RECT m_MapPos;
 	BOOL m_bPaintLine;
+	BOOL m_bLineDraw;
 	char	m_szEntireMapFile[128];	//地图图文件名称
 	KSGImageContent*	m_pEntireMap;//完整的缩略地图
 

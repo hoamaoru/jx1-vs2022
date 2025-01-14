@@ -155,13 +155,14 @@ BOOL KItemList::SearchPosition(int nWidth, int nHeight, ItemPos* pPos, bool bOve
 	POINT	pPt;
 	if (!m_Room[room_equipment].FindRoom(nWidth, nHeight, &pPt))
 	{
-		if((Player[m_PlayerIdx].m_dwEquipExpandTime - KSG_GetCurSec() > 0) && m_Room[room_equipmentex].FindRoom(nWidth, nHeight, &pPt))
+	/*	if((Player[m_PlayerIdx].m_dwEquipExpandTime - KSG_GetCurSec() > 0) && m_Room[room_equipmentex].FindRoom(nWidth, nHeight, &pPt))
 		{
 			pPos->nPlace = pos_equiproomex;
 			pPos->nX = pPt.x;
 			pPos->nY = pPt.y;
 		}
-		else if (!bOverLookHand)
+		else*/
+		if (!bOverLookHand) // tat hanh trang nho
 		{
 			if (0 != m_Hand)
 			{
@@ -183,7 +184,7 @@ BOOL KItemList::SearchPosition(int nWidth, int nHeight, ItemPos* pPos, bool bOve
 	return TRUE;
 }
 
-BOOL KItemList::SearchPosition(POINT ItemSize, ItemPos* pPos)
+BOOL KItemList::SearchPosition(POINT ItemSize, ItemPos* pPos) //Hanh trang
 {
 	POINT	pPt;
 	
@@ -194,13 +195,14 @@ BOOL KItemList::SearchPosition(POINT ItemSize, ItemPos* pPos)
 		pPos->nY = pPt.y;
 		return TRUE;
 	}
-	else if((Player[m_PlayerIdx].m_dwEquipExpandTime - KSG_GetCurSec() > 0) && m_Room[room_equipmentex].FindRoom((int)ItemSize.x, (int)ItemSize.y, &pPt))
+	// tat hanh trang nho
+	/*else if((Player[m_PlayerIdx].m_dwEquipExpandTime - KSG_GetCurSec() > 0) && m_Room[room_equipmentex].FindRoom((int)ItemSize.x, (int)ItemSize.y, &pPt))
 	{
 		pPos->nPlace = pos_equiproomex;
 		pPos->nX = pPt.x;
 		pPos->nY = pPt.y;
 		return TRUE;
-	}
+	}*/
 	return FALSE;
 }
 
@@ -372,6 +374,17 @@ int KItemList::Add(int nIdx, int nPlace, int nX, int nY, bool bAutoStack)
 		m_Items[i].nX = nX;
 		m_Items[i].nY = 0;
 		break;
+	//TamLTM kham nam xanh
+	case pos_builditem:
+		if (nX < 0 || nX >= MAX_PART_BUILD)
+			return 0;
+		if (m_BuildItem[nX])
+			return 0;
+		m_Items[i].nPlace = pos_builditem;
+		m_Items[i].nX = nX;
+		m_Items[i].nY = 0;
+		break;
+	//end
 	case pos_compoundroom:
 		if (!m_Room[room_compound].PlaceItem(nX, nY, nIdx, Item[nIdx].GetWidth(), Item[nIdx].GetHeight()))
 			return 0;
@@ -395,10 +408,15 @@ int KItemList::Add(int nIdx, int nPlace, int nX, int nY, bool bAutoStack)
 	{
 		PutCompound(m_Items[i].nIdx, nX);
 	}
+	//TamLTM Kham nam Xanh
+	if (m_Items[i].nPlace == pos_builditem)
+	{
+		BuildItem(m_Items[i].nIdx, nX);
+	}
+	//End code
 #ifdef _SERVER
 	SyncItem(nIdx, TRUE, m_Items[i].nPlace, m_Items[i].nX, m_Items[i].nY, m_PlayerIdx);
-	
-	Player[m_PlayerIdx].m_uMustSave = SAVE_REQUEST;
+	//Player[m_PlayerIdx].m_uMustSave = SAVE_REQUEST; //TamLTM fix bo doan nay
 #endif
 
 #ifndef _SERVER
@@ -424,6 +442,21 @@ int KItemList::Add(int nIdx, int nPlace, int nX, int nY, bool bAutoStack)
 		UIEP_HOODS,
 		UIEP_CLOAK,
 	};
+
+	//TamLTM kham nam xanh
+	int PartBuildItem[MAX_PART_BUILD] = 
+	{
+		UIEP_BUILDITEM1,
+		UIEP_BUILDITEM2,
+		UIEP_BUILDITEM3,
+		UIEP_BUILDITEM4,
+		UIEP_BUILDITEM5,
+		UIEP_BUILDITEM6,
+		UIEP_BUILDITEM7,
+		UIEP_BUILDITEM8,
+		UIEP_BUILDITEM9,
+	};
+	//End code
 
 	int PartCompoundConvert[MAX_COMPOUND_ITEM] =
 	{
@@ -506,6 +539,13 @@ int KItemList::Add(int nIdx, int nPlace, int nX, int nY, bool bAutoStack)
 		pInfo.Region.v = PartCompoundConvert[nX];
 		pInfo.eContainer = UOC_COMPOUND;
 		break;
+	//TamLTM kham nam xanh
+	case pos_builditem:
+		pInfo.Region.h = 0;
+		pInfo.Region.v = PartBuildItem[nX];
+		pInfo.eContainer = UOC_BUILD_ITEM;
+		break;
+	//End code
 	case pos_compoundroom:
 		pInfo.Region.h = nX;
 		pInfo.Region.v = nY;
@@ -659,6 +699,11 @@ BOOL KItemList::Remove(int nGameIdx)
 	case pos_compound:
 		DropCompound(m_Items[nIdx].nIdx);
 		break;
+	//TamLTM Kham Nam
+	case pos_builditem:
+		UnBuildItem(m_Items[nIdx].nIdx);
+		break;
+	//end code
 	case pos_compoundroom:
 		m_Room[room_compound].PickUpItem(
 			nGameIdx,
@@ -697,6 +742,21 @@ BOOL KItemList::Remove(int nGameIdx)
 		UIEP_HOODS,
 		UIEP_CLOAK,
 	};
+
+	//TamLTM kham nam xanh
+	int PartBuildItem[MAX_PART_BUILD] = 
+	{
+		UIEP_BUILDITEM1,
+		UIEP_BUILDITEM2,
+		UIEP_BUILDITEM3,
+		UIEP_BUILDITEM4,
+		UIEP_BUILDITEM5,
+		UIEP_BUILDITEM6,
+		UIEP_BUILDITEM7,
+		UIEP_BUILDITEM8,
+		UIEP_BUILDITEM9,
+	};
+	//End code
 
 	int PartCompoundConvert[MAX_COMPOUND_ITEM] =
 	{
@@ -781,6 +841,13 @@ BOOL KItemList::Remove(int nGameIdx)
 		pInfo.Region.v = PartCompoundConvert[m_Items[nIdx].nX];
 		pInfo.eContainer = UOC_COMPOUND;
 		break;
+	//TamLTM kham nam xanh
+	case pos_builditem:
+		pInfo.Region.h = 0;
+		pInfo.Region.v = PartBuildItem[m_Items[nIdx].nX];
+		pInfo.eContainer = UOC_BUILD_ITEM;
+		break;
+	//End code
 	case pos_compoundroom:
 		pInfo.Region.h = m_Items[nIdx].nX;
 		pInfo.Region.v = m_Items[nIdx].nY;
@@ -1225,6 +1292,7 @@ BOOL KItemList::Equip(int nIdx, int nPlace /* = -1 */)
 	}
 	Player[m_PlayerIdx].UpdataCurData();
 	return TRUE;
+	
 }
 
 /*!*****************************************************************************
@@ -1607,6 +1675,7 @@ BOOL KItemList::Fit(KItem* pItem, int nPlace)
 	return bRet;
 }
 
+//Check
 int KItemList::GetEquipEnhance(int nPlace)
 {
 	if (m_PlayerIdx <= 0)
@@ -1747,67 +1816,21 @@ int KItemList::UseItem(int nIdx)
 		return 0;
 
 	int		nRet = 0;
-	switch (Item[nIdx].GetGenre())
+	switch(Item[nIdx].GetGenre())
 	{
-	case item_equip:
+    case item_equip:
 		break;
-		/*		if (Equip(nNpcIdx, nIdx))
-					nRet = REQUEST_EQUIP_ITEM;*/
+/*		if (Equip(nNpcIdx, nIdx))
+			nRet = REQUEST_EQUIP_ITEM;*/
 		break;
-		//	case item_townportal:
-		//	case item_task:
+//	case item_townportal:
+//	case item_task:
 	case item_medicine:
 		if (NowEatItem(nIdx))
 			nRet = REQUEST_EAT_MEDICINE;
 		break;
 	default:
 		nRet = REQUEST_EAT_OTHER;
-		break;
-	}
-	return nRet;
-}
-
-int KItemList::ChangeItemInPlayer(int nIdx)
-{
-	if (m_PlayerIdx <= 0)
-		return FALSE;
-
-	int nNpcIdx = Player[m_PlayerIdx].m_nIndex;
-
-	if (0 == FindSame(nIdx))
-	{
-		return 0;
-	}
-	int		nRet = Item[nIdx].GetDetailType();
-	switch (nRet)
-	{
-	case itempart_head:
-		break;
-	case itempart_body:
-		break;
-	case itempart_belt:
-		break;
-	case itempart_weapon:
-		break;
-	case itempart_foot:
-		break;
-	case itempart_cuff:
-		break;
-	case itempart_amulet:
-		break;
-	case itempart_ring1:
-		break;
-	case itempart_ring2:
-		break;
-	case itempart_pendant:
-		break;
-	case itempart_mask:
-		break;
-	case itempart_num:
-		break;
-	case itempart_horse:
-		break;
-	default:
 		break;
 	}
 	return nRet;
@@ -1828,6 +1851,51 @@ BOOL KItemList::SearchEquipment(int nWidth, int nHeight)
 		return FALSE;
 	}
 	return TRUE;
+}
+int KItemList::ChangeItemInPlayer(int nIdx)
+{
+	if (m_PlayerIdx <= 0)
+		return FALSE;
+
+	int nNpcIdx = Player[m_PlayerIdx].m_nIndex;
+
+	if (0 == FindSame(nIdx))
+	{
+		return 0;
+	}
+	int		nRet = Item[nIdx].GetDetailType();
+	switch(nRet)
+	{
+		case itempart_head:
+			break;
+		case itempart_body:
+			break;
+		case itempart_belt:
+			break;
+		case itempart_weapon:
+			break;
+		case itempart_foot:
+			break;
+		case itempart_cuff:
+			break;
+		case itempart_amulet:
+			break;
+		case itempart_ring1:
+			break;
+		case itempart_ring2:
+			break;
+		case itempart_pendant:
+			break;
+		case itempart_mask:
+			break;
+		case itempart_num:
+			break;
+		case itempart_horse:
+			break;
+		default:
+			break;
+	}
+	return nRet;
 }
 
 BOOL KItemList::SearchStoreBox(int nRepositoryNum, int nWidth, int nHeight, ItemPos* pPos)
@@ -1933,6 +2001,41 @@ void KItemList::ExchangeMoney(int pos1, int pos2, int nMoney)
 #endif	
 }
 
+// rut tien;
+void KItemList::WithDrawaMoney(int pos1, int pos2, int nMoney) // rut tien;
+{
+	if (pos1 < 0 || pos2 < 0 || pos1 > room_trade || pos2 > room_trade)
+		return;
+
+	if(Npc[Player[m_PlayerIdx].m_nIndex].m_FightMode)
+		return;
+
+#ifdef _SERVER
+	if (m_Room[pos1].AddMoney(-nMoney))		// 源位置能拿出这么多钱来
+	{
+		if (!m_Room[pos2].AddMoney(nMoney))	// 目的地能放不下去
+		{
+			m_Room[pos1].AddMoney(nMoney);	// 还原源位置的钱
+		}
+	}
+	else
+	{
+		return;
+	}
+#endif
+
+#ifndef _SERVER
+	if (pos1 == room_repository && pos2 == room_equipment)
+		SendClientCmdWithDrawaMoney(0, nMoney);
+	else if (pos1 == room_equipment && pos2 == room_repository)
+		SendClientCmdWithDrawaMoney(1, nMoney);
+#endif
+#ifdef _SERVER
+	SendMoneySync();
+#endif	
+}
+//end code
+
 //----------------------------------------------------------------------
 //	功能：得到物品栏和储物箱的总钱数
 //----------------------------------------------------------------------
@@ -1974,12 +2077,15 @@ BOOL KItemList::AddMoney(int nRoom, int nMoney)
 	return TRUE;
 }
 
+//TamLTM Gui tien vao truong muc bang hoi
 BOOL KItemList::CostMoney(int nMoney)
 {
+//	g_DebugLog("TamLTM Debug Send money bang hoi CostMoney nMoney %d + ",nMoney);
+
 	if (nMoney > GetEquipmentMoney())
 		return FALSE;
 
-	if ( !m_Room[room_equipment].AddMoney(-nMoney) )
+	if (!m_Room[room_equipment].AddMoney(-nMoney))
 		return FALSE;
 
 #ifdef _SERVER
@@ -1989,7 +2095,7 @@ BOOL KItemList::CostMoney(int nMoney)
 	return TRUE;
 }
 
-BOOL KItemList::DecMoney(int nMoney)
+BOOL KItemList::DecMoney(int nMoney) //Description
 {
 	if (nMoney < 0)
 		return FALSE;
@@ -2047,6 +2153,8 @@ void	KItemList::SendMoneySync()
 	sMoney.m_nMoney2 = m_Room[room_repository].GetMoney();
 	sMoney.m_nMoney3 = m_Room[room_trade].GetMoney();
 	g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, (BYTE*)&sMoney, sizeof(PLAYER_MONEY_SYNC));
+
+//	g_DebugLog("TamLTM Debug Send money bang hoi 1 %d + 2 %d + 3 %d",sMoney.m_nMoney1,sMoney.m_nMoney2,sMoney.m_nMoney3);
 }
 #endif
 
@@ -2070,6 +2178,7 @@ void KItemList::SetRoomMoney(int nRoom, int nMoney)
 		m_Room[nRoom].SetMoney(nMoney);
 }
 
+//Vi tri item
 void KItemList::ExchangeItem(ItemPos* SrcPos, ItemPos* DesPos)
 {
 #ifdef _SERVER
@@ -2111,7 +2220,7 @@ void KItemList::ExchangeItem(ItemPos* SrcPos, ItemPos* DesPos)
 	switch(SrcPos->nPlace)
 	{
 	case pos_hand:
-		g_DebugLog("%s exchange item error", Npc[Player[m_PlayerIdx].m_nIndex].Name);
+		//g_DebugLog("%s exchange item error", Npc[Player[m_PlayerIdx].m_nIndex].Name);
 		return;
 		break;
 	case pos_equip:
@@ -2968,6 +3077,48 @@ void KItemList::ExchangeItem(ItemPos* SrcPos, ItemPos* DesPos)
 			
 		}
 		break;
+	//TamLTM Kham nam xanh ------------------------------------------------------------------------------
+	case pos_builditem:
+		if (Player[this->m_PlayerIdx].CheckTrading())	// ??????????
+			return;
+		if (SrcPos->nX < 0 || SrcPos->nX >= MAX_PART_BUILD || DesPos->nX < 0 || DesPos->nX >= MAX_PART_BUILD)
+			return;
+
+		nEquipIdx1 = m_BuildItem[SrcPos->nX];
+		if (m_Hand)
+		{
+		    if(BuildItem(m_Hand, DesPos->nX) == TRUE)
+			{
+				if (nEquipIdx1)
+				{
+					UnBuildItem(nEquipIdx1, SrcPos->nX);
+				}
+				m_Hand = nEquipIdx1;
+				m_Items[FindSame(nEquipIdx1)].nPlace = pos_hand;
+#ifdef _SERVER
+				g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, (BYTE*)&sMove, sizeof(PLAYER_MOVE_ITEM_SYNC));
+#endif
+			}
+			else if (nEquipIdx1)
+			{
+				BuildItem(nEquipIdx1, SrcPos->nX);
+			}	
+		}
+		else
+		{
+			if (nEquipIdx1)
+			{
+				UnBuildItem(nEquipIdx1, SrcPos->nX);
+			}
+			m_Hand = nEquipIdx1;
+			m_Items[FindSame(nEquipIdx1)].nPlace = pos_hand;
+#ifdef _SERVER
+			g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, (BYTE*)&sMove, sizeof(PLAYER_MOVE_ITEM_SYNC));
+#endif		
+			
+		}
+		break;
+		//End code ------------------------------------------------------------------------------
 	case pos_compoundroom:
 		if (Player[this->m_PlayerIdx].CheckTrading())	// 如果正在交易
 			return;
@@ -3077,12 +3228,28 @@ void KItemList::ExchangeItem(ItemPos* SrcPos, ItemPos* DesPos)
 			UIEP_CLOAK,
 		};
 
+		// TamLTM code kham nam xanh
+		int PartBuildItem[MAX_PART_BUILD] = 
+		{
+			UIEP_BUILDITEM1,
+			UIEP_BUILDITEM2,
+			UIEP_BUILDITEM3,
+			UIEP_BUILDITEM4,
+			UIEP_BUILDITEM5,
+			UIEP_BUILDITEM6,
+			UIEP_BUILDITEM7,
+			UIEP_BUILDITEM8,
+			UIEP_BUILDITEM9,
+		};
+		//End code
+
 		int PartCompoundConvert[MAX_COMPOUND_ITEM] =
 		{
 			MOSAICENCRUSTED_UIEP_BOX_1,
 			MOSAICENCRUSTED_UIEP_BOX_2,
 			MOSAICENCRUSTED_UIEP_BOX_3,
 		};
+
 		switch(SrcPos->nPlace)
 		{
 		case pos_immediacy:
@@ -3189,6 +3356,16 @@ void KItemList::ExchangeItem(ItemPos* SrcPos, ItemPos* DesPos)
 			pInfo1.eContainer = UOC_COMPOUND;
 			pInfo2.eContainer = UOC_COMPOUND;
 			break;
+		//TamLTM Code kham nam xanh
+		case pos_builditem:
+			pInfo1.Region.h = 0;
+			pInfo1.Region.v = PartBuildItem[SrcPos->nX];
+			pInfo2.Region.h = 0;
+			pInfo2.Region.v = PartBuildItem[DesPos->nX];
+			pInfo1.eContainer = UOC_BUILD_ITEM;
+			pInfo2.eContainer = UOC_BUILD_ITEM;
+			break;
+		//End code
 		case pos_compoundroom:
 			pInfo1.Region.h = SrcPos->nX;
 			pInfo1.Region.v = SrcPos->nY;
@@ -3790,6 +3967,9 @@ BOOL	KItemList::AutoMoveItemFromEquipmentRoom(int nItemIdx, int nSrcX, int nSrcY
 	sMove.m_btDestPos = pos_immediacy;
 	sMove.m_btDestX = nDestX;
 	sMove.m_btDestY = nDestY;
+
+//	g_DebugLog("s2c_ItemAutoMove %d", s2c_ItemAutoMove); //TamLTM Debug error packet
+
 	if (g_pServer)
 		g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, (BYTE*)&sMove, sizeof(ITEM_AUTO_MOVE_SYNC));
 
@@ -3889,6 +4069,48 @@ int KItemList::GetGoldActiveAttribNum(int nIdx)
 }
 
 #ifdef _SERVER
+void		KItemList::AutoDurationItem(int nRate)
+{
+	if (nRate <= 0 || nRate > 100)
+	return;
+	
+	int		nNo = 0;
+	int		nIdx = 0;
+	while ((nIdx = m_UseIdx.GetNext(nIdx)))
+	{
+		
+		int nGameIdx = m_Items[nIdx].nIdx;
+
+		if (nGameIdx <= 0 || nGameIdx >= MAX_ITEM)
+			continue;
+
+        if (m_Items[nIdx].nPlace != pos_equip)
+			continue;
+	
+		int  nDetail = Item[nGameIdx].GetDetailType();
+		if (nDetail == 11 || nDetail == 10 || nDetail == 4 || nDetail == 9 || nDetail == 3)
+			continue;
+			
+			int nOldDur = Item[nGameIdx].GetDurability();	
+		if (nOldDur <= 0)
+			continue;
+			
+			int Durability = nOldDur - (nRate * Item[nGameIdx].GetMaxDurability() / 100);
+			if (Durability < 0)
+			Durability = 1;
+
+			Item[nGameIdx].SetDurability(Durability);
+			
+				ITEM_DURABILITY_CHANGE sIDC;
+				sIDC.ProtocolType = s2c_itemdurabilitychange;
+				sIDC.dwItemID = Item[nGameIdx].GetID();
+				sIDC.nChange = Durability - nOldDur;
+				if (g_pServer)
+					g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, &sIDC, sizeof(ITEM_DURABILITY_CHANGE));
+	}
+}
+#endif
+#ifdef _SERVER
 //-------------------------------------------------------------------------------
 //	功能：丢失随身物品
 //-------------------------------------------------------------------------------
@@ -3960,7 +4182,7 @@ void	KItemList::AutoLoseItemFromEquipmentRoom(int nRate)
 			sMsg.ProtocolType = s2c_msgshow;
 			sMsg.m_wMsgID = enumMSG_ID_DEATH_LOSE_ITEM;
 			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID) + sizeof(sInfo.m_szName);
-			sMsg.AllocateBuffer(sMsg.m_wLength + 1);
+			sMsg.m_lpBuf = new BYTE[sMsg.m_wLength + 1];
 			memcpy(sMsg.m_lpBuf, &sMsg, sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID));
 			memcpy((char*)sMsg.m_lpBuf + sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID), sInfo.m_szName, sizeof(sInfo.m_szName));
 			g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, sMsg.m_lpBuf, sMsg.m_wLength + 1);
@@ -4056,7 +4278,7 @@ void	KItemList::AutoLoseEquip()
 		sMsg.ProtocolType = s2c_msgshow;
 		sMsg.m_wMsgID = enumMSG_ID_DEATH_LOSE_ITEM;
 		sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID) + sizeof(sInfo.m_szName);
-		sMsg.AllocateBuffer(sMsg.m_wLength + 1);
+		sMsg.m_lpBuf = new BYTE[sMsg.m_wLength + 1];
 		memcpy(sMsg.m_lpBuf, &sMsg, sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID));
 		memcpy((char*)sMsg.m_lpBuf + sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID), sInfo.m_szName, sizeof(sInfo.m_szName));
 		g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, sMsg.m_lpBuf, sMsg.m_wLength + 1);
@@ -4080,8 +4302,11 @@ int		KItemList::GetSameDetailItemNum(int nImmediatePos)
 #endif
 
 #ifdef _SERVER
+//TamLTM Do ben == 0 thi trang bi hu hong
 void KItemList::Abrade(int nType)
 {
+//	g_DebugLog("TamLTM 1 %d", nType);
+
 	int nItemIdx = 0;
 	for (int i = 0; i < itempart_num; i++)
 	{
@@ -4095,8 +4320,9 @@ void KItemList::Abrade(int nType)
 				ItemSet.GetAbradeRange(nType, i));
 			if(nDur == -1)
 				continue;
-			if (nOldDur != nDur)
+			if (nOldDur != nDur && nDur != -1) //TamLTM Fix
 			{
+			//	g_DebugLog("%d + %d", nOldDur, nDur);
 				ITEM_DURABILITY_CHANGE sIDC;
 				sIDC.ProtocolType = s2c_itemdurabilitychange;
 				sIDC.dwItemID = Item[nItemIdx].GetID();
@@ -4108,9 +4334,46 @@ void KItemList::Abrade(int nType)
 			{
 				Remove(nItemIdx);
 				InsertEquipment(nItemIdx);
+			//	g_DebugLog("nDur == 0", nDur);
 			}
 		}
 	}
+
+	//Cu~ Goc Code
+/*	int nItemIdx = 0;
+	for (int i = 0; i < itempart_num; i++)
+	{
+		nItemIdx = m_EquipItem[i];
+		if (nItemIdx)
+		{
+			int nOldDur = Item[nItemIdx].GetDurability();
+			int nDur = Item[nItemIdx].Abrade(ItemSet.GetAbradeRange(nType, i));
+			if (nDur == 0)
+			{
+				// 给客户端发消息
+				SHOW_MSG_SYNC	sMsg;
+				sMsg.ProtocolType = s2c_msgshow;
+				//sMsg.m_wMsgID = enumMSG_ID_ITEM_DAMAGED;
+				sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
+				sMsg.m_lpBuf = (void *)Item[nItemIdx].m_dwID;
+				if (g_pServer)
+					g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+				sMsg.m_lpBuf = 0;
+
+				Remove(nItemIdx);
+				ItemSet.Remove(nItemIdx);
+			}
+			else if (nOldDur != nDur && nDur != -1)
+			{
+				ITEM_DURABILITY_CHANGE sIDC;
+				sIDC.ProtocolType = s2c_itemdurabilitychange;
+				sIDC.dwItemID = Item[nItemIdx].GetID();
+				sIDC.nChange = nDur - nOldDur;
+				if (g_pServer)
+					g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, &sIDC, sizeof(ITEM_DURABILITY_CHANGE));
+			}
+		}
+	}*/
 }
 #endif
 
@@ -4168,6 +4431,7 @@ BOOL KItemList::CompareRemoveItem(int Source, int Dest)
 	return FALSE;
 }
 
+//Dong bo item
 #ifdef _SERVER
 void KItemList::SyncItem(int nIdx, BOOL bIsNew, int nPlace, int nX, int nY, int nPlayerIndex)
 {
@@ -4180,10 +4444,35 @@ void KItemList::SyncItem(int nIdx, BOOL bIsNew, int nPlace, int nX, int nY, int 
 	sItem.m_ID = Item[nIdx].GetID();
 	sItem.m_Nature = Item[nIdx].GetNature();
 	sItem.m_Genre = Item[nIdx].GetGenre();
+
+//	g_DebugLog("s2c_syncitem %d", s2c_syncitem); //TamLTM Debug error packet
+
+	//TamLTM code kham nam xanh
+	sItem.m_Kind = Item[nIdx].GetKind();
+
+	switch (sItem.m_Kind)
+	{
+	case gold_item:
+		sItem.m_Detail		= Item[nIdx].GetLine();
+		sItem.m_Luck		= Item[nIdx].m_GeneratorParam.nLuck;
+		break;
+	case purple_item:
+		sItem.m_Detail		= Item[nIdx].GetDetailType();
+		sItem.m_Luck		= Item[nIdx].GetLine();
+		break;
+	case normal_item:
+		sItem.m_Detail		= Item[nIdx].GetDetailType();
+		sItem.m_Luck		= Item[nIdx].m_GeneratorParam.nLuck;
+		break;
+	}
+	//End code
+
+	//Get thong tin item
 	if(Item[nIdx].GetNature() >= NATURE_GOLD)
 		sItem.m_Detail = Item[nIdx].GetRow();
 	else
 		sItem.m_Detail = Item[nIdx].GetDetailType();
+
 	sItem.m_Particur = Item[nIdx].GetParticular();
 	sItem.m_Series = Item[nIdx].GetSeries();
 	sItem.m_Level = Item[nIdx].GetLevel();
@@ -4203,8 +4492,10 @@ void KItemList::SyncItem(int nIdx, BOOL bIsNew, int nPlace, int nX, int nY, int 
 	sItem.m_Width	= Item[nIdx].GetWidth();
 	sItem.m_Height	= Item[nIdx].GetHeight();	
 	sItem.m_Fortune	= Item[nIdx].GetFortune();
+
 	for (int j = 0; j < MAX_ITEM_MAGICLEVEL; j++)
 		sItem.m_MagicLevel[j] = (int)Item[nIdx].m_GeneratorParam.nGeneratorLevel[j];
+
 	sItem.m_RandomSeed = Item[nIdx].m_GeneratorParam.uRandomSeed;
 	sItem.m_Version = Item[nIdx].m_GeneratorParam.nVersion;
 	sItem.m_Durability = Item[nIdx].GetDurability();
@@ -4213,6 +4504,20 @@ void KItemList::SyncItem(int nIdx, BOOL bIsNew, int nPlace, int nX, int nY, int 
 		g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, (BYTE*)&sItem, sizeof(ITEM_SYNC));
 	else
 		g_pServer->PackDataToClient(Player[m_PlayerIdx].m_nNetConnectIdx, (BYTE*)&sItem, sizeof(ITEM_SYNC));
+
+//	g_DebugLog("sItem.m_Series %d ", sItem.m_Series);
+//	g_DebugLog("sItem.m_Level %d ", sItem.m_Level);
+
+#ifdef _DEBUG
+	int nLoopIdx = 0;
+	nLoopIdx = m_UseIdx.GetNext(nLoopIdx);
+	g_DebugLog("[ITEM]Item Begin");
+	while(nLoopIdx)
+	{
+		g_DebugLog("[ITEM]ItemListIdx:%d, Item:%d, ItemId:%d", nLoopIdx, m_Items[nLoopIdx].nIdx, Item[m_Items[nLoopIdx].nIdx].GetID());
+		nLoopIdx = m_UseIdx.GetNext(nLoopIdx);
+	}
+#endif
 }
 
 void KItemList::SyncItemMagicAttrib(int nIdx)
@@ -4315,26 +4620,43 @@ BOOL KItemList::Lock(int nIdx, BOOL bLock)
 {
 	if(nIdx<=0)
 		return FALSE;
-	if(Item[nIdx].GetLock()->nState == LOCK_STATE_FOREVER || 
-	Item[nIdx].GetLock()->nState == LOCK_STATE_CHARACTER)
+	if(Item[nIdx].GetLock()->nState == LOCK_STATE_FOREVER || Item[nIdx].GetLock()->nState == LOCK_STATE_CHARACTER)
 		return FALSE;
-	if(bLock)
-	{
-		if(Item[nIdx].GetLock()->nState == LOCK_STATE_LOCK)
-			return FALSE;
-		Item[nIdx].LockItem(LOCK_STATE_LOCK);
-	}
-	else
-	{
-		if(Item[nIdx].GetLock()->nState == LOCK_STATE_UNLOCK)
-			return FALSE;
-		Item[nIdx].LockItem(259200);
-	}
+	
+	if(bLock != 1)
+	return FALSE;
+		
+	if(Item[nIdx].GetLock()->nState == LOCK_STATE_LOCK)
+	return FALSE;
+	
+	Item[nIdx].LockItem(LOCK_STATE_LOCK);
+	
+	SyncItem(nIdx);
+	
+	return TRUE;
+}
+
+BOOL KItemList::UnLock(int nIdx, BOOL bUnLock)
+{
+	if(nIdx<=0)
+		return FALSE;
+	if(Item[nIdx].GetLock()->nState == LOCK_STATE_FOREVER || Item[nIdx].GetLock()->nState == LOCK_STATE_CHARACTER)
+		return FALSE;
+
+	if (bUnLock != 2)
+		return FALSE;
+	if(Item[nIdx].GetLock()->nState == LOCK_STATE_UNLOCK || Item[nIdx].GetLock()->nState == LOCK_STATE_NORMAL)
+		return FALSE;
+	
+	Item[nIdx].LockItem(259200);
+	
 
 	SyncItem(nIdx);
+	
 
 	return TRUE;
 }
+
 #endif
 		
 
@@ -4362,6 +4684,61 @@ int		KItemList::GetItemNum(int nItemGenre, int nDetailType, int nParticular, int
 	return nNo;
 }
 
+//TamLTM Kham Nam xanh
+
+BOOL KItemList::BuildItem(int nIdx, int nPlace /* = -1 */)
+{
+	if (m_PlayerIdx <= 0 || nIdx <= 0)
+		return FALSE;
+
+	
+	int nItemListIdx = FindSame(nIdx);
+	if (!nItemListIdx)
+	{
+		_ASSERT(0);
+		return FALSE;
+	}
+
+	m_BuildItem[nPlace] = nIdx;
+	m_Items[nItemListIdx].nPlace = pos_builditem;
+	m_Items[nItemListIdx].nX = nPlace;
+	m_Items[nItemListIdx].nY = 0;
+	return TRUE;
+}
+
+
+void KItemList::UnBuildItem(int nIdx, int nPos/* = -1*/)
+{
+	int i = 0;
+	if (m_PlayerIdx <= 0)
+		return;
+
+	if (nIdx <= 0)
+		return;
+
+	if (nPos <= 0)
+	{
+		for (i = 0; i < MAX_PART_BUILD; i++)
+		{
+			if (m_BuildItem[i] == nIdx)
+				break;
+		}
+		if (i == MAX_PART_BUILD)
+			return;
+
+	}
+	else
+	{
+		if (m_BuildItem[nPos] != nIdx)	// ????????
+			return;
+		i = nPos;
+	}
+
+	m_BuildItem[i] = 0;
+	return;
+}
+
+//end code
 
 BOOL KItemList::PutCompound(int nIdx, int nPlace /* = -1 */)
 {

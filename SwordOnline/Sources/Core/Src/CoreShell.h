@@ -1,5 +1,5 @@
 
-/*****************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44***********************
+/*****************************************************************************************
 //	外界访问Core接口方法定义
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -209,6 +209,8 @@ enum GAMEDATA_INDEX
 
 	GDI_ITEM_DESC,
 
+	GDI_CHAT_ITEM_IMAGE, //Tam LTM fix post item;
+
 	GDI_GET_ITEM_PARAM,
 	
 	GDI_ITEM_CHAT,
@@ -218,6 +220,8 @@ enum GAMEDATA_INDEX
 	GDI_CHANGE_OPTIMAL,
 
 	GDI_TRADE_PLAYER_ITEM,
+
+	GDI_BUILD_ITEM, //TamLTM kham nam xanh
 
 	GDI_COMPOUND,
 
@@ -234,6 +238,8 @@ enum GAMEDATA_INDEX
 	GDI_CHATROOM_NAME,
 
 	GDI_IS_CHECK_IMAGE,
+
+	GDI_GET_VERSION_GAME, //TamTLM Get Version game
 };
 
 //=========================================================
@@ -411,7 +417,7 @@ enum GAMEDATA_CHANGED_NOTIFY_INDEX
 
 	GDCNI_RANKDATA,
 
-	GDCNI_ENCHASE,
+	GDCNI_ENCHASE, // Ep do tim
 
 	GDCNI_INPUT,
 
@@ -434,6 +440,14 @@ enum GAMEDATA_CHANGED_NOTIFY_INDEX
 	GDCNI_CHATROOM_JOIN,
 
 	GDCNI_CHATROOM_LEAVE,
+
+	//TamLTM da tau
+	GDCNI_FINISH_QUEST, // hoan thanh da tau
+
+	GDCNI_OPEN_TREMBLE, //TamLTM kham nam
+	//end code
+
+	GDCNI_PROGRESS_BAR, // TamLTM Progress bar
 };
 
 enum GAMEDEBUGCONTROL
@@ -574,6 +588,8 @@ enum GAMEOPERATION_INDEX
 	GOI_GIVE,
 
 	GOI_LOCKITEM,
+	
+	GOI_UNLOCKITEM,
 
 	GOI_SUPERSHOP,
 
@@ -583,7 +599,7 @@ enum GAMEOPERATION_INDEX
 
 	GOI_OPTIMAL,
 
-	GOI_OFFLINE,
+	GOI_OFFLINE, // TamLTM Uy thac Offline
 
 	GOI_MASKFEATURE,
 
@@ -602,6 +618,20 @@ enum GAMEOPERATION_INDEX
 	GOI_CHATROOM,
 
 	GOI_CP_SET_IMAGE_PLAYER,
+
+	//TamLTM da tau
+	GOI_CP_LOAD_SCRIPT, //load script da tau
+	//end
+
+	GOI_PLAYER_ACTIONCHAT, //Ma Doc
+
+	GOI_ADD_UI_CMD_SCRIPT, //TamLTM Kham nam Xanh
+
+	GOI_RECOVERY_BOX_COMMAND, //TamLTM kham nam xanh
+
+	GOI_TOI_UU_IMAGE_COMMAND, // TamLTM Toi Uu hinh anh trong game
+
+	GOI_CP_LOAD_SCRIPT_PROGRESS_BAR, //load script progress bar
 };
 
 //=========================================================
@@ -766,6 +796,7 @@ enum GAME_PLAYERAI_OPERATION_INDEX
 	GPI_FOLLOW_PEOPLE,
 	GPI_FOLLOW_PEOPLE_NAME,
 	GPI_FOLLOW_PEOPLE_RADIUS,
+	GPI_FOLLOW_PEOPLE_RADIUS_IS_CHECK, // them check auto follow radius
 	GPI_FIGHTNEAR_CHECK,
 	GPI_ATTACK_NPC_CHECK,
 	GPI_AUTO_PARTY,
@@ -776,6 +807,7 @@ enum GAME_PLAYERAI_OPERATION_INDEX
 	GPI_AUTO_ACCEPT_WITH_NAME,
 	GPI_FIGHT_AUTO,
 	GPI_RANGER_AUTO,
+	GPI_DISTANCE_AUTO, //TamLTM Distnace
 	GPI_FIGHT_USE_SB,
 	GPI_SUPPORT_SKILLS,
 	GPI_FIGHT_SKILLS,
@@ -785,6 +817,7 @@ enum GAME_PLAYERAI_OPERATION_INDEX
 	GPI_AURA_SKILLS2,
 	GPI_OVER_TARGET,
 	GPI_FOLLOW_TARGET,
+	GPI_QUANH_DIEM_TARGET, //TamLTM Quanh Diem
 	GPI_SORT_EQUIPMENT,
 	GPI_FILTER_EQUIPMENT,
 	GPI_PICK_FIGHTNONE,
@@ -831,6 +864,9 @@ enum GAME_PLAYERAI_OPERATION_INDEX
 	GPI_AUTO_MOVEMPSID,
 	GPI_AUTO_MOVEMPSX,
 	GPI_AUTO_MOVEMPSY,
+	GPI_WITHDRAWA, // rut tien;
+	GPI_WITHDRAWA_MONEY, // rut tien;
+	GPI_PASSREPOSITORY, // rut tien;
 };
 //-------游戏世界数据改变的通知函数原型---------
 struct IClientCallback
@@ -897,6 +933,8 @@ struct _declspec (novtable) iCoreShell
 	//绘制游戏世界
 	virtual void DrawGameSpace() = 0;
 
+	virtual int	 Debug(unsigned int uDataId, unsigned int uParam, int nParam) = 0;
+
 	virtual DWORD GetPing() = 0;
 	//virtual void SendPing() = 0;
 	//设置游戏世界数据改变的通知函数
@@ -937,7 +975,22 @@ struct _declspec (novtable) iCoreShell
 	virtual int GetDataSuperShop(int nSaleId, unsigned int uParam, int nParam) = 0;
 	virtual int GetDataDynamicShop(int nSaleId, unsigned int uParam, int nParam) = 0;
 	virtual int GetNextSkill(int nType, int nIndex) = 0;
-	virtual BOOL IsSkillAura(int nSkillId);
+//	virtual BOOL IsSkillAura(int nSkillId);
+
+	// TamLTM code kham nam xanh
+	virtual int GetKindItem(unsigned int uId ) = 0;
+	virtual int GetDetailItem(unsigned int uId ) = 0;
+	virtual int GetParticularItem(unsigned int uId ) = 0;
+	virtual int GetLevelItem(unsigned int uId ) = 0;
+	virtual int GetSeriesItem(unsigned int uId ) = 0;
+	virtual int GetItemColor(unsigned int uItemId);
+	// End code
+
+	//TamLTM auto run
+	virtual void SetAutoRun(BOOL autoRun) = 0;
+	virtual void SetFlagAutoRun(BOOL autoRunFlag, int x, int y) = 0;
+	virtual void CheckHoverMouseMiniMap(BOOL hover) = 0;
+	//end code
 };
 
 #ifndef CORE_EXPORTS

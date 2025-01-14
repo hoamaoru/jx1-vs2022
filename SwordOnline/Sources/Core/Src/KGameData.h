@@ -34,7 +34,7 @@ public:
 	char* 	GetStrDataGr_Name1(int nNo);
 	char* 	GetStrDataGr_Name2(int nNo);
 	BOOL	InitGameData();
-	BOOL	Save();
+	BOOL	Save(); //TamLTM save 3
 #endif
 };
 

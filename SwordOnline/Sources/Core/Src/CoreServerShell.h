@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
+/*****************************************************************************************
 //	外界访问服务版Core的接口方法定义
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -183,8 +183,8 @@ struct iCoreServerShell
 	virtual void RemoveQuitingPlayer(int nIndex) = 0;
 	virtual void* SavePlayerDataAtOnce(int nIndex) = 0;
 	virtual bool IsCharacterQuiting(int nIndex) = 0;
-	virtual void SetCharacterLixian(int nIndex, BYTE byLixian) = 0;
-	virtual int GetCharacterLixian(int nIndex) = 0;
+//	virtual void SetCharacterLixian(int nIndex, BYTE byLixian) = 0;
+//	virtual int GetCharacterLixian(int nIndex) = 0;
 	virtual bool CheckProtocolSize(const char* pChar, int nSize) = 0;
 	virtual bool PlayerDbLoading(int nPlayerIndex, int bSyncEnd, int& nStep, unsigned int& nParam) = 0;
 	virtual int  AttachPlayer(const unsigned long lnID, GUID* pGuid) = 0;
@@ -211,8 +211,8 @@ struct iCoreServerShell
 	virtual BOOL GroupChat(IClient* pClient, DWORD FromIP, unsigned long FromRelayID, DWORD channid, BYTE tgtcls, DWORD tgtid, const void* pData, size_t size) = 0;
 	virtual	void SetLadder(void* pData, size_t uSize) = 0;
 	virtual BOOL PayForSpeech(int nIndex, int nType) = 0;
-	virtual void SetExtPoint(int nIndex, int nExtPoint) = 0;
-	virtual	void GetLastName(int nIndex, char* szName) = 0;
+	virtual void SetExtPoint(int nIndex, int nExtPoint) = 0; //TamLTM fix xu;
+	virtual	void GetLastName(int nIndex, char* szName) = 0;//Doi ten nhan vat
 	virtual void RenameRoleRequest(int nIndex, bool bResult) = 0;
 	virtual void SaveData() = 0;
 };

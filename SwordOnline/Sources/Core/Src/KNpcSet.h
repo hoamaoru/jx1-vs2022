@@ -170,7 +170,7 @@ public:
 			return m_cPlayerBaseValue.nRunFrame[1];
 	};
 	BOOL			IsNpcRequestExist(DWORD	dwID);
-	void			InsertNpcRequest(DWORD dwID);
+	BOOL			InsertNpcRequest(DWORD dwID);
 	void			RemoveNpcRequest(DWORD dwID);
 	int				GetRequestIndex(DWORD dwID);
 	// 添加一个客户端npc（需要设定ClientNpcID）

@@ -16,6 +16,7 @@ typedef struct tagNpcSkill
 	int		MaxTimes;
 	int		RemainTimes;
 	DWORD	NextCastTime;		//下次可发送时的最小时间
+    DWORD	BeginCastTime;
 	int		WaitCastTime;
 #ifndef _SERVER
 	DWORD	TotalTime;//tong thoi gian
@@ -47,7 +48,7 @@ public:
 			m_Skills[i].SkillLevel = 0;
 			m_Skills[i].AddLevel = m_nAllSkillV;
 			m_Skills[i].CurrentSkillLevel = 0;
-			m_Skills[i].SkillExp = 0;
+			//m_Skills[i].SkillExp = 0;
 			m_Skills[i].NextSkillExp = 0;
 			m_Skills[i].TempSkill = FALSE;
 			m_Skills[i].MaxTimes = 0;
@@ -66,7 +67,7 @@ public:
 		m_Skills[nIdx].SkillLevel = 0;
 		m_Skills[nIdx].AddLevel = m_nAllSkillV;
 		m_Skills[nIdx].CurrentSkillLevel = 0;
-		m_Skills[nIdx].SkillExp = 0;
+	//	m_Skills[nIdx].SkillExp = 0;
 		m_Skills[nIdx].NextSkillExp = 0;
 		m_Skills[nIdx].TempSkill = FALSE;
 		m_Skills[nIdx].MaxTimes = 0;

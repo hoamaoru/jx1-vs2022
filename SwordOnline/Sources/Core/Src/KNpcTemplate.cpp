@@ -66,9 +66,10 @@ void	KNpcTemplate::Init(int nNpcTemplateId)
 	g_NpcSetting.GetInteger(nNpcTempRow, "RideHorse",0, &m_bRideHorse);
 #endif
 
-	int nParam;
-	int nParam2;
-#ifdef _SERVER				
+
+#ifdef _SERVER	
+int nParam;
+int nParam2;
 	g_NpcSetting.GetInteger(nNpcTempRow, "Skill1",	0, &nParam);
 	g_NpcSetting.GetInteger(nNpcTempRow, "Level1", 0, &nParam2);
 	if (nParam && nParam2)

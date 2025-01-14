@@ -15,7 +15,7 @@
 #include	"KNode.h"
 #include	"KList.h"
 #endif
-#include	<string>
+
 #ifdef _SERVER
 
 // 每个聊天好友的数据

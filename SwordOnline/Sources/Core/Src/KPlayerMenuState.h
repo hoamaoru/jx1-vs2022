@@ -34,7 +34,7 @@ public:
 #ifdef _SERVER
 	int			m_nBackState;
 	char		m_szBackSentence[MAX_SENTENCE_LENGTH];
-	bool		m_bBackTeamState;
+	bool		m_bBackTeamState; //TamLTM auto pt to doi
 #endif
 
 #ifndef _SERVER

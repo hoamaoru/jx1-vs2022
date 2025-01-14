@@ -119,7 +119,20 @@ public:
 	void	NetCommandSetHorse(BYTE* pMsg);
 	void	s2cSyncTaskValue(BYTE* pMsg);
 	void	s2cPlayerSync(BYTE* pMsg);
-	void	SetExtPoint(BYTE* pMsg);
+	/*//TamLTM fix s2c packet send sever to client
+	void	s2cplayersyncofflive(BYTE* pMsg);
+	void	s2cplayersyncmagicpoint(BYTE* pMsg);
+	void	s2cplayersyncproppoint(BYTE* pMsg);
+	void	s2cplayersyncinput(BYTE* pMsg);
+	void	s2cplayersyncopenenchase(BYTE* pMsg);
+	void	s2cplayersyncrankdata(BYTE* pMsg);
+	void	s2cplayersyncmaskfeature(BYTE* pMsg);
+	void	s2cplayersynclockstate(BYTE* pMsg);
+	void	s2cplayersyncequipexpand(BYTE* pMsg);
+	void	s2cplayersyncexpandbox(BYTE* pMsg);
+	void	s2cplayersyncgive(BYTE* pMsg);
+	//end code*/
+	void	s2cExtPointValueSync(BYTE* pMsg); // protocol TamLTM fix xu;
 	void	SyncGive(BYTE* pMsg);
 	void	SyncMaskLock(BYTE* pMsg);
 	void	SyncDataRes(BYTE* pMsg);
@@ -133,6 +146,11 @@ public:
 	void	s2cRequestMemberList(BYTE* pMsg);
 	void	s2cRequestBlackList(BYTE* pMsg);
 	void	s2cOpenMake(BYTE* pMsg);
+	void	OpenDTBox(BYTE* pMsg);//TamLTM end code // nhan phan thuong da tau
+	void	s2cOpenOtherBox(BYTE* pMsg); // TamLTM kham nam xanh
+	void	OpenProgressBar(BYTE* pMsg);//TamLTM open OpenProgressBar
+	void	SysNcPosMin(BYTE* pMsg);//TamLTM fix lag posu
+    void	s2cUpdateNpcState(BYTE * pMsg);
 
 	void	s2cExtend(BYTE* pMsg);
 	void	s2cExtendChat(BYTE* pMsg);
@@ -180,6 +198,7 @@ public:
 	void	NpcSitCommand(int nIndex, BYTE* pProtocol);
 	void	ObjMouseClick(int nIndex, BYTE* pProtocol);
 	void	StoreMoneyCommand(int nIndex, BYTE* pProtocol);
+	void	WithDrawaMoneyCommand(int nIndex, BYTE* pProtocol); // rut tien;
 	void	NpcReviveCommand(int nIndex, BYTE* pProtocol);
 	void	c2sTradeReplyStart(int nIndex, BYTE* pProtocol);
 	void	c2sPKApplyChangeNormalFlag(int nIndex, BYTE* pProtocol);
@@ -194,6 +213,8 @@ public:
 	void	TradeEnd(int nIndex, BYTE* pProtocol);	
 	void	NpcHorseCommand(int nIndex, BYTE* pProtocol);
 	void	PlayerCommand(int nIndex, BYTE* pProtocol);
+	void	PlayerLockItem(int nIndex, BYTE* pProtocol);
+	void	PlayerUnLockItem(int nIndex, BYTE* pProtocol);
 	void	InputCommand(int nIndex, BYTE* pProtocol);
 	void	UnlockCommand(int nIndex, BYTE* pProtocol);
 	void	BreakCommand(int nIndex, BYTE* pProtocol);
@@ -202,6 +223,13 @@ public:
 	void	LockMove(int nIndex, BYTE* pProtocol);
 	void	ChatRoomDecision(int nIndex, BYTE* pProtocol);
 	void	c2sSetImage(int nIndex, BYTE* pProtocol);
+	void	NpcDaTauCommand(int nIndex, BYTE* pProtocol);//TamLTM da tau
+	void	C2SPlayerActionChatCmd(int nIndex, BYTE* pProtocol); // Ma Doc
+	void	UiCommandScript(int nIndex, BYTE* pProtocol);	// TamLTM kham nam
+	void	RecoveryBoxCmd(int nIndex, BYTE* pProtocol);	//TamLTM Kham nam
+	void	c2sInputCommand(int nIndex, BYTE*pProtocol);	//TamLTM Kham nam
+	void	NpcOpenProgressBarCommand(int nIndex, BYTE* pProtocol);//TamLTM progress bar
+	void	NpcOfflineCommand(int nIndex, BYTE*pProtocol);//TamLTM Uy thac offline
 #endif
 };
 

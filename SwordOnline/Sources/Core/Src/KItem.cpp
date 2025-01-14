@@ -51,11 +51,11 @@ void* KItem::GetRequirement(IN int nReq)
 	return &m_aryRequireAttrib[nReq];
 }
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½itemï¿½Ïµï¿½Ä§ï¿½ï¿½Ó¦ï¿½Ãµï¿½NPCï¿½ï¿½ï¿½ï¿½
-ï¿½ï¿½Ú£ï¿½	pNPC: Ö¸ï¿½ï¿½NPCï¿½ï¿½Ö¸ï¿½ë£¬nMagicAciveï¿½ï¿½ï¿½ò¿ªµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
-ï¿½ï¿½ï¿½ï¿½:	Ä§ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¡ï¿½
-		ï¿½ï¿½ï¿½å¹¤ï¿½ï¿½ï¿½ï¿½KNpcï¿½Ä³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ï¿½
-		KItem ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
+¹¦ÄÜ:	½«itemÉÏµÄÄ§·¨Ó¦ÓÃµ½NPCÉíÉÏ
+Èë¿Ú£º	pNPC: Ö¸ÏòNPCµÄÖ¸Õë£¬nMagicAcive£º´ò¿ªµÄÒþ²ØÊôÐÔÊýÄ¿
+³ö¿Ú:	Ä§·¨±»Ó¦ÓÃ¡£
+		¾ßÌå¹¤×÷ÓÉKNpcµÄ³ÉÔ±º¯ÊýÍê³É¡£
+		KItem ¶ÔÏó±¾ÉíÃ»ÓÐ³ÉÔ±±äÁ¿±»ÐÞ¸Ä
 ******************************************************************************/
 void KItem::ApplyMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive, IN int nMagicActiveE) const
 {
@@ -64,9 +64,9 @@ void KItem::ApplyMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive, IN int nMa
 
 	int nCount = nMagicActive;
 	int nCountE = nMagicActiveE;
-	int i = 0;
+	int i;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½NPC
+	// »ù´¡ÊôÐÔµ÷ÕûNPC
 	for (i = 0; i < sizeof(m_aryBaseAttrib)/sizeof(m_aryBaseAttrib[0]); i++)
 	{
 		const KItemNormalAttrib* pAttrib;
@@ -76,7 +76,7 @@ void KItem::ApplyMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive, IN int nMa
 			pNPC->ModifyAttrib(pNPC->m_Index, (void *)pAttrib);
 		}
 	}
-	// Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½NPC
+	// Ä§·¨ÊôÐÔµ÷ÕûNPC
 	for (i = 0; i < sizeof(m_aryMagicAttrib)/sizeof(m_aryMagicAttrib[0]); i++)
 	{
 		const KItemNormalAttrib* pAttrib;
@@ -94,7 +94,7 @@ void KItem::ApplyMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive, IN int nMa
 			}
 			else
 			{
-				if (i & 1)						// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çºï¿½×ºï¿½ï¿½iï¿½ï¿½ï¿½ã¿ªÊ¼ï¿½ï¿½
+				if (i & 1)						// ÎªÆæÊý£¬ÊÇºó×º£¨i´ÓÁã¿ªÊ¼£©
 				{
 					if (nCount > 0)
 					{
@@ -112,11 +112,11 @@ void KItem::ApplyMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive, IN int nMa
 }
 
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½itemï¿½Ïµï¿½Ä§ï¿½ï¿½ï¿½ï¿½NPCï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½
-ï¿½ï¿½Ú£ï¿½	pNPC: Ö¸ï¿½ï¿½NPCï¿½ï¿½Ö¸ï¿½ë£¬nMagicAciveï¿½ï¿½ï¿½ò¿ªµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
-ï¿½ï¿½ï¿½ï¿½:	Ä§ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¡ï¿½
-		ï¿½ï¿½ï¿½å¹¤ï¿½ï¿½ï¿½ï¿½KNpcï¿½Ä³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ï¿½
-		KItem ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
+¹¦ÄÜ:	½«itemÉÏµÄÄ§·¨´ÓNPCÉíÉÏÒÆ³ý
+Èë¿Ú£º	pNPC: Ö¸ÏòNPCµÄÖ¸Õë£¬nMagicAcive£º´ò¿ªµÄÒþ²ØÊôÐÔÊýÄ¿
+³ö¿Ú:	Ä§·¨±»Ó¦ÓÃ¡£
+		¾ßÌå¹¤×÷ÓÉKNpcµÄ³ÉÔ±º¯ÊýÍê³É¡£
+		KItem ¶ÔÏó±¾ÉíÃ»ÓÐ³ÉÔ±±äÁ¿±»ÐÞ¸Ä
 ******************************************************************************/
 void KItem::RemoveMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive, IN int nMagicActiveE) const
 {
@@ -127,7 +127,7 @@ void KItem::RemoveMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive, IN int 
 	int nCountE = nMagicActiveE;
 	int	i;
 	
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½NPC
+	// »ù´¡ÊôÐÔµ÷ÕûNPC
 	for (i = 0; i < sizeof(m_aryBaseAttrib)/sizeof(m_aryBaseAttrib[0]); i++)
 	{
 		const KItemNormalAttrib* pAttrib;
@@ -148,7 +148,7 @@ void KItem::RemoveMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive, IN int 
 		const KItemNormalAttrib* pAttrib;
 		pAttrib = &(m_aryMagicAttrib[i]);
 
-		if (INVALID_ATTRIB != pAttrib->nAttribType)		// TODO: Îª -1 ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
+		if (INVALID_ATTRIB != pAttrib->nAttribType)		// TODO: Îª -1 ¶¨ÒåÒ»¸ö³£Á¿?
 		{
 			KItemNormalAttrib RemoveAttrib;
 			if(i >= MAX_ITEM_NORMAL_MAGICATTRIB)
@@ -165,7 +165,7 @@ void KItem::RemoveMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive, IN int 
 			}
 			else
 			{
-				if (i & 1)						// Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çºï¿½×ºï¿½ï¿½iï¿½ï¿½ï¿½ã¿ªÊ¼ï¿½ï¿½
+				if (i & 1)						// ÎªÆæÊý£¬ÊÇºó×º£¨i´ÓÁã¿ªÊ¼£©
 				{
 					if (nCount > 0)
 					{
@@ -191,11 +191,11 @@ void KItem::RemoveMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive, IN int 
 }
 
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½itemï¿½ÏµÄµï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ãµï¿½NPCï¿½ï¿½ï¿½ï¿½
-ï¿½ï¿½Ú£ï¿½	pNPC: Ö¸ï¿½ï¿½NPCï¿½ï¿½Ö¸ï¿½ï¿½
-ï¿½ï¿½ï¿½ï¿½:	Ä§ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¡ï¿½
-		ï¿½ï¿½ï¿½å¹¤ï¿½ï¿½ï¿½ï¿½KNpcï¿½Ä³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ï¿½
-		KItem ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
+¹¦ÄÜ:	½«itemÉÏµÄµÚNÏîÒþ²ØÄ§·¨ÊôÐÔÓ¦ÓÃµ½NPCÉíÉÏ
+Èë¿Ú£º	pNPC: Ö¸ÏòNPCµÄÖ¸Õë
+³ö¿Ú:	Ä§·¨±»Ó¦ÓÃ¡£
+		¾ßÌå¹¤×÷ÓÉKNpcµÄ³ÉÔ±º¯ÊýÍê³É¡£
+		KItem ¶ÔÏó±¾ÉíÃ»ÓÐ³ÉÔ±±äÁ¿±»ÐÞ¸Ä
 ******************************************************************************/
 void KItem::ApplyHiddenMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive) const
 {
@@ -204,7 +204,7 @@ void KItem::ApplyHiddenMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive) cons
 		return;
 
 	const KItemNormalAttrib* pAttrib;
-	pAttrib = &(m_aryMagicAttrib[(nMagicActive << 1) - 1]);	// ï¿½ï¿½×ºÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô³ï¿½2ï¿½ï¿½Ò»
+	pAttrib = &(m_aryMagicAttrib[(nMagicActive << 1) - 1]);	// ºó×ºÎªÒþ²ØÊôÐÔËùÒÔ³Ë2¼õÒ»
 	if (-1 != pAttrib->nAttribType)
 	{
 		pNPC->ModifyAttrib(pNPC->m_Index, (void *)pAttrib);
@@ -212,11 +212,11 @@ void KItem::ApplyHiddenMagicAttribToNPC(IN KNpc* pNPC, IN int nMagicActive) cons
 }
 
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½itemï¿½ÏµÄµï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½NPCï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½
-ï¿½ï¿½Ú£ï¿½	pNPC: Ö¸ï¿½ï¿½NPCï¿½ï¿½Ö¸ï¿½ë£¬nMagicActiveï¿½ï¿½ï¿½ï¿½nï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-ï¿½ï¿½ï¿½ï¿½:	Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½
-		ï¿½ï¿½ï¿½å¹¤ï¿½ï¿½ï¿½ï¿½KNpcï¿½Ä³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ï¿½
-		KItem ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
+¹¦ÄÜ:	½«itemÉÏµÄµÚNÏîÒþ²ØÄ§·¨ÊôÐÔ´ÓNPCÉíÉÏÒÆ³ý
+Èë¿Ú£º	pNPC: Ö¸ÏòNPCµÄÖ¸Õë£¬nMagicActive£ºµÚnÏîÄ§·¨ÊôÐÔ
+³ö¿Ú:	Ä§·¨±»ÒÆ³ý¡£
+		¾ßÌå¹¤×÷ÓÉKNpcµÄ³ÉÔ±º¯ÊýÍê³É¡£
+		KItem ¶ÔÏó±¾ÉíÃ»ÓÐ³ÉÔ±±äÁ¿±»ÐÞ¸Ä
 ******************************************************************************/
 void KItem::RemoveHiddenMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive) const
 {
@@ -225,7 +225,7 @@ void KItem::RemoveHiddenMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive) c
 		return;
 
 	const KItemNormalAttrib* pAttrib;
-	pAttrib = &(m_aryMagicAttrib[(nMagicActive << 1) - 1]);	// ï¿½ï¿½×ºÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô³ï¿½2ï¿½ï¿½Ò»
+	pAttrib = &(m_aryMagicAttrib[(nMagicActive << 1) - 1]);	// ºó×ºÎªÒþ²ØÊôÐÔËùÒÔ³Ë2¼õÒ»
 	if (-1 != pAttrib->nAttribType)
 	{
 		KItemNormalAttrib RemoveAttrib;
@@ -238,12 +238,12 @@ void KItem::RemoveHiddenMagicAttribFromNPC(IN KNpc* pNPC, IN int nMagicActive) c
 }
 
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½,Îªitemï¿½Ä¸ï¿½ï¿½î¸³ï¿½ï¿½Öµ
-ï¿½ï¿½Ú£ï¿½	pData: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Â³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ:
+¹¦ÄÜ:	¸ù¾ÝÅäÖÃÎÄ¼þÖÐµÄÊý¾Ý,ÎªitemµÄ¸÷Ïî¸³³õÖµ
+Èë¿Ú£º	pData: ¸ø³öÀ´×ÔÅäÖÃÎÄ¼þµÄÊý¾Ý
+³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, ÒÔÏÂ³ÉÔ±±äÁ¿±»Öµ:
 			m_CommonAttrib,m_aryBaseAttrib,m_aryRequireAttrib
-		Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-Ëµï¿½ï¿½:	CBR: Common,Base,Require
+		Ê§°ÜÊ±·µ»ØÁã
+ËµÃ÷:	CBR: Common,Base,Require
 ******************************************************************************/
 BOOL KItem::SetAttrib_CBR(IN const KBASICPROP_EQUIPMENT* pData)
 {
@@ -253,7 +253,7 @@ BOOL KItem::SetAttrib_CBR(IN const KBASICPROP_EQUIPMENT* pData)
 	if (pData)
 	{
 		//SetAttrib_Common(pData);
-		*this = *pData;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		*this = *pData;		// ÔËËã·ûÖØÔØ
 		SetAttrib_Base(pData->m_aryPropBasic);
 		SetAttrib_Req(pData->m_aryPropReq);
 		bEC = TRUE;
@@ -268,7 +268,7 @@ BOOL KItem::SetAttrib_CBR(IN const KBASICPROP_EQUIPMENT_GOLD* pData)
 	BOOL bEC = FALSE;
 	if (pData)
 	{
-		*this = *pData;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		*this = *pData;		// ÔËËã·ûÖØÔØ
 		SetAttrib_Base(pData->m_aryPropBasic);
 		SetAttrib_Req(pData->m_aryPropReq);
 		bEC = TRUE;
@@ -283,7 +283,7 @@ BOOL KItem::SetAttrib_CBR(IN const KBASICPROP_EQUIPMENT_PLATINA* pData)
 	BOOL bEC = FALSE;
 	if (pData)
 	{
-		*this = *pData;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		*this = *pData;		// ÔËËã·ûÖØÔØ
 		SetAttrib_Base(pData->m_aryPropBasic);
 		SetAttrib_Req(pData->m_aryPropReq);
 		bEC = TRUE;
@@ -307,7 +307,7 @@ BOOL KItem::SetAttrib_Base(const KEQCP_BASIC* pBasic)
 		if (pDst->nAttribType == magic_durability_v)
 			SetDurability(pDst->nValue[0]);
 	}
-	//if (m_nCurrentDur == 0)	// Ëµï¿½ï¿½Ã»ï¿½ï¿½ï¿½Í¾Ã¶ï¿½ï¿½ï¿½ï¿½ï¿½
+	//if (m_nCurrentDur == 0)	// ËµÃ÷Ã»ÓÐÄÍ¾Ã¶ÈÊôÐÔ
 	//	m_nCurrentDur = -1;
 	return TRUE;
 }
@@ -328,11 +328,11 @@ BOOL KItem::SetAttrib_Req(const KEQCP_REQ* pReq)
 }
 
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Îªitemï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½Öµ
-ï¿½ï¿½Ú£ï¿½	pMA: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Â³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ:
+¹¦ÄÜ:	¸ù¾Ý´«ÈëµÄÊý¾Ý, ÎªitemµÄÄ§·¨ÊôÐÔ¸³³õÖµ
+Èë¿Ú£º	pMA: ¸ø³öÊý¾Ý
+³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, ÒÔÏÂ³ÉÔ±±äÁ¿±»Öµ:
 			m_aryMagicAttrib
-		Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItem::SetAttrib_MA(IN const KItemNormalAttrib* pMA)
 {
@@ -350,11 +350,11 @@ BOOL KItem::SetAttrib_MA(IN const KItemNormalAttrib* pMA)
 }
 
 /******************************************************************************
-ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Îªitemï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½Öµ
-ï¿½ï¿½Ú£ï¿½	pMA: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Â³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ:
+¹¦ÄÜ:	¸ù¾Ý´«ÈëµÄÊý¾Ý, ÎªitemµÄÄ§·¨ÊôÐÔ¸³³õÖµ
+Èë¿Ú£º	pMA: ¸ø³öÊý¾Ý
+³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, ÒÔÏÂ³ÉÔ±±äÁ¿±»Öµ:
 			m_aryMagicAttrib
-		Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItem::SetAttrib_MA(IN const KMACP* pMA)
 {
@@ -379,6 +379,9 @@ BOOL KItem::SetAttrib_MA(IN const KMACP* pMA)
 void KItem::operator = (const KBASICPROP_EQUIPMENT& sData)
 {
 	KItemCommonAttrib* pCA	= &m_CommonAttrib;
+	//TamLTM Code kham nam xanh
+	pCA->nKind				= normal_item;
+	//End code
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
 	pCA->nItemNature		= NATURE_NORMAL;
@@ -488,8 +491,11 @@ void KItem::operator = (const KBASICPROP_EVENTITEM& sData)
 
 void KItem::operator = (const KBASICPROP_QUEST& sData)
 {
-	// ï¿½ï¿½Öµ: ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	// ¸³Öµ: ¹²Í¬ÊôÐÔ²¿·Ö
 	KItemCommonAttrib* pCA = &m_CommonAttrib;
+	//TamLTM Code kham nam xanh
+	pCA->nKind				= normal_item;
+	//End code
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
 	pCA->nItemNature		= NATURE_NORMAL;
@@ -532,9 +538,9 @@ void KItem::operator = (const KBASICPROP_QUEST& sData)
 	::strcpy(pCA->szIntro,	   sData.m_szIntro);
 #endif
 	ZeroMemory(m_aryBaseAttrib, sizeof(m_aryBaseAttrib));
-	// ï¿½ï¿½Öµ: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½: ï¿½ï¿½
+	// ¸³Öµ: ÐèÇóÊôÐÔ²¿·Ö: ÎÞ
 	ZeroMemory(m_aryRequireAttrib, sizeof(m_aryBaseAttrib));
-	// ï¿½ï¿½Öµ: Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½: ï¿½ï¿½
+	// ¸³Öµ: Ä§·¨ÊôÐÔ²¿·Ö: ÎÞ
 	ZeroMemory(m_aryMagicAttrib, sizeof(m_aryBaseAttrib));
 #ifndef _SERVER
 	m_Image.Color.Color_b.a = 255;
@@ -548,8 +554,11 @@ void KItem::operator = (const KBASICPROP_QUEST& sData)
 
 void KItem::operator = (const KBASICPROP_TOWNPORTAL& sData)
 {
-	// ï¿½ï¿½Öµ: ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	// ¸³Öµ: ¹²Í¬ÊôÐÔ²¿·Ö
 	KItemCommonAttrib* pCA = &m_CommonAttrib;
+	//TamLTM Code kham nam xanh
+	pCA->nKind				= normal_item;
+	//End code
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
 	pCA->nItemNature		= NATURE_NORMAL;
@@ -590,9 +599,9 @@ void KItem::operator = (const KBASICPROP_TOWNPORTAL& sData)
 	::strcpy(pCA->szIntro,	   sData.m_szIntro);
 #endif
 	ZeroMemory(m_aryBaseAttrib, sizeof(m_aryBaseAttrib));
-	// ï¿½ï¿½Öµ: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½: ï¿½ï¿½
+	// ¸³Öµ: ÐèÇóÊôÐÔ²¿·Ö: ÎÞ
 	ZeroMemory(m_aryRequireAttrib, sizeof(m_aryBaseAttrib));
-	// ï¿½ï¿½Öµ: Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½: ï¿½ï¿½
+	// ¸³Öµ: Ä§·¨ÊôÐÔ²¿·Ö: ÎÞ
 	ZeroMemory(m_aryMagicAttrib, sizeof(m_aryBaseAttrib));
 #ifndef _SERVER
 	m_Image.Color.Color_b.a = 255;
@@ -606,7 +615,7 @@ void KItem::operator = (const KBASICPROP_TOWNPORTAL& sData)
 
 void KItem::operator = (const KBASICPROP_MAGICSCRIPT& sData)
 {
-	// ï¿½ï¿½Öµ: ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	// ¸³Öµ: ¹²Í¬ÊôÐÔ²¿·Ö
 	KItemCommonAttrib* pCA	= &(m_CommonAttrib);
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
@@ -664,8 +673,11 @@ void KItem::operator = (const KBASICPROP_MAGICSCRIPT& sData)
 
 void KItem::operator = (const KBASICPROP_MEDICINE& sData)
 {
-	// ï¿½ï¿½Öµ: ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	// ¸³Öµ: ¹²Í¬ÊôÐÔ²¿·Ö
 	KItemCommonAttrib* pCA	= &m_CommonAttrib;
+	//TamLTM Code kham nam xanh
+	pCA->nKind				= normal_item;
+	//End code
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
 	pCA->nItemNature		= NATURE_NORMAL;
@@ -707,7 +719,7 @@ void KItem::operator = (const KBASICPROP_MEDICINE& sData)
 	::strcpy(pCA->szImageName, sData.m_szImageName);
 	::strcpy(pCA->szIntro,	   sData.m_szIntro);
 #endif
-	// ï¿½ï¿½Öµ: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
+	// ¸³Öµ: »ù±¾ÊôÐÔ²¿·Ö
 	ZeroMemory(m_aryBaseAttrib, sizeof(m_aryBaseAttrib));
 	KItemNormalAttrib* pBA = m_aryBaseAttrib;
 	pBA[0].nAttribType = sData.m_aryAttrib[0].nAttrib;
@@ -732,7 +744,10 @@ void KItem::operator = (const KBASICPROP_MEDICINE& sData)
 
 void KItem::operator = (const KBASICPROP_EQUIPMENT_PLATINA& sData)
 {
-	KItemCommonAttrib* pCA  = &m_CommonAttrib;	
+	KItemCommonAttrib* pCA  = &m_CommonAttrib;
+	//TamLTM Code kham nam xanh
+	pCA->nKind				= normal_item;
+	//End code
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
 	pCA->nItemNature		= NATURE_PLATINA;
@@ -785,7 +800,10 @@ void KItem::operator = (const KBASICPROP_EQUIPMENT_PLATINA& sData)
 
 void KItem::operator = (const KBASICPROP_EQUIPMENT_GOLD& sData)
 {
-	KItemCommonAttrib* pCA  = &m_CommonAttrib;	
+	KItemCommonAttrib* pCA  = &m_CommonAttrib;
+	//TamLTM Code kham nam xanh
+	pCA->nKind				= gold_item;
+	//End code
 	pCA->bTemp				= FALSE;
 	pCA->BackLocal.Release();
 	pCA->nItemNature		= NATURE_GOLD;
@@ -869,21 +887,41 @@ BOOL KItem::SetMagicAttrib(IN const KItemNormalAttrib* pAttrib)
 	return SetAttrib_MA(pAttrib);
 }
 //------------------------------------------------------------------
-//	Ä¥ï¿½ð£¬·ï¿½ï¿½ï¿½Öµï¿½ï¿½Ê¾Ê£ï¿½ï¿½ï¿½Í¾Ã¶ï¿½
+//	Ä¥Ëð£¬·µ»ØÖµ±íÊ¾Ê£ÓàÄÍ¾Ã¶È Quai danh tinh hu do ben
 //------------------------------------------------------------------
 int KItem::Abrade(IN const int nAbradeP, IN const int nRange)
 {
-	if (m_nCurrentDur == -1 || nRange == 0)	// ï¿½ï¿½ï¿½ï¿½Ä¥ï¿½ï¿½
+//	g_DebugLog("Abrade(IN const int nAbradeP, IN const int nRange)");
+	//TamLTM Fix
+	if (GetGenre() == item_equip && GetDetailType() == equip_mask)
+		return -1;
+	//End code
+
+	if (m_nCurrentDur == -1 || nRange == 0)	// ÓÀ²»Ä¥Ëð
 		return -1;
 
 	if(nAbradeP > 0)
 		m_nCurrentDur -= GetMaxDurability() * nAbradeP / MAX_PERCENT;
 
+
+//	g_DebugLog("m_nCurrentDur %d", m_nCurrentDur);
+
 	if(m_nCurrentDur > 0)
 	{
-		if (g_Random(nRange) == 0)	// nRandRangeï¿½ï¿½Ö®Ò»ï¿½Ä¸ï¿½ï¿½ï¿½
+//		g_DebugLog("m_nCurrentDur g_Random %d", g_Random(nRange));
+		// nRandRange·ÖÖ®Ò»µÄ¸ÅÂÊ
+		if (g_Random(nRange) == 0) 
+		{ 
 			m_nCurrentDur--;
+			//TamLTM fix hu hong do ben
+			if (m_nCurrentDur == 0)
+			{
+				return 0;
+			}
+			//End code
+		}
 	}
+
 	if (m_nCurrentDur <= 0)
 		m_nCurrentDur = 0;
 
@@ -915,9 +953,9 @@ void KItem::Paint(int nX, int nY, bool bResize/* = false*/, bool bPaintStack/* =
 
 void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActiveAttrib, int nGoldActiveAttrib)
 {
-	char pszKeyName[256];
-	char pszTemp[256];
-	char pszTemp2[256];
+	char pszKeyName[6];
+	char pszTemp[128];
+	char pszTemp2[128];
 
 	memset(pszKeyName, 0, sizeof(pszKeyName));
 	memset(pszTemp, 0, sizeof(pszTemp));
@@ -959,20 +997,20 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 				if (m_CommonAttrib.nLevel < MAX_ITEM_LEVEL * 10)
 				{
 					if (m_CommonAttrib.nLevel % MAX_ITEM_LEVEL == 0)
-						sprintf(pszTemp, " [cï¿½p %d]", m_CommonAttrib.nLevel/(m_CommonAttrib.nLevel / MAX_ITEM_LEVEL));
+						sprintf(pszTemp, " [cÊp %d]", m_CommonAttrib.nLevel/(m_CommonAttrib.nLevel / MAX_ITEM_LEVEL));
 					else
-						sprintf(pszTemp, " [cï¿½p %d]", m_CommonAttrib.nLevel % MAX_ITEM_LEVEL);
+						sprintf(pszTemp, " [cÊp %d]", m_CommonAttrib.nLevel % MAX_ITEM_LEVEL);
 				}
 				else if (m_CommonAttrib.nLevel < MAX_ITEM_LEVEL * 100)
 				{
 					if (m_CommonAttrib.nLevel%100 == 0)
-						sprintf(pszTemp, " [cï¿½p %d]", m_CommonAttrib.nLevel/(m_CommonAttrib.nLevel / MAX_ITEM_LEVEL * 10));
+						sprintf(pszTemp, " [cÊp %d]", m_CommonAttrib.nLevel/(m_CommonAttrib.nLevel / MAX_ITEM_LEVEL * 10));
 					else
-						sprintf(pszTemp, " [cï¿½p %d]", m_CommonAttrib.nLevel % MAX_ITEM_LEVEL * 10);
+						sprintf(pszTemp, " [cÊp %d]", m_CommonAttrib.nLevel % MAX_ITEM_LEVEL * 10);
 				}
 			}
 			else if (m_CommonAttrib.nLevel > MIN_ITEM_LEVEL)
-				sprintf(pszTemp, " [cï¿½p %d]", m_CommonAttrib.nLevel);
+				sprintf(pszTemp, " [cÊp %d]", m_CommonAttrib.nLevel);
 		}
 		if(pszTemp[0])
 			strcat(pszMsg, pszTemp);
@@ -1005,7 +1043,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 			sprintf(pszTemp2, "%d", Player[CLIENT_PLAYER_INDEX].m_BuyInfo.m_nMoneyUnit);	
 		}
 		strcat(pszMsg, "\n");
-		strcpy(pszTemp, "Giï¿½ cï¿½: ");
+		strcpy(pszTemp, "Gi¸ c¶: ");
 		strcat(pszMsg, pszTemp);
 
 		g_GameSetting.GetString("MoneyUnit", pszTemp2, "", pszTemp, sizeof(pszTemp));		
@@ -1017,20 +1055,20 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 	switch (m_CommonAttrib.LockItem.nState)
 	{
 		case LOCK_STATE_CHARACTER:
-			sprintf(pszTemp2, "<color=0,255,0>Vï¿½t phï¿½m ï¿½ï¿½nh kï¿½m theo nhï¿½n vï¿½t<color>");
+			sprintf(pszTemp2, "<color=0,255,0>VËt phÈm ®Ýnh kÌm theo nh©n vËt<color>");
 			break;
 		case LOCK_STATE_FOREVER:
-			sprintf(pszTemp2, "<color=0,255,0>Vï¿½t phï¿½m nï¿½y ï¿½ï¿½ khï¿½a bï¿½o hiï¿½m vï¿½nh viï¿½n<color>");
+			sprintf(pszTemp2, "<color=0,255,0>VËt phÈm nµy ®· khãa b¶o hiÓm vÜnh viÔn<color>");
 			break;
 		case LOCK_STATE_LOCK:
-			sprintf(pszTemp2, "<color=0,255,0>Vï¿½t phï¿½m nï¿½y ï¿½ï¿½ khï¿½a bï¿½o hiï¿½m<color>");
+			sprintf(pszTemp2, "<color=0,255,0>VËt phÈm nµy ®· khãa b¶o hiÓm<color>");
 			break;
 		case LOCK_STATE_UNLOCK:
 			if (m_CommonAttrib.LockItem.dwLockTime > KSG_GetCurSec())
 			{
 				time_t nowtime=m_CommonAttrib.LockItem.dwLockTime+1451581200;
 				struct tm * timeinfo = localtime(&nowtime);
-				strcpy(pszTemp, "<color=0,255,0>Thï¿½i gian mï¿½ khï¿½a: %H:%M:%S %d-%m-%Y<color>");
+				strcpy(pszTemp, "<color=0,255,0>Thêi gian më khãa: %H:%M:%S %d-%m-%Y<color>");
 				strftime(pszTemp2, sizeof(pszTemp2), pszTemp, timeinfo);
 			}
 			break;
@@ -1076,7 +1114,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 						nL -= 6;
 					else
 					{
-						int k = 0;
+						int k;
 						for(k = 0; k<12; k++)
 						{
 							if(szIntro[offset+6+k] == '>') 
@@ -1096,7 +1134,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 					{
 						if (szIntro[offset+5] == '=')
 						{
-							int k = 0;
+							int k;
 							for(k = 0; k<12; k++)
 							{
 								if(szIntro[offset+5+k] == '>') 
@@ -1159,11 +1197,11 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 			sprintf(pszKeyName,"%d", m_GeneratorParam.nLuck);
 
 			MagicTab.GetString(pszKeyName,"DESC","",pszTemp,sizeof(pszTemp));
-			strcat(pszMsg, "<color=100,100,255>Thuï¿½c tï¿½nh: ");
+			strcat(pszMsg, "<color=100,100,255>Thuéc tÝnh: ");
 			strcat(pszMsg, pszTemp);
 			strcat(pszMsg, "\n");
 			MagicTab.GetString(pszKeyName,"FIT_EQUIP","",pszTemp,sizeof(pszTemp));
-			strcat(pszMsg, "<color=255,219,74>Loï¿½i trang bï¿½ cï¿½ thï¿½ khï¿½m nï¿½m: ");
+			strcat(pszMsg, "<color=255,219,74>Lo¹i trang bÞ cã thÓ kh¶m n¹m: ");
 			strcat(pszMsg, pszTemp);
 			strcat(pszMsg, "<color=255,255,255>");
 			strcat(pszMsg, "\n");
@@ -1171,7 +1209,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 
 		if(m_CommonAttrib.nLevel)
 		{
-			sprintf(pszTemp, "<color=100,100,255>Phï¿½m chï¿½t thuï¿½c tï¿½nh: <color=255,255,0>%d<color=255,255,255>", m_CommonAttrib.nLevel);
+			sprintf(pszTemp, "<color=100,100,255>PhÈm chÊt thuéc tÝnh: <color=255,255,0>%d<color=255,255,255>", m_CommonAttrib.nLevel);
 			strcat(pszMsg, pszTemp);
 		}
 	}
@@ -1186,10 +1224,10 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 		}
 		if (m_aryBaseAttrib[i].nAttribType == magic_durability_v)
 		{
-			if (GetDurability()==-1)
-				sprintf(pszTemp, "<color=255,255,0>Khï¿½ng thï¿½ phï¿½ hï¿½y<color=255,255,255>");
+			if (GetDurability() == -1)
+				sprintf(pszTemp, "<color=255,255,0>Kh«ng thÓ ph¸ hñy<color=255,255,255>");
 			else
-				sprintf(pszTemp, "ï¿½ï¿½ bï¿½n: %3d / %3d", GetDurability(), GetMaxDurability());
+				sprintf(pszTemp, "§é bÒn: %3d / %3d", GetDurability(), GetMaxDurability());
 			strcat(pszMsg, pszTemp);
 		}
 		else
@@ -1211,9 +1249,9 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 			continue;
 
 		if (Player[CLIENT_PLAYER_INDEX].m_ItemList.EnoughAttrib(&m_aryRequireAttrib[i]))
-			strcat(pszMsg, "<color=255,255,255>");
+			strcat(pszMsg, "<color=255,255,255>"); //Item mau trang
 		else
-			strcat(pszMsg, "<color=255,0,0>");
+			strcat(pszMsg, "<color=255,0,0>"); //item mau do
 
 		strcat(pszMsg, pszTemp2);
 		strcat(pszMsg, "\n");
@@ -1229,7 +1267,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 				{
 					if (i == MAX_ITEM_NORMAL_MAGICATTRIB)
 						strcat(pszMsg, "\n");
-					strcat(pszMsg, "<color=255,255,0>Chï¿½a khï¿½m nï¿½m<color=255,255,255>");
+					strcat(pszMsg, "<color=255,255,0>Ch­a kh¶m n¹m<color=255,255,255>");
 					strcat(pszMsg, "\n");
 				}
 			}
@@ -1342,7 +1380,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 	{
 		time_t nowtime= m_CommonAttrib.nExpireTime+1451581200;
 		struct tm * timeinfo = localtime(&nowtime);
-		strcpy(pszTemp, "<color=255,90,0>Thï¿½i hï¿½n sï¿½ dï¿½ng: %H:%M:%S %d-%m-%Y<color>");
+		strcpy(pszTemp, "<color=255,90,0>Thêi h¹n sö dông: %H:%M:%S %d-%m-%Y<color>");
 		strftime(pszTemp2, sizeof(pszTemp2), pszTemp, timeinfo);
 		strcat(pszMsg, "\n");
 		strcat(pszMsg,pszTemp2);
@@ -1353,7 +1391,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 	{
 		time_t nowtime = m_CommonAttrib.nExpirePoint+(KSG_GetCurSec()+1451581200);
 		struct tm * timeinfo = localtime(&nowtime);
-		strcpy(pszTemp, "<color=255,90,0>Thï¿½i hï¿½n sï¿½ dï¿½ng: %H:%M:%S %d-%m-%Y<color>");
+		strcpy(pszTemp, "<color=255,90,0>Thêi h¹n sö dông: %H:%M:%S %d-%m-%Y<color>");
 		strftime(pszTemp2, sizeof(pszTemp2), pszTemp, timeinfo);
 		strcat(pszMsg, "\n");
 		strcat(pszMsg,pszTemp2);
@@ -1382,7 +1420,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 				sprintf(pszKeyName, "NeedEq%d", m_CommonAttrib.nDetailType);
 			g_GameSetting.GetString("ActiveEquip", pszKeyName, "", szBuffer, sizeof(szBuffer));
 
-			sprintf(pszTemp, "<color=Yellow>Cï¿½n hï¿½ %s cï¿½a %s ï¿½ï¿½ kï¿½ch hoï¿½t thuï¿½c tï¿½nh ï¿½m<color>", szBuff, szBuffer);
+			sprintf(pszTemp, "<color=Yellow>CÇn hÖ %s cña %s ®Ó kÝch ho¹t thuéc tÝnh ©m<color>", szBuff, szBuffer);
 			strcat(pszMsg, "\n");	
 			strcat(pszMsg, pszTemp);	
 			strcat(pszMsg, "\n<color=255,255,255>");
@@ -1443,7 +1481,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 
 	KLuaScript * pScript = NULL;
 	g_SetFilePath("\\");
-	//ï¿½ï¿½ï¿½ï¿½Luaï¿½Å±ï¿½
+	//¼ÓÔØLua½Å±¾
 	KLuaScript Script;
 	Script.Init();
 	if (Script.Load(m_CommonAttrib.szScript)) 
@@ -1464,7 +1502,7 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 
 	if (m_CommonAttrib.nFortune)
 	{
-		sprintf(pszTemp2, "<color=255,255,0>Trï¿½ sï¿½ tï¿½i phï¿½ binh giï¿½p:<color> <color=0,255,0>%d<color>", m_CommonAttrib.nFortune);
+		sprintf(pszTemp2, "<color=255,255,0>TrÞ sè tµi phó binh gi¸p:<color> <color=0,255,0>%d<color>", m_CommonAttrib.nFortune);
 
 		strcat(pszMsg, "\n");
 		strcat(pszMsg, pszTemp2);
@@ -1475,15 +1513,28 @@ void KItem::GetDesc(char* pszMsg, bool bShowPrice, bool bPriceScale, int nActive
 		m_CommonAttrib.nTradePrice) 
 	{
 		strcat(pszMsg,"\n");
-		strcat(pszMsg, "<color=255,255,255>Giï¿½ niï¿½m yï¿½t: <color=255,255,0>");
+		strcat(pszMsg, "<color=255,255,255>Gi¸ niªm yÕt: <color=255,255,0>");
 		if (m_CommonAttrib.nTradePrice < MONEY_FLOOR)
-			sprintf(pszTemp,"%d lï¿½ï¿½ng",m_CommonAttrib.nTradePrice);
+			sprintf(pszTemp,"%d l­îng",m_CommonAttrib.nTradePrice);
 		else if ((m_CommonAttrib.nTradePrice % MONEY_FLOOR) == 0)
-			sprintf(pszTemp,"%d vï¿½n lï¿½ï¿½ng",m_CommonAttrib.nTradePrice / MONEY_FLOOR);
+			sprintf(pszTemp,"%d v¹n l­îng",m_CommonAttrib.nTradePrice / MONEY_FLOOR);
 		else
-			sprintf(pszTemp,"%d vï¿½n %d lï¿½ï¿½ng",m_CommonAttrib.nTradePrice / MONEY_FLOOR, m_CommonAttrib.nTradePrice % MONEY_FLOOR);
+			sprintf(pszTemp,"%d v¹n %d l­îng",m_CommonAttrib.nTradePrice / MONEY_FLOOR, m_CommonAttrib.nTradePrice % MONEY_FLOOR);
 		strcat(pszMsg, pszTemp);
 	}
+
+//Debug
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
+	if(Player[CLIENT_PLAYER_INDEX].m_bDebugMode)
+	{
+		char szTemp[64];
+		sprintf(szTemp, "<color=green>ItemID: [%d]<color>", m_dwID);
+		strcat(pszMsg, "\n");
+		strcat(pszMsg, szTemp);
+		strcat(pszMsg, "\n");
+	}
+#endif
+//end code
 }
 #endif
 
@@ -1635,3 +1686,27 @@ int KItem::GetSalePrice()
 
 	return (m_CommonAttrib.nPrice/BUY_SELL_SCALE)*m_CommonAttrib.nStackNum;
 }
+
+//TamLTM kham nam
+int KItem::GetColorItem()
+{
+	if (GetGenre() == item_equip)
+	{
+		if(m_nCurrentDur == 0)
+			return 5;
+		else
+		{
+			switch(m_CommonAttrib.nKind)
+			{	
+			case gold_item:
+				return 3;
+			case purple_item:
+				return 4;
+			}
+		}
+		if (m_aryMagicAttrib[0].nAttribType)
+			return 1;
+	}
+	return 0;
+}
+//End code

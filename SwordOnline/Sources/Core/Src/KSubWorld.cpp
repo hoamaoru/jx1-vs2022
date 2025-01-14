@@ -61,7 +61,17 @@ KSubWorld::KSubWorld()
 	}
 #endif
 	m_nTotalRegion = m_nWorldRegionWidth * m_nWorldRegionHeight;
-	
+
+	//TamLTM Bang hoi chiem linh thanh thi thon
+	m_dwTongName = 0;
+	memset(m_szTongName, 0, sizeof(m_szTongName));
+	memset(m_szTongNameBC, 0, sizeof(m_szTongNameBC));
+	m_dwTongNameBC = 0;
+	m_nTongT = 0;
+	m_nTongVG = 0;
+	m_bCheckTong = FALSE;
+//	g_DebugLog("m_bCheckTong 2: %d", SubWorld[0].m_bCheckTong);
+	//end code
 }
 
 KSubWorld::~KSubWorld()
@@ -287,8 +297,25 @@ BYTE	KSubWorld::TestBarrier(int nMpsX, int nMpsY)
 
 #ifndef _SERVER
 	BYTE bRet = (BYTE)g_ScenePlace.GetObstacleInfo(nMpsX, nMpsY);
-	if (bRet != Obstacle_NULL)
+
+//	g_DebugLog("TamLTM Debug GetObstacleInfo");
+
+	if (bRet != Obstacle_NULL) //1
+	{
+		//TamLTM Debug Check Move Barrier Test Barrier
+	//	if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].isCheckNotBarrierPlayer)
+	//	{
+		//	Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].DoAutoMoveBarrier(0);
+		//	g_DebugLog("TamLTM Debug Check Move Barrier Test Barrier true");
+	//	}
+		//End code
 		return bRet;
+	}
+	else if (bRet == Obstacle_NULL)
+	{
+	//	g_DebugLog("TamLTM Debug Check Move Barrier Test Barrier bRet == Obstacle_NULL");
+	}
+
 	return m_Region[nRegion].GetBarrier(nCellX, nCellY, nOffX, nOffY);
 #endif
 #ifdef _SERVER
@@ -296,6 +323,7 @@ BYTE	KSubWorld::TestBarrier(int nMpsX, int nMpsY)
 #endif
 }
 
+//Move NPC
 BYTE KSubWorld::TestBarrier(int nRegion, int nMapX, int nMapY, int nDx, int nDy, int nChangeX, int nChangeY)
 {
 	int nOldMapX = nMapX;
@@ -334,6 +362,8 @@ BYTE KSubWorld::TestBarrier(int nRegion, int nMapX, int nMapY, int nDx, int nDy,
 
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_LEFT];
 		nMapX += m_nRegionWidth;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 1");
 	}
 	else if (nMapX >= m_nRegionWidth)
 	{
@@ -341,6 +371,8 @@ BYTE KSubWorld::TestBarrier(int nRegion, int nMapX, int nMapY, int nDx, int nDy,
 			return 0xff;
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_RIGHT];
 		nMapX -= m_nRegionWidth;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 2");
 	}
 	
 	if (nMapY < 0)
@@ -349,6 +381,8 @@ BYTE KSubWorld::TestBarrier(int nRegion, int nMapX, int nMapY, int nDx, int nDy,
 			return 0xff;
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_UP];;
 		nMapY += m_nRegionHeight;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 3");
 	}
 	else if (nMapY >= m_nRegionHeight)
 	{
@@ -356,6 +390,8 @@ BYTE KSubWorld::TestBarrier(int nRegion, int nMapX, int nMapY, int nDx, int nDy,
 			return 0xff;
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_DOWN];
 		nMapY -= m_nRegionHeight;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 4");
 	}
 
 	int nXf, nYf;
@@ -370,8 +406,17 @@ BYTE KSubWorld::TestBarrier(int nRegion, int nMapX, int nMapY, int nDx, int nDy,
 	int nMpsX, nMpsY;
 	Map2Mps(nRegion, nMapX, nMapY, nDx, nDy, &nMpsX, &nMpsY);
 	BYTE bRet = (BYTE)g_ScenePlace.GetObstacleInfo(nMpsX, nMpsY);
+
+	 //2 Chay lien hoi tuc
 	if (bRet != Obstacle_NULL)
+	{
+		//TamLTM Debug Check Move Barrier Test Barrier
+	//	g_DebugLog("TamLTM Debug Check Move Barrier Test Barrier 2");
+	//	Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].CheckMoveBarrier();
+		//End code
 		return bRet;
+	}
+
 //	if (nMapX == nOldMapX && nMapY == nOldMapY && nRegion == nOldRegion)
 //		return Obstacle_NULL;
 
@@ -421,6 +466,8 @@ BYTE KSubWorld::TestBarrierMin(int nRegion, int nMapX, int nMapY, int nDx, int n
 
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_LEFT];
 		nMapX += m_nRegionWidth;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 1");
 	}
 	else if (nMapX >= m_nRegionWidth)
 	{
@@ -428,6 +475,8 @@ BYTE KSubWorld::TestBarrierMin(int nRegion, int nMapX, int nMapY, int nDx, int n
 			return 0xff;
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_RIGHT];
 		nMapX -= m_nRegionWidth;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 2");
 	}
 	
 	if (nMapY < 0)
@@ -436,6 +485,8 @@ BYTE KSubWorld::TestBarrierMin(int nRegion, int nMapX, int nMapY, int nDx, int n
 			return 0xff;
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_UP];;
 		nMapY += m_nRegionHeight;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 3");
 	}
 	else if (nMapY >= m_nRegionHeight)
 	{
@@ -443,6 +494,8 @@ BYTE KSubWorld::TestBarrierMin(int nRegion, int nMapX, int nMapY, int nDx, int n
 			return 0xff;
 		nRegion = m_Region[nRegion].m_nConnectRegion[DIR_DOWN];
 		nMapY -= m_nRegionHeight;
+
+	//	g_DebugLog("TamLTM Debug Check Move Barrier DIR_LEFT 4");
 	}
 
 #ifndef _SERVER
@@ -450,8 +503,17 @@ BYTE KSubWorld::TestBarrierMin(int nRegion, int nMapX, int nMapY, int nDx, int n
 	int nMpsX, nMpsY;
 	Map2Mps(nRegion, nMapX, nMapY, nDx, nDy, &nMpsX, &nMpsY);
 	BYTE bRet = (BYTE)g_ScenePlace.GetObstacleInfoMin(nMpsX, nMpsY, nDx & 0x000003ff, nDy & 0x000003ff);
-	if (bRet != Obstacle_NULL)
+
+	//TamLTM Debug Check Move Barrier Test Barrier
+//	g_DebugLog("TamLTM Debug Check Move Barrier Test Barrier 3");
+//	Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].CheckTimerMoveBarrier();
+	//End code*/
+
+	//3 Kiem tra va Chay lien tuc
+	if (bRet != Obstacle_NULL) 
+	{
 		return bRet;
+	}
 
 	if (nMapX == nOldMapX && nMapY == nOldMapY && nRegion == nOldRegion)
 		return Obstacle_NULL;
@@ -477,13 +539,47 @@ DWORD KSubWorld::GetTrap(int nMpsX, int nMpsY)
 	return m_Region[nRegion].GetTrap(nMapX, nMapY);
 }
 
+//TamLTM Bang hoi chiem linh thanh thi thon
+void KSubWorld::LoadTong(char* szMapTongName,int nMapTongId,int nMapTongT,int nMapTongVG,char* szMapTongNameBC,int nMapTongBCId,int nCheckMap)
+{
+//	g_DebugLog("nCheckMap %d", nCheckMap);
+	if (nCheckMap)
+	{
+		m_dwTongName = (DWORD)nMapTongId;
+		memcpy(m_szTongName, szMapTongName,sizeof(m_szTongName));
+		memcpy(m_szTongNameBC, szMapTongNameBC,sizeof(m_szTongNameBC));
+		m_nTongT = nMapTongT;
+		m_nTongVG = nMapTongVG;
+		m_dwTongNameBC = (DWORD) nMapTongBCId;
+		m_bCheckTong = TRUE;
+		
+//		g_DebugLog("m_bCheckTong here %d", m_bCheckTong);
+	}
+	else
+	{
+		m_dwTongName = 0;
+		memset(m_szTongName, 0, sizeof(m_szTongName));
+		memset(m_szTongNameBC, 0, sizeof(m_szTongNameBC));
+		m_dwTongNameBC = 0;
+		m_nTongT = 0;
+		m_nTongVG = 0;
+		m_bCheckTong = FALSE;
+	}
+
+}
+//end code
+
 BYTE KSubWorld::GetBarrier(int nMpsX, int nMpsY)
 {
+	//TamLTM Debug
+//	g_DebugLog("KSubWorld GetBarrier");
+
 #ifdef _SERVER
 	int nRegion, nMapX, nMapY, nOffX, nOffY;
 	Mps2Map(nMpsX, nMpsY, &nRegion, &nMapX, &nMapY, &nOffX, &nOffY);
 	
 	if (nRegion == -1)
+	//	g_DebugLog("KSubWorld GetBarrier");
 		return 0xff;
 	return m_Region[nRegion].GetBarrier(nMapX, nMapY, (nOffX >> 10), (nOffY) >> 10);
 #else
@@ -538,12 +634,12 @@ BOOL KSubWorld::LoadMap(int nId)
 
 	char	szPath[MAX_PATH];
 	sprintf(szPath, "\\maps\\%s", szPathName);
-	int		nIdx =0;
+	int		nX, nY, nIdx;
 
 	// 加载地图障碍，并连接各Region
-	for (int nY = 0; nY < m_nWorldRegionHeight; nY++)
+	for (nY = 0; nY < m_nWorldRegionHeight; nY++)
 	{
-		for (int nX = 0; nX < m_nWorldRegionWidth; nX++)
+		for (nX = 0; nX < m_nWorldRegionWidth; nX++)
 		{
 			char	szRegionPath[128];
 
@@ -571,9 +667,9 @@ BOOL KSubWorld::LoadMap(int nId)
 	}
 
 	sprintf(szPath, "\\maps\\%s", szPathName);
-	for (int nY = 0; nY < m_nWorldRegionHeight; nY++)
+	for (nY = 0; nY < m_nWorldRegionHeight; nY++)
 	{
-		for (int nX = 0; nX < m_nWorldRegionWidth; nX++)
+		for (nX = 0; nX < m_nWorldRegionWidth; nX++)
 		{
 			g_SetFilePath(szPath);
 			m_Region[nY * m_nWorldRegionWidth + nX].LoadObject(m_nIndex,nX + m_nRegionBeginX, nY + m_nRegionBeginY);
@@ -587,6 +683,196 @@ BOOL KSubWorld::LoadMap(int nId)
 #ifndef _SERVER
 BOOL KSubWorld::LoadMap(int nId, int nRegion)
 {
+/*	static int	nXOff[8] = {0, -1, -1, -1, 0,  1, 1, 1};
+	static int	nYOff[8] = {1, 1,  0,  -1, -1, -1, 0, 1};
+	KIniFile	IniFile;
+	if (nId <= 0 && nId > 150)
+	{
+		nId = m_SubWorldID;
+		return TRUE;
+	}
+
+	if (!m_Region)
+	{
+//		g_DebugLog("LOAD MAP 2");
+		m_Region = new KRegion[MAX_REGION];
+	}
+
+	if (nId != m_SubWorldID)
+	{
+//		g_DebugLog("LOAD MAP 1");
+//		g_DebugLog("ID %d %d",nId, m_SubWorldID);
+//		g_DebugLog("Region: %d",m_Region);
+		SubWorld[0].Close();
+		g_ScenePlace.ClosePlace();
+		// NpcSet.RemoveAll(Player[CLIENT_PLAYER_INDEX].m_nIndex); -- later finish it. spe
+
+		char	szKeyName[32], szPathName[FILE_NAME_LENGTH];
+
+//		g_DebugLog("ID 2: %d %d",nId, m_SubWorldID);
+
+		g_SetFilePath("\\settings");
+		IniFile.Load("MapList.ini");
+		sprintf(szKeyName, "%d", nId);
+		IniFile.GetString("List", szKeyName, "", szPathName, sizeof(szPathName));
+
+		sprintf(m_szMapPath, "\\maps\\%s", szPathName);
+
+		g_ScenePlace.OpenPlace(nId);
+		m_SubWorldID = nId;
+		m_nRegionWidth = KScenePlaceRegionC::RWPP_AREGION_WIDTH / 32;
+		m_nRegionHeight = KScenePlaceRegionC::RWPP_AREGION_HEIGHT / 32;
+		m_nCellWidth = 32;
+		m_nCellHeight = 32;
+		Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_RegionIndex = -1;
+	}
+	int nX = LOWORD(nRegion);
+	int nY = HIWORD(nRegion);
+
+	int nIdx = FindRegion(nRegion);
+
+	if (nIdx < 0)
+	{
+//		g_DebugLog("LOAD MAP 3:");
+//		g_DebugLog("nIDx %d:",nIdx);
+		nIdx = m_ClientRegionIdx[0];
+
+		if (m_Region[nIdx].Load(nX, nY))
+		{
+			m_Region[nIdx].m_nIndex = nIdx;
+			m_Region[nIdx].Init(m_nRegionWidth, m_nRegionHeight);
+			m_Region[nIdx].LoadObject(0, nX, nY, m_szMapPath);
+		}
+	}
+	
+	g_ScenePlace.SetFocusPosition(m_Region[nIdx].m_nRegionX, m_Region[nIdx].m_nRegionY, 0);
+	m_ClientRegionIdx[0] = nIdx;
+
+	for (int i = 0; i < 8; i++)
+	{
+		int nConIdx;
+		nConIdx = FindRegion(m_Region[nIdx].m_nConRegionID[i]);
+
+		if (nConIdx < 0)
+		{
+			nConIdx = FindFreeRegion(nX, nY);
+			_ASSERT(nConIdx >= 0);
+
+			if (m_Region[nConIdx].Load(nX + nXOff[i], nY + nYOff[i]))
+			{
+				m_Region[nConIdx].m_nIndex = nConIdx;
+				m_Region[nConIdx].Init(m_nRegionWidth, m_nRegionHeight);
+				m_Region[nConIdx].LoadObject(0, nX + nXOff[i], nY + nYOff[i], m_szMapPath);
+			}
+			else
+			{
+				m_Region[nConIdx].m_nIndex = -1;
+				m_Region[nConIdx].m_RegionID = -1;
+				nConIdx = -1;
+			}
+		}
+		m_ClientRegionIdx[i + 1] = nConIdx;
+		m_Region[nIdx].m_nConnectRegion[i] = nConIdx;
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[0] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[0] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[1] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[7] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[4] = nIdx;
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[2] = m_Region[nIdx].m_nConnectRegion[1];
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[3] = m_Region[nIdx].m_nConnectRegion[2];
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[5] = m_Region[nIdx].m_nConnectRegion[6];
+		m_Region[m_Region[nIdx].m_nConnectRegion[0]].m_nConnectRegion[6] = m_Region[nIdx].m_nConnectRegion[7];
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[1] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[0] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[1] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[7] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[4] = m_Region[nIdx].m_nConnectRegion[2];
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[2] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[3] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[5] = nIdx;
+		m_Region[m_Region[nIdx].m_nConnectRegion[1]].m_nConnectRegion[6] = m_Region[nIdx].m_nConnectRegion[0];
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[2] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[0] = m_Region[nIdx].m_nConnectRegion[1];
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[1] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[7] = m_Region[nIdx].m_nConnectRegion[0];
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[4] = m_Region[nIdx].m_nConnectRegion[3];
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[2] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[3] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[5] = m_Region[nIdx].m_nConnectRegion[4];
+		m_Region[m_Region[nIdx].m_nConnectRegion[2]].m_nConnectRegion[6] = nIdx;
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[3] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[0] = m_Region[nIdx].m_nConnectRegion[2];
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[1] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[2] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[3] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[4] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[5] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[6] = m_Region[nIdx].m_nConnectRegion[4];
+		m_Region[m_Region[nIdx].m_nConnectRegion[3]].m_nConnectRegion[7] = nIdx;
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[4] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[0] = nIdx;
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[1] = m_Region[nIdx].m_nConnectRegion[2];
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[2] = m_Region[nIdx].m_nConnectRegion[3];
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[3] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[4] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[5] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[6] = m_Region[nIdx].m_nConnectRegion[5];
+		m_Region[m_Region[nIdx].m_nConnectRegion[4]].m_nConnectRegion[7] = m_Region[nIdx].m_nConnectRegion[6];
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[5] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[0] = m_Region[nIdx].m_nConnectRegion[6];
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[1] = nIdx;
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[2] = m_Region[nIdx].m_nConnectRegion[4];
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[3] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[4] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[5] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[6] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[5]].m_nConnectRegion[7] = -1;
+	}
+
+	if (m_Region[nIdx].m_nConnectRegion[6] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[0] = m_Region[nIdx].m_nConnectRegion[7];
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[1] = m_Region[nIdx].m_nConnectRegion[0];
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[2] = nIdx;
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[3] = m_Region[nIdx].m_nConnectRegion[4];
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[4] = m_Region[nIdx].m_nConnectRegion[5];
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[5] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[6] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[6]].m_nConnectRegion[7] = -1;
+	}
+	
+	if (m_Region[nIdx].m_nConnectRegion[7] >= 0)
+	{
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[0] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[1] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[2] = m_Region[nIdx].m_nConnectRegion[0];
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[3] = nIdx;
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[4] = m_Region[nIdx].m_nConnectRegion[6];
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[5] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[6] = -1;
+		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[7] = -1;
+	}
+
+	return TRUE; // */
+
 	static int	nXOff[8] = {0, -1, -1, -1, 0,  1, 1, 1};
 	static int	nYOff[8] = {1, 1,  0,  -1, -1, -1, 0, 1};
 	KIniFile	IniFile;
@@ -623,8 +909,8 @@ BOOL KSubWorld::LoadMap(int nId, int nRegion)
 
 		m_nRegionWidth = KScenePlaceRegionC::RWPP_AREGION_WIDTH / 32;
 		m_nRegionHeight = KScenePlaceRegionC::RWPP_AREGION_HEIGHT / 32;
-		m_nCellWidth = defLOGIC_CELL_WIDTH;
-		m_nCellHeight = defLOGIC_CELL_HEIGHT;
+		m_nCellWidth = 32;
+		m_nCellHeight = 32;
 		Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_RegionIndex = -1;
 	}
 
@@ -768,7 +1054,7 @@ BOOL KSubWorld::LoadMap(int nId, int nRegion)
 		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[6] = -1;
 		m_Region[m_Region[nIdx].m_nConnectRegion[7]].m_nConnectRegion[7] = -1;
 	}
-	return TRUE;
+	return TRUE; //*/
 }
 #endif
 
@@ -922,7 +1208,10 @@ void KSubWorld::NpcChangeRegion(int nSrcRnidx, int nDesRnIdx, int nIdx)
 		m_Region[nDest].AddNpc(nIdx);
 		
 		if (Player[CLIENT_PLAYER_INDEX].m_nIndex == nIdx)
+		{
 			LoadMap(m_SubWorldID, m_Region[nDest].m_RegionID);
+		}
+
 		Npc[nIdx].m_dwRegionID = m_Region[nDest].m_RegionID;
 		Npc[nIdx].m_RegionIndex = nDest;
 	}
@@ -1052,6 +1341,8 @@ void KSubWorld::GetMps(int *nX, int *nY, int nSpeed, int nDir, int nMaxDir /* = 
 {
 	*nX += (g_DirCos(nDir, nMaxDir) * nSpeed) >> 10;
 	*nY += (g_DirSin(nDir, nMaxDir) * nSpeed) >> 10;
+
+	//g_DebugLog("GetMps g_DirCos g_DirSin");
 }
 #ifdef _SERVER
 BOOL KSubWorld::SendSyncData(int nIdx, int nClient)
@@ -1062,6 +1353,15 @@ BOOL KSubWorld::SendSyncData(int nIdx, int nClient)
 	WorldSync.Weather = m_nWeather;
 	WorldSync.Frame = m_dwCurrentTime;
 	WorldSync.SubWorld = m_SubWorldID;
+
+	//TamLTM Bang hoi chiem linh thanh thi thon
+	memcpy(WorldSync.TongName, m_szTongName,sizeof(WorldSync.TongName));
+	memcpy(WorldSync.TongNameBC, m_szTongNameBC,sizeof(WorldSync.TongNameBC));
+	WorldSync.TongT = m_nTongT;
+	WorldSync.TongVG = m_nTongVG;
+	WorldSync.CheckTong = (BYTE)m_bCheckTong;
+//	g_DebugLog("WorldSync.CheckTong %d", WorldSync.CheckTong);
+	//end code
 
 	if (SUCCEEDED(g_pServer->PackDataToClient(nClient, (BYTE*)&WorldSync, sizeof(WORLD_SYNC))))
 	{
@@ -1341,12 +1641,14 @@ void KSubWorld::GetFreeObjPos(POINT& pos)
 
 BOOL KSubWorld::CanPutObj(POINT pos)
 {
+	//g_DebugLog("CanPutObj(POINT pos)");
 	int nRegion, nMapX, nMapY, nOffX, nOffY;
 	Mps2Map(pos.x, pos.y, &nRegion, &nMapX, &nMapY, &nOffX, &nOffY);
 
 	if (nRegion >= 0)
 	{
 		if (m_Region[nRegion].GetBarrier(nMapX, nMapY, nOffX, nOffY))
+		//	g_DebugLog("CanPutObj(POINT pos) GetBarrier");
 			return FALSE;
 		if (m_Region[nRegion].GetRef(nMapX, nMapY, obj_object))
 			return FALSE;

@@ -3,7 +3,7 @@
 //
 // File:	KNpcRes.cpp
 // Date:	2002.01.06
-// Code:	ï¿½ß³ï¿½ï¿½ï¿½ï¿½ï¿½
+// Code:	±ß³ÇÀË×Ó
 // Desc:	Obj Class
 //---------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@
 
 #define	PREFIX_MANTLE_LEVEL 1
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º	¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KNpcRes::KNpcRes()
 {
@@ -63,11 +63,11 @@ KNpcRes::KNpcRes()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½Ê¼ï¿½ï¿½
+//	¹¦ÄÜ£º	³õÊ¼»¯
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::Init(char *lpszNpcName, KNpcResList *pNpcResList)
 {
-	// ï¿½ï¿½Ê¼ï¿½ï¿½ NpcResNode
+	// ³õÊ¼»¯ NpcResNode
 	if (!lpszNpcName || !lpszNpcName[0])
 		return FALSE;
 	m_pcResNode = pNpcResList->AddNpcRes(lpszNpcName);
@@ -106,7 +106,7 @@ BOOL	KNpcRes::Init(char *lpszNpcName, KNpcResList *pNpcResList)
 			m_pcResNode->GetFileName(i, m_nAction, 0, "", szBuffer, sizeof(szBuffer),true);
 			m_cNpcEffectImage[i].SetSprFile(szBuffer, m_pcResNode->GetTotalFrames(i, m_nAction, 0, MAX_PART, true), m_pcResNode->GetTotalDirs(i, m_nAction, 0, MAX_PART, true), m_pcResNode->GetInterval(i, m_nAction, 0, 0,true));
 		}
-		// ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// Èç¹û´Ë²¿¼þ²»´æÔÚ£¬¶ÔÓ¦µÄÎÄ¼þÃû¶¼Ìî¿Õ
 		else
 		{
 			m_cNpcImage[i].Release();
@@ -160,7 +160,7 @@ BOOL	KNpcRes::Init(char *lpszNpcName, KNpcResList *pNpcResList)
 
 void	KNpcRes::_Init(char *lpszNpcName, KNpcResList *pNpcResList)
 {
-	// ï¿½ï¿½Ê¼ï¿½ï¿½ NpcResNode
+	// ³õÊ¼»¯ NpcResNode
 	if (!lpszNpcName || !lpszNpcName[0])
 		return;
 	m_pcResNode = pNpcResList->AddNpcRes(lpszNpcName);
@@ -199,7 +199,7 @@ void	KNpcRes::_Init(char *lpszNpcName, KNpcResList *pNpcResList)
 			m_pcResNode->GetFileName(i, m_nAction, 0, "", szBuffer, sizeof(szBuffer),true);
 			m_cNpcEffectImage[i].SetSprFile(szBuffer, m_pcResNode->GetTotalFrames(i, m_nAction, 0, MAX_PART, true), m_pcResNode->GetTotalDirs(i, m_nAction, 0, MAX_PART, true), m_pcResNode->GetInterval(i, m_nAction, 0, 0,true));
 		}
-		// ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// Èç¹û´Ë²¿¼þ²»´æÔÚ£¬¶ÔÓ¦µÄÎÄ¼þÃû¶¼Ìî¿Õ
 		else
 		{
 			m_cNpcImage[i].Release();
@@ -236,7 +236,7 @@ void	KNpcRes::Remove(int nNpcIdx)
 	//m_cNpcBlur.Remove();
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	»æÖÆ
 //---------------------------------------------------------------------------
 void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bInMenu, BOOL bPaintBody)
 {
@@ -250,10 +250,10 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 	if (!m_pcResNode)
 		return;
 
-	// ï¿½â²¿ï¿½ï¿½ï¿½Æ»ï¿½Ö¡
+	// Íâ²¿¿ØÖÆ»»Ö¡
 	if (nAllFrame > 0)
 	{
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½Ç°Ö¡
+		// ¼ÆËãÒõÓ°µ±Ç°Ö¡
 		nGetDir = this->m_cNpcShadow.m_nTotalDir;
 		if (nGetDir <= 0)
 			nGetDir = 1;
@@ -264,9 +264,9 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 		nCurFrameNo = nCurDirNo * (nGetFrame / nGetDir) + (nGetFrame / nGetDir) * nCurFrame / nAllFrame;
 		this->m_cNpcShadow.SetCurFrame(nCurFrameNo);
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ¸÷¸ö²¿¼þ
 		nFirst = 0;
-		// ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ç°ï¿½ï¿½
+		// ÕÒµ½¶¯»­µÄµ±Ç°èå
 		for (i = 0; i < MAX_PART; i++)
 		{
 			if (m_cNpcImage[i].CheckExist())
@@ -312,13 +312,13 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 	}
 	else
 	{
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½Ç°Ö¡
+		// ¼ÆËãÒõÓ°µ±Ç°Ö¡
 		if (m_cNpcShadow.SetCurDir64(nDir))
 		{
 			m_cNpcShadow.GetNextFrame();
 		}
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ¸÷¸ö²¿¼þ
 		for (i = 0; i < MAX_PART; i++)
 		{
 			if ( m_cNpcEffectImage[i].CheckExist() )
@@ -340,7 +340,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 		}
 	}
 
-	// ×´Ì¬ï¿½ï¿½Ð§ï¿½ï¿½Ö¡
+	// ×´Ì¬ÌØÐ§»»Ö¡
 	for (i = 0; i < MAX_SKILL_STATE; i++)
 		m_cStateSpr[i].m_SprContrul.GetNextFrame();
 	if ( m_cSpecialSpr.GetNextFrame(FALSE) )
@@ -349,20 +349,20 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 			m_cSpecialSpr.Release();
 	}
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ²¥·ÅÉùÒô
 	if (nCurFrame < nAllFrame / 4)
 	{
 		this->GetSoundName();
 		this->PlaySound(this->m_nXpos, this->m_nYpos);
 	}
 
-	// ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½
+	// µÃµ½²¿¼þÅÅÁÐË³Ðò
 	if ( !m_pcResNode->GetSort(m_nAction, nCurDirNo, nCurFrameNo, m_nSortTable, MAX_PART) )
 		return;
 
-// ---------------------------------- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ -------------------------------
+// ---------------------------------- ´¦Àí»æÖÆÁÐ±í -------------------------------
 	nPos = 0;
-	// ï¿½ï¿½Ó°ï¿½Ä¼ï¿½ï¿½ï¿½
+	// ÒõÓ°ÎÄ¼þÃû
 	if ((IgnoreShowRes()==FALSE) && bPaintBody)
 	{
 		strcpy(m_cDrawFile[nPos].szImage, this->m_cNpcShadow.m_szName);
@@ -373,7 +373,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 		m_cDrawFile[nPos].oPosition.nZ = 0;//nScreenZ;
 		nPos++;
 	}
-	// ï¿½Åµï¿½×´Ì¬ï¿½ï¿½Ð§
+	// ½Åµ××´Ì¬ÌØÐ§
 	for ( i = MAX_SKILL_STATE - (MAX_SKILL_STATE/3); i < MAX_SKILL_STATE; i++)
 	{
 		if (m_cStateSpr[i].m_nID)
@@ -391,7 +391,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 	g_pRepresent->DrawPrimitives(nPos, m_cDrawFile, RU_T_IMAGE, bInMenu);
 	nPos = 0;
 
-	// ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ð§(npcï¿½ï¿½ï¿½ï¿½)
+	// ÉíÉÏ×´Ì¬ÌØÐ§(npc±³ºó)
 	for (i = (MAX_SKILL_STATE/3); i < MAX_SKILL_STATE - (MAX_SKILL_STATE/3); i++)
 	{
 		if (m_cStateSpr[i].m_nID)
@@ -416,7 +416,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 	g_pRepresent->DrawPrimitives(nPos, m_cDrawFile, RU_T_IMAGE, bInMenu);
 	nPos = 0;
 
-	// npcï¿½ï¿½ï¿½ï¿½
+	// npc²¿¼þ
 	if (bPaintBody)
 	{
 		for (i = 0; i < MAX_PART; i++)
@@ -476,7 +476,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 		g_pRepresent->DrawPrimitives(nPos, m_cDrawFile, RU_T_IMAGE, bInMenu);
 		nPos = 0;
 	}
-	// ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ð§(npcï¿½ï¿½Ç°)
+	// ÉíÉÏ×´Ì¬ÌØÐ§(npcÉíÇ°)
 	for (i = (MAX_SKILL_STATE/3); i < MAX_SKILL_STATE - (MAX_SKILL_STATE/3); i++)
 	{
 		if (m_cStateSpr[i].m_nID)
@@ -497,7 +497,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 			}
 		}
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½sprï¿½Ä¼ï¿½
+	// ÌØÊâµÄÖ»²¥·ÅÒ»±éµÄsprÎÄ¼þ
 	if (m_cSpecialSpr.m_szName[0])
 	{
 		strcpy(m_cDrawFile[nPos].szImage, m_cSpecialSpr.m_szName);
@@ -514,7 +514,7 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 	g_pRepresent->DrawPrimitives(nPos, m_cDrawFile, RU_T_IMAGE, bInMenu);
 
 	nPos = 0;
-	// Í·ï¿½ï¿½×´Ì¬ï¿½ï¿½Ð§
+	// Í·¶¥×´Ì¬ÌØÐ§
 	for ( i = 0; i < (MAX_SKILL_STATE/3); i++)
 	{
 		if (m_cStateSpr[i].m_nID)
@@ -539,9 +539,9 @@ void	KNpcRes::Draw(int nNpcIdx, int nDir, int nAllFrame, int nCurFrame, BOOL bIn
 
 	nPos = 0;
 
-// -------------------------------- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ end -----------------------------
+// -------------------------------- ´¦Àí»æÖÆÁÐ±í end -----------------------------
 
-// ----------------------------------- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó° ----------------------------------
+// ----------------------------------- ´¦Àí²ÐÓ° ----------------------------------
 	int j = 0;
 	m_cNpcBlur.ChangeAlpha();
 	if (m_nBlurState == TRUE && m_cNpcBlur.NowGetBlur())
@@ -588,7 +588,7 @@ void KNpcRes::GetResFile(int nActionNo, char *lpszSprName)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨Í·¿øÀàÐÍ
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::SetHelm(int nHelmType)
 {
@@ -617,7 +617,7 @@ BOOL	KNpcRes::SetHelm(int nHelmType)
 				m_pcResNode->GetFileName(i, m_nAction, nHelmType, "", szBuffer, sizeof(szBuffer));
 				m_cNpcImage[i].SetSprFile(szBuffer, m_pcResNode->GetTotalFrames(i, m_nAction, nHelmType, MAX_PART), m_pcResNode->GetTotalDirs(i, m_nAction, nHelmType, MAX_PART), m_pcResNode->GetInterval(i, m_nAction, nHelmType, 0));
 			}
-			// ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			// Èç¹û´Ë²¿¼þ²»´æÔÚ£¬¶ÔÓ¦µÄÎÄ¼þÃû¶¼Ìî¿Õ
 			else
 			{
 				m_cNpcImage[i].Release();
@@ -627,7 +627,7 @@ BOOL	KNpcRes::SetHelm(int nHelmType)
 	return TRUE;
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨¿ø¼×ÀàÐÍ
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::SetArmor(int nArmorType, int nMantleType)
 {
@@ -669,7 +669,7 @@ BOOL	KNpcRes::SetArmor(int nArmorType, int nMantleType)
 				m_cNpcImage[i].SetSprFile(szBuffer, m_pcResNode->GetTotalFrames(i, m_nAction, nArmorType, MAX_PART), m_pcResNode->GetTotalDirs(i, m_nAction, nArmorType, MAX_PART), m_pcResNode->GetInterval(i, m_nAction, nArmorType, 0));
 			}
 		}
-		// ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// Èç¹û´Ë²¿¼þ²»´æÔÚ£¬¶ÔÓ¦µÄÎÄ¼þÃû¶¼Ìî¿Õ
 		else
 		{
 			m_cNpcImage[i].Release();
@@ -689,7 +689,7 @@ BOOL	KNpcRes::SetArmor(int nArmorType, int nMantleType)
 			else
 				m_cNpcImage[i].Release();
 		}
-		// ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// Èç¹û´Ë²¿¼þ²»´æÔÚ£¬¶ÔÓ¦µÄÎÄ¼þÃû¶¼Ìî¿Õ
 		else
 		{
 			m_cNpcImage[i].Release();
@@ -698,7 +698,7 @@ BOOL	KNpcRes::SetArmor(int nArmorType, int nMantleType)
 	return TRUE;
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨ÎäÆ÷ÀàÐÍ
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::SetWeapon(int nWeaponType)
 {
@@ -841,7 +841,7 @@ BOOL	KNpcRes::SetWeapon(int nWeaponType)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨ÂíÆ¥ÀàÐÍ
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::SetHorse(int nHorseType)
 {
@@ -875,7 +875,7 @@ BOOL	KNpcRes::SetHorse(int nHorseType)
 	return TRUE;
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨¶¯×÷ÀàÐÍ
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::SetAction(int nDoing)
 {
@@ -1018,7 +1018,7 @@ BOOL	KNpcRes::SetAction(int nDoing)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨ÊÇ·ñÆïÂí
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::SetRideHorse(BOOL bRideHorse)
 {
@@ -1178,7 +1178,7 @@ BOOL	KNpcRes::IgnoreShowRes()
 	return FALSE;
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ npc Î»ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨ npc Î»ÖÃ
 //---------------------------------------------------------------------------
 void	KNpcRes::SetPos(int nNpcIdx, int x, int y, int z, BOOL bFocus, BOOL bMenu)
 {
@@ -1215,7 +1215,7 @@ void	KNpcRes::SetPos(int nNpcIdx, int x, int y, int z, BOOL bFocus, BOOL bMenu)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨×´Ì¬ï¿½ï¿½Ð§
+//	¹¦ÄÜ£º	Éè¶¨×´Ì¬ÌØÐ§
 //---------------------------------------------------------------------------
 void	KNpcRes::SetState(BYTE *pNpcStateList, KNpcResList *pNpcResList)
 {
@@ -1227,7 +1227,7 @@ void	KNpcRes::SetState(BYTE *pNpcStateList, KNpcResList *pNpcResList)
 	int		nType, nPlayType, nBackStart, nBackEnd, nTotalFrame, nTotalDir, nInterVal;
 	char	szBuffer[80];
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½Ç·ï¿½ÒªÍ£Ö¹
+	// ¼ì²éÏÖÓÐµÄÊÇ·ñÒªÍ£Ö¹
 	memset(nFindFlag, 0, sizeof(nFindFlag));
 
 	for (i = 0; i < MAX_SKILL_STATE; i++)
@@ -1251,7 +1251,7 @@ void	KNpcRes::SetState(BYTE *pNpcStateList, KNpcResList *pNpcResList)
 	{
 		if (*(pNpcStateList + i) <= 0)
 			continue;
-		// ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ¼ì²éÊÇ·ñÒÑ¾­´æÔÚ
 		nFind = 0;
 		for (j = 0; j < MAX_SKILL_STATE; j++)
 		{
@@ -1276,7 +1276,7 @@ void	KNpcRes::SetState(BYTE *pNpcStateList, KNpcResList *pNpcResList)
 		{
 			if (m_cStateSpr[j].m_nID == 0)
 			{
-				// ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½
+				// Ìí¼ÓÐÂµÄ
 				m_cStateSpr[j].Release();
 				m_cStateSpr[j].m_nID = *(pNpcStateList + i);
 				m_cStateSpr[j].m_nType = nType;
@@ -1291,7 +1291,7 @@ void	KNpcRes::SetState(BYTE *pNpcStateList, KNpcResList *pNpcResList)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sprï¿½Ä¼ï¿½
+//	¹¦ÄÜ£º	Éè¶¨ÌØÊâµÄÖ»²¥·ÅÒ»±éµÄËæÉísprÎÄ¼þ
 //---------------------------------------------------------------------------
 void	KNpcRes::SetSpecialSpr(char *lpszSprName)
 {
@@ -1309,7 +1309,7 @@ void	KNpcRes::SetSpecialSpr(char *lpszSprName)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½set menu state spr
+//	¹¦ÄÜ£ºset menu state spr
 //---------------------------------------------------------------------------
 void	KNpcRes::SetMenuStateSpr(int nMenuState)
 {
@@ -1341,8 +1341,8 @@ void	KNpcRes::SetMenuStateSpr(int nMenuState)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½Ó°ï¿½ò¿ª¹Ø±ï¿½
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	bBlur	if == TRUE  ï¿½ï¿½  if == FLASE  ï¿½Ø±ï¿½
+//	¹¦ÄÜ£º	²ÐÓ°´ò¿ª¹Ø±Õ
+//	²ÎÊý£º	bBlur	if == TRUE  ´ò¿ª  if == FLASE  ¹Ø±Õ
 //---------------------------------------------------------------------------
 void	KNpcRes::SetBlur(BOOL bBlur)
 {
@@ -1386,7 +1386,7 @@ void KNpcRes::CreateBlur(int nNpcIdx, int nRange, int nDir)
 	}
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½Ãµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Ä¼ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	»ñµÃµ±Ç°¶¯×÷µÄÒôÐ§ÎÄ¼þÃû
 //---------------------------------------------------------------------------
 void	KNpcRes::GetSoundName()
 {
@@ -1395,7 +1395,7 @@ void	KNpcRes::GetSoundName()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½Åµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
+//	¹¦ÄÜ£º	²¥·Åµ±Ç°¶¯×÷µÄÒôÐ§
 //---------------------------------------------------------------------------
 void	KNpcRes::PlaySound(int nX, int nY)
 {
@@ -1404,7 +1404,7 @@ void	KNpcRes::PlaySound(int nX, int nY)
 
 	int		nCenterX = 0, nCenterY = 0, nCenterZ = 0;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½Äµï¿½Äµï¿½Í¼ï¿½ï¿½ï¿½ï¿½ not end
+	// »ñµÃÆÁÄ»ÖÐÐÄµãµÄµØÍ¼×ø±ê not end
 	g_ScenePlace.GetFocusPosition(nCenterX, nCenterY, nCenterZ);
 
 	m_pSoundNode = (KCacheNode*) g_SoundCache.GetNode(m_szSoundName, (KCacheNode*)m_pSoundNode);
@@ -1433,7 +1433,7 @@ void	KNpcRes::StopSound()
 	}
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½è¶¨Í·ï¿½ï¿½×´Ì¬
+//	¹¦ÄÜ£ºÉè¶¨Í·¶¥×´Ì¬
 //---------------------------------------------------------------------------
 void	KNpcRes::SetMenuState(int nState, char *lpszSentence, int nSentenceLength)
 {
@@ -1464,7 +1464,7 @@ void	KNpcRes::SetMenuState(int nState, char *lpszSentence, int nSentenceLength)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½×´Ì¬
+//	¹¦ÄÜ£º»ñµÃÍ·¶¥×´Ì¬
 //---------------------------------------------------------------------------
 int		KNpcRes::GetMenuState()
 {
@@ -1474,7 +1474,7 @@ int		KNpcRes::GetMenuState()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½è¶¨Ë¯ï¿½ï¿½×´Ì¬
+//	¹¦ÄÜ£ºÉè¶¨Ë¯Ãß×´Ì¬
 //---------------------------------------------------------------------------
 void	KNpcRes::SetSleepState(BOOL bFlag)
 {
@@ -1498,7 +1498,7 @@ void	KNpcRes::SetSleepState(BOOL bFlag)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ë¯ï¿½ï¿½×´Ì¬
+//	¹¦ÄÜ£º»ñµÃË¯Ãß×´Ì¬
 //---------------------------------------------------------------------------
 BOOL	KNpcRes::GetSleepState()
 {
@@ -1506,7 +1506,7 @@ BOOL	KNpcRes::GetSleepState()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½npcï¿½Ä±ß¿ï¿½(3DÄ£Ê½ï¿½Ð¸ï¿½Îªï¿½ï¿½ï¿½ï¿½)
+//	¹¦ÄÜ£º»æÖÆnpcµÄ±ß¿ò(3DÄ£Ê½ÖÐ¸ÄÎª¼ÓÁÁ)
 //---------------------------------------------------------------------------
 void	KNpcRes::DrawBorder()
 {
@@ -1534,20 +1534,20 @@ void	KNpcRes::DrawBorder()
 	nPos = 0;
 }
 
-//ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ß¶È»ï¿½ï¿½ï¿½Í·ï¿½ï¿½×´Ì¬
+//ÔÚÖ¸¶¨¸ß¶È»æÖÆÍ·¶¥×´Ì¬
 int	KNpcRes::DrawMenuState(int nHeightOffset)
 {
 	int		nScreenX = m_nXpos, nScreenY = m_nYpos, nScreenZ = 0;
 
 	if (!m_pcResNode)
 		return nHeightOffset;
-	// Í·ï¿½ï¿½×´Ì¬ï¿½ï¿½Ð§
-	//int i = 0;
+	// Í·¶¥×´Ì¬ÌØÐ§
+	//int i;
 	//for ( i = 0; i < MAX_SKILL_STATE; i++)
 	//{
 	//	if (m_cStateSpr[i].m_nID)
 	//	{
-	//		return nHeightOffset;	//ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Ð§Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½×µï¿½×´Ì¬
+	//		return nHeightOffset;	//ÓÐÍ·¶¥ÌØÐ§Ê±²»»æÖÆ½»Ò×µÈ×´Ì¬
 	//	}
 	//}
 
@@ -1572,7 +1572,7 @@ int	KNpcRes::DrawMenuState(int nHeightOffset)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½(0 - 63)
+//	¹¦ÄÜ£º¶¯»­Ö¡Êý×ª»»³ÉÂß¼­·½Ïò(0 - 63)
 //---------------------------------------------------------------------------
 int		KNpcRes::GetNormalNpcStandDir(int nFrame)
 {
@@ -1590,7 +1590,7 @@ int		KNpcRes::GetNormalNpcStandDir(int nFrame)
 
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º	¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KStateSpr::KStateSpr()
 {
@@ -1598,7 +1598,7 @@ KStateSpr::KStateSpr()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½Õ£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
+//	¹¦ÄÜ£º	Çå¿Õ£¬³õÊ¼»¯
 //---------------------------------------------------------------------------
 void	KStateSpr::Release()
 {
@@ -1611,7 +1611,7 @@ void	KStateSpr::Release()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º	¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KNpcBlur::KNpcBlur()
 {
@@ -1622,7 +1622,7 @@ KNpcBlur::KNpcBlur()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Îö¹¹º¯Êý
 //---------------------------------------------------------------------------
 KNpcBlur::~KNpcBlur()
 {
@@ -1631,7 +1631,7 @@ KNpcBlur::~KNpcBlur()
 
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½(ï¿½Ü¹ï¿½7ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ñ­ï¿½ï¿½)
+//	¹¦ÄÜ£º	µ±Ç°±àºÅÖ¸ÕëÖ¸ÏòÏÂÒ»¸ö(×Ü¹²7¸ö£¬Ö¸ÕëÑ­»·)
 //---------------------------------------------------------------------------
 void	KNpcBlur::SetNextNo()
 {
@@ -1641,7 +1641,7 @@ void	KNpcBlur::SetNextNo()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½Ç°ï¿½ï¿½Ó°Ö¡ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨µ±Ç°²ÐÓ°Ö¡µØÍ¼×ø±ê
 //---------------------------------------------------------------------------
 void	KNpcBlur::SetMapPos(int x, int y, int z, int nNpcIdx)
 {
@@ -1653,7 +1653,7 @@ void	KNpcBlur::SetMapPos(int x, int y, int z, int nNpcIdx)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½Ä±ï¿½alphaï¿½ï¿½
+//	¹¦ÄÜ£º	¸Ä±äalpha¶È
 //---------------------------------------------------------------------------
 void	KNpcBlur::ChangeAlpha()
 {
@@ -1701,7 +1701,7 @@ void	KNpcBlur::ChangeAlpha()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½Õµï¿½Ç°Ö¸ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Çå¿Õµ±Ç°Ö¸ÕëÖ¸ÏòµÄÄÚÈÝ
 //---------------------------------------------------------------------------
 void	KNpcBlur::ClearCurNo()
 {
@@ -1712,7 +1712,7 @@ void	KNpcBlur::ClearCurNo()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½è¶¨ï¿½ï¿½Ç°Ä³Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º	Éè¶¨µ±Ç°Ä³Ò»ÏîµÄÄÚÈÝ
 //---------------------------------------------------------------------------
 void	KNpcBlur::SetFile(int nNo, char *lpszFileName, int nSprID, int nFrameNo, int nXpos, int nYpos, int nZpos, int nBlurAlpha/* = START_BLUR_ALPHA*/)
 {
@@ -1731,7 +1731,7 @@ void	KNpcBlur::SetFile(int nNo, char *lpszFileName, int nSprID, int nFrameNo, in
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½Æ²ï¿½Ó°
+//	¹¦ÄÜ£º	»æÖÆ²ÐÓ°
 //---------------------------------------------------------------------------
 void	KNpcBlur::Draw(int nIdx)
 {
@@ -1742,7 +1742,7 @@ void	KNpcBlur::Draw(int nIdx)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½È¡ï¿½ï¿½Ó°
+//	¹¦ÄÜ£º	ÒÀ¾ÝÊ±¼äÅÐ¶ÏÊÇ·ñÈ¡²ÐÓ°
 //---------------------------------------------------------------------------
 BOOL	KNpcBlur::NowGetBlur()
 {

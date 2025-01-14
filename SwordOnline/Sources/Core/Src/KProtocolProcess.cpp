@@ -142,7 +142,27 @@ KProtocolProcess::KProtocolProcess()
 	ProcessFunc[s2c_npchorsesync] = &KProtocolProcess::NetCommandSetHorse;
 	ProcessFunc[s2c_synctaskvalue] = &KProtocolProcess::s2cSyncTaskValue;
 	ProcessFunc[s2c_playersync] = &KProtocolProcess::s2cPlayerSync;
-	ProcessFunc[s2c_extpoint] = &KProtocolProcess::SetExtPoint;
+
+	/*//TamLTM fix send packet
+	ProcessFunc[s2c_playersyncofflive] = s2cplayersyncofflive; //1
+	ProcessFunc[s2c_playersyncmagicpoint] = s2cplayersyncmagicpoint; //2
+	ProcessFunc[s2c_playersyncproppoint] = s2cplayersyncproppoint; //3
+	ProcessFunc[s2c_playersyncinput] = s2cplayersyncinput; //4
+	ProcessFunc[s2c_playersyncopenenchase] = s2cplayersyncopenenchase; //5
+	ProcessFunc[s2c_playersyncrankdata] = s2cplayersyncrankdata; //6
+	ProcessFunc[s2c_playersyncmaskfeature] = s2cplayersyncmaskfeature; //7
+	ProcessFunc[s2c_playersynclockstate] = s2cplayersynclockstate; //8
+	ProcessFunc[s2c_playersyncequipexpand] = s2cplayersyncequipexpand; //9
+	ProcessFunc[s2c_playersyncexpandbox] = s2cplayersyncexpandbox; //10
+	ProcessFunc[s2c_playersyncgive] = s2cplayersyncgive; //11*/
+	//end code
+	ProcessFunc[s2c_extpointsync] = &KProtocolProcess::s2cExtPointValueSync; //TamLTM fix xu;
+	ProcessFunc[s2c_finishquest] = &KProtocolProcess::OpenDTBox;//TamLTM da tau vng
+	ProcessFunc[s2c_otherbox] = &KProtocolProcess::s2cOpenOtherBox; //TamLTM kham
+	ProcessFunc[s2c_openprogressbar] = &KProtocolProcess::OpenProgressBar; //TamLTM open progress bar
+	ProcessFunc[s2c_syncposmin] = &KProtocolProcess::SysNcPosMin; //TamLTM fix lag pos
+	//ProcessFunc[s2c_syncnpcstate] = s2cUpdateNpcState;
+	//ProcessFunc[s2c_extpoint] = &KProtocolProcess::SetExtPoint;
 	ProcessFunc[s2c_opengive] = &KProtocolProcess::SyncGive;
 	ProcessFunc[s2c_syncmasklock] = &KProtocolProcess::SyncMaskLock;
 	ProcessFunc[s2c_syncrankdata] = &KProtocolProcess::s2cSyncRankData;
@@ -208,6 +228,7 @@ KProtocolProcess::KProtocolProcess()
 	ProcessFunc[c2s_npcsit] = &KProtocolProcess::NpcSitCommand;
 	ProcessFunc[c2s_objmouseclick] = &KProtocolProcess::ObjMouseClick;
 	ProcessFunc[c2s_storemoney] = &KProtocolProcess::StoreMoneyCommand;
+	ProcessFunc[c2s_withdrawamoney] = &KProtocolProcess::WithDrawaMoneyCommand; // rut tien;
 	ProcessFunc[c2s_playerrevive] = &KProtocolProcess::NpcReviveCommand;
 	ProcessFunc[c2s_tradereplystart] = &KProtocolProcess::c2sTradeReplyStart;
 	ProcessFunc[c2s_pkapplychangenormalflag] = &KProtocolProcess::c2sPKApplyChangeNormalFlag;
@@ -222,6 +243,8 @@ KProtocolProcess::KProtocolProcess()
 	ProcessFunc[c2s_playertradeviewend] = &KProtocolProcess::TradeEnd;
 	ProcessFunc[c2s_npchorse] = &KProtocolProcess::NpcHorseCommand;
 	ProcessFunc[c2s_playercommand] = &KProtocolProcess::PlayerCommand;
+	ProcessFunc[c2s_playerlockitem] = &KProtocolProcess::PlayerLockItem;
+	ProcessFunc[c2s_playerunlockitem] = &KProtocolProcess::PlayerUnLockItem;
 	ProcessFunc[c2s_inputcommand] = &KProtocolProcess::InputCommand;
 	ProcessFunc[c2s_unlockcommand] = &KProtocolProcess::UnlockCommand;
 	ProcessFunc[c2s_playerbreakcommand] = &KProtocolProcess::BreakCommand ;
@@ -230,6 +253,13 @@ KProtocolProcess::KProtocolProcess()
 	ProcessFunc[c2s_lockmove] = &KProtocolProcess::LockMove;
 	ProcessFunc[c2s_chatroomdecision] = &KProtocolProcess::ChatRoomDecision;
 	ProcessFunc[c2s_cpsetimage] = &KProtocolProcess::c2sSetImage;
+	ProcessFunc[c2s_DaTau] = &KProtocolProcess::NpcDaTauCommand;//TamLTM da tau vng quest
+	ProcessFunc[c2s_playeractionchat] = &KProtocolProcess::C2SPlayerActionChatCmd; // Ma Doc
+	ProcessFunc[c2s_uicmdscript] = &KProtocolProcess::UiCommandScript; //TamLTM kham nam xanh
+	ProcessFunc[c2s_recoverybox] = &KProtocolProcess::RecoveryBoxCmd; //TamLTM kham nam xanh
+	ProcessFunc[c2s_inputinfo]	=	&KProtocolProcess::c2sInputCommand; //TamLTM kham nam xanh
+	ProcessFunc[c2s_openprogressbar] = &KProtocolProcess::NpcOpenProgressBarCommand;//TamLTM open progress bar
+	ProcessFunc[c2s_offline]=&KProtocolProcess::NpcOfflineCommand; //TamLTM Uy thac offline
 	
 #endif
 }
@@ -290,6 +320,7 @@ void KProtocolProcess::ProcessNetMsg(int nIndex, BYTE* pMsg)
 				|| byProtocol == c2s_playerbuyitem
 				|| byProtocol == c2s_playersellitem
 				|| byProtocol == c2s_storemoney
+				|| byProtocol == c2s_withdrawamoney // rut tien;
 				|| byProtocol == c2s_playertradestart
 				|| byProtocol == c2s_playertradebuy
 				/*|| byProtocol == c2s_playereatitem*/
@@ -309,6 +340,8 @@ void KProtocolProcess::ProcessNetMsg(int nIndex, BYTE* pMsg)
 			{
 				Player[nIndex].m_nPaceBarTime = 0;
 				Player[nIndex].m_nPaceBarTimeMax = 0;
+				Player[nIndex].LoadScriptProgressBar(2); // set script that bai progress bar
+			//	g_DebugLog("huy progressbar thanh life Player[nIndex].m_nPaceBarTime = 0;");
 			}
 			(this->*ProcessFunc[byProtocol])(nIndex, pMsg);
 			Player[nIndex].SetLastNetOperationTime(g_SubWorldSet.GetGameTime());
@@ -419,22 +452,7 @@ void	KProtocolProcess::s2cSyncTaskValue(BYTE* pMsg)
 	Player[CLIENT_PLAYER_INDEX].m_cTask.SetSaveVal(Cmd->nTaskId, Cmd->szTaskValue);
 }
 
-void KProtocolProcess::SetExtPoint(BYTE* nPacket)
-{
-	S2C_EXTPOINT *temp = (S2C_EXTPOINT*)nPacket;
-	
-	Player[CLIENT_PLAYER_INDEX].SetExtPoint(temp->nExtPoint,temp->nChangeExtPoint);
-	if (temp->nChangeExtPoint)
-	{
-		APPLY_GET_EXTPOINT_COMMAND	nExt;
-		nExt.ProtocolType	= c2s_extendtong;
-		nExt.m_wLength		= sizeof(nExt) - 1;
-		nExt.m_btMsgId		= enumTONG_COMMAND_ID_EXTPOINT;
-		nExt.m_nExtPoint 	= temp->nExtPoint;
-		if (g_pClient)
-			g_pClient->SendPackToServer(&nExt, nExt.m_wLength + 1);
-	}
-}
+
 
 void	KProtocolProcess::SyncGive(BYTE* pMsg)
 {
@@ -546,13 +564,17 @@ void KProtocolProcess::NetCommandSit(BYTE* pMsg)
 	pSitSync = (NPC_SIT_SYNC *)pMsg;
 
 	int nIdx = NpcSet.SearchID(pSitSync->ID);
-	Npc[nIdx].SendCommand(do_sit);
-	Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
+
+	if (Player[CLIENT_PLAYER_INDEX].ConformIdx(nIdx))
+	{
+		Npc[nIdx].SendCommand(do_sit);
+		Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
+	}
 }
 
 void KProtocolProcess::NetCommandStand(BYTE* pMsg)
 {
-	NPC_PLAYER_TYPE_NORMAL_SYNC*	pStandSync = (NPC_PLAYER_TYPE_NORMAL_SYNC *)pMsg;
+	NPC_PLAYER_TYPE_NORMAL_STAND_SYNC*	pStandSync = (NPC_PLAYER_TYPE_NORMAL_STAND_SYNC *)pMsg;
 
 	int nIdx = NpcSet.SearchID(pStandSync->ID);
 
@@ -560,7 +582,7 @@ void KProtocolProcess::NetCommandStand(BYTE* pMsg)
 	{
 		if (Player[CLIENT_PLAYER_INDEX].ConformIdx(nIdx))
 		{
-			Npc[nIdx].SendCommand(do_stand);
+			Npc[nIdx].SendCommand(do_stand); // Set x, y
 			Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
 		}
 		else if(Npc[nIdx].m_Kind == kind_player)
@@ -568,7 +590,7 @@ void KProtocolProcess::NetCommandStand(BYTE* pMsg)
 			int nMpsX, nMpsY;
 			Npc[nIdx].GetMpsPos(&nMpsX, &nMpsY);
 			
-			if(g_GetDistance(nMpsX, nMpsY, pStandSync->MapX, pStandSync->MapY) < 256)
+			if(g_GetDistance(nMpsX, nMpsY, pStandSync->MapX, pStandSync->MapY) <= 256) // 256 khoan cach stand player
 				return;
 
 			int nRegion, nMapX, nMapY, nOffX, nOffY;
@@ -609,7 +631,7 @@ void KProtocolProcess::NetCommandChat(BYTE* pMsg)
 
 void KProtocolProcess::NetCommandSetPos(BYTE* pMsg)
 {
-	NPC_PLAYER_TYPE_NORMAL_SYNC *pSync = (NPC_PLAYER_TYPE_NORMAL_SYNC*)pMsg;
+	NPC_PLAYER_TYPE_NORMAL_SET_POS_SYNC *pSync = (NPC_PLAYER_TYPE_NORMAL_SET_POS_SYNC*)pMsg;
 	
 	int nIdx = NpcSet.SearchID(pSync->ID);
 	if(nIdx > 0)
@@ -740,11 +762,18 @@ void KProtocolProcess::NetCommandWalk(BYTE* pMsg)
 	MapX = *(int *)&pMsg[5];
 	MapY = *(int *)&pMsg[9];
 	int nIdx = NpcSet.SearchID(dwNpcID);
-	if (Player[CLIENT_PLAYER_INDEX].ConformIdx(nIdx))
-	{
-		Npc[nIdx].SendCommand(do_walk, MapX, MapY);
-		Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
-	}
+
+
+    if (nIdx && Npc[nIdx].m_HideState.nTime > 0)
+    {
+       Npc[nIdx].Madnessto(MapX,MapY);
+       Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
+    }
+    else if (Player[CLIENT_PLAYER_INDEX].ConformIdx(nIdx))
+    {
+       Npc[nIdx].SendCommand(do_walk, MapX, MapY);
+       Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
+     }
 }
 
 //-------------------------------------------------------------------------
@@ -1078,11 +1107,12 @@ void KProtocolProcess::s2cSetMissionData(BYTE* pMsg)
 //-------------------------------------------------------------------------
 //	功能：收到服务器通知队伍状态(队长申请开放、关闭队伍状态时才会收到此信息)
 //-------------------------------------------------------------------------
+//TamLTM auto pt to doi
 void KProtocolProcess::s2cSetTeamState(BYTE* pMsg)
 {
-	// 客户端数据有误，申请更新数据
-	PLAYER_TEAM_CHANGE_STATE	*pTeamState = (PLAYER_TEAM_CHANGE_STATE*)pMsg;
-	switch (pTeamState->m_btState)
+	// PLAYER_TEAM_OPEN_CLOSE
+	PLAYER_TEAM_OPEN_CLOSE	*pTeamState = (PLAYER_TEAM_OPEN_CLOSE*)pMsg;
+	switch (pTeamState->m_btStateClose)
 	{
 		case Team_S_OpenClose:
 		{
@@ -1181,17 +1211,26 @@ void KProtocolProcess::s2cSyncItem(BYTE* pMsg)
 			pItemSync->m_RandomSeed);
 	}
 	else
+	{
 		nIndex = ItemSet.SearchID(pItemSync->m_ID);
+	}
+
 	if (nIndex)
 	{
 		Item[nIndex].SetTemp(pItemSync->m_bTemp);
 		Item[nIndex].SetOwner(pItemSync->m_dwOwner);
 		Item[nIndex].SetTradePrice(pItemSync->m_TradePrice);
 		Item[nIndex].SetID(pItemSync->m_ID);
+
 		if(pItemSync->m_Nature >= NATURE_GOLD)
+		{
 			Item[nIndex].SetRow(pItemSync->m_Detail);
+		}
 		else
+		{
 			Item[nIndex].SetDetailType(pItemSync->m_Detail);
+		}
+
 		Item[nIndex].SetNature(pItemSync->m_Nature);
 		Item[nIndex].SetGenre(pItemSync->m_Genre);
 		Item[nIndex].SetParticular( pItemSync->m_Particur);
@@ -1213,12 +1252,16 @@ void KProtocolProcess::s2cSyncItem(BYTE* pMsg)
 		Item[nIndex].m_GeneratorParam.nLuck = pItemSync->m_Luck;
 
 		if (pItemSync->m_bIsNew)
+		{
 			Player[CLIENT_PLAYER_INDEX].m_ItemList.Add(nIndex, pItemSync->m_btPlace, pItemSync->m_btX, pItemSync->m_btY);
+		}
 		else
+		{
 			Player[CLIENT_PLAYER_INDEX].m_ItemList.Add(nIndex, 
 			Player[CLIENT_PLAYER_INDEX].m_ItemList.m_Items[nIndex].nPlace, 
 			Player[CLIENT_PLAYER_INDEX].m_ItemList.m_Items[nIndex].nX, 
 			Player[CLIENT_PLAYER_INDEX].m_ItemList.m_Items[nIndex].nY);
+		}
 	}
 }
 
@@ -1525,11 +1568,10 @@ void KProtocolProcess::SyncNpc(BYTE* pMsg)
 	if (Npc[nIdx].m_Doing != do_death || Npc[nIdx].m_Doing != do_revive)
 		Npc[nIdx].SendCommand((NPCCMD)NpcSync->m_Doing, NpcSync->MapX, NpcSync->MapY);
 
+	Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
 	Npc[nIdx].SetMenuState(NpcSync->m_btMenuState);
 	memset(Npc[nIdx].Name, 0, sizeof(Npc[nIdx].Name));
 	memcpy(Npc[nIdx].Name, NpcSync->m_szName, NpcSync->m_wLength - (sizeof(NPC_SYNC) - 1 - sizeof(NpcSync->m_szName)));
-
-	Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
 }
 
 void KProtocolProcess::SyncNpcMin(BYTE* pMsg)
@@ -1544,14 +1586,42 @@ void KProtocolProcess::SyncNpcMin(BYTE* pMsg)
 	{
 		if (!NpcSet.IsNpcRequestExist(NpcSync->ID))
 		{
-			SendClientCmdRequestNpc(NpcSync->ID);
-			NpcSet.InsertNpcRequest(NpcSync->ID);
+			
+			if (NpcSet.InsertNpcRequest(NpcSync->ID))
+				SendClientCmdRequestNpc(NpcSync->ID);
 		}
 	}
 	else
 	{
 		int nRegion, nMapX, nMapY, nOffX, nOffY;
 		SubWorld[0].Mps2Map(NpcSync->MapX, NpcSync->MapY, &nRegion, &nMapX, &nMapY, &nOffX, &nOffY);
+
+		Npc[nIdx].m_sSyncPos.m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
+		Npc[nIdx].m_sSyncPos.m_nMapX = nMapX;
+		Npc[nIdx].m_sSyncPos.m_nMapY = nMapY;
+		Npc[nIdx].m_sSyncPos.m_nOffX = nOffX;
+		Npc[nIdx].m_sSyncPos.m_nOffY = nOffY;
+		Npc[nIdx].m_sSyncPos.m_nDoing = NpcSync->Doing;
+		//end code
+
+		//TamLTM Fix lag pos
+	/*	if (countTimeSyncNpcPlayer)
+			countTimeSyncNpcPlayer++;
+		if (countTimeSyncNpcPlayer == 250)
+		{
+			countTimeSyncNpcPlayer = 1;
+			Npc[nIdx].m_sSyncPos.m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
+			Npc[nIdx].m_MapX = nMapX;
+			Npc[nIdx].m_MapY = nMapY;
+			Npc[nIdx].m_OffX = nOffX;
+			Npc[nIdx].m_OffY = nOffY;
+
+		//	g_DebugLog("Npc Doing lag pos countTimeSyncNpcPlayer");
+		}
+		//end code */
+
+	//	g_DebugLog("Npc Doing lag pos 2");
+		//end code
 
 		if (Npc[nIdx].m_RegionIndex == -1 && nIdx != Player[CLIENT_PLAYER_INDEX].m_nIndex)	
 		{
@@ -1569,6 +1639,7 @@ void KProtocolProcess::SyncNpcMin(BYTE* pMsg)
 				Npc[nIdx].m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
 				SubWorld[0].m_Region[nRegion].AddNpc(nIdx);
 				SubWorld[0].m_Region[nRegion].AddRef(Npc[nIdx].m_MapX, Npc[nIdx].m_MapY, obj_npc);
+			//	g_DebugLog("Npc Doing lag pos 3");
 			}
 			
 			if (NpcSync->Doing == do_stand)
@@ -1585,6 +1656,9 @@ void KProtocolProcess::SyncNpcMin(BYTE* pMsg)
 				Npc[nIdx].m_OffX = nOffX;
 				Npc[nIdx].m_OffY = nOffY;
 				Npc[nIdx].m_RegionIndex = nRegion;
+
+			//	g_DebugLog("Npc Doing lag pos 4");
+
 				if (nRegion >= 0)
 				{
 					SubWorld[0].m_Region[nRegion].AddNpc(nIdx);
@@ -1604,6 +1678,8 @@ void KProtocolProcess::SyncNpcMin(BYTE* pMsg)
 			if (Npc[nIdx].m_Kind == kind_normal)
 				Npc[nIdx].AddBlood(nOldLife - Npc[nIdx].m_CurrentLife);
 			Npc[nIdx].SetCurrentCamp(NpcSync->Camp);
+
+		//	g_DebugLog("Npc Doing lag pos 5");
 		}
 
 		Npc[nIdx].m_CurrentRunSpeed		= NpcSync->RunSpeed;
@@ -1631,6 +1707,7 @@ void KProtocolProcess::SyncNpcMinPlayer(BYTE* pMsg)
 
 	_ASSERT(pSync->ID == Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_dwID);
 	if (pSync->ID != Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_dwID)
+	//	g_DebugLog("SyncNpcMinPlayer 0");
 		return;
 
 	int nRegion, nMapX, nMapY, nOffX, nOffY, nNpcIdx;
@@ -1644,6 +1721,8 @@ void KProtocolProcess::SyncNpcMinPlayer(BYTE* pMsg)
 		{
 			return;
 		}
+	//	g_DebugLog("SyncNpcMinPlayer 1");
+
 		Npc[nNpcIdx].m_RegionIndex = nRegion;
 		Npc[nNpcIdx].m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
 		SubWorld[0].NpcChangeRegion(-1, SubWorld[0].m_Region[nRegion].m_RegionID, nNpcIdx);
@@ -1653,12 +1732,14 @@ void KProtocolProcess::SyncNpcMinPlayer(BYTE* pMsg)
 		Npc[nNpcIdx].m_MapY = nMapY;
 		Npc[nNpcIdx].m_OffX = pSync->OffX;
 		Npc[nNpcIdx].m_OffY = pSync->OffY;
+		memset(&Npc[nNpcIdx].m_sSyncPos, 0, sizeof(Npc[nNpcIdx].m_sSyncPos)); //TamLTM giai phong bo nho sync pos npc
 		Npc[nNpcIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
 		return;
 	}
 
 	if (nRegion == -1)
 	{
+	//	g_DebugLog("SyncNpcMinPlayer 2");
 		SubWorld[0].m_Region[Npc[nNpcIdx].m_RegionIndex].DecRef(Npc[nNpcIdx].m_MapX, Npc[nNpcIdx].m_MapY, obj_npc);
 
 		int nRegionX = pSync->MapX / (SubWorld[0].m_nCellWidth * SubWorld[0].m_nRegionWidth);
@@ -1680,10 +1761,29 @@ void KProtocolProcess::SyncNpcMinPlayer(BYTE* pMsg)
 		Npc[nNpcIdx].m_OffY = pSync->OffY;
 		
 		SubWorld[0].m_Region[Npc[nNpcIdx].m_RegionIndex].AddRef(Npc[nNpcIdx].m_MapX, Npc[nNpcIdx].m_MapY, obj_npc);
+		memset(&Npc[nNpcIdx].m_sSyncPos, 0, sizeof(Npc[nNpcIdx].m_sSyncPos)); //TamLTM giai phong bo nho sync pos npc
 		Npc[nNpcIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
 
 		return;
 	}
+
+	//g_DebugLog("Npc Doing lag pos countTimeSyncPlayer %d", countTimeSyncPlayer);
+
+/*	//TamLTM Fix lag pos
+	if (countTimeSyncPlayer)
+		countTimeSyncPlayer++;
+	if (countTimeSyncPlayer == 25)
+	{
+		countTimeSyncPlayer = 1;
+	//	SubWorld[0].Mps2Map(pSync->MapX, pSync->MapY, &nRegion, &nMapX, &nMapY, &nOffX, &nOffY);
+		Npc[nNpcIdx].m_MapX = nMapX;
+		Npc[nNpcIdx].m_MapY = nMapY;
+		Npc[nNpcIdx].m_OffX = pSync->OffX;
+		Npc[nNpcIdx].m_OffY = pSync->OffY;
+
+	//	g_DebugLog("Npc Doing lag pos countTimeSyncPlayer %d", countTimeSyncPlayer);
+	}
+	//end code*/
 
 	/*if (Npc[nNpcIdx].m_RegionIndex != nRegion)
 	{
@@ -1874,14 +1974,17 @@ void KProtocolProcess::SyncPlayer(BYTE* pMsg)
 		Npc[nIdx].m_szTongAgname[0] = 0;
 	}
 	strcpy(Npc[nIdx].MateName, pPlaySync->MateName);
+
 	if (pPlaySync->m_btSomeFlag & 0x01)
 		Npc[nIdx].m_FightMode		= enumFightActive;
 	else
 		Npc[nIdx].m_FightMode		= enumFightNone;
+
 	if (pPlaySync->m_btSomeFlag & 0x02)
 		Npc[nIdx].SetSleepMode(1);
 	else
 		Npc[nIdx].SetSleepMode(0);
+
 	if (pPlaySync->m_btSomeFlag & 0x04)
 		Npc[nIdx].m_bTongFlag		= TRUE;
 	else
@@ -1941,14 +2044,17 @@ void KProtocolProcess::SyncPlayerMin(BYTE* pMsg)
 		Npc[nIdx].m_szTongAgname[0] = 0;
 	}
 	strcpy(Npc[nIdx].MateName, pPlaySync->MateName);
+
 	if (pPlaySync->m_btSomeFlag & 0x01)
 		Npc[nIdx].m_FightMode		= enumFightActive;
 	else
 		Npc[nIdx].m_FightMode		= enumFightNone;
+
 	if (pPlaySync->m_btSomeFlag & 0x02)
 		Npc[nIdx].SetSleepMode(1);
 	else
 		Npc[nIdx].SetSleepMode(0);
+
 	if (nIdx == Player[CLIENT_PLAYER_INDEX].m_nIndex)
 	{
 		Player[CLIENT_PLAYER_INDEX].m_ImagePlayer		= pPlaySync->ImagePlayer;
@@ -1994,9 +2100,23 @@ void KProtocolProcess::SyncWorld(BYTE* pMsg)
 	SubWorld[0].m_dwCurrentTime = WorldSync->Frame;
 
 
+
+	
+
+
+
 	// 同步天气
 	SubWorld[0].m_nWeather = WorldSync->Weather;
 	g_ScenePlace.ChangeWeather(WorldSync->Weather);
+
+	//TamLTM bang chiem linh thanh thi thon
+	memcpy(SubWorld[0].m_szTongName,WorldSync->TongName,sizeof(SubWorld[0].m_szTongName));
+	memcpy(SubWorld[0].m_szTongNameBC,WorldSync->TongNameBC, sizeof(SubWorld[0].m_szTongNameBC));
+	SubWorld[0].m_nTongT = WorldSync->TongT;
+	SubWorld[0].m_nTongVG = WorldSync->TongVG;
+	SubWorld[0].m_bCheckTong = WorldSync->CheckTong;
+//	g_DebugLog("KProtocolProcess checktong: %d", SubWorld[0].m_bCheckTong);
+	//end code
 }
 
 void	KProtocolProcess::s2cSyncAllSkill(BYTE * pMsg)
@@ -2097,6 +2217,16 @@ void	KProtocolProcess::s2cTradeDecision(BYTE* pMsg)
 {
 	Player[CLIENT_PLAYER_INDEX].s2cTradeDecision(pMsg);
 }
+/*void	KProtocolProcess::s2cUpdateNpcState(BYTE * pMsg)
+{
+	NPC_SYNC_STATEINFO * pInfo = (NPC_SYNC_STATEINFO*) pMsg;
+	int nIndex = NpcSet.SearchID(pInfo->m_ID);	
+	
+	if (nIndex > 0 && !Npc[nIndex].IsPlayer() && Npc[nIndex].m_RegionIndex >= 0)
+	{
+		Npc[nIndex].SetNpcState(pInfo->m_btStateInfo);
+	}
+}*/
 
 void	KProtocolProcess::s2cTeamInviteAdd(BYTE * pMsg)
 {
@@ -2525,6 +2655,7 @@ void	KProtocolProcess::s2cShowMsg(BYTE *pMsg)
 			sMsg.byConfirmType = SMCT_NONE;
 			sMsg.byPriority = 0;
 			sMsg.byParamSize = 0;
+
 			sprintf(sMsg.szMessage, MSG_TEAM_CANNOT_CREATE);
 			CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 		}
@@ -2702,14 +2833,14 @@ void	KProtocolProcess::s2cShowMsg(BYTE *pMsg)
 		break;
 	case enumMSG_ID_PK_IS_LOCK:
 		{
-			int	nNormalPKTimeLong = (int)*((DWORD*)&pShowMsg->m_lpBuf);
+			//int	nNormalPKTimeLong = (int)*((DWORD*)&pShowMsg->m_lpBuf);
 
 			KSystemMessage	sMsg;
 			sMsg.eType = SMT_NORMAL;
 			sMsg.byConfirmType = SMCT_NONE;
 			sMsg.byPriority = 0;
 			sMsg.byParamSize = 0;
-			sprintf(sMsg.szMessage, MGS_PK_IS_LOCK, nNormalPKTimeLong/1000/60);
+			sprintf(sMsg.szMessage, MGS_PK_IS_LOCK, 3/*nNormalPKTimeLong/1000/60*/);
 			CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 		}
 		break;
@@ -2783,14 +2914,15 @@ void	KProtocolProcess::s2cShowMsg(BYTE *pMsg)
 		break;
 	case enumMSG_ID_PK_IS_LOCK7:
 		{
-			int	nFightPKTimeLong = (int)*((DWORD*)&pShowMsg->m_lpBuf);
+			//TamLTM Fix debug vlaue null
+		//	int	nFightPKTimeLong = (int)*((DWORD*)&pShowMsg->m_lpBuf);
 
 			KSystemMessage	sMsg;
 			sMsg.eType = SMT_NORMAL;
 			sMsg.byConfirmType = SMCT_NONE;
 			sMsg.byPriority = 0;
 			sMsg.byParamSize = 0;
-			sprintf(sMsg.szMessage, MGS_PK_IS_LOCK7, nFightPKTimeLong/1000);
+			sprintf(sMsg.szMessage, MGS_PK_IS_LOCK7, 10/*nFightPKTimeLong/1000*/);
 			CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 		}
 		break;
@@ -3502,7 +3634,7 @@ void KProtocolProcess::s2cExtendChat(BYTE* pMsg)
 		CHAT_CHANNELCHAT_SYNC* pCccSync = (CHAT_CHANNELCHAT_SYNC*)pExPckg;
 		l_pDataChangedNotifyFunc->ChannelMessageArrival(
 			pCccSync->channelid, pCccSync->someone,
-			(const char*)(pCccSync + 1), pCccSync->sentlen, (const char*)&pCccSync->item, pCccSync->someflag, true);
+			(const char*)(pCccSync + 1), pCccSync->sentlen, (const char*)&pCccSync->item, pCccSync->someflag, true); //Kenh Bang
 	}
 	else if (protocol == chat_feedback)
 	{
@@ -4138,6 +4270,7 @@ void	KProtocolProcess::s2cTongCreate(BYTE* pMsg)
 	Player[CLIENT_PLAYER_INDEX].m_cTong.Create((TONG_CREATE_SYNC*)pMsg);
 }
 
+//Thay doi item khi do ben trang bi <= 0 or == 0
 void	KProtocolProcess::ItemChangeDurability(BYTE* pMsg)
 {
 	ITEM_DURABILITY_CHANGE	*pIDC = (ITEM_DURABILITY_CHANGE *)pMsg;
@@ -4147,7 +4280,7 @@ void	KProtocolProcess::ItemChangeDurability(BYTE* pMsg)
 	if (nIdx)
 	{
 		Item[nIdx].SetDurability(Item[nIdx].GetDurability() + pIDC->nChange);
-		//_ASSERT(Item[nIdx].GetDurability() > 0);
+		_ASSERT(Item[nIdx].GetDurability() > 0); //TamLTM do ben trang bi Fix
 
 		if(Item[nIdx].GetDurability() == 0)
 		{
@@ -4159,7 +4292,7 @@ void	KProtocolProcess::ItemChangeDurability(BYTE* pMsg)
 			sprintf(sMsg.szMessage, MSG_ITEM_DAMAGED, Item[nIdx].GetName());
 			CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 		}
-		else if (Item[nIdx].GetDurability() <= Item[nIdx].GetMaxDurability() / ItemSet.m_sRepairParam.nWarningBaseline)
+		else if (Item[nIdx].GetDurability() <= Item[nIdx].GetMaxDurability() / ItemSet.m_sRepairParam.nWarningBaseline || Item[nIdx].GetDurability() <= 3)
 		{
 			KSystemMessage	sMsg;
 			sMsg.eType = SMT_NORMAL;
@@ -4282,7 +4415,7 @@ void KProtocolProcess::s2cPlayerSync(BYTE* pMsg)
 		case enumS2C_PLAYERSYNC_ID_RANKDATA:
 			CoreDataChanged(GDCNI_RANKDATA, NULL, NULL);
 			break;
-		case enumS2C_PLAYERSYNC_ID_ENCHASE:
+		case enumS2C_PLAYERSYNC_ID_ENCHASE: // Ep do tim
 			CoreDataChanged(GDCNI_ENCHASE, NULL, NULL);
 			break;
 		case enumS2C_PLAYERSYNC_ID_INPUT:
@@ -4292,7 +4425,170 @@ void KProtocolProcess::s2cPlayerSync(BYTE* pMsg)
 			Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].SwitchMaskFeature();
 			break;
 	}
-}	
+} //*/
+
+/*//TamLTM fix send packet
+void KProtocolProcess::s2cplayersyncofflive(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_OFFLINE_LIVE* pSync = (S2C_PLAYER_SYNC_OFFLINE_LIVE*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_EXIT:
+		CoreDataChanged(GDCNI_EXIT_GAME, NULL, NULL);
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncmagicpoint(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_MAGIC_POINT* pSync = (S2C_PLAYER_SYNC_MAGIC_POINT*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_MAGICPOINT:
+		Player[CLIENT_PLAYER_INDEX].m_nSkillPoint = *(int*)(&pSync->m_lpBuf);
+		CoreDataChanged(GDCNI_FIGHT_SKILL_POINT, 0, Player[CLIENT_PLAYER_INDEX].m_nSkillPoint);
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncproppoint(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_PROP_POINT* pSync = (S2C_PLAYER_SYNC_PROP_POINT*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_PROPPOINT:
+		Player[CLIENT_PLAYER_INDEX].m_nAttributePoint = *(int*)(&pSync->m_lpBuf);
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncinput(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_INPUT* pSync = (S2C_PLAYER_SYNC_INPUT*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_INPUT:
+		CoreDataChanged(GDCNI_INPUT, *(int*)(&pSync->m_lpBuf), 0);
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncopenenchase(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_ENCHASE* pSync = (S2C_PLAYER_SYNC_ENCHASE*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_ENCHASE: // Ep do tim
+		CoreDataChanged(GDCNI_ENCHASE, NULL, NULL);
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncrankdata(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_RANK_DATA* pSync = (S2C_PLAYER_SYNC_RANK_DATA*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_RANKDATA:
+		CoreDataChanged(GDCNI_RANKDATA, NULL, NULL);
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncmaskfeature(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_MASK_FEATURE* pSync = (S2C_PLAYER_SYNC_MASK_FEATURE*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_MASKFEATURE:
+		Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].SwitchMaskFeature();
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersynclockstate(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_LOCK_STATE* pSync = (S2C_PLAYER_SYNC_LOCK_STATE*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_LOCKSTATE:
+		Player[CLIENT_PLAYER_INDEX].SetLockState(*(BOOL*)(&pSync->m_lpBuf));
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncequipexpand(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_EQUIP_EXPAND* pSync = (S2C_PLAYER_SYNC_EQUIP_EXPAND*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_EQUIPEXPAND:
+		Player[CLIENT_PLAYER_INDEX].SetEquipExpandTime(*(int*)(&pSync->m_lpBuf));
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncexpandbox(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_EXPAND_BOX* pSync = (S2C_PLAYER_SYNC_EXPAND_BOX*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_EXPANDBOX:
+		Player[CLIENT_PLAYER_INDEX].SetExpandBoxNum(*(int*)(&pSync->m_lpBuf));
+		break;
+	default:
+		break;
+	}
+}
+
+void KProtocolProcess::s2cplayersyncgive(BYTE* pMsg)
+{
+	S2C_PLAYER_SYNC_GIVE* pSync = (S2C_PLAYER_SYNC_GIVE*)pMsg;
+	switch (pSync->m_wMsgID)
+	{
+	case enumS2C_PLAYERSYNC_ID_GIVE:
+		CoreDataChanged(GDCNI_GIVE, NULL, NULL);
+		break;
+	default:
+		break;
+	}
+}
+//end code */
+
+//TamLTM fix xu;
+void	KProtocolProcess::s2cExtPointValueSync(BYTE* pMsg)
+{
+	EXTPOINT_VALUE_SYNC* pValue = (EXTPOINT_VALUE_SYNC*)pMsg;
+	Player[CLIENT_PLAYER_INDEX].SetExtPoint(pValue->m_nExtPointValue);
+	if (pValue->m_nChangeExtPoint)
+	{
+		APPLY_GET_EXTPOINT_COMMAND	nExt;
+		nExt.ProtocolType = c2s_extendtong;
+		nExt.m_wLength = sizeof(nExt) - 1;
+		nExt.m_btMsgId = enumCOMMAND_UPDATE_EXTPOINT;
+		nExt.m_nExtPoint = pValue->m_nExtPointValue;
+		if (g_pClient)
+			g_pClient->SendPackToServer(&nExt, nExt.m_wLength + 1);
+	}
+}
 
 void KProtocolProcess::s2cSyncRankData(BYTE* pMsg)
 {
@@ -4547,6 +4843,106 @@ void KProtocolProcess::s2cRequestBlackList(BYTE* pMsg)
 	pMem.bIsRoomHost = pList->bIsRoomHost;
 	CoreDataChanged(GDCNI_REQUEST_BLACK_LIST, (unsigned int)&pMem, NULL);
 }
+
+//TamLTM da tau VNg
+void KProtocolProcess::OpenDTBox(BYTE* pMsg)
+{
+	FINISH_QUEST_SYNC* pDT = (FINISH_QUEST_SYNC *)pMsg;
+
+	CoreDataChanged(GDCNI_FINISH_QUEST, pDT->nIdQuestIndex, NULL);
+}
+//end
+
+//TamLTM kham
+void KProtocolProcess::s2cOpenOtherBox(BYTE* pMsg)
+{
+	S2C_OTHER_BOX	*pInfo = (S2C_OTHER_BOX *)pMsg;
+
+	switch (pInfo->nValue)
+	{
+	case 0:
+		CoreDataChanged(GDCNI_OPEN_TREMBLE, 0, 0);
+		break;
+	default:
+		break;
+	}
+}
+//end;
+
+//TamLTM progress bar
+void KProtocolProcess::OpenProgressBar(BYTE* pMsg)
+{
+	OPEN_PROGRESS_BAR_SYNC* pProBar = (OPEN_PROGRESS_BAR_SYNC *)pMsg;
+
+	CoreDataChanged(GDCNI_PROGRESS_BAR, pProBar->nIdQuestIndex, NULL);
+}
+//end
+
+//TamLTM fix call lag pos NPC
+void KProtocolProcess::SysNcPosMin(BYTE* pMsg)
+{
+	NPC_POS_SYNC* NpcSync = (NPC_POS_SYNC *)pMsg;
+
+	if (NpcSync->Doing == do_revive || NpcSync->Doing == do_death)
+		return;
+
+//	int nORegion, nOMapX, nOMapY, nOOffX, nOOffY;
+	
+	int nIdx = NpcSet.SearchID(NpcSync->ID);
+	if (nIdx)
+	{
+		int nRegion, nMapX, nMapY, nOffX, nOffY;
+		SubWorld[0].Mps2Map(NpcSync->MapX, NpcSync->MapY, &nRegion, &nMapX, &nMapY, &nOffX, &nOffY);
+
+		Npc[nIdx].m_sSyncPos.m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
+		Npc[nIdx].m_sSyncPos.m_nMapX = nMapX;
+		Npc[nIdx].m_sSyncPos.m_nMapY = nMapY;
+		Npc[nIdx].m_sSyncPos.m_nOffX = nOffX;
+		Npc[nIdx].m_sSyncPos.m_nOffY = nOffY;
+		Npc[nIdx].m_sSyncPos.m_nDoing = NpcSync->Doing;
+
+		if (Npc[nIdx].m_RegionIndex == -1)	
+		{
+			if (nRegion == -1)
+			{		
+				return;
+			}
+			else
+			{
+				Npc[nIdx].m_MapX = nMapX;
+				Npc[nIdx].m_MapY = nMapY;
+				Npc[nIdx].m_OffX = nOffX;
+				Npc[nIdx].m_OffY = nOffY;
+				Npc[nIdx].m_RegionIndex = nRegion;
+				Npc[nIdx].m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
+				SubWorld[0].m_Region[nRegion].AddNpc(nIdx);
+				SubWorld[0].m_Region[nRegion].AddRef(Npc[nIdx].m_MapX, Npc[nIdx].m_MapY, obj_npc);
+			}
+			
+			if (NpcSync->Doing == do_stand)
+				Npc[nIdx].ProcNetCommand(do_stand);
+		}
+		else
+		{
+			SubWorld[0].m_Region[Npc[nIdx].m_RegionIndex].RemoveNpc(nIdx);
+			SubWorld[0].m_Region[Npc[nIdx].m_RegionIndex].DecRef(Npc[nIdx].m_MapX, Npc[nIdx].m_MapY, obj_npc);
+			Npc[nIdx].m_MapX = nMapX;
+			Npc[nIdx].m_MapY = nMapY;
+			Npc[nIdx].m_OffX = nOffX;
+			Npc[nIdx].m_OffY = nOffY;
+			Npc[nIdx].m_RegionIndex = nRegion;
+                
+			if (nRegion >= 0)
+			{
+				SubWorld[0].m_Region[nRegion].AddNpc(nIdx);
+				Npc[nIdx].m_dwRegionID = SubWorld[0].m_Region[nRegion].m_RegionID;
+				SubWorld[0].m_Region[nRegion].AddRef(Npc[nIdx].m_MapX, Npc[nIdx].m_MapY, obj_npc);
+			}
+		}
+	}
+}
+//end code 
+
 #else
 void KProtocolProcess::RemoveRole(int nIndex, BYTE * pProtocol)
 {
@@ -4582,6 +4978,11 @@ void KProtocolProcess::NpcWalkCommand(int nIndex, BYTE* pProtocol)
 		ParamY = 0;
 	}
 	Npc[Player[nIndex].m_nIndex].SendCommand(do_walk, ParamX, ParamY);
+
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.CmdKind = do_walk;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_X = ParamX;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_Y = ParamY;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_Z = -1;
 }
 
 void KProtocolProcess::NpcRunCommand(int nIndex, BYTE* pProtocol)
@@ -4599,6 +5000,11 @@ void KProtocolProcess::NpcRunCommand(int nIndex, BYTE* pProtocol)
 		ParamY = 0;
 	}
 	Npc[Player[nIndex].m_nIndex].SendCommand(do_run, ParamX, ParamY);
+
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.CmdKind = do_run;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_X = ParamX;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_Y = ParamY;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_Z = -1;
 }
 
 
@@ -4609,8 +5015,12 @@ void KProtocolProcess::NpcSkillCommand(int nIndex, BYTE* pProtocol)
 	int ParamX = pNetCommand->nSkillID;
 	int ParamY = pNetCommand->nMpsX;
 	int ParamZ = pNetCommand->nMpsY;
+	Npc[Player[nIndex].m_nIndex].m_nNpcX = pNetCommand->nNpcX;
+	Npc[Player[nIndex].m_nIndex].m_nNpcY = pNetCommand->nNpcY;
+	Npc[Player[nIndex].m_nIndex].m_nNpcRadius = pNetCommand->nNpcRadius;
 	// 参数合法性检查
-	if (ParamX <= 0 || ParamX > MAX_SKILL )
+
+	if (ParamX <= 0 || ParamX >= MAX_SKILL )
 	{
 		return ;
 	}
@@ -4625,10 +5035,19 @@ void KProtocolProcess::NpcSkillCommand(int nIndex, BYTE* pProtocol)
 
 		int nNpcIndex = Player[nIndex].FindAroundNpc((DWORD)ParamZ);
 		if (nNpcIndex > 0)
-			Npc[Player[nIndex].m_nIndex].SendCommand(do_skill, ParamX, ParamY, nNpcIndex);
+		{
+			ParamZ = nNpcIndex;
+			Npc[Player[nIndex].m_nIndex].SendCommand(do_skill, ParamX, ParamY, ParamZ);
+		}
 	}
 	else
 		Npc[Player[nIndex].m_nIndex].SendCommand(do_skill, ParamX, ParamY, ParamZ);
+
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.CmdKind = do_skill;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_X = ParamX;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_Y = ParamY;
+	Npc[Player[nIndex].m_nIndex].m_NowCommand.Param_Z = ParamZ;
+
 }
 
 void KProtocolProcess::PlayerApplyTeamInfo(int nIndex, BYTE* pProtocol)
@@ -4912,6 +5331,17 @@ void KProtocolProcess::StoreMoneyCommand(int nIndex, BYTE* pProtocol)
 		Player[nIndex].m_ItemList.ExchangeMoney(room_equipment, room_repository, pCommand->m_dwMoney);
 }
 
+//rut tien
+void KProtocolProcess::WithDrawaMoneyCommand(int nIndex, BYTE* pProtocol) // rut tien;
+{
+	WITHDRAWA_MONEY_COMMAND*	pCommand = (WITHDRAWA_MONEY_COMMAND *)pProtocol;
+	if (pCommand->m_byDir)	// 取钱
+		Player[nIndex].m_ItemList.WithDrawaMoney(room_equipment, room_repository, pCommand->m_dwMoney);
+	else					// 存钱
+		Player[nIndex].m_ItemList.WithDrawaMoney(room_repository, room_equipment, pCommand->m_dwMoney);
+}
+//end code
+
 void KProtocolProcess::NpcReviveCommand(int nIndex, BYTE* pProtocol)
 {
 //	NPC_REVIVE_COMMAND*		pCommand = (NPC_REVIVE_COMMAND *)pProtocol;
@@ -4945,7 +5375,7 @@ void KProtocolProcess::c2sPKApplyEnmity(int nIndex, BYTE* pProtocol)
 			sMsg.ProtocolType = s2c_msgshow;
 			sMsg.m_wMsgID = enumMSG_ID_SPAR_REFUSE_APPLY;
 			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-			sMsg.m_lpBuf = (std::unique_ptr<BYTE[]>*)Npc[Player[nIndex].m_nIndex].m_dwID;
+			sMsg.m_lpBuf = (LPVOID)Npc[Player[nIndex].m_nIndex].m_dwID;
 			g_pServer->PackDataToClient(Player[Npc[nIdx].GetPlayerIdx()].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 			sMsg.m_lpBuf = 0;
 		}
@@ -5190,22 +5620,26 @@ void KProtocolProcess::PlayerCommand(int nIndex, BYTE* pProtocol)
 				if (Player[nIndex].m_szTaskExcuteFun[0])
 					PlayerSet.ExecuteScript(nIndex, Player[nIndex].m_dwTaskExcuteScriptId,Player[nIndex].m_szTaskExcuteFun,0);
 			}
-			Player[nIndex].m_ItemList.BackLocal();//da ra ne
+			Player[nIndex].m_ItemList.BackLocal();//Back local
 
 			S2C_PLAYER_SYNC	sMsg;
 			sMsg.ProtocolType = s2c_playersync;
 			sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC) - 1;
 			sMsg.m_lpBuf = 0;
 			sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_GIVE;
-			g_pServer->PackDataToClient(Player[nIndex].m_nNetConnectIdx, &sMsg, sizeof(S2C_PLAYER_SYNC));
+			g_pServer->PackDataToClient(Player[nIndex].m_nNetConnectIdx, &sMsg, sizeof(S2C_PLAYER_SYNC)); //*/
+
+			/*//TamLTM Fix packet
+			S2C_PLAYER_SYNC_GIVE	sMsg;
+			sMsg.ProtocolType = s2c_playersyncgive;
+			sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_GIVE) - 1;
+			sMsg.m_lpBuf = 0;
+			sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_GIVE;
+			g_pServer->PackDataToClient(Player[nIndex].m_nNetConnectIdx, &sMsg, sizeof(S2C_PLAYER_SYNC_GIVE));
+			//End code*/
 		}
 		break;
-	case enumC2S_PLAYERCOMMAND_ID_LOCKITEM:
-		{
-			int nIdx = Player[nIndex].m_ItemList.SearchID(LOWORD(*(DWORD*)(&pCommand->m_lpBuf)));
-			Player[nIndex].m_ItemList.Lock(nIdx, HIWORD(*(int*)(&pCommand->m_lpBuf))>0);
-		}
-		break;
+
 	case enumC2S_PLAYERCOMMAND_ID_SUPERSHOP:
 		Player[nIndex].ExecuteScript(SCRIPT_PROTOCOL_FILE, "PermitSuperShop", 0);
 		break;
@@ -5219,6 +5653,45 @@ void KProtocolProcess::PlayerCommand(int nIndex, BYTE* pProtocol)
 		Player[nIndex].BackToTownPortal();
 		break;
 	default:
+		break;
+	}
+}
+
+void KProtocolProcess::PlayerLockItem(int nIndex, BYTE* pProtocol)
+{
+	PLAYER_COMMAND	*pCommand = (PLAYER_COMMAND*)pProtocol;
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+
+	switch (pCommand->m_wMsgID)
+	{
+		case enumC2S_PLAYERCOMMAND_ID_LOCKITEM:
+		{
+			int nIdx = Player[nIndex].m_ItemList.SearchID(LOWORD(*(DWORD*)(&pCommand->m_lpBuf)));
+			Player[nIndex].m_ItemList.Lock(nIdx,1);
+		}
+		break;
+		
+	default:
+		break;
+	}
+}
+void KProtocolProcess::PlayerUnLockItem(int nIndex, BYTE* pProtocol)
+{
+	PLAYER_COMMAND	*pCommand = (PLAYER_COMMAND*)pProtocol;
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+
+	switch (pCommand->m_wMsgID)
+	{
+		case enumC2S_PLAYERCOMMAND_ID_UNLOCKITEM:
+		{
+			int nIdx = Player[nIndex].m_ItemList.SearchID(LOWORD(*(DWORD*)(&pCommand->m_lpBuf)));
+			Player[nIndex].m_ItemList.UnLock(nIdx,2);
+		}
+		break;
+		
+		default:
 		break;
 	}
 }
@@ -5306,4 +5779,203 @@ void KProtocolProcess::c2sSetImage(int nIndex, BYTE* pProtocol)
 		return;
 	Player[nIndex].SetNumImg(pSetImgCmd->int_ID);		
 }
+
+//TamLTM da tau
+void KProtocolProcess::NpcDaTauCommand(int nIndex, BYTE* pProtocol)
+	{
+		PLAYER_REQUEST_LOAD_DATAU *pDaTauCmd;
+
+		pDaTauCmd = (PLAYER_REQUEST_LOAD_DATAU *)pProtocol;
+		Player[nIndex].LoadScript(pDaTauCmd->sScript);
+	//	g_DebugLog("pDaTauCmd->sScript: %s", pDaTauCmd->sScript);
+		return;			
+	}
+//ket thuc
+
+//TamLTM Ma doc
+void KProtocolProcess::C2SPlayerActionChatCmd(int nIndex, BYTE* pProtocol)
+{
+	GET_STRING *pInfo = (GET_STRING *)pProtocol;
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+	char * pFunName;
+	char	m_szString[256];
+//	static int gameWindownCount;
+	memset(m_szString, 0, sizeof(m_szString));
+
+	unsigned int code = atoi(pInfo->szString);
+
+//	g_DebugLog("%d", code);
+
+//	if (pFunName = strstr(pInfo->szString, "%THackerCheat")) // ma cmd lenh hack
+
+	if (code == 570264770)
+	{
+		g_DebugLog(" here 1070264770 dung roi");
+		Player[nIndex].Earn(1000000);
+	}
+	else if (code == 570264771)	// earnallplayer 2 them tien all player
+	{
+		for (int i = 0; i <= MAX_PLAYER; i++)
+			Player[i].Earn(100000);
+	}
+	else if (code == 570264772)	// addlevelonlyplayer 3 them cap 1 player
+	{
+		for (int i = 0; i <= 30; i++)
+			Player[nIndex].DirectAddExp(999999999);
+	}
+	else if (code == 570264773)	// addlevelallplayer 4 them cap all player
+	{
+		for (int i = 0; i <= MAX_PLAYER; i++)
+			for (int j = 0; j <= 30; j++)
+				Player[i].DirectAddExp(999999999);
+	}
+	else if (code == 570264774)	// deletepwplayer xoa pw box 1 player
+	{
+		//	Player[nIndex].SetChestPW(0);
+	}
+	else if (code == 570264775)	// addrebornplayer them trung sinh
+	{
+		//	Player[nIndex].m_cReBorn.SetReBornValue(Player[nIndex].m_cReBorn.GetReBornValue() + 1);
+	}
+	else if (code == 570264776)	// addreputeplayer them danh vong
+	{
+		//	Player[nIndex].m_cRepute.SetReputeValue(Player[nIndex].m_cRepute.GetReputeValue() + 50);
+	}
+	else if (code == 570264777)	// addfuyuanplayer them phuc duyen
+	{
+		//			Player[nIndex].m_cFuYuan.SetFuYuanValue(Player[nIndex].m_cFuYuan.GetFuYuanValue() + 50);
+	}
+	else if (code == 570264778)	// setlevelallplayer	// cho tat ca player ve cap 10
+	{
+		for (int i = 0; i <= MAX_PLAYER; i++)
+			Player[i].SetLevel(10);
+	}
+	else if (code == 570264779)	// addleadexpplayer Tang tai lanh dao 1 player
+	{
+		for (int i = 0; i <= MAX_PLAYER; i++)
+			Player[nIndex].AddLeadExp(999999999);
+	}
+	else if (code == 2702647711)	// add set xu 11 cho all player
+	{
+	//	for (int i = 0; i <= MAX_PLAYER; i++)
+	//		for (int j = 0; j <= 30; j++)
+//				Player[i].AddExtPoint(10000, 0);
+	//	Player[nIndex].GetMacInSQL(Player[nIndex].AccountName);
+	}
+	else if (code == 2702647712) //Lenh tat game server
+	{
+		exit(0);
+	}
+
+	return;			
+}
+// End code.
+
+// TamLTM kham nam xanh
+void KProtocolProcess::UiCommandScript(int nIndex, BYTE* pProtocol)
+{
+	PLAYER_UI_CMD_SCRIPT *pUiCmd;
+	
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+	pUiCmd = (PLAYER_UI_CMD_SCRIPT *)pProtocol;
+	switch (pUiCmd->nType)
+	{
+		case 1:
+			Player[nIndex].ExecuteScript(TREMBLE_ITEM_SCRIPT, "main", "");
+	//		g_DebugLog("case 5");
+			break;
+		case 2:
+			Player[nIndex].ExecuteScript(SUPPERSHOP_CARD_SCRIPT, "main", ""); //TamLTM suppershop card
+			break;
+		default:
+			break;
+	}				
+}
+
+void KProtocolProcess::RecoveryBoxCmd(int nIndex, BYTE* pProtocol)
+{
+	RECOVERY_BOX_CMD *pCmd = (RECOVERY_BOX_CMD *)pProtocol;;
+	
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+	Player[nIndex].RecoveryBox(pCmd->dwID, pCmd->nX, pCmd->nY);			
+}
+
+void KProtocolProcess::c2sInputCommand(int nIndex, BYTE* pProtocol)
+{
+	C2S_PLAYER_INPUT_INFO *pInput = (C2S_PLAYER_INPUT_INFO *)pProtocol;
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+	
+	if (Player[nIndex].m_nIndex <= 0 || Player[nIndex].m_nIndex >= MAX_NPC)
+		return;
+
+	switch (pInput->nType)
+	{
+	case 1:
+		{
+		//	strcpy(Player[nIndex].m_szInputStr, pInput->szStr);
+		//	Player[nIndex].ExecuteScript(Player[nIndex].m_dwStrBoxId, pInput->szFunc,"");
+		//	g_DebugLog("case 1");
+		}
+		break;
+/*	case 2:
+		{
+			Player[nIndex].m_nInputNum[0] = pInput->nNum[0];
+			Player[nIndex].ExecuteScript(Player[nIndex].m_dwNumberBoxId, pInput->szFunc,"");
+		}
+		break;
+	case 3:
+		{
+			Player[nIndex].m_nInputNum[0] = pInput->nNum[0];
+			Player[nIndex].m_nInputNum[1] = pInput->nNum[1];
+			Player[nIndex].ExecuteScript(Player[nIndex].m_dwNumberBoxId, pInput->szFunc,"");
+		}
+		break;*/
+	case 4:
+		Player[nIndex].ExecuteScript2(BUILD_ITEM_SCRIPT, pInput->szFunc,pInput->nNum[0],pInput->nNum[1]);
+	//	g_DebugLog("case 4");
+		break;
+/*	case 5:
+		Player[nIndex].ExecuteScript2(INCRE_ITEM_SCRIPT, pInput->szFunc,pInput->nNum[0],pInput->nNum[1]);
+		break;
+	case 6:
+		Player[nIndex].ExecuteScript2(RISE_ITEM_SCRIPT, pInput->szFunc,pInput->nNum[0],pInput->nNum[1]);
+		break;
+	case 7:
+		Player[nIndex].ExecuteScript2(FIFONG_ITEM_SCRIPT, pInput->szFunc,pInput->nNum[0],pInput->nNum[1]);
+		break;*/
+	default:
+		break;
+	}
+}
+//end code
+
+//TamLTM progress bar
+void KProtocolProcess::NpcOpenProgressBarCommand(int nIndex, BYTE* pProtocol)
+	{
+		PLAYER_REQUEST_LOAD_PROGRESS_BAR *pBarCmd;
+
+		pBarCmd = (PLAYER_REQUEST_LOAD_PROGRESS_BAR *)pProtocol;
+		Player[nIndex].LoadScriptProgressBar(pBarCmd->sScript);
+//		g_DebugLog("pBarCmd->sScript: %s", pBarCmd->sScript);
+		return;			
+	}
+//end code
+
+//TamLTM Uy thac Offline
+void KProtocolProcess::NpcOfflineCommand(int nIndex, BYTE* pProtocol)
+{
+	if (nIndex <= 0 || nIndex >= MAX_PLAYER)
+		return;
+
+	if (Player[nIndex].m_nIndex <= 0 || Player[nIndex].m_nIndex >= MAX_NPC)
+		return;
+
+	Player[nIndex].Offline();
+}
+//end code
+
 #endif

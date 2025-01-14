@@ -139,6 +139,7 @@ KNpcAttribModify::KNpcAttribModify()
 	ProcessFunc[magic_walkrunshadow] = &KNpcAttribModify::WalkRunShadow;
 	ProcessFunc[magic_randmove] = &KNpcAttribModify::RandMove;
 	ProcessFunc[magic_manatoskill_enhance] = &KNpcAttribModify::ManaToSkillEnhanceP;
+	ProcessFunc[magic_expenhance_s] = &KNpcAttribModify::ExpSkillsEnhanceP;// Add magic
 }
 
 KNpcAttribModify::~KNpcAttribModify()
@@ -160,10 +161,79 @@ void KNpcAttribModify::ModifyAttrib(KNpc* pNpc, void* pData)
 void KNpcAttribModify::AddColdDamageV(KNpc* pNpc, void* pData)
 {	
 	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
+	int COLD_DAMAGE_TIME_Count = 0;
+	if (pMagic->nValue[0] <= 0)
+	{
+	COLD_DAMAGE_TIME_Count = 0;
+	}
+	else if (pMagic->nValue[0] < 9)
+	{
+	COLD_DAMAGE_TIME_Count = 4;
+	}
+	else if (pMagic->nValue[0] < 18)
+	{
+	COLD_DAMAGE_TIME_Count = 6;
+	}
+	else if (pMagic->nValue[0] < 27)
+	{
+	COLD_DAMAGE_TIME_Count = 8;
+	}
+	else if (pMagic->nValue[0] < 36)
+	{
+	COLD_DAMAGE_TIME_Count = 10;
+	}
+	else if (pMagic->nValue[0] < 45)
+	{
+	COLD_DAMAGE_TIME_Count = 12;
+	}
+	else if (pMagic->nValue[0] < 54)
+	{
+	COLD_DAMAGE_TIME_Count = 14;
+	}
+	else if (pMagic->nValue[0] < 63)
+	{
+	COLD_DAMAGE_TIME_Count = 16;
+	}
+	else if (pMagic->nValue[0] < 72)
+	{
+	COLD_DAMAGE_TIME_Count = 18;
+	}
+	else if (pMagic->nValue[0] < 81)
+	{
+	COLD_DAMAGE_TIME_Count = 20;
+	}
+	else if (pMagic->nValue[0] < 90)
+	{
+	COLD_DAMAGE_TIME_Count = 24;
+	}
+	else if (pMagic->nValue[0] < 99)
+	{
+	COLD_DAMAGE_TIME_Count = 28;
+	}
+	else if (pMagic->nValue[0] < 108)
+	{
+	COLD_DAMAGE_TIME_Count = 32;
+	}
+	else if (pMagic->nValue[0] < 117)
+	{
+	COLD_DAMAGE_TIME_Count = 36;
+	}
+	else if (pMagic->nValue[0] < 126)
+	{
+	COLD_DAMAGE_TIME_Count = 40;
+	}
+	else if (pMagic->nValue[0] < 135)
+	{
+	COLD_DAMAGE_TIME_Count = 44;
+	}
+	else
+	{
+	COLD_DAMAGE_TIME_Count = 50;
+	}
 	pNpc->m_CurrentColdDamage.nValue[0] += pMagic->nValue[0];
 	pNpc->m_CurrentColdDamage.nValue[2] += pMagic->nValue[0];
 	if (pNpc->m_CurrentColdDamage.nValue[0] > 0 && pNpc->m_CurrentColdDamage.nValue[2] > 0)
-		pNpc->m_CurrentColdDamage.nValue[1] = COLD_DAMAGE_TIME;
+		pNpc->m_CurrentColdDamage.nValue[1] = COLD_DAMAGE_TIME_Count;
 	else
 	{
 		pNpc->m_CurrentColdDamage.nValue[0] = 0;
@@ -175,10 +245,79 @@ void KNpcAttribModify::AddColdDamageV(KNpc* pNpc, void* pData)
 void KNpcAttribModify::AddColdMagicV(KNpc* pNpc, void* pData)
 {	
 	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
+	int COLD_DAMAGE_TIME_Count_1 = 0;
+	if (pMagic->nValue[0] <= 0)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 0;
+	}
+	else if (pMagic->nValue[0] < 9)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 4;
+	}
+	else if (pMagic->nValue[0] < 18)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 8;
+	}
+	else if (pMagic->nValue[0] < 27)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 12;
+	}
+	else if (pMagic->nValue[0] < 36)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 16;
+	}
+	else if (pMagic->nValue[0] < 45)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 20;
+	}
+	else if (pMagic->nValue[0] < 54)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 24;
+	}
+	else if (pMagic->nValue[0] < 63)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 28;
+	}
+	else if (pMagic->nValue[0] < 72)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 32;
+	}
+	else if (pMagic->nValue[0] < 81)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 18;
+	}
+	else if (pMagic->nValue[0] < 90)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 40;
+	}
+	else if (pMagic->nValue[0] < 99)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 44;
+	}
+	else if (pMagic->nValue[0] < 108)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 48;
+	}
+	else if (pMagic->nValue[0] < 117)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 52;
+	}
+	else if (pMagic->nValue[0] < 126)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 56;
+	}
+	else if (pMagic->nValue[0] < 135)
+	{
+	COLD_DAMAGE_TIME_Count_1 = 60;
+	}
+	else
+	{
+	COLD_DAMAGE_TIME_Count_1 = 64;
+	}
 	pNpc->m_CurrentColdMagic.nValue[0] += pMagic->nValue[0];
 	pNpc->m_CurrentColdMagic.nValue[2] += pMagic->nValue[0];
 	if (pNpc->m_CurrentColdMagic.nValue[0] > 0 && pNpc->m_CurrentColdMagic.nValue[2] > 0)
-		pNpc->m_CurrentColdMagic.nValue[1] = COLD_DAMAGE_TIME;
+		pNpc->m_CurrentColdMagic.nValue[1] = COLD_DAMAGE_TIME_Count_1;
 	else
 	{
 		pNpc->m_CurrentColdMagic.nValue[0] = 0;
@@ -227,7 +366,7 @@ void KNpcAttribModify::AddPhysicsDamageP(KNpc* pNpc, void* pData)
 
 	int nType = abs(pMagic->nValue[2]);
 	
-	if (nType == WEAPON_ALL)
+	if ( (nType + 1) == WEAPON_ALL)
 	{
 		for (int i = 0; i < MAX_MELEE_WEAPON; i++)
 		{
@@ -236,15 +375,15 @@ void KNpcAttribModify::AddPhysicsDamageP(KNpc* pNpc, void* pData)
 		pNpc->m_CurrentHandEnhance += pMagic->nValue[0];
 		pNpc->m_CurrentRangeEnhance += pMagic->nValue[0];
 	}
-	else if (nType == WEAPON_RANGE_ALL)
+	else if ((nType + 1) == WEAPON_RANGE_ALL)
 	{
 		pNpc->m_CurrentRangeEnhance += pMagic->nValue[0];
 	}
-	else if (nType == WEAPON_NONE)
+	else if ((nType + 1) == WEAPON_NONE)
 	{
 		pNpc->m_CurrentHandEnhance += pMagic->nValue[0];
 	}
-	else if (nType == WEAPON_MELEE_ALL)
+	else if ((nType + 1) == WEAPON_MELEE_ALL)
 	{
 		for (int i = 0; i < MAX_MELEE_WEAPON; i++)
 		{
@@ -529,7 +668,16 @@ void KNpcAttribModify::ManaV(KNpc* pNpc, void* pData)
 void KNpcAttribModify::ManaShieldP(KNpc* pNpc, void* pData)
 {
 	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
-	pNpc->m_ManaShield.nValue[0] += pMagic->nValue[0];
+	// pNpc->m_ManaShield.nValue[0] += pMagic->nValue[0];
+
+	if (pMagic->nValue[1] > 0)
+	{
+		pNpc->m_ManaShield.nValue[0] += pMagic->nValue[0];
+	}
+	else
+	{
+		pNpc->m_ManaShield.nValue[0] += pMagic->nValue[0];
+	}
 }
 
 void KNpcAttribModify::MeleeDamageReturnP(KNpc* pNpc, void* pData)
@@ -847,7 +995,16 @@ void KNpcAttribModify::MixPoisonDamage(KMagicAttrib* pDes, KMagicAttrib* pSrc)
 void KNpcAttribModify::DynamicMagicShieldV( KNpc* pNpc, void* pData )
 {
 	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
-	pNpc->m_CurrentManaShield += pMagic->nValue[0];
+//	pNpc->m_CurrentManaShield += pMagic->nValue[0];
+
+	//Fix Damge huyen thien vo cuc
+	if (pMagic->nValue[0] > 0)
+	{
+		pNpc->m_CurrentManaShield = pMagic->nValue[0] * pNpc->m_CurrentMana;
+		pNpc->m_CurrentMana = 0;
+	}
+	else
+		pNpc->m_CurrentManaShield = 0;
 }
 
 void KNpcAttribModify::StaticMagicShieldP(KNpc* pNpc, void* pData)
@@ -862,6 +1019,19 @@ void KNpcAttribModify::ExpEnhanceP( KNpc* pNpc, void* pData )
 	if (pNpc->IsPlayer())
 	{
 		pNpc->m_CurrentExpEnhance += pMagic->nValue[0];
+	}
+}
+
+void KNpcAttribModify::ExpSkillsEnhanceP(KNpc* pNpc, void* pData)//TamLTM ExpSkills x2
+{
+	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
+	if (pNpc->IsPlayer())
+	{
+		if (pMagic->nValue[0] > 1)
+			pNpc->m_CurrentExpSkillsEnchance = 2; //truong hop su dung x2;
+
+		else
+			pNpc->m_CurrentExpSkillsEnchance = 1; // truong hop khong su dung x2;
 	}
 }
 

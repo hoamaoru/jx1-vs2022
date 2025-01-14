@@ -1,4 +1,4 @@
-// *****************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+// ***************************************************************************************
 // 场景对象树上的树叶的函数
 // Copyright : Kingsoft 2002
 // Author    : wooy(wu yue)
@@ -61,7 +61,8 @@ void KIpotLeaf_EnumerateObjects(KIpotLeaf* pLeaf, void* p, ObjectsCallbackFn Cal
 	};
 }
 
-//extern int		g_bShowObstacle;
+extern int		g_bShowObstacle;
+//int		g_bShowObstacle; //Fix debug
 
 void KIpotLeaf_PaintObjectLayer(KIpotLeaf* pLeaf, RECT* pRepresentArea)
 {
@@ -82,20 +83,21 @@ void KIpotLeaf_PaintObjectLayer(KIpotLeaf* pLeaf, RECT* pRepresentArea)
 				CoreDrawGameObj(pObj->uGenre, pObj->nId, pObj->oPosition.x,
 					pObj->oPosition.y, 0, 0, IPOT_RL_OBJECT);
 			}
-			//#ifdef _DEBUG
-			////if (g_bShowObstacle)
-			//{
-			//	KRURect	FootSpot;
-			//	FootSpot.Color.Color_dw = 0x000FFFF;
-			//	FootSpot.oPosition.nX = pObj->oPosition.x - 3;
-			//	FootSpot.oPosition.nY = pObj->oPosition.y - POINT_LEAF_Y_ADJUST_VALUE;
-			//	FootSpot.oPosition.nZ = 0;
-			//	FootSpot.oEndPos.nX = pObj->oPosition.x + 4;
-			//	FootSpot.oEndPos.nY = pObj->oPosition.y;
-			//	FootSpot.oEndPos.nZ = 0;
-			//	g_pRepresent->DrawPrimitives(1, &FootSpot, RU_T_RECT, false);
-			//}
-			//#endif
+
+			#ifdef SWORDONLINE_SHOW_DBUG_INFO
+			if (g_bShowObstacle)
+			{
+				KRURect	FootSpot;
+				FootSpot.Color.Color_dw = 0x000FFFF;
+				FootSpot.oPosition.nX = pObj->oPosition.x - 3;
+				FootSpot.oPosition.nY = pObj->oPosition.y - POINT_LEAF_Y_ADJUST_VALUE;
+				FootSpot.oPosition.nZ = 0;
+				FootSpot.oEndPos.nX = pObj->oPosition.x + 4;
+				FootSpot.oEndPos.nY = pObj->oPosition.y;
+				FootSpot.oEndPos.nZ = 0;
+				g_pRepresent->DrawPrimitives(1, &FootSpot, RU_T_RECT, false);
+			}
+			#endif
 		}
 		else// if (eLeafType == IPOTL_T_BUILDIN_OBJ)
 		{

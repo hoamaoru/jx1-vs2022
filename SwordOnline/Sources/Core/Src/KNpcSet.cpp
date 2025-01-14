@@ -75,7 +75,7 @@ void KNpcSet::Init()
 		cPKIni.GetInteger("PK", "PKTongOpenCamp", 0, &m_nPKTongOpenCamp);
 		cPKIni.GetInteger("PK", "NormalPKTimeLong", 180000, &m_nNormalPKTimeLong);
 		cPKIni.GetInteger("PK", "FightPKTimeLong", 5000, &m_nFightPKTimeLong);
-		cPKIni.GetInteger("PK", "NotFightWhenHightPK", 6, &m_nNotFightWhenHightPK);
+		cPKIni.GetInteger("PK", "NotFightWhenHightPK", 10, &m_nNotFightWhenHightPK);
 		cPKIni.GetInteger("PK", "PKNotSwitchPKWhenLock", 3, &m_nPKNotSwitchPKWhenLock);
 		cPKIni.GetInteger("PK", "SparPacific", 0, &m_nSparPacific);
 	}
@@ -100,7 +100,7 @@ void KNpcSet::Init()
 		m_nPKTongOpenCamp = 0;
 		m_nNormalPKTimeLong = 180000;
 		m_nFightPKTimeLong = 5000;
-		m_nNotFightWhenHightPK = 6;
+		m_nNotFightWhenHightPK = 10;
 		m_nPKNotSwitchPKWhenLock = 3;
 		m_nSparPacific = 0;
 	}
@@ -115,7 +115,7 @@ void KNpcSet::Init()
 	m_RequestFreeIdx.Init(MAX_NPC_REQUEST);
 	m_RequestUseIdx.Init(MAX_NPC_REQUEST);
 
-	for (int i = MAX_NPC_REQUEST - 1; i > 0; i--)
+	for (i = MAX_NPC_REQUEST - 1; i > 0; i--)
 	{
 		m_RequestFreeIdx.Insert(i);
 	}
@@ -391,6 +391,7 @@ int KNpcSet::Add(int nNpcSettingIdxInfo, int nSubWorld, int nMpsX, int nMpsY, BO
 
 	if (bBarrier)
 	{
+		//TamLTM va cham GetBarrierMin
 		if (SubWorld[nSubWorld].m_Region[nRegion].GetBarrierMin(nMapX, nMapY, nOffX, nOffY, TRUE, TRUE) != Obstacle_NULL)
 		{
 			g_DebugLog("[AddNpc]Npc in Barrier %d,%d,%d",nSubWorld, nMpsX, nMpsY);
@@ -448,7 +449,7 @@ int KNpcSet::Add(int nNpcSettingIdxInfo, int nSubWorld, int nRegion, int nMapX, 
 	// 修改可用与使用表
 	m_FreeIdx.Remove(i);
 	m_UseIdx.Insert(i);
-	SubWorld[nSubWorld].m_Region[nRegion].AddNpc(i);//m_WorldMessage.Send(GWM_NPC_ADD, nRegion, i);
+	SubWorld[nSubWorld].m_Region[nRegion].AddNpc(i);//m_WorldMessage.Send(GWM_NPC_ADD, nRegion, i); //Add Player and npc
 	SubWorld[nSubWorld].m_Region[nRegion].AddRef(nMapX, nMapY, obj_npc);
 
 #ifndef _SERVER
@@ -562,6 +563,9 @@ void KNpcSet::SetID(int m_nIndex)
 
 int KNpcSet::GetDistance(int nIdx1, int nIdx2)
 {
+	//TamLTM Debug
+//	g_DebugLog("GetDistance");
+
 	int	nRet = 0;
 	if (Npc[nIdx1].m_SubWorldIndex != Npc[nIdx2].m_SubWorldIndex)
 		return -1;
@@ -602,6 +606,9 @@ int KNpcSet::GetDistance(int nIdx1, int nIdx2)
 
 int		KNpcSet::GetDistanceSquare(int nIdx1, int nIdx2)
 {
+	//TamLTM Debug
+//	g_DebugLog("GetDistanceSquare");
+
 	int	nRet = 0;
 	if (Npc[nIdx1].m_SubWorldIndex != Npc[nIdx2].m_SubWorldIndex)
 		return -1;
@@ -708,7 +715,7 @@ BOOL KNpcSet::ExecuteScript(int nNpcIndex, DWORD dwScriptId, char* szFuncName, i
 #ifndef _SERVER
 void KNpcSet::CheckBalance()
 {
-	int nIdx;
+/*	int nIdx;
 	nIdx = m_UseIdx.GetNext(0);
 	while(nIdx)
 	{
@@ -742,7 +749,60 @@ void KNpcSet::CheckBalance()
 //			g_DebugLog("[Request]Remove %d from %d on %d timeout", dwID, nIdx, SubWorld[0].m_dwCurrentTime);
 		}
 		nIdx = nTmpIdx;
+	}*/
+
+	//Fix remove del npc
+	int nIdx;
+	nIdx = m_UseIdx.GetNext(0);
+	while(nIdx)
+	{
+		int nTmpIdx = m_UseIdx.GetNext(nIdx);
+		if (SubWorld[0].m_dwCurrentTime - Npc[nIdx].m_SyncSignal > 1000)
+		{
+			if (nIdx != Player[CLIENT_PLAYER_INDEX].m_nIndex)
+			{
+				if (Npc[nIdx].m_RegionIndex >= 0)
+				{
+					SubWorld[0].m_Region[Npc[nIdx].m_RegionIndex].RemoveNpc(nIdx);
+					SubWorld[0].m_Region[Npc[nIdx].m_RegionIndex].DecRef(Npc[nIdx].m_MapX, Npc[nIdx].m_MapY, obj_npc);
+				}
+				Remove(nIdx);
+			}
+		}
+		else if (nIdx != Player[CLIENT_PLAYER_INDEX].m_nIndex && Player[CLIENT_PLAYER_INDEX].m_nIndex > 0 && Player[CLIENT_PLAYER_INDEX].m_nIndex < MAX_NPC)
+			{
+
+			if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_SyncSignal - Npc[nIdx].m_SyncSignal > 5*18)//Fix lag toa do
+			{
+				if (Npc[nIdx].m_RegionIndex >= 0)
+				{
+					SubWorld[0].m_Region[Npc[nIdx].m_RegionIndex].RemoveNpc(nIdx);
+					SubWorld[0].m_Region[Npc[nIdx].m_RegionIndex].DecRef(Npc[nIdx].m_MapX, Npc[nIdx].m_MapY, obj_npc);
+				}
+
+				Remove(nIdx);
+			}
+		}
+
+		nIdx = nTmpIdx;
 	}
+	nIdx = m_RequestUseIdx.GetNext(0);
+	while(nIdx)
+	{
+		int nTmpIdx = m_RequestUseIdx.GetNext(nIdx);
+		if (SubWorld[0].m_dwCurrentTime - m_RequestNpc[nIdx].dwRequestTime > 100)
+		{
+			DWORD	dwID = m_RequestNpc[nIdx].dwRequestId;
+			m_RequestNpc[nIdx].dwRequestId = 0;	
+			m_RequestNpc[nIdx].dwRequestTime = 0;
+			
+			m_RequestUseIdx.Remove(nIdx);
+			m_RequestFreeIdx.Insert(nIdx);
+		//	g_DebugLog("[Request]Remove %d from %d on %d timeout", dwID, nIdx, SubWorld[0].m_dwCurrentTime);
+		}
+		nIdx = nTmpIdx;
+	}
+	//end code
 }
 #endif
 
@@ -1104,22 +1164,24 @@ BOOL KNpcSet::IsNpcRequestExist(DWORD dwID)
 	return (GetRequestIndex(dwID) > 0);
 }
 
-void KNpcSet::InsertNpcRequest(DWORD dwID)
+BOOL KNpcSet::InsertNpcRequest(DWORD dwID)
 {
 	if (IsNpcRequestExist(dwID))
 	{
-		return;
+		return FALSE;
 	}
 
 	int nIndex = m_RequestFreeIdx.GetNext(0);
 	if (!nIndex)
-		return;
+		return FALSE;
 
 	m_RequestNpc[nIndex].dwRequestId = dwID;
 	m_RequestNpc[nIndex].dwRequestTime = SubWorld[0].m_dwCurrentTime;
 	m_RequestFreeIdx.Remove(nIndex);
 	m_RequestUseIdx.Insert(nIndex);
-//	g_DebugLog("[Request]Insert %d at %d on %d", dwID, nIndex, SubWorld[0].m_dwCurrentTime);
+	g_DebugLog("[Request]Insert %d at %d on %d", dwID, nIndex, SubWorld[0].m_dwCurrentTime);
+
+	return TRUE;
 }
 
 void KNpcSet::RemoveNpcRequest(DWORD dwID)

@@ -17,11 +17,11 @@ KWeatherMgr::KWeatherMgr()
 	m_nWeatherDuration = 0;
 }
 
-// IniFile:锟窖撅拷锟津开碉拷.wor锟侥硷拷
+// IniFile:已经打开的.wor文件
 bool KWeatherMgr::InitFromIni(KIniFile &IniFile)
 {
 	KIniFile IniFileWeather;
-	// 锟斤拷锟斤拷戏锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絠ni锟侥硷拷
+	// 打开游戏中所有天气定义的ini文件
 	if(!IniFileWeather.Load("\\settings\\Weather\\Weather.ini"))
 		return false;
 
@@ -67,12 +67,12 @@ bool KWeatherMgr::InitFromIni(KIniFile &IniFile)
 int KWeatherMgr::Activate()
 {
 	int tmCur = g_SubWorldSet.GetGameTime();
-	int i = 0;
+	int i;
 	if(!m_bInWeather)
 	{
 		if(tmCur > m_nNextHappentime)
 		{
-			// 时锟戒到锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷
+			// 时间到，发生一次天气
 			int nOdds = g_Random(m_nFullOdds);
 			m_nWeatherDuration = 0;
 			for(i=0; i<m_nWeatherNum; i++)
@@ -97,7 +97,7 @@ int KWeatherMgr::Activate()
 	{
 		if(tmCur - m_nLastHappentime > m_nWeatherDuration)
 		{
-			// 时锟戒到锟斤拷锟斤拷锟斤拷停止
+			// 时间到，天气停止
 			m_nCurWeather = WEATHERID_NOTHING;
 			m_bInWeather = false;
 		}

@@ -31,7 +31,8 @@ public:
 	void			Active();
 #ifdef _SERVER
 	void			AddDamage(int nPlayerIdx, int nDamage);
-	int				CalcExp();
+//	int				CalcExp();
+	int				CalcExp(int nAttacker = -1); //TamLTM fix exp
 #endif
 	void			Clear();
 };

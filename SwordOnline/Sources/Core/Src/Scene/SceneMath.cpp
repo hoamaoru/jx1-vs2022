@@ -1,4 +1,4 @@
-// *****************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+// ***************************************************************************************
 // 场景模块的一些数学计算
 // Copyright : Kingsoft 2002
 // Author    : wooy(wu yue)
@@ -46,7 +46,7 @@ int	SM_Distance_PointLine(const POINT& Point, const POINT& LP1, const POINT& LP2
 //	int d = abs(pt.y*(x2-x1) - pt.x*(y2-y1) + (x1*y2 - x2*y1) ) / sqrtf((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 
 //	int d = (int)(abs(x1*y2 - x2*y1) / sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)));
-	int d = (int)(abs(x1*y2 - x2*y1) / sqrt((float)((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))));
+	int d = (int)(abs(x1*y2 - x2*y1) / qsqrt((float)((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))));
 	return d;
 }
 

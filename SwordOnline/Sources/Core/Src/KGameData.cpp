@@ -153,29 +153,24 @@ BOOL KGameData::InitGameData()
 	KIniFile Ini;
 	if (!Ini.Load(GAME_DATA_FILE_INI))
 		Ini.Save(GAME_DATA_FILE_INI);
-
-
-	for (int i=0;i<GameDataNum;i++)
+	int i, j, k;
+	char szSectName[16];
+	char szKeyName[6];
+	char szName[32];
+	for (i=0;i<GameDataNum;i++)
 	{
-
 		switch (i)
 		{
 			case GameDataInt:
-				for (int j=0;j<MAX_DATA_INT;j++)
+				for (j=0;j<MAX_DATA_INT;j++)
 				{
-					char szSectName[16];
-					char szKeyName[16];
-					char szName[32];
 					sprintf(szKeyName, DATA_SAVE_KEY, j);
 					Ini.GetString(DATA_SAVE_SEC, szKeyName, "", m_szSave[j], sizeof(m_szSave[j]));
 				}
 				break;
 			case GameDataGr:
-				for (int j=0;j<MAX_PLAYER;j++)
+				for (j=0;j<MAX_PLAYER;j++)
 				{
-					char szSectName[16];
-					char szKeyName[16];
-					char szName[32];
 					sprintf(szSectName, DATA_GROUP_SEC, j);
 					Ini.GetInteger(szSectName, DATA_GROUP_NAMEID_KEY, 0, &m_sDataGroup[j].nNameId);
 					szName[0] = 0;
@@ -186,7 +181,7 @@ BOOL KGameData::InitGameData()
 					Ini.GetString(szSectName, DATA_GROUP_NAME2_KEY, "", szName, sizeof(szName));
 					if (szName[0])
 						strcpy(m_sDataGroup[j].szName2, szName);
-					for (int k=0;k<MAX_DATAGROUP_VALUE;k++)
+					for (k=0;k<MAX_DATAGROUP_VALUE;k++)
 					{
 						sprintf(szKeyName, DATA_GROUP_VALUE_KEY, k);
 						Ini.GetInteger(szSectName, szKeyName, 0, &m_sDataGroup[j].nValue[k]);
@@ -206,19 +201,18 @@ BOOL KGameData::Save()
 {
 	KIniFile Ini;
 
-	char szSectName[32];
-	char szKeyName[32];
-
-	for (int i=0;i<MAX_DATA_INT;i++)
+	int i, j;
+	char szSectName[16];
+	char szKeyName[6];
+	for (i=0;i<MAX_DATA_INT;i++)
 	{
-
 		if (!m_szSave[i][0])
 			continue;
 		sprintf(szKeyName, DATA_SAVE_KEY, i);
 		Ini.WriteString(DATA_SAVE_SEC, szKeyName, m_szSave[i]);
 	}
 	
-	for (int i=0;i<MAX_PLAYER;i++)
+	for (i=0;i<MAX_PLAYER;i++)
 	{
 		if (!m_sDataGroup[i].nNameId)
 			continue;
@@ -226,7 +220,7 @@ BOOL KGameData::Save()
 		Ini.WriteInteger(szSectName, DATA_GROUP_NAMEID_KEY, m_sDataGroup[i].nNameId);
 		Ini.WriteString(szSectName, DATA_GROUP_NAME1_KEY, m_sDataGroup[i].szName1);
 		Ini.WriteString(szSectName, DATA_GROUP_NAME2_KEY, m_sDataGroup[i].szName2);
-		for (int j=0;j<MAX_DATAGROUP_VALUE;j++)
+		for (j=0;j<MAX_DATAGROUP_VALUE;j++)
 		{
 			sprintf(szKeyName, DATA_GROUP_VALUE_KEY, j);
 			Ini.WriteInteger(szSectName, szKeyName, m_sDataGroup[i].nValue[j]);

@@ -65,6 +65,7 @@ void KPlayerTask::SetSaveVal(int nTaskID, char* szTaskVal, BOOL bSync)
 	if(bSync || (nTaskID >= TASKVALUE_BASEDATA_PASSWORD && nTaskID < TASKVALUE_STATTASK_NUM))
 		SyncTaskValue(nTaskID);
 #endif
+
 }
 
 void KPlayerTask::SetSaveVal(int nTaskID, int nTaskVal, BOOL bSync)
@@ -90,6 +91,9 @@ BOOL	KPlayerTask::SyncTaskValue(int nTaskID)
 	SyncTaskValue.ProtocolType = s2c_synctaskvalue;
 	SyncTaskValue.nTaskId = nTaskID;
 	strcpy(SyncTaskValue.szTaskValue, szSave[nTaskID]);
+
+//	g_DebugLog("s2c_synctaskvalue %d", s2c_synctaskvalue); //TamLTM Debug error packet
+
 	if (g_pServer && Player[m_nPlayerIndex].m_nNetConnectIdx != -1)
 		g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, (BYTE*)&SyncTaskValue, sizeof(S2C_SYNCTASKVALUE));
 

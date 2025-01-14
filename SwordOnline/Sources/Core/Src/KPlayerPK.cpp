@@ -12,12 +12,16 @@
 #include	"KPlayer.h"
 #include	"KPlayerDef.h"
 #include	"KPlayerPK.h"
+#include	"KNpc.h"
 #include "../../Engine/Src/Text.h"
+#include "../../Represent/iRepresent/iRepresentShell.h" // Add output text
+
+extern struct iRepresentShell* g_pRepresent;
 
 #ifndef _SERVER
 #include "CoreShell.h"
 #endif
-#include <memory>
+
 #ifdef _SERVER
 
 //-------------------------------------------------------------------------
@@ -55,7 +59,7 @@ void	KPlayerPK::Active()
 	EnmityPKCountDown();
 }
 
-
+//Ham new check pk
 BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 {
 	if ((m_nPKValue >= NpcSet.m_nPKNotSwitchPKWhenLock) && 
@@ -66,7 +70,7 @@ BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 		sMsg.ProtocolType = s2c_msgshow;
 		sMsg.m_wMsgID = enumMSG_ID_PK_HIGHT_LOCK_NOT_SWITCH;
 		sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-		sMsg.m_lpBuf = (std::unique_ptr<BYTE[]>*)NpcSet.m_nPKNotSwitchPKWhenLock;
+		sMsg.m_lpBuf = (LPVOID)NpcSet.m_nPKNotSwitchPKWhenLock;
 		g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		sMsg.m_lpBuf = 0;
 		return FALSE;
@@ -82,6 +86,8 @@ BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 		g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		return FALSE;
 	}
+
+	//TamLTM pt to doi kiem tra trang thai pk
 	if (!bCaptainSet && 
 		Player[m_nPlayerIndex].m_cTeam.m_nFlag && 
 		Player[m_nPlayerIndex].m_cTeam.m_nFigure != TEAM_CAPTAIN && 
@@ -94,6 +100,7 @@ BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 		g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		return FALSE;
 	}
+	//end code
 
 	if (bFlag == enumPKTongWar && !Player[m_nPlayerIndex].m_cTong.m_nFlag)
 	{
@@ -192,12 +199,14 @@ BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 					m_uNextChangeFightPK = GetTickCount();
 					return TRUE;
 				}
+
 				SHOW_MSG_SYNC	sMsg;
 				sMsg.ProtocolType = s2c_msgshow;
-				sMsg.m_wMsgID = enumMSG_ID_PK_IS_LOCK7;
-				sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-				sMsg.m_lpBuf = (std::unique_ptr<BYTE[]>*)NpcSet.m_nFightPKTimeLong;
-				g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+				sMsg.m_wMsgID = enumMSG_ID_PK_IS_LOCK7; //show mess
+				sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1; 
+			//	sMsg.m_lpBuf = (LPVOID)NpcSet.m_nFightPKTimeLong;
+				g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1); //*/
+
 				return FALSE;
 			}
 			return TRUE;
@@ -217,7 +226,7 @@ BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 			sMsg.ProtocolType = s2c_msgshow;
 			sMsg.m_wMsgID = enumMSG_ID_PK_IS_LOCK;
 			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-			sMsg.m_lpBuf = (std::unique_ptr<BYTE[]>*)NpcSet.m_nNormalPKTimeLong;
+		//	sMsg.m_lpBuf = (LPVOID)NpcSet.m_nNormalPKTimeLong;
 			g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 			return FALSE;
 		}
@@ -227,6 +236,7 @@ BOOL	KPlayerPK::CheckSwitchPK(BYTE bFlag, BOOL bCaptainSet)
 //-------------------------------------------------------------------------
 //	功能：设定正常PK状态 TRUE 打开，可以砍人  FALSE 关闭，不可以砍人
 //-------------------------------------------------------------------------
+//TamLTM set PK chien dau normal
 void	KPlayerPK::SetNormalPKState(BYTE bFlag, BOOL bCaptainSet)
 {
 	if (!CheckSwitchPK(bFlag, bCaptainSet))
@@ -249,7 +259,7 @@ void	KPlayerPK::SetNormalPKState(BYTE bFlag, BOOL bCaptainSet)
 	PK_NORMAL_FLAG_SYNC	sFlag;
 	sFlag.ProtocolType = s2c_pksyncnormalflag;
 	sFlag.m_btFlag = m_nNormalPKFlag;
-	g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, (BYTE*)&sFlag, sizeof(PK_NORMAL_FLAG_SYNC));
+	g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, (BYTE*)&sFlag, sizeof(PK_NORMAL_FLAG_SYNC)); // */
 
 	int i,nMemberId;
 	if (Player[m_nPlayerIndex].m_cTeam.m_nFlag)
@@ -259,11 +269,11 @@ void	KPlayerPK::SetNormalPKState(BYTE bFlag, BOOL bCaptainSet)
 			for (i=0; i< MAX_TEAM_MEMBER; i++)
 			{
 				nMemberId = g_Team[Player[m_nPlayerIndex].m_cTeam.m_nID].m_nMember[i];
-				if (nMemberId > 0 && (Player[nMemberId].m_cTeam.GetPKFollowCaptain()))
+				if (nMemberId > 0 && (Player[nMemberId].m_cTeam.GetPKFollowCaptain())) //TamLTM pt to doi check pk
 					Player[nMemberId].m_cPK.SetNormalPKState(bFlag, TRUE);
 			}
 		}
-	}
+	} // */
 }
 
 
@@ -350,7 +360,7 @@ BOOL	KPlayerPK::EnmityPKOpen(int nAim, BOOL bSpar)
 		sMsg.ProtocolType = s2c_msgshow;
 		sMsg.m_wMsgID = enumMSG_ID_PK_HIGHT_LOCK_NOT_SWITCH;
 		sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-		sMsg.m_lpBuf = (std::unique_ptr<BYTE[]>*)NpcSet.m_nPKNotSwitchPKWhenLock;
+		sMsg.m_lpBuf = (LPVOID)NpcSet.m_nPKNotSwitchPKWhenLock;
 		g_pServer->PackDataToClient(Player[m_nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		sMsg.m_lpBuf = 0;
 		return FALSE;
@@ -752,7 +762,7 @@ void	KPlayerPK::SetNormalPKState(int bFlag, BOOL bShowMsg/* = TRUE*/)
 			sprintf(sMsg.szMessage, MSG_PK_NORMAL_FLAG_CLOSE);
 		else if (bFlag == enumPKWar)
 			sprintf(sMsg.szMessage, MSG_PK_NORMAL_FLAG_OPEN);
-		else if (bFlag == enumPKMurder)
+		else if (bFlag == enumPKMurder) // Tinh trang do sat
 			sprintf(sMsg.szMessage, MSG_PK_NORMAL_FLAG_DS);
 		else if (bFlag == enumPKTongWar)
 			sprintf(sMsg.szMessage, MSG_PK_NORMAL_FLAG_TONGWAR);
@@ -886,6 +896,7 @@ void	KPlayerPK::ReplyInvite(int nNpcID, int nResult)
 	if (g_pClient)
 		g_pClient->SendPackToServer(&sApply, sizeof(PK_APPLY_ENMITY_COMMAND));
 }
+
 //-------------------------------------------------------------------------
 //	功能：设定仇杀PK状态
 //-------------------------------------------------------------------------
@@ -914,6 +925,8 @@ void	KPlayerPK::SetEnmityPKState(int nState, int nNpcID/* = 0*/, char *lpszName/
 	}
 	else if (nState == enumPK_ENMITY_STATE_TIME)
 	{
+	//	g_DebugLog("state %d", nState);
+
 		m_nEnmityPKState = enumPK_ENMITY_STATE_CLOSE;
 		m_nEnmityPKAim = nNpcID;
 		if (bSpar)
@@ -930,15 +943,17 @@ void	KPlayerPK::SetEnmityPKState(int nState, int nNpcID/* = 0*/, char *lpszName/
 		sMsg.byPriority = 0;
 		sMsg.byParamSize = 0;
 		if (bSpar)
-			sprintf(sMsg.szMessage, MSG_PK_SPAR_ENMITY_SUCCESS_1, m_szEnmityAimName);
+			sprintf(sMsg.szMessage, MSG_PK_SPAR_ENMITY_SUCCESS_1, m_szEnmityAimName); // tien hanh ty vo dai
 		else
-			sprintf(sMsg.szMessage, MSG_PK_ENMITY_SUCCESS_1, m_szEnmityAimName);
+			sprintf(sMsg.szMessage, MSG_PK_ENMITY_SUCCESS_1, m_szEnmityAimName); // Hien thi ten nguoi cuu sat
+
 		CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 
 		if (bSpar)
-			sprintf(sMsg.szMessage, MSG_PK_SPAR_ENMITY_SUCCESS_2);
+			sprintf(sMsg.szMessage, MSG_PK_SPAR_ENMITY_SUCCESS_2); // sau 5 giay tien hanh ty vo dai
 		else
-			sprintf(sMsg.szMessage, MSG_PK_ENMITY_SUCCESS_2);
+			sprintf(sMsg.szMessage, MSG_PK_ENMITY_SUCCESS_2); // Hien thi sau 10 giay cuu sat
+			
 		CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 	}
 	else	// if (nState == enumPK_ENMITY_STATE_PKING)
@@ -958,9 +973,21 @@ void	KPlayerPK::SetEnmityPKState(int nState, int nNpcID/* = 0*/, char *lpszName/
 			sprintf(sMsg.szMessage, MSG_PK_SPAR_ENMITY_OPEN);
 		else
 			sprintf(sMsg.szMessage, MSG_PK_ENMITY_OPEN);
+
 		CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 	}
 }
+
+//TamLTM Add get name PK
+char* KPlayerPK::GetPKNamePlayer()
+{
+	char* pkNamePlayer = new char;
+	pkNamePlayer = m_szEnmityAimName;
+//	Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].ShowPKNamePlayer(pkNamePlayer);
+	return pkNamePlayer;
+}
+//end code
+
 
 //-------------------------------------------------------------------------
 //	功能：仇杀倒计时

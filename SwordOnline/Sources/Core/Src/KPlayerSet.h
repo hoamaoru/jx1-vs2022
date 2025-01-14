@@ -170,6 +170,13 @@ public:
 
 private:
 	int		FindFree();
+//TamLTM fix auto save
+#ifdef	_SERVER
+private:
+	int		m_nNumPlayer;
+	int		m_nPlayerNumMax;
+#endif
+//end code
 };
 
 extern KPlayerSet PlayerSet;

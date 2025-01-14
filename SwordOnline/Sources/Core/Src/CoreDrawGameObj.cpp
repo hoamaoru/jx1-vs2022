@@ -70,7 +70,10 @@ void	CoreDrawGameObj(unsigned int uObjGenre, unsigned int uId, int x, int y, int
 								nHeight = Npc[uId].PaintInfo(nHeight, NORMAL_FONTSIZE + 2, 0xff000000);	//被选中的人名放大显示
 							else
 								nHeight = Npc[uId].PaintInfo(nHeight, NORMAL_FONTSIZE, 0xff000000);
+
 						Npc[uId].PaintTop(nHeight, nnHeight, NORMAL_FONTSIZE, 0xff000000);
+
+					//	g_DebugLog("TamLTM debug id cua target nhan vat uId %d - %d x %d", uId, x, y);
 					}
 					else
 					{
@@ -83,6 +86,8 @@ void	CoreDrawGameObj(unsigned int uObjGenre, unsigned int uId, int x, int y, int
 
 						Npc[uId].PaintTop(nnHeight, nnHeight, NORMAL_FONTSIZE, 0xff000000);
 					}
+
+				//	g_DebugLog("TamLTM debug id cua target nhan vat uId %d", uId);
 				}
 				else
 				{

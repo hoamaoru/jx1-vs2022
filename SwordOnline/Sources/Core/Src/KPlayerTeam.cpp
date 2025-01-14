@@ -3,7 +3,7 @@
 //
 // File:	KPlayerTeam.cpp
 // Date:	2002.01.06
-// Code:	ï¿½ß³ï¿½ï¿½ï¿½ï¿½ï¿½
+// Code:	±ß³ÇÀË×Ó
 // Desc:	Team Class
 //---------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ void	KPlayerTeam::Release()
 	m_nApplyCaptainID = -1;
 	m_nApplyCaptainID = 0;
 	m_dwApplyTimer = 0;
-	m_bAutoRefuseInviteFlag = FALSE;	 // TRUE ï¿½Ô¶ï¿½ï¿½Ü¾ï¿½   FALSE ï¿½Ö¶ï¿½
+	m_bAutoRefuseInviteFlag = FALSE;	 // TRUE ×Ô¶¯¾Ü¾ø   FALSE ÊÖ¶¯
 	ReleaseList();
 	m_bAutoAccept = FALSE;
 	m_bAutoAcceptWithName = FALSE;
@@ -62,17 +62,14 @@ void	KPlayerTeam::ReleaseList()
 #ifndef _SERVER
 BOOL	KPlayerTeam::ApplyCreate()//char *lpszTeamName)
 {
-//	if (!lpszTeamName || !lpszTeamName[0])
-//		return FALSE;
-//	if (strlen(lpszTeamName) >= 32)
-//		return FALSE;
 	if (m_nFlag)
 		return FALSE;
 
 	PLAYER_APPLY_CREATE_TEAM	sCreateTeam;
 	sCreateTeam.ProtocolType = c2s_teamapplycreate;
-//	memset(sCreateTeam.m_szTeamName, 0, sizeof(sCreateTeam.m_szTeamName));
-//	strcpy(sCreateTeam.m_szTeamName, lpszTeamName);
+	sCreateTeam.dwID = Player[CLIENT_PLAYER_INDEX].GetPlayerID();			
+	sCreateTeam.dwTimePacker = GetTickCount();
+
 	if (g_pClient)
 		g_pClient->SendPackToServer(&sCreateTeam, sizeof(PLAYER_APPLY_CREATE_TEAM));
 
@@ -82,7 +79,7 @@ BOOL	KPlayerTeam::ApplyCreate()//char *lpszTeamName)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÑûÇë¼ÓÈë¶ÓÎé
 //---------------------------------------------------------------------------
 void	KPlayerTeam::InviteAdd(DWORD dwNpcID)
 {
@@ -90,6 +87,8 @@ void	KPlayerTeam::InviteAdd(DWORD dwNpcID)
 //		return;
 	TEAM_INVITE_ADD_COMMAND	sAdd;
 	sAdd.ProtocolType = c2s_teaminviteadd;
+	sAdd.dwID = Player[CLIENT_PLAYER_INDEX].GetPlayerID();			
+	sAdd.dwTimePacker = GetTickCount();
 	sAdd.m_dwNpcID = dwNpcID;
 	if (g_pClient)
 		g_pClient->SendPackToServer(&sAdd, sizeof(TEAM_INVITE_ADD_COMMAND));
@@ -98,7 +97,7 @@ void	KPlayerTeam::InviteAdd(DWORD dwNpcID)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÊÕµ½ÑûÇë
 //---------------------------------------------------------------------------
 void	KPlayerTeam::ReceiveInvite(TEAM_INVITE_ADD_SYNC *pInvite)
 {
@@ -110,12 +109,15 @@ void	KPlayerTeam::ReceiveInvite(TEAM_INVITE_ADD_SYNC *pInvite)
 	memcpy(szName, pInvite->m_szName, sizeof(pInvite->m_szName) - (sizeof(TEAM_INVITE_ADD_SYNC) - pInvite->m_wLength - 1));
 	nIdx = pInvite->m_nIdx;
 
+	// pt to doi
 	if (m_bAutoRefuseInviteFlag && 
 		Player[CLIENT_PLAYER_INDEX].m_cAI.m_bAutoParty)
 	{
 		ReplyInvite(nIdx, 0);
 		return;
 	}
+
+	//TamLTM auto pt to doi
 	if (m_bAutoAccept && 
 			Player[CLIENT_PLAYER_INDEX].m_cAI.m_bAutoParty)
 	{
@@ -129,8 +131,9 @@ void	KPlayerTeam::ReceiveInvite(TEAM_INVITE_ADD_SYNC *pInvite)
 		ReplyInvite(nIdx, 1);
 		return;
 	}
+	//end code
 
-	// Í¨Öªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Í¨Öª½çÃæÓÐÈËÑûÇëÍæ¼Ò¼ÓÈëÄ³¸ö¶ÓÎé
 	KUiPlayerItem	sPlayer;
 	KSystemMessage	sMsg;
 
@@ -150,8 +153,8 @@ void	KPlayerTeam::ReceiveInvite(TEAM_INVITE_ADD_SYNC *pInvite)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½nResult  if == 0 ï¿½Ü¾ï¿½  if == 1 ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º»Ø¸´ÑûÇë
+//	²ÎÊý£ºnResult  if == 0 ¾Ü¾ø  if == 1 ½ÓÊÜ
 //---------------------------------------------------------------------------
 void	KPlayerTeam::ReplyInvite(int nIdx, int nResult)
 {
@@ -159,6 +162,8 @@ void	KPlayerTeam::ReplyInvite(int nIdx, int nResult)
 		return;
 	TEAM_REPLY_INVITE_COMMAND	sReply;
 	sReply.ProtocolType = c2s_teamreplyinvite;
+	sReply.dwID = Player[CLIENT_PLAYER_INDEX].GetPlayerID();			
+	sReply.dwTimePacker = GetTickCount();
 	sReply.m_nIndex = nIdx;
 	sReply.m_btResult = nResult;
 	if (g_pClient)
@@ -168,7 +173,7 @@ void	KPlayerTeam::ReplyInvite(int nIdx, int nResult)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½è¶¨ï¿½Ç·ï¿½ï¿½Ô¶ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ËµÄ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÉè¶¨ÊÇ·ñ×Ô¶¯¾Ü¾ø±ðÈËµÄ¼ÓÈë¶ÓÎéµÄÑûÇë
 //---------------------------------------------------------------------------
 void	KPlayerTeam::SetAutoRefuseInvite(BOOL bFlag)
 {
@@ -181,7 +186,7 @@ void	KPlayerTeam::SetAutoRefuseInvite(BOOL bFlag)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ô¶ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ËµÄ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
+//	¹¦ÄÜ£º»ñµÃÊÇ·ñ×Ô¶¯¾Ü¾ø±ðÈËµÄ¼ÓÈë¶ÓÎéµÄÑûÇë×´Ì¬
 //---------------------------------------------------------------------------
 BOOL	KPlayerTeam::GetAutoRefuseState()
 {
@@ -191,8 +196,9 @@ BOOL	KPlayerTeam::GetAutoRefuseState()
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ£©
+//	¹¦ÄÜ£º»ñµÃ×ÔÉí¶ÓÎéÐÅÏ¢£¨¸ø½çÃæ£©
 //---------------------------------------------------------------------------
+//TamLTM auto pt to doi
 int		KPlayerTeam::GetInfo(KUiPlayerTeam *pTeam)
 {
 	if (!pTeam)
@@ -248,11 +254,12 @@ void	KPlayerTeam::SetCreatTeamFlag(BOOL bFlag)
 	if (bFlag)
 		m_bCreatTeamFlag = TRUE;
 }
+//end code
 #endif
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
+//	¹¦ÄÜ£º¸üÐÂ½çÃæÏÔÊ¾
 //---------------------------------------------------------------------------
 void	KPlayerTeam::UpdateInterface()
 {
@@ -270,7 +277,7 @@ void	KPlayerTeam::UpdateInterface()
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½É¾ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º´ÓÉêÇëÈËÁÐ±íÖÐÉ¾³ýÄ³¸öÉêÇëÈË
 //---------------------------------------------------------------------------
 void	KPlayerTeam::DeleteOneFromApplyList(DWORD dwNpcID)
 {
@@ -287,7 +294,7 @@ void	KPlayerTeam::DeleteOneFromApplyList(DWORD dwNpcID)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÇå¿Õ
 //---------------------------------------------------------------------------
 void	KPlayerTeam::Release()
 {
@@ -305,7 +312,7 @@ BOOL	KPlayerTeam::CreateTeam(int nIdx, PLAYER_APPLY_CREATE_TEAM *pCreateTeam)
 {
 	_ASSERT(pCreateTeam);
 
-	// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
+	// µ±Ç°´¦ÓÚ²»ÄÜ×é¶Ó×´Ì¬
 	if (!m_bCreatTeamFlag)
 	{
 		PLAYER_SEND_CREATE_TEAM_FALSE	sCreateFalse;
@@ -315,7 +322,7 @@ BOOL	KPlayerTeam::CreateTeam(int nIdx, PLAYER_APPLY_CREATE_TEAM *pCreateTeam)
 		return FALSE;
 	}
 
-	if (m_nFlag)	// ï¿½ï¿½ï¿½é´´ï¿½ï¿½Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½
+	if (m_nFlag)	// ¶ÓÎé´´½¨Ê§°Ü£ºÒÑÔÚ¶ÓÎéÖÐ
 	{
 		PLAYER_SEND_CREATE_TEAM_FALSE	sCreateFalse;
 		sCreateFalse.ProtocolType = s2c_teamcreatefalse;
@@ -343,9 +350,9 @@ BOOL	KPlayerTeam::CreateTeam(int nIdx, PLAYER_APPLY_CREATE_TEAM *pCreateTeam)
 //		SendToClient(Player[nIdx].m_nNetConnectIdx, (BYTE*)&sCreateFalse, sizeof(PLAYER_SEND_CREATE_TEAM_FALSE));
 //		return FALSE;
 //	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ´´½¨¶ÓÎé
 	m_nID = g_TeamSet.CreateTeam(nIdx);//, szTeamName);
-	if (m_nID >= 0)	// ï¿½ï¿½ï¿½é´´ï¿½ï¿½ï¿½É¹ï¿½
+	if (m_nID >= 0)	// ¶ÓÎé´´½¨³É¹¦
 	{
 		m_nFlag = 1;
 		m_nFigure = TEAM_CAPTAIN;
@@ -365,7 +372,7 @@ BOOL	KPlayerTeam::CreateTeam(int nIdx, PLAYER_APPLY_CREATE_TEAM *pCreateTeam)
 
 		return TRUE;
 	}
-//	else if (m_nID == -1)					// ï¿½ï¿½ï¿½é´´ï¿½ï¿½Ê§ï¿½Ü£ï¿½Í¬ï¿½ï¿½
+//	else if (m_nID == -1)					// ¶ÓÎé´´½¨Ê§°Ü£ºÍ¬Ãû
 //	{
 //		PLAYER_SEND_CREATE_TEAM_FALSE	sCreateFalse;
 //		sCreateFalse.ProtocolType = s2c_teamcreatefalse;
@@ -381,7 +388,7 @@ BOOL	KPlayerTeam::CreateTeam(int nIdx, PLAYER_APPLY_CREATE_TEAM *pCreateTeam)
 		g_pServer->PackDataToClient(Player[nIdx].m_nNetConnectIdx, (BYTE*)&sCreateFalse, sizeof(PLAYER_SEND_CREATE_TEAM_FALSE));
 		return FALSE;
 	}
-	else	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	else	// ÆäËû´íÎó
 	{
 		return FALSE;
 	}
@@ -392,17 +399,19 @@ BOOL	KPlayerTeam::CreateTeam(int nIdx, PLAYER_APPLY_CREATE_TEAM *pCreateTeam)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º×ª·¢ÑûÇë¼ÓÈë¶ÓÎé
 //---------------------------------------------------------------------------
 void	KPlayerTeam::InviteAdd(int nIdx, TEAM_INVITE_ADD_COMMAND *pAdd)
 {
 	if (!pAdd)
 		return;
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ß²ï¿½ï¿½Ç¶Ó³ï¿½ï¿½ï¿½ï¿½ß¶ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½
+	// Èç¹û²»ÔÚ¶ÓÎéÖÐ»òÕß²»ÊÇ¶Ó³¤»òÕß¶ÓÎéÎ´¿ª·Å
 	if ( !this->m_nFlag || this->m_nFigure != TEAM_CAPTAIN)
 	{
 		return;
 	}
+
+	//TamLTM auto pt to doi
 	if (!g_Team[this->m_nID].IsOpen())
 	{
 		if (Player[nIdx].m_cMenuState.m_bBackTeamState == true)
@@ -419,6 +428,8 @@ void	KPlayerTeam::InviteAdd(int nIdx, TEAM_INVITE_ADD_COMMAND *pAdd)
 			return;
 		}
 	}
+	//end code
+
 	int nTargetIdx = Player[nIdx].FindAroundPlayer(pAdd->m_dwNpcID);
 	if (nTargetIdx == -1)
 		return;
@@ -448,7 +459,7 @@ void	KPlayerTeam::InviteAdd(int nIdx, TEAM_INVITE_ADD_COMMAND *pAdd)
 	sMsg.ProtocolType = s2c_msgshow;
 	sMsg.m_wMsgID = enumMSG_ID_GET_INVITE_TEAM_REPLY;
 	sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID) + sizeof(sAdd.m_szName);
-	sMsg.AllocateBuffer(sMsg.m_wLength + 1);
+	sMsg.m_lpBuf = new BYTE[sMsg.m_wLength + 1];
 	memcpy(sMsg.m_lpBuf, &sMsg, sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID));
 	memcpy((char*)sMsg.m_lpBuf + sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID), sAdd.m_szName, sizeof(sAdd.m_szName));
 	g_pServer->PackDataToClient(Player[nIdx].m_nNetConnectIdx, sMsg.m_lpBuf, sMsg.m_wLength + 1);
@@ -457,11 +468,11 @@ void	KPlayerTeam::InviteAdd(int nIdx, TEAM_INVITE_ADD_COMMAND *pAdd)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»Ø¸ï¿½
+//	¹¦ÄÜ£ºÊÕµ½ÑûÇë¼ÓÈë¶ÓÎéµÄ»Ø¸´
 //---------------------------------------------------------------------------
 void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 {
-	// ×´Ì¬ï¿½Ô²ï¿½ï¿½ï¿½
+	// ×´Ì¬¶Ô²»¶Ô
 	if (!m_nFlag || m_nFigure != TEAM_CAPTAIN)
 	{
 		SHOW_MSG_SYNC	sMsg;
@@ -471,6 +482,8 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 		g_pServer->PackDataToClient(Player[nTargetIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		return;
 	}
+
+	//TamLTM auto pt to doi
 	if (!g_Team[m_nID].IsOpen() && !Player[nSelfIdx].m_cMenuState.m_bBackTeamState)
 	{
 		SHOW_MSG_SYNC	sMsg;
@@ -480,8 +493,9 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 		g_pServer->PackDataToClient(Player[nTargetIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		return;
 	}
-	// ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int i = 0;
+
+	// ÓÐÃ»ÓÐÑûÇë
+	int i;
 	for (i = 0; i < MAX_TEAM_MEMBER; i++)
 	{
 		if (m_nInviteList[i] == nTargetIdx)
@@ -492,15 +506,15 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 	if (Player[nTargetIdx].m_nIndex == 0)
 		return;
 
-	// ï¿½Ô·ï¿½ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ¶Ô·½¾Ü¾øÑûÇë
 	if (nResult == 0)
 	{
-		// ï¿½ï¿½Òªï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢Í¨Öªï¿½Ô·ï¿½ï¿½Ü¾ï¿½
+		// ÐèÒªÏò¶Ó³¤·¢ÏûÏ¢Í¨Öª¶Ô·½¾Ü¾ø
 		SHOW_MSG_SYNC	sMsg;
 		sMsg.ProtocolType = s2c_msgshow;
 		sMsg.m_wMsgID = enumMSG_ID_TEAM_REFUSE_INVITE;
 		sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID) + sizeof(Npc[Player[nTargetIdx].m_nIndex].Name);
-		sMsg.AllocateBuffer(sMsg.m_wLength + 1);
+		sMsg.m_lpBuf = new BYTE[sMsg.m_wLength + 1];
 		memcpy(sMsg.m_lpBuf, &sMsg, sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID));
 		memcpy((char*)sMsg.m_lpBuf + sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID), Npc[Player[nTargetIdx].m_nIndex].Name, sizeof(Npc[Player[nTargetIdx].m_nIndex].Name));
 		g_pServer->PackDataToClient(Player[nSelfIdx].m_nNetConnectIdx, sMsg.m_lpBuf, sMsg.m_wLength + 1);
@@ -510,7 +524,7 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 	if (g_Team[m_nID].m_nMemNum >= MAX_TEAM_MEMBER ||
 		g_Team[m_nID].m_nMemNum >= g_Team[m_nID].CalcCaptainPower())
 		return;
-	// ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½
+	// ×Ô¶¯Àë¶Ó
 	if (Player[nTargetIdx].m_cTeam.m_nFlag)
 	{
 		PLAYER_APPLY_LEAVE_TEAM	sLeave;
@@ -518,15 +532,15 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 		sLeave.bMySelf = FALSE;
 		Player[nTargetIdx].LeaveTeam((BYTE*)&sLeave);
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Ô±
+	// ¶ÓÎéÌí¼Ó³ÉÔ±
 	if ( !g_Team[m_nID].AddMember(nTargetIdx) )
 		return;
-	// ï¿½Ä±ï¿½ï¿½ï¿½ï¿½×´Ì¬
+	// ¸Ä±ä¶ÓÎé×´Ì¬
 	if (g_Team[m_nID].m_nMemNum >= MAX_TEAM_MEMBER || g_Team[m_nID].CheckFull())
 	{
 		g_Team[m_nID].SetTeamClose();
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½
+	// ±»½ÓÊÜ¶ÓÔ±¶ÓÎéÊý¾Ý´¦Àí
 	Player[nTargetIdx].m_cTeam.Release();
 	Player[nTargetIdx].m_cTeam.m_nFlag = 1;
 	Player[nTargetIdx].m_cTeam.m_nFigure = TEAM_MEMBER;
@@ -534,7 +548,7 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 	Npc[Player[nTargetIdx].m_nIndex].SetCurrentCamp(Npc[Player[nSelfIdx].m_nIndex].m_Camp);
 
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ï¢
+	// ¸ø¸÷¸ö¶ÓÔ±·¢ÏûÏ¢
 	PLAYER_TEAM_ADD_MEMBER	sAddMem;
 	memset(sAddMem.m_szName, 0, sizeof(sAddMem.m_szName));
 	sAddMem.ProtocolType = s2c_teamaddmember;
@@ -542,10 +556,10 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 	sAddMem.m_btLevel = (DWORD)Npc[Player[nTargetIdx].m_nIndex].m_Level;
 	strcpy(sAddMem.m_szName, Npc[Player[nTargetIdx].m_nIndex].Name);
 
-	// ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+	// ¸ø¶Ó³¤·¢ÏûÏ¢
 	g_pServer->PackDataToClient(Player[nSelfIdx].m_nNetConnectIdx, (BYTE*)&sAddMem, sizeof(PLAYER_TEAM_ADD_MEMBER));
 
-	// ï¿½ï¿½ï¿½Ï¶ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ï¢
+	// ¸øÀÏ¶ÓÔ±·¢ÏûÏ¢
 	for (i = 0; i < MAX_TEAM_MEMBER; i++)
 	{
 		if (g_Team[m_nID].m_nMember[i] < 0 || g_Team[m_nID].m_nMember[i] == nTargetIdx)
@@ -553,19 +567,19 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 		g_pServer->PackDataToClient(Player[g_Team[m_nID].m_nMember[i]].m_nNetConnectIdx, (BYTE*)&sAddMem, sizeof(PLAYER_TEAM_ADD_MEMBER));
 	}
 
-// ------------------------------------- ï¿½ï¿½ï¿½Â¶ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ï¢ --------------------------
+// ------------------------------------- ¸øÐÂ¶ÓÔ±·¢ÏûÏ¢ --------------------------
 	int		nNpcIndex;
 	PLAYER_SEND_SELF_TEAM_INFO	sSelfInfo;
 	sSelfInfo.ProtocolType = s2c_teamselfinfo;
 	sSelfInfo.nTeamServerID = m_nID;
 	sSelfInfo.m_nLeadExp = Player[nTargetIdx].m_nLeadExp;
 	sSelfInfo.m_btState = g_Team[m_nID].m_nState;
-	// ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ¶Ó³¤Êý¾Ý
 	nNpcIndex = Player[nSelfIdx].m_nIndex;
 	sSelfInfo.m_dwNpcID[0] = Npc[nNpcIndex].m_dwID;
 	sSelfInfo.m_btLevel[0] = (DWORD)Npc[nNpcIndex].m_Level;
 	strcpy(sSelfInfo.m_szNpcName[0], Npc[nNpcIndex].Name);
-	// ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½
+	// ¶ÓÔ±Êý¾Ý
 	for (i = 0; i < MAX_TEAM_MEMBER; i++)
 	{
 		if (g_Team[m_nID].m_nMember[i] >= 0)
@@ -582,7 +596,7 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 			memset(sSelfInfo.m_szNpcName[i + 1], 0, sizeof(sSelfInfo.m_szNpcName[i + 1]));
 		}
 	}
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+	// ·¢ËÍÏûÏ¢
 	g_pServer->PackDataToClient(Player[nTargetIdx].m_nNetConnectIdx, (BYTE*)&sSelfInfo, sizeof(PLAYER_SEND_SELF_TEAM_INFO));
 
 	SHOW_MSG_SYNC	sMsg;
@@ -591,25 +605,27 @@ void	KPlayerTeam::GetInviteReply(int nSelfIdx, int nTargetIdx, int nResult)
 	sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID);
 	g_pServer->PackDataToClient(Player[nTargetIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 
-// --------------------------------- ï¿½ï¿½ï¿½Â¶ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ï¢ end --------------------------
+// --------------------------------- ¸øÐÂ¶ÓÔ±·¢ÏûÏ¢ end --------------------------
 }
 #endif
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»Ø¸ï¿½
+//	¹¦ÄÜ£ºÊÕµ½ÑûÇë¼ÓÈë¶ÓÎéµÄ»Ø¸´
 //---------------------------------------------------------------------------
+//TamLTM auto pt to doi
 void	KPlayerTeam::SetCreatTeamFlag(int nSelfIdx, BOOL bFlag)
 {
 	m_bCreatTeamFlag = FALSE;
+
 	if (bFlag)
 		m_bCreatTeamFlag = TRUE;
 
-	PLAYER_TEAM_CHANGE_STATE	sTeamState;
+	PLAYER_TEAM_OPEN_CLOSE	sTeamState;
 	sTeamState.ProtocolType = (BYTE)s2c_teamchangestate;
-	sTeamState.m_btState = Team_S_CreatTeamFlag;
+	sTeamState.m_btStateClose = Team_S_CreatTeamFlag;
 	sTeamState.m_btFlag = m_bCreatTeamFlag;
-	g_pServer->PackDataToClient(Player[nSelfIdx].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_CHANGE_STATE));
+	g_pServer->PackDataToClient(Player[nSelfIdx].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_OPEN_CLOSE));
 }
 
 void	KPlayerTeam::SetFreezeTeamFlag(int nSelfIdx, BOOL bFlag)
@@ -636,16 +652,17 @@ void	KPlayerTeam::SetPKFollowCaptain(int nSelfIdx, BOOL bFlag)
 		Player[nSelfIdx].SendSystemMessage(MESSAGE_TEAM_ANNOUCE_HEAD, MSG_TEAM_PKFOLLOW_CLOSE);
 	}
 
-	PLAYER_TEAM_CHANGE_STATE	sTeamState;
+	PLAYER_TEAM_OPEN_CLOSE	sTeamState;
 	sTeamState.ProtocolType = (BYTE)s2c_teamchangestate;
-	sTeamState.m_btState = Team_S_PKFollowCaptain;
+	sTeamState.m_btStateClose = Team_S_PKFollowCaptain;
 	sTeamState.m_btFlag = m_bPKFollowCaptain;
-	g_pServer->PackDataToClient(Player[nSelfIdx].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_CHANGE_STATE));
+	g_pServer->PackDataToClient(Player[nSelfIdx].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_OPEN_CLOSE));
 }
+//end code
 #endif
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KTeam::KTeam()
 {
@@ -653,7 +670,7 @@ KTeam::KTeam()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÇå¿Õ
 //---------------------------------------------------------------------------
 void	KTeam::Release()
 {
@@ -680,7 +697,7 @@ void	KTeam::Release()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½è¶¨ Team ï¿½ï¿½ g_Team ï¿½Ðµï¿½Î»ï¿½ï¿½
+//	¹¦ÄÜ£ºÉè¶¨ Team ÔÚ g_Team ÖÐµÄÎ»ÖÃ
 //---------------------------------------------------------------------------
 void	KTeam::SetIndex(int nIndex)
 {
@@ -688,7 +705,7 @@ void	KTeam::SetIndex(int nIndex)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ñ°ï¿½Ò¶ï¿½Ô±ï¿½ï¿½Î»
+//	¹¦ÄÜ£ºÑ°ÕÒ¶ÓÔ±¿ÕÎ»
 //---------------------------------------------------------------------------
 int		KTeam::FindFree()
 {
@@ -701,8 +718,8 @@ int		KTeam::FindFree()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ñ°ï¿½Ò¾ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½npc idï¿½Ä¶ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½
-//	ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ m_nMember ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½Î»ï¿½ï¿½
+//	¹¦ÄÜ£ºÑ°ÕÒ¾ßÓÐÖ¸¶¨npc idµÄ¶ÓÔ±£¨²»°üÀ¨¶Ó³¤£©
+//	·µ»ØÖµ£º¶ÓÔ±ÔÚ m_nMember Êý×éÖÐµÄÎ»ÖÃ
 //---------------------------------------------------------------------------
 int		KTeam::FindMemberID(DWORD dwNpcID)
 {
@@ -721,8 +738,8 @@ int		KTeam::FindMemberID(DWORD dwNpcID)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Ð¶Ï¶ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Ô±
-//	ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½FALSE Î´ï¿½ï¿½Ô±  TRUE ï¿½ï¿½ï¿½ï¿½Ô±
+//	¹¦ÄÜ£ºÅÐ¶Ï¶ÓÎéÊÇ·ñÒÑ¾­ÂúÔ±
+//	·µ»ØÖµ£ºFALSE Î´ÂúÔ±  TRUE ÒÑÂúÔ±
 //---------------------------------------------------------------------------
 BOOL	KTeam::CheckFull()
 {
@@ -733,7 +750,7 @@ BOOL	KTeam::CheckFull()
 #endif
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ò¿ª£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½Ô±ï¿½ï¿½
+//	¹¦ÄÜ£ºÉè¶¨¶ÓÎé×´Ì¬£º´ò¿ª£¨ÔÊÐí½ÓÊÜÐÂ³ÉÔ±£©
 //---------------------------------------------------------------------------
 BOOL	KTeam::SetTeamOpen(BOOL bNotify)
 {
@@ -743,13 +760,15 @@ BOOL	KTeam::SetTeamOpen(BOOL bNotify)
 
 	m_nState = Team_S_Open;
 
-	PLAYER_TEAM_CHANGE_STATE	sTeamState;
+	PLAYER_TEAM_OPEN_CLOSE	sTeamState;
 	sTeamState.ProtocolType = (BYTE)s2c_teamchangestate;
-	sTeamState.m_btState = Team_S_OpenClose;
+	sTeamState.m_btStateClose = Team_S_OpenClose;
 	sTeamState.m_btFlag = Team_S_Open;
-	g_pServer->PackDataToClient(Player[m_nCaptain].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_CHANGE_STATE));
+	g_pServer->PackDataToClient(Player[m_nCaptain].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_OPEN_CLOSE));
 
+	//TamLTM auto pt to doi
 	Player[m_nCaptain].m_cMenuState.m_bBackTeamState = false;
+
 	Player[m_nCaptain].m_cMenuState.SetState(m_nCaptain, PLAYER_MENU_STATE_TEAMOPEN);
 
 	NPC_SET_MENU_STATE_SYNC	sSync;
@@ -771,18 +790,19 @@ BOOL	KTeam::SetTeamOpen(BOOL bNotify)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½Ø±Õ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½Ô±ï¿½ï¿½
+//	¹¦ÄÜ£ºÉè¶¨¶ÓÎé×´Ì¬£º¹Ø±Õ£¨²»ÔÊÐí½ÓÊÜÐÂ³ÉÔ±£©
 //---------------------------------------------------------------------------
+//TamLTM auto pt to toi
 BOOL	KTeam::SetTeamClose(BOOL bNotify)
 {
 #ifdef _SERVER
 	m_nState = Team_S_Close;
 
-	PLAYER_TEAM_CHANGE_STATE	sTeamState;
+	PLAYER_TEAM_OPEN_CLOSE	sTeamState;
 	sTeamState.ProtocolType = (BYTE)s2c_teamchangestate;
-	sTeamState.m_btState = Team_S_OpenClose;
+	sTeamState.m_btStateClose = Team_S_OpenClose;
 	sTeamState.m_btFlag = Team_S_Close;
-	g_pServer->PackDataToClient(Player[m_nCaptain].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_CHANGE_STATE));
+	g_pServer->PackDataToClient(Player[m_nCaptain].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_OPEN_CLOSE));
 
 	Player[m_nCaptain].m_cMenuState.SetState(m_nCaptain, PLAYER_MENU_STATE_NORMAL);
 
@@ -804,6 +824,7 @@ BOOL	KTeam::SetTeamClose(BOOL bNotify)
 #endif
 }
 
+//TamLTM auto pt to toi
 BOOL	KTeam::SetModePick(int nMode)
 {
 	if (nMode < Team_S_SelfPick || nMode > Team_S_AlternatePick)
@@ -815,15 +836,15 @@ BOOL	KTeam::SetModePick(int nMode)
 #ifdef _SERVER
 	NotifyModePick();
 
-	PLAYER_TEAM_CHANGE_STATE	sTeamState;
+	PLAYER_TEAM_OPEN_CLOSE	sTeamState;
 	sTeamState.ProtocolType = (BYTE)s2c_teamchangestate;
-	sTeamState.m_btState = Team_S_ModePick;
+	sTeamState.m_btStateClose = Team_S_ModePick;
 	sTeamState.m_btFlag = m_nModePick;
-	g_pServer->PackDataToClient(Player[m_nCaptain].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_CHANGE_STATE));
+	g_pServer->PackDataToClient(Player[m_nCaptain].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_OPEN_CLOSE));
 	for (int i = 0; i < MAX_TEAM_MEMBER; i ++)
 	{
 		if (m_nMember[i])
-			g_pServer->PackDataToClient(Player[m_nMember[i]].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_CHANGE_STATE));
+			g_pServer->PackDataToClient(Player[m_nMember[i]].m_nNetConnectIdx, (BYTE*)&sTeamState, sizeof(PLAYER_TEAM_OPEN_CLOSE));
 	}
 #else
 	Player[CLIENT_PLAYER_INDEX].m_cTeam.UpdateInterface();
@@ -878,7 +899,7 @@ void	KTeam::NotifyMemberModePick(int nPlayerIndex)
 	}
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Ð¶Ï¶ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ç´ï¿½×´Ì¬
+//	¹¦ÄÜ£ºÅÐ¶Ï¶ÓÎéÊÇ·ñÊÇ´ò¿ª×´Ì¬
 //---------------------------------------------------------------------------
 BOOL	KTeam::IsOpen()
 {
@@ -887,7 +908,7 @@ BOOL	KTeam::IsOpen()
 #endif
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½Í³Ë§ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º¼ÆËã¶Ó³¤ÄÜÍ³Ë§¶ÓÔ±µÄÈËÊý
 //---------------------------------------------------------------------------
 int		KTeam::CalcCaptainPower()
 {
@@ -900,7 +921,7 @@ int		KTeam::CalcCaptainPower()
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Ð¶Ï¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÅÐ¶Ï¼ÓÈë¶ÓÎéµÄÊôÐÔÌõ¼þÊÇ·ñºÏÊÊ
 //---------------------------------------------------------------------------
 BOOL	KTeam::CheckAddCondition(int nPlayerIndex)
 {
@@ -912,7 +933,7 @@ BOOL	KTeam::CheckAddCondition(int nPlayerIndex)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö§ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º´´½¨Ò»Ö§¶ÓÎé
 //---------------------------------------------------------------------------
 BOOL	KTeam::CreateTeam(int nPlayerIndex)//, char *lpszName)
 {
@@ -928,14 +949,14 @@ BOOL	KTeam::CreateTeam(int nPlayerIndex)//, char *lpszName)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±
+//	¹¦ÄÜ£ºÌí¼ÓÒ»¸ö¶ÓÎé³ÉÔ±
 //---------------------------------------------------------------------------
 BOOL	KTeam::AddMember(int nPlayerIndex)
 {
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½
+	// ¶ÓÎéÊÇ·ñÎª¿Õ
 	if (m_nCaptain < 0)
 		return FALSE;
-	// ï¿½ï¿½Óªï¿½Ç·ï¿½ï¿½ï¿½Í¬
+	// ÕóÓªÊÇ·ñÏàÍ¬
 	if ( !CheckAddCondition(nPlayerIndex) )
 	{
 		SHOW_MSG_SYNC	sMsg;
@@ -945,7 +966,7 @@ BOOL	KTeam::AddMember(int nPlayerIndex)
 		g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		return FALSE;
 	}
-	// ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Ô±
+	// ÊÇ·ñÒÑ¾­ÂúÔ±
 	if (CheckFull())
 		return FALSE;
 
@@ -963,7 +984,7 @@ BOOL	KTeam::AddMember(int nPlayerIndex)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½É¾ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±
+//	¹¦ÄÜ£ºÉ¾³ýÒ»¸ö¶ÓÎé³ÉÔ±
 //---------------------------------------------------------------------------
 BOOL	KTeam::DeleteMember(int nPlayerIndex)
 {
@@ -974,7 +995,7 @@ BOOL	KTeam::DeleteMember(int nPlayerIndex)
 	{
 		SHOW_MSG_SYNC	sMsg;
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½É¢ï¿½ï¿½Ï¢
+		// ¶ÓÎé½âÉ¢ÏûÏ¢
 		sMsg.ProtocolType = s2c_msgshow;
 		sMsg.m_wMsgID = enumMSG_ID_TEAM_DISMISS;
 		sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID);
@@ -1038,7 +1059,7 @@ BOOL	KTeam::DeleteMember(int nPlayerIndex)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Í»ï¿½ï¿½Ë´ï¿½ï¿½ï¿½Ò»Ö§ï¿½ï¿½ï¿½é£¨ï¿½Í»ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½Ò»Ö§ï¿½Ä¶ï¿½ï¿½é£¬ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½Ò£ï¿½
+//	¹¦ÄÜ£º¿Í»§¶Ë´´½¨Ò»Ö§¶ÓÎé£¨¿Í»§¶ËÖ»¿ÉÄÜ´æÔÚÒ»Ö§µÄ¶ÓÎé£¬ÊôÓÚ±¾µØÍæ¼Ò£©
 //---------------------------------------------------------------------------
 void	KTeam::CreateTeam(int nCaptainNpcID, char *lpszCaptainName, int nCaptainLevel, DWORD nTeamServerID)
 {
@@ -1046,13 +1067,13 @@ void	KTeam::CreateTeam(int nCaptainNpcID, char *lpszCaptainName, int nCaptainLev
 	m_nCaptain = nCaptainNpcID;
 	m_nMemLevel[0] = nCaptainLevel;
 	strcpy(m_szMemName[0], lpszCaptainName);
-	m_nTeamServerID = nTeamServerID;		// ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Î¨Ò»ï¿½ï¿½Ê¶
+	m_nTeamServerID = nTeamServerID;		// ¶ÓÎéÔÚ·þÎñÆ÷ÉÏµÄÎ¨Ò»±êÊ¶
 }
 #endif
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±
+//	¹¦ÄÜ£ºÌí¼ÓÒ»¸ö¶ÓÎé³ÉÔ±
 //---------------------------------------------------------------------------
 BOOL	KTeam::AddMember(DWORD dwNpcID, int nLevel, char *lpszNpcName)
 {
@@ -1077,7 +1098,7 @@ BOOL	KTeam::AddMember(DWORD dwNpcID, int nLevel, char *lpszNpcName)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Í»ï¿½ï¿½ï¿½É¾ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±
+//	¹¦ÄÜ£º¿Í»§¶ËÉ¾³ýÒ»¸ö¶ÓÎé³ÉÔ±
 //---------------------------------------------------------------------------
 void	KTeam::DeleteMember(DWORD dwNpcID)
 {
@@ -1103,7 +1124,7 @@ void	KTeam::DeleteMember(DWORD dwNpcID)
 
 #ifndef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½Ï¢(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ó£¬¸ï¿½ï¿½ï¿½ï¿½ï¿½)
+//	¹¦ÄÜ£ºÊä³ö¶ÓÔ±ÐÅÏ¢(°´½çÃæµÄÒªÇó£¬¸ø½çÃæ)
 //---------------------------------------------------------------------------
 int		KTeam::GetMemberInfo(KUiPlayerItem *pList, int nCount)
 {
@@ -1115,7 +1136,7 @@ int		KTeam::GetMemberInfo(KUiPlayerItem *pList, int nCount)
 		return m_nMemNum + 1;
 	}
 	
-	// ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ¶Ó³¤Ãû×Ö
 	strcpy(pList[nNum].Name, m_szMemName[0]);
 	pList[nNum].uId = this->m_nCaptain;
 	pList[nNum].nIndex = 0;
@@ -1140,7 +1161,7 @@ int		KTeam::GetMemberInfo(KUiPlayerItem *pList, int nCount)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Ð¶ï¿½Ä³ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½ï¿½Ô±
+//	¹¦ÄÜ£ºÅÐ¶ÏÄ³ÈËÊÇ·ñÊÇ¶ÓÎé³ÉÔ±
 //---------------------------------------------------------------------------
 BOOL	KTeam::CheckIn(int nSelfIndex, int nPlayerIndex)
 {
@@ -1185,7 +1206,7 @@ BOOL	KTeam::CheckIn(int nSelfIndex, int nPlayerIndex)
 		case Team_S_AlternatePick:
 			if (nSelfIndex == m_nTurnPick)
 			{
-				int i = 0;
+				int i;
 				if (m_nTurnPick == m_nCaptain)
 				{
 					i = 0;
@@ -1236,7 +1257,7 @@ BOOL	KTeam::CheckItemIn(int nPlayerIndex)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
+//	¹¦ÄÜ£º³õÊ¼»¯
 //---------------------------------------------------------------------------
 void	KTeamSet::Init()
 {
@@ -1247,7 +1268,7 @@ void	KTeamSet::Init()
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ g_Team ï¿½ÐµÄ¿ï¿½Î»
+//	¹¦ÄÜ£º²îÕÒ g_Team ÖÐµÄ¿ÕÎ»
 //---------------------------------------------------------------------------
 int		KTeamSet::FindFree()
 {
@@ -1263,7 +1284,7 @@ int		KTeamSet::FindFree()
 /*
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½Ð¶Ï¶ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÅÐ¶Ï¶ÓÃûÊÇ·ñ¿ÉÓÃ
 //---------------------------------------------------------------------------
 BOOL	KTeamSet::CheckName(char *lpszName)
 {
@@ -1285,7 +1306,7 @@ BOOL	KTeamSet::CheckName(char *lpszName)
 
 #ifdef _SERVER
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö§ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º´´½¨Ò»Ö§¶ÓÎé
 //---------------------------------------------------------------------------
 int		KTeamSet::CreateTeam(int nPlayerID)//, char *lpszName)
 {

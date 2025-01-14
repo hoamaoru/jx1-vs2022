@@ -1,4 +1,4 @@
-ï»¿#include "KCore.h"
+#include "KCore.h"
 #include "KNpc.h"
 #include "KNpcSet.h"
 #include "KMissleSet.h"
@@ -93,21 +93,21 @@ BOOL KRegion::Load(int nX, int nY)
 	m_nRegionX = nX * 512;
 	m_nRegionY = nY * 1024;
 
-	// ÃÃ‚Â·Â½
+	// ÏÂ·½
 	m_nConRegionID[0] = MAKELONG(nX, nY + 1);
-	// Ã—Ã³ÃÃ‚Â·Â½
+	// ×óÏÂ·½
 	m_nConRegionID[1] = MAKELONG(nX - 1, nY + 1);
-	// Ã—Ã³Â·Â½
+	// ×ó·½
 	m_nConRegionID[2] = MAKELONG(nX - 1, nY);
-	// Ã—Ã³Ã‰ÃÂ·Â½
+	// ×óÉÏ·½
 	m_nConRegionID[3] = MAKELONG(nX - 1, nY - 1);
-	// Ã‰ÃÂ·Â½
+	// ÉÏ·½
 	m_nConRegionID[4] = MAKELONG(nX, nY - 1);
-	// Ã“Ã’Ã‰ÃÂ·Â½
+	// ÓÒÉÏ·½
 	m_nConRegionID[5] = MAKELONG(nX + 1, nY - 1);
-	// Ã“Ã’Â·Â½
+	// ÓÒ·½
 	m_nConRegionID[6] = MAKELONG(nX + 1, nY);
-	// Ã“Ã’ÃÃ‚Â·Â½
+	// ÓÒÏÂ·½
 	m_nConRegionID[7] = MAKELONG(nX + 1, nY + 1);
 
 	return TRUE;
@@ -115,20 +115,19 @@ BOOL KRegion::Load(int nX, int nY)
 
 #ifdef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾region ÂµÃ„ objectÃŠÃ½Â¾ÃÂ£Â¨Â°Ã¼Ã€Â¨npcÂ¡Â¢trapÂ¡Â¢boxÂµÃˆÂ£Â©
-//	Ã—Â¢Ã’Ã¢Â£ÂºÃŠÂ¹Ã“ÃƒÂ´Ã‹ÂºÂ¯ÃŠÃ½Ã–Â®Ã‡Â°Â±Ã˜ÃÃ«Â±Â£Ã–Â¤ÂµÂ±Ã‡Â°Ã‚Â·Â¾Â¶ÃŠÃ‡Â±Â¾ÂµÃ˜ÃÂ¼Ã‚Â·Â¾Â¶
+//	¹¦ÄÜ£ºÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾region µÄ objectÊı¾İ£¨°üÀ¨npc¡¢trap¡¢boxµÈ£©
+//	×¢Òâ£ºÊ¹ÓÃ´Ëº¯ÊıÖ®Ç°±ØĞë±£Ö¤µ±Ç°Â·¾¶ÊÇ±¾µØÍ¼Â·¾¶
 //----------------------------------------------------------------------
 BOOL KRegion::LoadObject(int nSubWorld, int nX, int nY)
 {
-
-	KFile	cData;
+	KPakFile	cData;
 	char		szFilePath[80];
 	char		szFile[80];
 
 	g_GetFilePath(szFile);
 
 	sprintf(szFilePath, "\\%sv_%03d", szFile, nY);
-	//g_SetFilePath(szFilePath);
+//	g_SetFilePath(szFilePath);
 
 	//sprintf(szFile, "%s\\%03d_%s", szFilePath, nX, REGION_COMBIN_FILE_NAME_SERVER);
 	sprintf(szFile, "%s\\%03d_%s", szFilePath, nX, REGION_COMBIN_FILE_NAME_CLIENT);
@@ -140,7 +139,7 @@ BOOL KRegion::LoadObject(int nSubWorld, int nX, int nY)
 
 		if (cData.Size() < sizeof(DWORD) + sizeof(KCombinFileSection) * REGION_ELEM_FILE_COUNT)
 		{
-			//ZeroMemory(m_Obstacle, sizeof(m_Obstacle));
+			ZeroMemory(m_Obstacle, sizeof(m_Obstacle));
 			goto gotoCLOSE;
 		}
 		cData.Read(&dwMaxElemFile, sizeof(DWORD));
@@ -155,20 +154,19 @@ BOOL KRegion::LoadObject(int nSubWorld, int nX, int nY)
 		}
 		dwHeadSize = sizeof(DWORD) + sizeof(KCombinFileSection) * dwMaxElemFile;
 
-		// Ã”Ã˜ÃˆÃ«Ã•ÃÂ°Â­ÃŠÃ½Â¾Ã
+		// ÔØÈëÕÏ°­Êı¾İ
 		cData.Seek(dwHeadSize + sElemFile[REGION_OBSTACLE_FILE_INDEX].uOffset, FILE_BEGIN);
 		LoadServerObstacle(&cData, sElemFile[REGION_OBSTACLE_FILE_INDEX].uLength);
 
-		// Ã”Ã˜ÃˆÃ«trapÃÃ…ÃÂ¢
+		// ÔØÈëtrapĞÅÏ¢
 		cData.Seek(dwHeadSize + sElemFile[REGION_TRAP_FILE_INDEX].uOffset, FILE_BEGIN);
 //		LoadServerTrap(&cData, sElemFile[REGION_TRAP_FILE_INDEX].uLength);
 
-		// Phuc tat load npc mac dinh
+		// ÔØÈënpcÊı¾İ
 		cData.Seek(dwHeadSize + sElemFile[REGION_NPC_FILE_INDEX].uOffset, FILE_BEGIN);
 		LoadServerNpc(nSubWorld, &cData, sElemFile[REGION_NPC_FILE_INDEX].uLength);
-		// Phuc tat load npc mac dinh
 
-		// Ã”Ã˜ÃˆÃ«objÃŠÃ½Â¾Ã
+		// ÔØÈëobjÊı¾İ
 		cData.Seek(dwHeadSize + sElemFile[REGION_OBJ_FILE_INDEX].uOffset, FILE_BEGIN);
 		LoadServerObj(nSubWorld, &cData, sElemFile[REGION_OBJ_FILE_INDEX].uLength);
 
@@ -177,7 +175,7 @@ gotoCLOSE:
 	}
 	else
 	{
-		KFile	cObstacle;
+		KPakFile	cObstacle;
 
 //		g_SetFilePath(szFilePath);
 		sprintf(szFile, "%s\\%03d_%s", szFilePath, nX, REGION_OBSTACLE_FILE);
@@ -191,12 +189,12 @@ gotoCLOSE:
 		}
 		else
 		{
-		
+			ZeroMemory(m_Obstacle, sizeof(m_Obstacle));
 		}
 
 /*		KPakFile	cTrapData, cNpcData;
 
-		// Ã”Ã˜ÃˆÃ«trapÃÃ…ÃÂ¢
+		// ÔØÈëtrapĞÅÏ¢
 		KTrapFileHead	sTrapFileHead;
 		KSPTrap			sTrapCell;
 		int				i, j;
@@ -225,7 +223,7 @@ gotoCLOSE:
 TRAP_CLOSE:
 		cTrapData.Close();
 
-		// Ã”Ã˜ÃˆÃ«npcÃŠÃ½Â¾Ã
+		// ÔØÈënpcÊı¾İ
 		KNpcFileHead	sNpcFileHead;
 		KSPNpc			sNpcCell;
 
@@ -256,7 +254,7 @@ TRAP_CLOSE:
 NPC_CLOSE:
 		cNpcData.Close();
 
-		// Ã”Ã˜ÃˆÃ«objÃŠÃ½Â¾Ã
+		// ÔØÈëobjÊı¾İ
 		ObjSet.ServerLoadRegionObj(szFilePath, nX, nY, nSubWorld);*/
 	}
 
@@ -266,14 +264,110 @@ NPC_CLOSE:
 
 #ifndef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â¿ÃÂ»Â§Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾region ÂµÃ„ objectÃŠÃ½Â¾ÃÂ£Â¨Â°Ã¼Ã€Â¨npcÂ¡Â¢boxÂµÃˆÂ£Â©
-//	ÃˆÃ§Â¹Ã» bLoadNpcFlag == TRUE ÃÃ¨Ã’ÂªÃ”Ã˜ÃˆÃ« clientonly npc else Â²Â»Ã”Ã˜ÃˆÃ«
+//	¹¦ÄÜ£ºÔØÈë¿Í»§¶ËµØÍ¼ÉÏ±¾region µÄ objectÊı¾İ£¨°üÀ¨npc¡¢boxµÈ£©
+//	Èç¹û bLoadNpcFlag == TRUE ĞèÒªÔØÈë clientonly npc else ²»ÔØÈë
 //----------------------------------------------------------------------
 BOOL KRegion::LoadObject(int nSubWorld, int nX, int nY, char *lpszPath)
 {
 #ifdef TOOLVERSION
 	return TRUE;
 #endif
+/*	char	szPath[FILE_NAME_LENGTH], szFile[FILE_NAME_LENGTH];
+
+	if (!lpszPath || !lpszPath[0] || strlen(lpszPath) >= FILE_NAME_LENGTH)
+		return FALSE;
+	sprintf(szPath, "\\%s\\v_%03d", lpszPath, nY);
+//	g_SetFilePath(szPath);
+
+	// ÔØÈënpcÊı×éÖĞÎ»ÓÚ±¾µØµÄ client npc
+	NpcSet.InsertNpcToRegion(this->m_nIndex);
+
+	KPakFile	cData;
+	sprintf(szFile, "%s\\%03d_%s", szPath, nX, REGION_COMBIN_FILE_NAME_CLIENT);
+
+	if (cData.Open(szFile))
+	{
+		DWORD	dwHeadSize;
+		DWORD	dwMaxElemFile = 0;
+		KCombinFileSection	sElemFile[REGION_ELEM_FILE_COUNT];
+
+		if (cData.Size() < sizeof(DWORD) + sizeof(KCombinFileSection) * REGION_ELEM_FILE_COUNT)
+			goto gotoCLOSE;
+		cData.Read(&dwMaxElemFile, sizeof(DWORD));
+		if (dwMaxElemFile > REGION_ELEM_FILE_COUNT)
+		{
+			cData.Read(sElemFile, sizeof(sElemFile));
+			cData.Seek(sizeof(KCombinFileSection) * (dwMaxElemFile - REGION_ELEM_FILE_COUNT), FILE_CURRENT);
+		}
+		else
+		{
+			cData.Read(sElemFile, sizeof(sElemFile));
+		}
+		dwHeadSize = sizeof(DWORD) + sizeof(KCombinFileSection) * dwMaxElemFile;
+
+		// ÔØÈënpcÊı¾İ
+		cData.Seek(dwHeadSize + sElemFile[REGION_NPC_FILE_INDEX].uOffset, FILE_BEGIN);
+		LoadClientNpc(&cData, sElemFile[REGION_NPC_FILE_INDEX].uLength);
+
+		// ÔØÈëobjÊı¾İ
+		cData.Seek(dwHeadSize + sElemFile[REGION_OBJ_FILE_INDEX].uOffset, FILE_BEGIN);
+		LoadClientObj(&cData, sElemFile[REGION_OBJ_FILE_INDEX].uLength);
+
+gotoCLOSE:
+		cData.Close();
+	}
+	else
+	{
+		// ÔØÈë Client npc Êı¾İ
+		KPakFile		cNpcData;
+		KNpcFileHead	sNpcFileHead;
+		KSPNpc			sNpcCell;
+		DWORD			i;
+		KClientNpcID	sTempID;
+		int				nNpcNo;
+
+		// ÔØÈëµØÍ¼ÎÄ¼şÀïµÄ client npc
+//		g_SetFilePath(szPath);
+		sprintf(szFile, "%s\\%03d_%s", szPath, nX, REGION_NPC_FILE_CLIENT);
+		if (!cNpcData.Open(szFile))
+			goto NPC_CLOSE;
+		if (cNpcData.Size() < sizeof(KNpcFileHead))
+			goto NPC_CLOSE;
+		cNpcData.Read(&sNpcFileHead, sizeof(KNpcFileHead));
+		for (i = 0; i < sNpcFileHead.uNumNpc; i++)
+		{
+			cNpcData.Read(&sNpcCell, sizeof(KSPNpc) - sizeof(sNpcCell.szScript));
+			_ASSERT(sNpcCell.nScriptNameLen < sizeof(sNpcCell.szScript));
+			if (sNpcCell.nScriptNameLen > 0)
+			{
+				cNpcData.Read(sNpcCell.szScript, sNpcCell.nScriptNameLen);
+				sNpcCell.szScript[sNpcCell.nScriptNameLen] = 0;
+			}
+			else
+			{
+				sNpcCell.szScript[0] = 0;
+			}
+			sTempID.m_dwRegionID = MAKELONG(nX, nY);
+			sTempID.m_nNo = i;
+			nNpcNo = NpcSet.SearchClientID(sTempID);
+			if (nNpcNo == 0)
+			{
+				int nIdx = NpcSet.AddClientNpc(sNpcCell.nTemplateID, nX, nY, sNpcCell.nPositionX, sNpcCell.nPositionY, i);
+				if (nIdx > 0)
+				{
+					Npc[nIdx].m_Kind = sNpcCell.shKind;
+					Npc[nIdx].SendCommand(do_stand);
+					Npc[nIdx].m_Dir = Npc[nIdx].GetNormalNpcStandDir(sNpcCell.nCurFrame);
+				}
+			}
+		}
+
+NPC_CLOSE:
+		cNpcData.Close();
+
+		// ÔØÈëClientObjectÊı¾İ
+		ObjSet.ClientLoadRegionObj(szPath, nX, nY, nSubWorld, this->m_nIndex);
+	}*/
 
 	return TRUE;
 }
@@ -281,9 +375,9 @@ BOOL KRegion::LoadObject(int nSubWorld, int nX, int nY, char *lpszPath)
 
 #ifdef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„Ã•ÃÂ°Â­ÃŠÃ½Â¾Ã
+//	¹¦ÄÜ£ºÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄÕÏ°­Êı¾İ
 //----------------------------------------------------------------------
-BOOL	KRegion::LoadServerObstacle(KFile *pFile, DWORD dwDataSize)
+BOOL	KRegion::LoadServerObstacle(KPakFile *pFile, DWORD dwDataSize)
 {
 	if (!pFile || dwDataSize != sizeof(this->m_Obstacle))
 	{
@@ -298,9 +392,9 @@ BOOL	KRegion::LoadServerObstacle(KFile *pFile, DWORD dwDataSize)
 
 #ifdef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ trap ÃŠÃ½Â¾Ã
+//	¹¦ÄÜ£ºÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄ trap Êı¾İ
 //----------------------------------------------------------------------
-BOOL	KRegion::LoadServerTrap(KFile*pFile, DWORD dwDataSize)
+BOOL	KRegion::LoadServerTrap(KPakFile *pFile, DWORD dwDataSize)
 {
 	memset(m_dwTrap, 0, sizeof(m_dwTrap));
 	if (!pFile || dwDataSize < sizeof(KTrapFileHead))
@@ -330,9 +424,9 @@ BOOL	KRegion::LoadServerTrap(KFile*pFile, DWORD dwDataSize)
 
 #ifdef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ npc ÃŠÃ½Â¾Ã
+//	¹¦ÄÜ£ºÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄ npc Êı¾İ
 //----------------------------------------------------------------------
-BOOL	KRegion::LoadServerNpc(int nSubWorld, KFile*pFile, DWORD dwDataSize)
+BOOL	KRegion::LoadServerNpc(int nSubWorld, KPakFile *pFile, DWORD dwDataSize)
 {
 	if (!pFile || dwDataSize < sizeof(KNpcFileHead))
 		return FALSE;
@@ -365,9 +459,9 @@ BOOL	KRegion::LoadServerNpc(int nSubWorld, KFile*pFile, DWORD dwDataSize)
 
 #ifdef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ obj ÃŠÃ½Â¾Ã
+//	¹¦ÄÜ£ºÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄ obj Êı¾İ
 //----------------------------------------------------------------------
-BOOL	KRegion::LoadServerObj(int nSubWorld, KFile*pFile, DWORD dwDataSize)
+BOOL	KRegion::LoadServerObj(int nSubWorld, KPakFile *pFile, DWORD dwDataSize)
 {
 	return ObjSet.ServerLoadRegionObj(nSubWorld, pFile, dwDataSize);
 }
@@ -375,7 +469,7 @@ BOOL	KRegion::LoadServerObj(int nSubWorld, KFile*pFile, DWORD dwDataSize)
 
 #ifndef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â¿ÃÂ»Â§Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ clientonlynpc ÃŠÃ½Â¾Ã
+//	¹¦ÄÜ£ºÔØÈë¿Í»§¶ËµØÍ¼ÉÏ±¾ region µÄ clientonlynpc Êı¾İ
 //----------------------------------------------------------------------
 BOOL	KRegion::LoadClientNpc(KPakFile *pFile, DWORD dwDataSize)
 {
@@ -423,7 +517,7 @@ BOOL	KRegion::LoadClientNpc(KPakFile *pFile, DWORD dwDataSize)
 
 #ifndef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Â¿ÃÂ»Â§Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ clientonlyobj ÃŠÃ½Â¾Ã
+//	¹¦ÄÜ£ºÔØÈë¿Í»§¶ËµØÍ¼ÉÏ±¾ region µÄ clientonlyobj Êı¾İ
 //----------------------------------------------------------------------
 BOOL	KRegion::LoadClientObj(KPakFile *pFile, DWORD dwDataSize)
 {
@@ -433,7 +527,7 @@ BOOL	KRegion::LoadClientObj(KPakFile *pFile, DWORD dwDataSize)
 
 #ifndef _SERVER
 //----------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ”Ã˜ÃˆÃ«Ã•ÃÂ°Â­ÃŠÃ½Â¾ÃÂ¸Ã¸ÃÂ¡ÂµÃ˜ÃÂ¼
+//	¹¦ÄÜ£ºÔØÈëÕÏ°­Êı¾İ¸øĞ¡µØÍ¼
 //----------------------------------------------------------------------
 void	KRegion::LoadLittleMapData(int nX, int nY, char *lpszPath, BYTE *lpbtObstacle)
 {
@@ -448,7 +542,7 @@ void	KRegion::LoadLittleMapData(int nX, int nY, char *lpszPath, BYTE *lpbtObstac
 	sprintf(szPath, "\\%s\\v_%03d", lpszPath, nY);
 
 	KPakFile	cData;
-	long		nTempTable[REGION_GRID_WIDTH][REGION_GRID_HEIGHT];	// ÂµÃ˜ÃÂ¼Ã•ÃÂ°Â­ÃÃ…ÃÂ¢Â±Ã­
+	long		nTempTable[REGION_GRID_WIDTH][REGION_GRID_HEIGHT];	// µØÍ¼ÕÏ°­ĞÅÏ¢±í
 
 //	g_SetFilePath(szPath);
 	sprintf(szFile, "%s\\%03d_%s", szPath, nX, REGION_COMBIN_FILE_NAME_CLIENT);
@@ -509,6 +603,86 @@ void	KRegion::LoadLittleMapData(int nX, int nY, char *lpszPath, BYTE *lpbtObstac
 }
 #endif
 
+/*void KRegion::Activate()
+{
+	KIndexNode *pNode = NULL;
+	KIndexNode *pTmpNode = NULL;
+	int	nCounter = 0;
+
+	pNode = (KIndexNode *)m_NpcList.GetHead();
+
+	while(pNode) //fix dis client by veg
+	{
+		// pTmpNode = (KIndexNode *)pNode->GetNext();
+		// int nNpcIdx = pNode->m_nIndex;
+		pTmpNode = pNode;
+		int nNpcIdx = pTmpNode->m_nIndex;
+		pNode = (KIndexNode *)pNode->GetNext();
+#ifdef _SERVER
+		if ((nCounter == m_nNpcSyncCounter / 2) && (m_nNpcSyncCounter & 1))
+		{
+			// ·¢ËÍÍ¬²½ĞÅºÅ
+			Npc[nNpcIdx].NormalSync();
+		}		
+#endif
+		//printf("Region [%03d:%03d] NPC %s active...\n", m_nRegionX, m_nRegionY, Npc[nNpcIdx].Name);	//[wxb 2003-7-29]
+		Npc[nNpcIdx].Activate();
+		nCounter++;
+		// pNode = pTmpNode;
+	}
+	m_nNpcSyncCounter++;
+	if (m_nNpcSyncCounter > m_NpcList.GetNodeCount() * 2)
+	{
+		m_nNpcSyncCounter = 0;
+	}
+	nCounter = 0;
+	pNode = (KIndexNode *)m_ObjList.GetHead();
+	while(pNode)
+	{
+		pTmpNode = (KIndexNode *)pNode->GetNext();
+#ifdef _SERVER
+		if ((nCounter == m_nObjSyncCounter / 2) && (m_nObjSyncCounter & 1))
+		{
+			Object[pNode->m_nIndex].SyncState();
+		}
+		nCounter++;
+#endif
+		Object[pNode->m_nIndex].Activate();
+		pNode = pTmpNode;
+	}
+	m_nObjSyncCounter++;
+	if (m_nObjSyncCounter > m_ObjList.GetNodeCount() * 2)
+	{
+		m_nObjSyncCounter = 0;
+	}
+
+	pNode = (KIndexNode *)m_MissleList.GetHead();
+	while(pNode)
+	{
+		pTmpNode = (KIndexNode *)pNode->GetNext();
+//		g_DebugLog("[Missle]Missle%d,Activate,in R%d", pNode->m_nIndex, this->m_nIndex);
+		Missle[pNode->m_nIndex].Activate();		
+		pNode = pTmpNode;
+	}
+#ifdef _SERVER	
+	pNode = (KIndexNode *)m_PlayerList.GetHead();
+	while(pNode)
+	{
+		pTmpNode = (KIndexNode *)pNode->GetNext();
+		Player[pNode->m_nIndex].Active();
+		pNode = pTmpNode;		
+	}
+#endif
+
+#ifndef _SERVER
+	if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_RegionIndex == m_nIndex)	// ÊÇPlayerËùÔÚµÄRegion
+	{
+		Player[CLIENT_PLAYER_INDEX].Active();
+	}
+#endif
+}*/
+
+//TamLTM FIX region TAM
 void KRegion::Activate()
 {
 	KIndexNode *pNode = NULL;
@@ -524,7 +698,7 @@ void KRegion::Activate()
 #ifdef _SERVER
 		if ((nCounter == m_nNpcSyncCounter / 2) && (m_nNpcSyncCounter & 1))
 		{
-			// Â·Â¢Ã‹ÃÃÂ¬Â²Â½ÃÃ…ÂºÃ…
+			// ·¢ËÍÍ¬²½ĞÅºÅ
 			Npc[nNpcIdx].NormalSync();
 		}
 		nCounter++;
@@ -578,33 +752,50 @@ void KRegion::Activate()
 #endif
 
 #ifndef _SERVER
-	if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_RegionIndex == m_nIndex)	// ÃŠÃ‡PlayerÃ‹Ã¹Ã”ÃšÂµÃ„Region
+	if (Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_RegionIndex == m_nIndex)	// ÊÇPlayerËùÔÚµÄRegion
 	{
 		Player[CLIENT_PLAYER_INDEX].Active();
 	}
 #endif
 }
+//end code
 
-void KRegion::AddNpc(int nIdx)
+//TamLTM fix region cu~
+/*void KRegion::AddNpc(int nIdx)
 {
 	if (nIdx > 0 && nIdx < MAX_NPC)
 	{
-		//_ASSERT(Npc[nIdx].m_Node.m_Ref == 0);
+		_ASSERT(Npc[nIdx].m_Node.m_Ref == 0);
 		if (Npc[nIdx].m_Node.m_Ref == 0)
 		{
 			m_NpcList.AddTail(&Npc[nIdx].m_Node);
 			Npc[nIdx].m_Node.AddRef();
 		}
 	}
-}
+}*/
 
+//TamLTM fix region new
+void KRegion::AddNpc(int nIdx)
+{
+	if (nIdx > 0 && nIdx < MAX_NPC)
+	{
+		if (Npc[nIdx].m_Node.m_Ref != 0) return;
+		if (Npc[nIdx].m_Node.m_Ref == 0) 
+		{
+			m_NpcList.AddTail(&Npc[nIdx].m_Node);
+			Npc[nIdx].m_Node.AddRef();
+		}
+	}
+}
+//end code
+
+//TamLTM Remove NPC
 void KRegion::RemoveNpc(int nIdx)
 {
 	if (nIdx <= 0 || nIdx >= MAX_NPC)
 		return;
 
-	//_ASSERT(Npc[nIdx].m_Node.m_Ref > 0);
-
+    if (Npc[nIdx].m_Node.m_Ref <= 0) return;
 	if (Npc[nIdx].m_Node.m_Ref > 0)
 	{
 		Npc[nIdx].m_Node.Remove();
@@ -619,7 +810,7 @@ void KRegion::AddMissle(int nId)
 {
 	if (nId > 0 && nId < MAX_MISSLE)
 	{
-		_ASSERT(Missle[nId].m_Node.m_Ref == 0);
+		if (Missle[nId].m_Node.m_Ref != 0) return;
 		if (Missle[nId].m_Node.m_Ref == 0)
 		{
 			m_MissleList.AddTail(&Missle[nId].m_Node);
@@ -702,8 +893,10 @@ DWORD KRegion::GetTrap(int nMapX, int nMapY)
 #endif
 }
 
+//TamLTM va cham voi NPC
 BYTE KRegion::GetBarrier(int nMapX, int nMapY, int nDx, int nDy)
 {
+
 #ifdef _SERVER	
 	long lType, lInfo;
 	long lRet = 0;
@@ -717,18 +910,26 @@ BYTE KRegion::GetBarrier(int nMapX, int nMapY, int nDx, int nDy)
 	case Obstacle_LT:
 		if (nDx + nDy > 32)
 			lRet = Obstacle_NULL;
+		//TamLTM Debug
+		//g_DebugLog("KRegion GetBarrier 1");
 		break;
 	case Obstacle_RT:
 		if (nDx < nDy)
 			lRet = Obstacle_NULL;
+			//TamLTM Debug
+			//g_DebugLog("KRegion GetBarrier 2");
 		break;
 	case Obstacle_LB:
 		if (nDx > nDy)
 			lRet = Obstacle_NULL;
+		//TamLTM Debug
+		//g_DebugLog("KRegion GetBarrier 3");
 		break;
 	case Obstacle_RB:
 		if (nDx + nDy < 32)
 			lRet = Obstacle_NULL;
+		//TamLTM Debug
+		//g_DebugLog("KRegion GetBarrier 4");
 		break;
 	default:
 		break;
@@ -762,11 +963,12 @@ BYTE KRegion::GetBarrier(int nMapX, int nMapY, int nDx, int nDy)
 }
 
 //----------------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÂ°Â´ ÃÃ±Ã‹Ã˜ÂµÃ£Ã—Ã¸Â±Ãª * 1024 ÂµÃ„Â¾Â«Â¶ÃˆÃ…ÃÂ¶ÃÃ„Â³Â¸Ã¶ÃÂ»Ã–ÃƒÃŠÃ‡Â·Ã±Ã•ÃÂ°Â­
-//	Â²ÃÃŠÃ½Â£ÂºnGridX nGirdY Â£ÂºÂ±Â¾regionÂ¸Ã±Ã—Ã“Ã—Ã¸Â±Ãª
-//	Â²ÃÃŠÃ½Â£ÂºnOffX nOffY Â£ÂºÂ¸Ã±Ã—Ã“Ã„ÃšÂµÃ„Ã†Â«Ã’Ã†ÃÂ¿(ÃÃ±Ã‹Ã˜ÂµÃ£ * 1024 Â¾Â«Â¶Ãˆ)
-//	Â²ÃÃŠÃ½Â£ÂºbCheckNpc Â£ÂºÃŠÃ‡Â·Ã±Ã…ÃÂ¶ÃnpcÃÃÂ³Ã‰ÂµÃ„Ã•ÃÂ°Â­
-//	Â·ÂµÂ»Ã˜Ã–ÂµÂ£ÂºÃ•ÃÂ°Â­Ã€Ã ÃÃ(if Ã€Ã ÃÃ == Obstacle_NULL ÃÃÃ•ÃÂ°Â­)
+//	¹¦ÄÜ£º°´ ÏñËØµã×ø±ê * 1024 µÄ¾«¶ÈÅĞ¶ÏÄ³¸öÎ»ÖÃÊÇ·ñÕÏ°­
+//	²ÎÊı£ºnGridX nGirdY £º±¾region¸ñ×Ó×ø±ê
+//	²ÎÊı£ºnOffX nOffY £º¸ñ×ÓÄÚµÄÆ«ÒÆÁ¿(ÏñËØµã * 1024 ¾«¶È)
+//	²ÎÊı£ºbCheckNpc £ºÊÇ·ñÅĞ¶ÏnpcĞÎ³ÉµÄÕÏ°­
+//	·µ»ØÖµ£ºÕÏ°­ÀàĞÍ(if ÀàĞÍ == Obstacle_NULL ÎŞÕÏ°­)
+//	TamLTM va cham voi vat can va rao chan
 //----------------------------------------------------------------------------
 BYTE	KRegion::GetBarrierMin(int nGridX, int nGridY, int nOffX, int nOffY, BOOL bCheckNpc, BOOL bCheckObs)
 {
@@ -775,13 +977,14 @@ BYTE	KRegion::GetBarrierMin(int nGridX, int nGridY, int nOffX, int nOffY, BOOL b
 	long lType;
 	long lRet = Obstacle_NULL;
 	
-	lRet = m_Obstacle[nGridX][nGridY] & 0x0000000f;
+	lRet = m_Obstacle[nGridX][nGridY] & 0x0000000f; //Vat can
 	lType = (m_Obstacle[nGridX][nGridY] >> 4) & 0x0000000f;
 
 	if (lRet == Obstacle_NULL)
 	{
 		if (bCheckNpc && m_pNpcRef)
 		{
+		//	g_DebugLog("== NULL");
 			if (m_pNpcRef[nGridY * m_nWidth + nGridX] > 0)
 				return Obstacle_JumpFly;
 		}
@@ -797,30 +1000,53 @@ BYTE	KRegion::GetBarrierMin(int nGridX, int nGridY, int nOffX, int nOffY, BOOL b
 	{
 	case Obstacle_LT:
 		if (nOffX + nOffY > 32 * 1024)
+		{
+			//TamLTM Debug
+		//	g_DebugLog("KRegion GetBarrierMin 1 %d + %d ", nOffX, nOffY); //Huong 12h
+			//Npc[CLIENT_PLAYER_INDEX].CheckMoveBarrier(TRUE, FALSE, FALSE, FALSE);
 			return Obstacle_NULL;
+		}
 		break;
 	case Obstacle_RT:
 		if (nOffX < nOffY)
+		{
+			//TamLTM Debug
+		//	g_DebugLog("KRegion GetBarrierMin 2 %d + %d ", nOffX, nOffY); //Huong 6h
+			//Npc[CLIENT_PLAYER_INDEX].CheckMoveBarrier(FALSE, TRUE, FALSE, FALSE);
 			return Obstacle_NULL;
+		}
 		break;
 	case Obstacle_LB:
 		if (nOffX > nOffY)
+		{
+			//TamLTM Debug
+		//	g_DebugLog("KRegion GetBarrierMin 3 %d + %d ", nOffX, nOffY); //Huong 9h
+			//Npc[CLIENT_PLAYER_INDEX].CheckMoveBarrier(FALSE, FALSE, TRUE, FALSE);
 			return Obstacle_NULL;
+		}
 		break;
 	case Obstacle_RB:
 		if (nOffX + nOffY < 32 * 1024)
+		{
+			//TamLTM Debug
+		//	g_DebugLog("KRegion GetBarrierMin 4 %d + %d ", nOffX, nOffY); //Huong 3h
+			//Npc[CLIENT_PLAYER_INDEX].CheckMoveBarrier(FALSE, FALSE, FALSE, TRUE);
 			return Obstacle_NULL;
+		}
 		break;
 	default:
 		break;
 	}
-
 	return lRet;
 
 #else
 	_ASSERT(0 <= nGridX && nGridX < REGION_GRID_WIDTH && 0 <= nGridY && nGridY < REGION_GRID_HEIGHT);
+
 	if (bCheckNpc && m_pNpcRef)
 	{
+		//TamLTM Debug
+		//g_DebugLog("_ASSERT(0 <= nGridX && nGridX");
+
 		if (m_pNpcRef[nGridY * m_nWidth + nGridX] > 0)
 			return Obstacle_JumpFly;
 	}
@@ -976,7 +1202,7 @@ BOOL KRegion::RemovePlayer(int nIdx)
 }
 
 //-------------------------------------------------------------------------
-//	Â¹Â¦Ã„ÃœÂ£ÂºÃ‘Â°Ã•Ã’Â±Â¾Ã‡Ã¸Ã“Ã²Ã„ÃšÃŠÃ‡Â·Ã±Ã“ÃÃ„Â³Â¸Ã¶Ã–Â¸Â¶Â¨ id ÂµÃ„ npc
+//	¹¦ÄÜ£ºÑ°ÕÒ±¾ÇøÓòÄÚÊÇ·ñÓĞÄ³¸öÖ¸¶¨ id µÄ npc
 //-------------------------------------------------------------------------
 int		KRegion::SearchNpc(DWORD dwNpcID)
 {
@@ -1121,9 +1347,11 @@ void KRegion::SendSyncData(int nClient)
 	}
 }
 
+// Chieu rong broad cast
 void KRegion::BroadCast(const void* pBuffer, DWORD dwSize, int &nMaxCount, int nOX, int nOY)
 {
-#define	MAX_SYNC_RANGE	25
+//TamLTM sleep mode code goc'
+/*#define	MAX_SYNC_RANGE	25
 	KIndexNode *pNode = NULL;
 
 	pNode = (KIndexNode *)m_PlayerList.GetHead();
@@ -1142,11 +1370,34 @@ void KRegion::BroadCast(const void* pBuffer, DWORD dwSize, int &nMaxCount, int n
 			g_pServer->PackDataToClient(Player[pNode->m_nIndex].m_nNetConnectIdx, (BYTE*)pBuffer, dwSize);
 		nMaxCount--;
 		pNode = (KIndexNode *)pNode->GetNext();
+	}*/
+
+//TamLTM fix sleep mode
+#define	MAX_SYNC_RANGE	25
+	KIndexNode *pNode = NULL;
+
+	pNode = (KIndexNode *)m_PlayerList.GetHead();
+	while(pNode && nMaxCount > 0)
+	{
+		_ASSERT(pNode->m_nIndex > 0 && pNode->m_nIndex < MAX_PLAYER);
+		int nPlayerIndex = pNode->m_nIndex;
+		int nNpcIndex = Player[nPlayerIndex].m_nIndex;
+		int nTX = Npc[nNpcIndex].m_MapX;
+		int nTY = Npc[nNpcIndex].m_MapY;
+		int nDX = nTX - nOX;
+		int nDY = nTY - nOY;
+		if (Player[pNode->m_nIndex].m_nNetConnectIdx >= 0 
+			&& (nDX * nDX + nDY * nDY) <= MAX_SYNC_RANGE * MAX_SYNC_RANGE
+			&& Player[pNode->m_nIndex].m_bSleepMode == FALSE)
+			g_pServer->PackDataToClient(Player[pNode->m_nIndex].m_nNetConnectIdx, (BYTE*)pBuffer, dwSize);
+		nMaxCount--;
+		pNode = (KIndexNode *)pNode->GetNext();
 	}
+//end code
 }
 
 //---------------------------------------------------------------------
-// Â²Ã©Ã•Ã’Â¸ÃƒRegionÃ–ÃNpcIDÃÂªdwIdÂµÃ„PlayerÃ‹Ã·Ã’Ã½
+// ²éÕÒ¸ÃRegionÖĞNpcIDÎªdwIdµÄPlayerË÷Òı
 //---------------------------------------------------------------------
 int KRegion::FindPlayer(DWORD dwId)
 {
@@ -1216,7 +1467,7 @@ void* KRegion::GetObjNode(int nIdx)
 	return pNode;
 }
 
-void KRegion::Close()		// Ã‡Ã¥Â³Ã½RegionÃ–ÃÂµÃ„Â¼Â¸Â¸Ã¶ÃÂ´Â±Ã­Â£Â¨Ã‹Ã¹Ã–Â¸ÃÃ²ÂµÃ„Ã„ÃšÃˆÃÃƒÂ»Ã“ÃÂ±Â»Ã‡Ã¥Â³Ã½Â£Â©
+void KRegion::Close()		// Çå³ıRegionÖĞµÄ¼¸¸öÁ´±í£¨ËùÖ¸ÏòµÄÄÚÈİÃ»ÓĞ±»Çå³ı£©
 {
 	KIndexNode* pNode = NULL;
 	KIndexNode* pTempNode = NULL;
@@ -1263,7 +1514,7 @@ void KRegion::Close()		// Ã‡Ã¥Â³Ã½RegionÃ–ÃÂµÃ„Â¼Â¸Â¸Ã¶ÃÂ´Â±Ã­Â£Â¨Ã‹Ã¹Ã–Â¸ÃÃ²
 		pTempNode->Release();
 	}
 
-	// ÃÂ¬ÃŠÂ±Ã‡Ã¥Â³Ã½ clientonly Ã€Ã ÃÃÂµÃ„ obj ---- zroc add
+	// Í¬Ê±Çå³ı clientonly ÀàĞÍµÄ obj ---- zroc add
 	pNode = (KIndexNode *)m_ObjList.GetHead();
 	while(pNode)
 	{

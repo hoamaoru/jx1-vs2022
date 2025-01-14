@@ -911,15 +911,13 @@ BOOL	KMissle::CheckBeyondRegion(int nDOffsetX, int nDOffsetY)
 	//Î´¶¯
 	if (nDOffsetX == 0 && nDOffsetY == 0) return TRUE;
 
-	if ( abs(nDOffsetX) >= (REGION_PIXEL_WIDTH << 10) ) 
+	if (abs(nDOffsetX) > CellWidth) 
 	{
-		_ASSERT(FALSE);
 		return FALSE;
 	}
-	
-	if ( abs(nDOffsetY) >= (REGION_PIXEL_HEIGHT << 10) )
+
+	if (abs(nDOffsetY) > CellHeight) 
 	{
-		_ASSERT(FALSE);
 		return FALSE;
 	}
 
@@ -1121,14 +1119,21 @@ BOOL KMissle::ProcessDamage(int nNpcId)
 		}
 		if (Npc[nNpcId].ReceiveDamage(m_nLauncher, m_nMissleSeries, m_bIsMelee, m_pMagicAttribsData->m_pDamageMagicAttribs, m_bUseAttackRating, m_nDoHurtP, m_nMissRate))
 		{
-			if(Npc[nNpcId].m_CurrentIgnoreNegativeStateP ||
-				Npc[nNpcId].m_CurrentReturnSkillPercent ||
-				Npc[nNpcId].m_CurrentIgnoreSkillPercent)
+			if (m_pMagicAttribsData->m_nStateMagicAttribsNum > 0)
 			{
-				if(!pSkill->IsAura())
+				if(Npc[nNpcId].m_CurrentIgnoreNegativeStateP ||
+					Npc[nNpcId].m_CurrentReturnSkillPercent ||
+					Npc[nNpcId].m_CurrentIgnoreSkillPercent)
 				{
-					if (pSkill->GetSkillStyle() == SKILL_SS_Missles && 
-						pSkill->IsTargetOnly() && pSkill->IsTargetEnemy())
+				// if(!pSkill->IsAura())
+				// {
+					// if (pSkill->GetSkillStyle() == SKILL_SS_Missles && 
+						// pSkill->IsTargetOnly() && pSkill->IsTargetEnemy())
+						if (m_pMagicAttribsData->m_pStateMagicAttribs->nValue[1] && 
+						!m_pMagicAttribsData->m_pStateMagicAttribs->nValue[2] && 
+						(pSkill->GetSkillStyle() == SKILL_SS_Missles || 
+						pSkill->GetSkillStyle() == SKILL_SS_InitiativeNpcState) && 
+						pSkill->IsTargetEnemy())
 					{
 						if (g_RandPercent(Npc[nNpcId].m_CurrentIgnoreNegativeStateP))
 							return TRUE;
@@ -1148,20 +1153,22 @@ BOOL KMissle::ProcessDamage(int nNpcId)
 
 						if (g_RandPercent(Npc[nNpcId].m_CurrentReturnSkillPercent))
 						{
-							if (m_pMagicAttribsData->m_nStateMagicAttribsNum > 0)
-							{
+							// if (m_pMagicAttribsData->m_nStateMagicAttribsNum > 0)
+							// {
 								KMagicAttrib DamageMagicAttribs[MAX_MISSLE_DAMAGEATTRIB];
 								memset(DamageMagicAttribs, 0, sizeof(DamageMagicAttribs));
 								DamageMagicAttribs[0].nAttribType = magic_attackrating_v;
 								DamageMagicAttribs[0].nValue[0] = 0;
 								Npc[nNpcId].SetStateSkillEffect(nNpcId, 725, 1, DamageMagicAttribs, 1, GAME_FPS, TRUE);
-							}
+                                	//Fix phan don bua chu
+								Npc[m_nLauncher].SetStateSkillEffect(m_nLauncher, m_nSkillId, m_nLevel, m_pMagicAttribsData->m_pStateMagicAttribs, m_pMagicAttribsData->m_nStateMagicAttribsNum, m_pMagicAttribsData->m_pStateMagicAttribs[0].nValue[1]);
+							// }
 						}
 					}
-				}
+				// }
 			}
-			if (m_pMagicAttribsData->m_nStateMagicAttribsNum > 0)
-			{
+			// if (m_pMagicAttribsData->m_nStateMagicAttribsNum > 0)
+			// {
 				Npc[nNpcId].SetStateSkillEffect(m_nLauncher, m_nSkillId, m_nLevel, m_pMagicAttribsData->m_pStateMagicAttribs, m_pMagicAttribsData->m_nStateMagicAttribsNum, m_pMagicAttribsData->m_pStateMagicAttribs[0].nValue[1]);
 			}
 			

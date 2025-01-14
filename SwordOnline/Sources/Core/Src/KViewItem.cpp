@@ -60,7 +60,7 @@ void	KViewItem::GetData(BYTE* pMsg)
 
 	DeleteAll();
 
-	int					i, j,nNpcIdx, nItemIdx;
+	int					i,nNpcIdx, nItemIdx;
 	VIEW_EQUIP_SYNC		*pView = (VIEW_EQUIP_SYNC*)pMsg;
 	KUiPlayerItem	sPlayer;
 

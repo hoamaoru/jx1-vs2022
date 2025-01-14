@@ -104,8 +104,8 @@ void KMissleRes::Clear()
 // Function		: KMissleRes::Draw
 // Purpose		: 
 // Return		: void 
-// Argumant		: int nX Êµï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
-// Argumant		: int nY Êµï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+// Argumant		: int nX Êµ¼ÊÏñËØµã×ø±ê
+// Argumant		: int nY Êµ¼ÊÏñËØµã×ø±ê
 // Argumant		: int nZ
 // Argumant		: int nFrame
 // Comments		:
@@ -113,7 +113,7 @@ void KMissleRes::Clear()
 *****************************************************************************/
 int KMissleRes::Draw(int eStatus,  int nX, int nY , int nZ, int nDir, int nAllFrame,  int nCurLifeFrame)
 {
-	//ï¿½ï¿½nAllFrame == 0Ê±ï¿½ï¿½ï¿½ï¿½Ê¾ÎªÄ¬ï¿½ï¿½ï¿½ï¿½
+	//µ±nAllFrame == 0Ê±£¬±íÊ¾ÎªÄ¬ÈÏÊý
 //	char SprFileName[80];
 //	g_SetFilePath("\\");
 	if (eStatus == MS_DoWait)
@@ -136,7 +136,7 @@ int KMissleRes::Draw(int eStatus,  int nX, int nY , int nZ, int nDir, int nAllFr
 		int nSprFrames = m_MissleRes[eStatus].nTotalFrame;
 		if (nSprDir && nSprFrames)
 		{
-			//ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Ê¾Ê±Êµï¿½Ê·ï¿½ï¿½ï¿½
+			//´¦Àí×Óµ¯ÏÔÊ¾Ê±Êµ¼Ê·½Ïò
 			int	nImageDir = (nDir / (64 / nSprDir));
 			int nImageDir1 = (nDir % (64 / nSprDir));
 			if (nImageDir1 >= 32 / nSprDir) 	nImageDir ++;
@@ -149,14 +149,14 @@ int KMissleRes::Draw(int eStatus,  int nX, int nY , int nZ, int nDir, int nAllFr
 			int nFrame = nCurLifeFrame ;
 
 			{
-				if (m_bLoopAnim) //ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ÅµÄ»ï¿½ï¿½ï¿½Ã¿Ö¡ï¿½ï¿½ï¿½ï¿½Ö¡
+				if (m_bLoopAnim) //Èç¹ûÊÇÑ­»·²¥·ÅµÄ»°ÔòÃ¿Ö¡¶¼»»Ö¡
 				{
-					if (!m_bSubLoop)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ñ­ï¿½ï¿½
+					if (!m_bSubLoop)//ÎÞ×ÓÏÔÊ¾Ñ­»·
 					{	nFrame = (nCurLifeFrame / m_MissleRes[eStatus].nInterval)  % nTotalFrame;
 					}
 					else
 					{
-						//  Î´ï¿½ï¿½Ê¾ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ÅµÄ¿ï¿½Ê¼Ö¡
+						//  Î´ÏÔÊ¾µ½Ñ­»·²¥·ÅµÄ¿ªÊ¼Ö¡
 						if ( (nCurLifeFrame / m_MissleRes[eStatus].nInterval) < m_nSubStart)
 							nFrame = nCurLifeFrame / m_MissleRes[eStatus].nInterval;
 						else
@@ -251,7 +251,7 @@ void KMissleRes::PlaySound(int eStatus, int nX, int nY, int nLoop)
 
 	int		nCenterX = 0, nCenterY = 0, nCenterZ = 0;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½Äµï¿½Äµï¿½Í¼ï¿½ï¿½ï¿½ï¿½ not end
+	// »ñµÃÆÁÄ»ÖÐÐÄµãµÄµØÍ¼×ø±ê not end
 	g_ScenePlace.GetFocusPosition(nCenterX, nCenterY, nCenterZ);
 
 	KWavSound * pSound = NULL;

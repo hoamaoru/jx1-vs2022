@@ -21,4 +21,5 @@ enum Obstacle_Kind
 	Obstacle_JumpFly,		// 障碍但是可以跳过并且飞过
 	Obstacle_Kind_Num,		// 障碍种类数
 };
+
 #endif

@@ -224,6 +224,9 @@ void	KLittleMap::Init(int nLeft, int nTop, int nRight, int nBottom)
 //---------------------------------------------------------------------------
 BYTE*	KLittleMap::GetBarrierBuf(int nX, int nY)
 {
+	//TamLTM Debug
+//	g_DebugLog("Va Cham GetBarrierBuf(int nX, int nY)");
+
 	if (nX < m_sMapRect.left ||
 		nX > m_sMapRect.right ||
 		nY < m_sMapRect.top ||
@@ -247,6 +250,8 @@ BYTE*	KLittleMap::GetBarrierBuf(int nX, int nY)
 //---------------------------------------------------------------------------
 void	KLittleMap::SetHaveLoad(int nX, int nY)
 {
+//	g_DebugLog("Va Cham SetHaveLoad(int nX, int nY)");
+
 	if (nX < m_sMapRect.left ||
 		nX > m_sMapRect.right ||
 		nY < m_sMapRect.top ||
@@ -515,6 +520,8 @@ void	KLittleMap::Show(int nFlag)
 //---------------------------------------------------------------------------
 void	KLittleMap::SetShowSize(int nWidth, int nHeight)
 {
+//	g_DebugLog("SetShowSize");
+
 	nWidth /= REGION_GRID_WIDTH * 2;
 	nHeight /= REGION_GRID_HEIGHT;
 	if (nWidth < 3)

@@ -1,4 +1,4 @@
-#include "KEngine.h"
+c#include "KEngine.h"
 #include "KCore.h"
 #include "KTabFile.h"
 #include "KPlayer.h"
@@ -365,6 +365,33 @@ BOOL KBuySell::Buy(int nPlayerIdx, int nBuy, int nBuyIdx, BYTE nBuyNumber)
 	}
 
 	int nPrice = m_Item[nIdx].GetCurPrice();
+
+	//TamLTM Thue bang hoi chiem linh thanh thi thon
+	int nMoneyMapVG = 0;
+//	bool m_bIsCheckMoneyGold = false;
+
+	if (SubWorld[Npc[Player[nPlayerIdx].m_nIndex].m_SubWorldIndex].m_bCheckTong /*&& m_bIsCheckMoneyGold*/)
+	{
+		int nTongVG = SubWorld[Npc[Player[nPlayerIdx].m_nIndex].m_SubWorldIndex].m_nTongVG;
+		if (nTongVG >= 0 && nTongVG <= 50)
+		{
+			if (SubWorld[Npc[Player[nPlayerIdx].m_nIndex].m_SubWorldIndex].m_dwTongName == Player[nPlayerIdx].m_cTong.GetTongNameID())
+			{
+				nMoneyMapVG = nPrice * nTongVG / 200;
+			}
+			else
+			{
+				nMoneyMapVG = nPrice * nTongVG / 100;
+			}
+
+			if (nPrice <= nMoneyMapVG || nMoneyMapVG < 0)
+			{
+				nMoneyMapVG = 0;
+			}
+		}
+	}
+	//end code
+
 	for(int i = 0; i < nBuyNumber; i++)
 	{
 		int nItemIdx = ItemSet.Add(&m_Item[nIdx]);
@@ -387,42 +414,85 @@ BOOL KBuySell::Buy(int nPlayerIdx, int nBuy, int nBuyIdx, BYTE nBuyNumber)
 			break;
 		}
 	}
-	int i = 1;
+
 	if (i)
 	{
-	switch (Player[nPlayerIdx].m_BuyInfo.m_nMoneyUnit)
+		switch (Player[nPlayerIdx].m_BuyInfo.m_nMoneyUnit)
+		{
+			case moneyunit_money:
+				Player[nPlayerIdx].Pay((nPrice * i) + nMoneyMapVG);
+		//		m_bIsCheckMoneyGold = true;
+				break;
+			case moneyunit_extpoint:
+				Player[nPlayerIdx].PayExtPoint(nPrice*i);
+		//		m_bIsCheckMoneyGold = false;
+				break;
+			case moneyunit_fuyuan:
+				Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_FUYUAN, 
+					Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_FUYUAN)-(nPrice*i));
+		//		m_bIsCheckMoneyGold = false;
+				break;
+			case moneyunit_repute:
+				Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_REPUTE, 
+					Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_REPUTE)-(nPrice*i));
+		//		m_bIsCheckMoneyGold = false;
+				break;
+			case moneyunit_accum:
+				Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_ACCUM, 
+					Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_ACCUM)-(nPrice*i));
+			//	m_bIsCheckMoneyGold = false;
+				break;
+			case moneyunit_honor:
+				Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_HONOR, 
+					Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_HONOR)-(nPrice*i));
+//				m_bIsCheckMoneyGold = false;
+				break;
+			case moneyunit_respect:
+				Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_RESPECT, 
+					Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_RESPECT)-(nPrice*i));
+			//	m_bIsCheckMoneyGold = false; //
+				break;
+			default:
+				printf("[error]BuySell %s moneyunit (%d)", Npc[Player[nPlayerIdx].m_nIndex].Name, Player[nPlayerIdx].m_BuyInfo.m_nMoneyUnit);
+				break;
+		}
+	}
+
+	// TamLTM Thue bang hoi chiem linh thanh thi thon
+	if (Player[nPlayerIdx].m_ItemList.GetEquipmentMoney() < (nPrice + nMoneyMapVG) /*&& m_bIsCheckMoneyGold*/)
+		return FALSE;
+
+	if (SubWorld[Npc[Player[nPlayerIdx].m_nIndex].m_SubWorldIndex].m_bCheckTong /*&& m_bIsCheckMoneyGold*/)
 	{
-	case moneyunit_money:
-		Player[nPlayerIdx].Pay(nPrice*i);	
-		break;
-	case moneyunit_extpoint:
-		Player[nPlayerIdx].PayExtPoint(nPrice*i);
-		break;
-	case moneyunit_fuyuan:
-		Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_FUYUAN, 
-			Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_FUYUAN)-(nPrice*i));
-		break;
-	case moneyunit_repute:
-		Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_REPUTE, 
-			Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_REPUTE)-(nPrice*i));
-		break;
-	case moneyunit_accum:
-		Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_ACCUM, 
-			Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_ACCUM)-(nPrice*i));
-		break;
-	case moneyunit_honor:
-		Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_HONOR, 
-			Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_HONOR)-(nPrice*i));
-		break;
-	case moneyunit_respect:
-		Player[nPlayerIdx].m_cTask.SetSaveVal(TASKVALUE_STATTASK_RESPECT, 
-			Player[nPlayerIdx].m_cTask.GetSaveVal(TASKVALUE_STATTASK_RESPECT)-(nPrice*i));
-		break;
-	default:
-		printf("[error]BuySell %s moneyunit (%d)", Npc[Player[nPlayerIdx].m_nIndex].Name, Player[nPlayerIdx].m_BuyInfo.m_nMoneyUnit);
-		break;
+//		m_bIsCheckMoneyGold = false;
+
+		try
+		{	
+			bool bExecuteScriptMistake = true;
+			KLuaScript * pScript = (KLuaScript* )g_GetScript("\\script\\item\\banghoi\\banghoi.lua");;
+			if (pScript)
+			{
+				int nTopIndex = 0;
+					
+				pScript->SafeCallBegin(&nTopIndex);
+
+				if (pScript->CallFunction("AddMoneyMain",0, "dsd", 
+					SubWorld[Npc[Player[nPlayerIdx].m_nIndex].m_SubWorldIndex].m_dwTongName, 
+					SubWorld[Npc[Player[nPlayerIdx].m_nIndex].m_SubWorldIndex].m_szTongNameBC, nMoneyMapVG * i));
+				{
+					bExecuteScriptMistake = false;
+				}
+
+				pScript->SafeCallEnd(nTopIndex);
+			}
+		}
+		catch(...)
+		{
+		//	printf("Exception Have Caught When Execute Script[%d]!!!!!", g_FileName2Id("\\script\\item\\banghoi\\banghoi.lua"));
+		}
 	}
-	}
+	//end code */
+
 	return TRUE;
 }
 /*******************************************************************************
@@ -560,6 +630,9 @@ void KBuySell::OpenSale(int nPlayerIdx, int nSaleType, int nMoneyUnit, int nShop
 	sSale.ProtocolType = s2c_syncsupershop;
 	sSale.m_nSaleType = nSaleType;
 	memcpy(&sSale.m_BuySellInfo, &Player[nPlayerIdx].m_BuyInfo, sizeof(BuySellInfo));
+
+//	g_DebugLog("s2c_syncsupershop %d", s2c_syncsupershop); //TamLTM Debug error packet
+
 	g_pServer->PackDataToClient(Player[nPlayerIdx].m_nNetConnectIdx, (BYTE*)&sSale, sizeof(S2C_SUPERSHOP));
 }
 #endif

@@ -4,7 +4,7 @@
 // File:	KItemGenerator.CPP
 // Date:	2002.08.26
 // Code:	DongBo
-// Desc:    CPP file. ï¿½ï¿½ï¿½Ä¼ï¿½Êµï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½
+// Desc:    CPP file. ±¾ÎÄ¼þÊµÏÖµÄÀàÓÃÓÚÉú³ÉµÀ¾ß
 //---------------------------------------------------------------------------
 #include "KEngine.h"
 #include "KCore.h"
@@ -13,7 +13,7 @@
 #include "KSubWorldSet.h"
 #include "KItemGenerator.h"
 
-KItemGenerator	ItemGen;			//	×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+KItemGenerator	ItemGen;			//	×°±¸Éú³ÉÆ÷
 
 KItemGenerator::KItemGenerator()
 {
@@ -24,11 +24,11 @@ KItemGenerator::~KItemGenerator()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½Ý³ï¿½Ê¼ï¿½ï¿½. ï¿½ï¿½tab fileï¿½Ð¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ£º	Êý¾Ý³õÊ¼»¯. ´Ótab fileÖÐ¶ÁÈ¡Êý¾Ý
 ******************************************************************************/
 BOOL KItemGenerator::Init()
 {
-	if (!m_BPTLib.Init())		// ï¿½Ëµï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½Éµï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
+	if (!m_BPTLib.Init())		// ´Ëµ÷ÓÃ´ÓÈô¸ÉµÄtab fileÖÐÔØÈëËùÓÐµÄ³õÊ¼ÊôÐÔ
 		return FALSE;
 
 	for (int i = equip_meleeweapon; i < equip_detailnum - equip_meleeweapon; i++)
@@ -93,12 +93,12 @@ BOOL KItemGenerator::Init()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½Ò©Æ·
-	ï¿½ï¿½ï¿½:	nDetailType: Ò©Æ·ï¿½ï¿½ï¿½ï¿½
-			nLevel: ï¿½È¼ï¿½
-			nVersion: ï¿½æ±¾ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pItem ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ£º	Éú³ÉÒ©Æ·
+	Èë¿Ú:	nDetailType: Ò©Æ·ÀàÐÍ
+			nLevel: µÈ¼¶
+			nVersion: °æ±¾ºÅ
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, Ïà¹ØÊý¾ÝÔÚ pItem ËùÖ¸¶ÔÏóÖÐ¸ø³ö
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItemGenerator::Gen_Medicine(IN int nDetailType,
 								  IN int nLevel,
@@ -110,7 +110,7 @@ BOOL KItemGenerator::Gen_Medicine(IN int nDetailType,
 
 	BOOL bEC = FALSE;
 	
-#ifdef _SERVER	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+#ifdef _SERVER	// ·þÎñÆ÷°æ±¾
 	pItem->m_GeneratorParam.uRandomSeed = g_GetRandomSeed();
 	pItem->m_GeneratorParam.nVersion = g_SubWorldSet.GetGameVersion();
 	pItem->m_GeneratorParam.nLuck = 0;
@@ -119,8 +119,8 @@ BOOL KItemGenerator::Gen_Medicine(IN int nDetailType,
 	int nGameVersion = pItem->m_GeneratorParam.nVersion;
 #endif
 
-	const int i = nDetailType * 5 + nLevel - 1;	// ï¿½ï¿½ï¿½ï¿½Ê½ï¿½É²ß»ï¿½ï¿½ï¿½ï¿½ï¿½
-												// ï¿½È¼ï¿½ï¿½ï¿½ï¿½Ý´ï¿½1ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	const int i = nDetailType * 5 + nLevel - 1;	// ±¾¹«Ê½ÓÉ²ß»®¶¨Òå
+												// µÈ¼¶Êý¾Ý´Ó1¿ªÊ¼£¬ËùÒÔÒª¼õ»ØÀ´
 	const KBASICPROP_MEDICINE* pMed = NULL;
 	pMed = m_BPTLib.GetMedicineRecord(i);
 	if (NULL == pMed)
@@ -132,15 +132,15 @@ BOOL KItemGenerator::Gen_Medicine(IN int nDetailType,
 	return TRUE;
 }
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nDetailType: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½......
-			nParticularType: ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½
-			nSeriesReq: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nLevel: ï¿½È¼ï¿½
-			pnaryMALevel: Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÈ¼ï¿½ï¿½ï¿½ï¿½ï¿½[6]
-			nLucky: ï¿½ï¿½ï¿½ï¿½Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pItem ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ£º	Éú³ÉËæ»ú×°±¸
+	Èë¿Ú:	nDetailType: ¾ßÌåÀà±ð, Èç½ü³ÌÎäÆ÷¡¢°µÆ÷¡¢......
+			nParticularType: ÏêÏ¸Àà±ð
+			nSeriesReq: ÎåÐÐÊôÐÔ
+			nLevel: µÈ¼¶
+			pnaryMALevel: Ä§·¨ÊôÐÔµÈ¼¶Êý×é[6]
+			nLucky: ÔËÆøÖµ
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, Ïà¹ØÊý¾ÝÔÚ pItem ËùÖ¸¶ÔÏóÖÐ¸ø³ö
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItemGenerator::Gen_Equipment(IN int nItemNature,
 								   IN int nDetailType,
@@ -175,7 +175,7 @@ BOOL KItemGenerator::Gen_Equipment(IN int nItemNature,
 	default:
 		{
 		BOOL bEC = FALSE;
-	#ifdef _SERVER	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+	#ifdef _SERVER	// ·þÎñÆ÷°æ±¾
 		pItem->m_GeneratorParam.uRandomSeed = g_GetRandomSeed();
 		if (pnaryMALevel)
 			memcpy(pItem->m_GeneratorParam.nGeneratorLevel, pnaryMALevel, sizeof(int) * MAX_ITEM_MAGICLEVEL);
@@ -190,15 +190,15 @@ BOOL KItemGenerator::Gen_Equipment(IN int nItemNature,
 		pItem->m_GeneratorParam.nLuck = nLucky;
 		int nGameVersion = pItem->m_GeneratorParam.nVersion;
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½, È·ï¿½ï¿½×°ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		int i = 0;
+		// ¸ù¾ÝÈë¿Ú²ÎÊý, È·¶¨×°±¸µÄ»ù±¾Êý¾Ý
+		int i;
 		if (nDetailType > equip_horse)
 			i = nParticularType;
 		else
-			i = nParticularType * 10 + nLevel - 1;// ï¿½ï¿½ï¿½ï¿½Ê½ï¿½É²ß»ï¿½ï¿½ï¿½ï¿½ï¿½
-													// ï¿½ï¿½ï¿½SPE 2002ï¿½ï¿½8ï¿½ï¿½31ï¿½ï¿½7:40
-													// email: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½
-													// ï¿½È¼ï¿½ï¿½ï¿½ï¿½Ý´ï¿½1ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			i = nParticularType * 10 + nLevel - 1;// ±¾¹«Ê½ÓÉ²ß»®¶¨Òå
+													// Ïê¼ûSPE 2002Äê8ÔÂ31ÈÕ7:40
+													// email: »ù´¡µÀ¾ßÊýÖµ±í
+													// µÈ¼¶Êý¾Ý´Ó1¿ªÊ¼£¬ËùÒÔÒª¼õ»ØÀ´
 		const KBASICPROP_EQUIPMENT* pEqu = NULL;
 		switch(nDetailType)
 		{
@@ -258,11 +258,11 @@ BOOL KItemGenerator::Gen_Equipment(IN int nItemNature,
 		}
 		if (NULL == pEqu)
 			{ _ASSERT(FALSE); return bEC; }
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Ö±ï¿½ï¿½Ô­ï¿½ï¿½: Ö»ï¿½ï¿½nï¿½ï¿½×°ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ i ï¿½ï¿½Öµï¿½ï¿½[0,n-1]Ö®ï¿½ï¿½
-			// ï¿½ï¿½ï¿½3ï¿½ï¿½: nParticularType ï¿½ï¿½ï¿½ï¿½?
-			//			nLevel ï¿½ï¿½ï¿½ï¿½?
-			//			Ô­Ê¼ï¿½ï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ m_BPTLib.m_BPTEquipment ï¿½ï¿½
-			//			ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
+			// ÔËÐÐÖÁ´ËµÄÖ±½ÓÔ­Òò: Ö»ÓÐnÖÖ×°±¸, ¶øÉÏÃæ i µÄÖµÔÚ[0,n-1]Ö®Íâ
+			// ¼ì²é3µã: nParticularType ÓÐÎó?
+			//			nLevel ÓÐÎó?
+			//			Ô­Ê¼µÄtab fileÓÐÎóµ¼ÖÂ m_BPTLib.m_BPTEquipment Ëù
+			//			¹ÜÀíµÄÊý¾ÝÓÐÎÊÌâ?
 		pItem->SetAttrib_CBR(pEqu);
 		if (nSeriesReq < series_metal)
 			pItem->SetSeries(::GetRandomNumber(series_metal, series_earth));
@@ -303,7 +303,7 @@ BOOL KItemGenerator::Gen_GoldEquipment(IN int nIndex, IN const int* pnaryMALevel
 	if (nLuckMax > MAX_ITEM_LUCK)
 		nLuckMax = MAX_ITEM_LUCK;
 
-#ifdef _SERVER	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+#ifdef _SERVER	// ·þÎñÆ÷°æ±¾
 	pItem->m_GeneratorParam.uRandomSeed = g_GetRandomSeed();
 	pItem->m_GeneratorParam.nVersion = g_SubWorldSet.GetGameVersion();
 #else
@@ -377,7 +377,7 @@ BOOL KItemGenerator::Gen_GoldEquipment(IN int nIndex, IN const int* pnaryMALevel
 	}
     for (NULL; i < MAX_ITEM_MAGICATTRIB; i++)
     {
-        // ï¿½ï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½
+        // Çå¿ÕÊ£ÏÂµÄÏî
         sMA[i].nAttribType = 0;
         sMA[i].nValue[0] = 0;
         sMA[i].nValue[1] = 0;
@@ -406,7 +406,7 @@ BOOL KItemGenerator::Gen_PlatinaEquipment(IN int nIndex, IN const int* pnaryMALe
 	if (nLuckMax > MAX_ITEM_LUCK)
 		nLuckMax = MAX_ITEM_LUCK;
 
-#ifdef _SERVER	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾
+#ifdef _SERVER	// ·þÎñÆ÷°æ±¾
 	pItem->m_GeneratorParam.uRandomSeed = g_GetRandomSeed();
 	pItem->m_GeneratorParam.nVersion = g_SubWorldSet.GetGameVersion();
 #else
@@ -480,7 +480,7 @@ BOOL KItemGenerator::Gen_PlatinaEquipment(IN int nIndex, IN const int* pnaryMALe
 	}
     for (NULL; i < MAX_ITEM_MAGICATTRIB; i++)
     {
-        // ï¿½ï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½
+        // Çå¿ÕÊ£ÏÂµÄÏî
         sMA[i].nAttribType = 0;
         sMA[i].nValue[0] = 0;
         sMA[i].nValue[1] = 0;
@@ -491,12 +491,12 @@ BOOL KItemGenerator::Gen_PlatinaEquipment(IN int nIndex, IN const int* pnaryMALe
 	return TRUE;
 }
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nType: ×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			pnaryMALevel: ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ÄµÈ¼ï¿½Òªï¿½ï¿½, ï¿½ï¿½6ï¿½ï¿½
-			nSeriesReq: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nLucky: ï¿½ï¿½ï¿½ï¿½Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ pnaryMA ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½6ï¿½ï¿½
+	¹¦ÄÜ£º	Éú³ÉÄ§·¨ÊôÐÔ
+	Èë¿Ú:	nType: ×°±¸ÀàÐÍ
+			pnaryMALevel: Êý×éÖ¸Õë, ¸ø³öÄ§·¨µÄµÈ¼¶ÒªÇó, ¹²6¸ö
+			nSeriesReq: ÎåÐÐÊôÐÔ
+			nLucky: ÔËÆøÖµ
+	³ö¿Ú:	ÔÚ pnaryMA ËùÖ¸Êý×éÖÐ·µ»ØÄ§·¨µÄÊôÐÔºËÐÄÊý¾Ý, ¹²6¸ö
 ******************************************************************************/
 // Add by Freeway Chen in 2003.5.30
 BOOL KItemGenerator::Gen_MagicAttrib(
@@ -507,7 +507,7 @@ BOOL KItemGenerator::Gen_MagicAttrib(
     int nResult = false;
 
     KBPT_ClassMAIT  SelectedMagicTable;	
-	// ï¿½ï¿½Â¼Ã¿Ò»ï¿½ï¿½ï¿½ï¿½Â¼Ñ¡ï¿½Ðµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½Òªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã±ï¿½Ö¾ï¿½ï¿½ï¿½
+	// ¼ÇÂ¼Ã¿Ò»¸ö¼ÇÂ¼Ñ¡ÖÐµÄÄ§·¨ÊôÐÔ£¬Ö÷ÒªÊÇÎªÁË×îºó½«Ê¹ÓÃ±êÖ¾Çå³ý
     KMAGICATTRIB_TABFILE *pMagicAttrTable[MAX_ITEM_MAGICLEVEL] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 
     int i = 0;
@@ -531,35 +531,35 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 	{
 		for (i = 0; i < MAX_ITEM_MAGICLEVEL; i++) 
 		{
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½Îªï¿½ã£¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½Ë³ï¿½
+			// Èç¹û·¢ÏÖ¼¶±ðÎªÁã£¬±íÊ¾²»ÐèÒª¼ÌÐø´¦ÀíÁË£¬ÍË³ö
 			if (pnaryMALevel[i] == 0)	
         		break;
 			SelectedMagicTable.Clear();
 
-			// ï¿½ï¿½ï¿½ï¿½Ç°×ºï¿½ï¿½×ºï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Í¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¼¶±ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
+			// ¸ù¾ÝÇ°×ººó×º¡¢ÎïÆ·ÀàÐÍ¡¢ÎåÐÐÐèÇó¡¢ÐèÇó¼¶±ð½«ËùÓÐ·ûºÏÌõ¼þµÄÄ§·¨ÊôÐÔÏîÈ¡³öÀ´
 			const KBPT_ClassMAIT *pCMITItem = m_BPTLib.GetCMIT(
-				1 - (i & 1),        // Ç°×ºï¿½ï¿½×º
-				nType,              // ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
-				nSeriesReq,         // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
-				pnaryMALevel[i]     // ï¿½ï¿½ï¿½ó¼¶±ï¿½
+				1 - (i & 1),        // Ç°×ººó×º
+				nType,              // ÎïÆ·ÀàÐÍ
+				nSeriesReq,         // ÎåÐÐÐèÇó 
+				pnaryMALevel[i]     // ÐèÇó¼¶±ð
 			);
 
 			_ASSERT(pCMITItem);
 			if (!pCMITItem)
 				break;
 
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½
-			// 1.ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½Ê¹ï¿½Ã£ï¿½
-			// 2.ï¿½ï¿½ï¿½ï¿½Öµ
-			// 3.ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			// È¡ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SelectedMagicTableï¿½ï¿½
+			// ±éÀú·ûºÏÌõ¼þµÄÄ§·¨ÊôÐÔ£¬¸ù¾Ý
+			// 1.ÊÇ·ñÒÑ¾­Ê¹ÓÃ£¬
+			// 2.ÔËÆøÖµ
+			// 3.ÊÇ·ñÓÐÏàÍ¬µÄ¡°ÊôÐÔµ÷ÕûÀà±ð¡±
+			// È¡³öÏàÓ¦µÄÏî·ÅÔÚSelectedMagicTableÖÐ
 			int nCMITItemCount = pCMITItem->GetCount();
 			int j = 0;
 			int nDecide = GetRandomNumber(0, 100 - 1) / (1 + nLucky * 20 / 100);
 
 			for (j = 0; j < nCMITItemCount; j++)
 			{
-				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
+				// ¸ù¾ÝË÷ÒýÖµ£¬È¡³öÏàÓ¦µÄÏî
 				int nMAIndex = pCMITItem->Get(j);
 				KMAGICATTRIB_TABFILE *pMAItem = (KMAGICATTRIB_TABFILE *)m_BPTLib.GetMARecord(nMAIndex);
 				if (!pMAItem)
@@ -568,15 +568,15 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 					continue;
 				}
 
-				// ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½Ê¹ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½
+				// Èç¹ûÒÑ¾­Ê¹ÓÃ£¬Ìø¹ýÈ¡ÏÂÒ»¸ö
 				if (pMAItem->m_nUseFlag)
 					continue;
 
-				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¬È¡ï¿½ï¿½Ò»ï¿½ï¿½
+				// Èç¹ûÔËÆø²»×ã£¬È¡ÏÂÒ»¸ö
 				if ((pMAItem->m_DropRate[nType]) <= nDecide)
 					continue;
             
-				// ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				// ¼ì²éÊÇ·ñÒÑ¾­ÓÐÏàÍ¬µÄ¡°ÊôÐÔµ÷ÕûÀà±ð¡±
 				int k = 0;
 				for (k = 0; k < i; k++)
 				{
@@ -586,7 +586,7 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 						break;
 				}
 
-				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Öµï¿½ï¿½Ñ¡ï¿½Ð£ï¿½ï¿½ï¿½Ã´È¡ï¿½ï¿½Ò»ï¿½ï¿½
+				// Èç¹û·¢ÏÖ ¡°ÊôÐÔµ÷ÕûÀà±ð¡±ÏàÍ¬£¬ËµÃ÷ÒÑ¾­ÓÐÒ»¸öÏàÍ¬µÄÖµ±»Ñ¡ÖÐ£¬ÄÇÃ´È¡ÏÂÒ»¸ö
 				if (k < i)
 					continue;
 
@@ -597,23 +597,23 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 
 			if (nSelectedCount == 0)
 			{   
-				// ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½Ë³ï¿½
+				// Èç¹ûÃ»ÓÐÂú×ãÌõ¼þµÄÄ§·¨ÊôÐÔ£¬¾ÍÍË³ö
 				break;
 			}
         
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			// Èç¹û·¢ÏÖÂú×ãÌõ¼þµÄÄ§·¨ÊôÐÔ£¬¾ÍÉèÖÃ
 			int nLuckyItemIndex = GetRandomNumber(0, nSelectedCount - 1);
 			KMAGICATTRIB_TABFILE *pMAItem = (KMAGICATTRIB_TABFILE *)m_BPTLib.GetMARecord(
 				 SelectedMagicTable.Get(nLuckyItemIndex)
 			);
 
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê¹ï¿½Ã±ï¿½Ö¾ï¿½ï¿½ï¿½
+			// ±£´æÂú×ãÌõ¼þµÄÄ§·¨ÊôÐÔ£¬ÒÔ±ãÔÚ×îºóµÄÊ±ºò½«Ê¹ÓÃ±êÖ¾Çå³ý
 			pMagicAttrTable[i] = pMAItem;
 
 			_ASSERT(pMAItem);
-			_ASSERT(!(pMAItem->m_nUseFlag));     // È·ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ê¹ï¿½ï¿½
+			_ASSERT(!(pMAItem->m_nUseFlag));     // È·¶¨»¹Ã»ÓÐÊ¹ÓÃ
 
-			// ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã±ï¿½Ö¾
+			// ÉèÖÃÊ¹ÓÃ±êÖ¾
 			pMAItem->m_nUseFlag = true;
 			
 			pnaryMA[i].nAttribType = pMAItem->m_MagicAttrib.nPropKind;
@@ -630,11 +630,11 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 				pMAItem->m_MagicAttrib.aryRange[2].nMax
 			);
 
-		} // for ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÈ¡ï¿½Øµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½
+		} // for ±éÀúÐèÒªÈ¡»ØµÄÄ§·¨ÊôÐÔ±í
 	}
     for (NULL; i < MAX_ITEM_MAGICATTRIB; i++)
     {
-        // ï¿½ï¿½ï¿½Ê£ï¿½Âµï¿½ï¿½ï¿½
+        // Çå¿ÕÊ£ÏÂµÄÏî
         pnaryMA[i].nAttribType = 0;
         pnaryMA[i].nValue[0] = 0;
         pnaryMA[i].nValue[1] = 0;
@@ -646,9 +646,9 @@ BOOL KItemGenerator::Gen_MagicAttrib(
         if (!pMagicAttrTable[i])
             break;
 
-        _ASSERT(pMagicAttrTable[i]->m_nUseFlag);   // È·ï¿½ï¿½ï¿½Ñ¾ï¿½Ê¹ï¿½ï¿½
+        _ASSERT(pMagicAttrTable[i]->m_nUseFlag);   // È·¶¨ÒÑ¾­Ê¹ÓÃ
 
-        pMagicAttrTable[i]->m_nUseFlag = false;    // ï¿½ï¿½ï¿½ï¿½ÎªÃ»ï¿½ï¿½Ê¹ï¿½ï¿½
+        pMagicAttrTable[i]->m_nUseFlag = false;    // ÉèÖÃÎªÃ»ÓÃÊ¹ÓÃ
     }
 
     nResult = true;
@@ -662,16 +662,16 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 //									 KItemNormalAttrib* pnaryMA)
 //{
 //	
-//    // È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½×°ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//    // È·¶¨ÊÊÓÃÓÚ¸Ã×°±¸µÄÈ«²¿Ä§·¨ÊôÐÔ¼°ÆäÊýÁ¿
 //	if (FALSE == GMA_GetAvaliableMA(nType))
 //		{ _ASSERT(FALSE); return FALSE; }
 //
-//	// È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄµÈ¼ï¿½,ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½
+//	// È·¶¨ÉÏÊö¸÷Ä§·¨ÊôÐÔµÄµÈ¼¶,³öÏÖ¸ÅÂÊ
 //	if (FALSE == GMA_GetLevelAndDropRate(nType))
 //		{ _ASSERT(FALSE); return FALSE; }
 //
-//	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ß»ï¿½Òªï¿½ï¿½Ñ¡ï¿½ï¿½6ï¿½ï¿½
-//	for (int i = 0; i < 6; i++)				// ï¿½ï¿½ï¿½ï¿½: Ç°×º, Å¼ï¿½ï¿½: ï¿½ï¿½×º
+//	// ´ÓÉÏÊöÄ§·¨ÊôÐÔÖÐÑ¡³ö·ûºÏÌõ¼þµÄ. ²ß»®ÒªÇóÑ¡³ö6¸ö
+//	for (int i = 0; i < 6; i++)				// ÆæÊý: Ç°×º, Å¼Êý: ºó×º
 //	{
 //		GMA_ChooseMA((i&1), pnaryMALevel[i], nLucky, &(pnaryMA[i]));
 //		if (pnaryMA[i].nAttribType == 0)
@@ -681,18 +681,18 @@ BOOL KItemGenerator::Gen_MagicAttrib(
 //}
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nType: Ö¸ï¿½ï¿½×°ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½. m_GMA_naryMA[0]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½×°ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°×º
-							m_GMA_nCount[0]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½
-							m_GMA_naryMA[1]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½×°ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôºï¿½×º
-							m_GMA_nCount[1]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	È·¶¨ÊÊÓÃÓÚÖ¸¶¨×°±¸µÄÈ«²¿Ä§·¨ÊôÐÔ¼°ÆäÊýÁ¿
+	Èë¿Ú:	nType: Ö¸¶¨×°±¸
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã. m_GMA_naryMA[0]¸ø³öÊÊÓÃÓÚ¸Ã×°±¸µÄÈ«²¿Ä§·¨ÊôÐÔÇ°×º
+							m_GMA_nCount[0]¸ø³öÉÏÊöÄ§·¨ÊôÐÔµÄ×ÜÊý
+							m_GMA_naryMA[1]¸ø³öÊÊÓÃÓÚ¸Ã×°±¸µÄÈ«²¿Ä§·¨ÊôÐÔºó×º
+							m_GMA_nCount[1]¸ø³öÉÏÊöÄ§·¨ÊôÐÔµÄ×ÜÊý
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItemGenerator::GMA_GetAvaliableMA(int nType)
 {
-	//TODO: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½nTypeï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½, ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ m_BPTLib.m_CMAT ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	for (int i = 0; i < 2; i++)		// 0: Ç°×º, 1: ï¿½ï¿½×º
+	//TODO: ¿ÉÄÜÐèÒª¶ÔnType½øÐÐ×ª»», ´Ó×°±¸ÀàÐÍÖµ±ä³É m_BPTLib.m_CMAT Êý×éµÄË÷Òý
+	for (int i = 0; i < 2; i++)		// 0: Ç°×º, 1: ºó×º
 	{
 		const KBPT_ClassifiedMAT* pCMAT;
 		pCMAT = m_BPTLib.GetCMAT(i, nType);
@@ -705,18 +705,18 @@ BOOL KItemGenerator::GMA_GetAvaliableMA(int nType)
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄµÈ¼ï¿½Òªï¿½ï¿½Í³ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nType: Ö¸ï¿½ï¿½×°ï¿½ï¿½
-			m_GMA_naryMAï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½. m_GMA_naryLevelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄµÈ¼ï¿½Òªï¿½ï¿½
-							m_GMA_naryDropRateï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄ³ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	È·¶¨¸÷¸ø¶¨Ä§·¨ÊôÐÔµÄµÈ¼¶ÒªÇóºÍ³öÏÖ¸ÅÂÊ
+	Èë¿Ú:	nType: Ö¸¶¨×°±¸
+			m_GMA_naryMAÊý×é: ¸ø³öÈ«²¿Ä§·¨ÊôÐÔµÄË÷ÒýÖµ
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã. m_GMA_naryLevelÊý×é¸ø³öÉÏÊöÄ§·¨ÊôÐÔµÄµÈ¼¶ÒªÇó
+							m_GMA_naryDropRate¸ø³öÉÏÊöÄ§·¨ÊôÐÔµÄ³öÏÖ¸ÅÂÊ
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItemGenerator::GMA_GetLevelAndDropRate(int nType)
 {
-	//TODO: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½nTypeï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½, ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ m_BPTLib.m_CMAT ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//TODO: ¿ÉÄÜÐèÒª¶ÔnType½øÐÐ×ª»», ´Ó×°±¸ÀàÐÍÖµ±ä³É m_BPTLib.m_CMAT Êý×éµÄË÷Òý
 
-	for (int i = 0; i < 2; i++)		// 0: Ç°×º, 1: ï¿½ï¿½×º
+	for (int i = 0; i < 2; i++)		// 0: Ç°×º, 1: ºó×º
 	{
 		for (int n = 0; n < m_GMA_nCount[i]; n++)
 		{
@@ -725,31 +725,31 @@ BOOL KItemGenerator::GMA_GetLevelAndDropRate(int nType)
 			if (pMATF == NULL)
 				{ _ASSERT(FALSE); return FALSE; }
 			m_GMA_naryLevel[i][n] = pMATF->m_nLevel;
-			m_GMA_naryDropRate[i][n] = pMATF->m_DropRate[nType];		// ï¿½ï¿½ï¿½Å»ï¿½
+			m_GMA_naryDropRate[i][n] = pMATF->m_DropRate[nType];		// ¿ÉÓÅ»¯
 		}
 	}
 	return TRUE;
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nPos: 0: Ñ¡Ç°×º, 1: Ñ¡ï¿½ï¿½×º
-			nLevel: ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄµÈ¼ï¿½Òªï¿½ï¿½
-			nLucky: ï¿½ï¿½ï¿½ï¿½Öµ
-			m_GMA_naryMAï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	ï¿½ï¿½ï¿½ï¿½:	*pINA ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡Ä§ï¿½ï¿½ï¿½Äºï¿½ï¿½Ä²ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	´ÓÈ«²¿¿ÉÓÃµÄÄ§·¨ÊôÐÔÖÐÑ¡³ö·ûºÏÌõ¼þµÄÄ§·¨
+	Èë¿Ú:	nPos: 0: Ñ¡Ç°×º, 1: Ñ¡ºó×º
+			nLevel: ¶ÔÄ§·¨ÊôÐÔµÄµÈ¼¶ÒªÇó
+			nLucky: ÔËÆøÖµ
+			m_GMA_naryMAÊý×é: ¸ø³öÈ«²¿¿ÉÓÃµÄÄ§·¨ÊôÐÔµÄË÷ÒýÖµ
+	³ö¿Ú:	*pINA ¸ø³öËùÑ¡Ä§·¨µÄºËÐÄ²ÎÊý
 ******************************************************************************/
 void KItemGenerator::GMA_ChooseMA(int nPos, int nLevel, int nLucky, KItemNormalAttrib* pINA)
 {
 	_ASSERT(pINA != NULL);
 
-	// ï¿½ï¿½ï¿½ï¿½Öµ
+	// ¸³³õÖµ
 	pINA->nAttribType = 0;
 	pINA->nValue[0] = 0;
 	pINA->nValue[1] = 0;
 	pINA->nValue[2] = 0;
 
-	// É¸Ñ¡ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// É¸Ñ¡³öÈ«²¿¿ÉÓÃµÄÄ§·¨ÊôÐÔ
 	int nDropRate = ::GetRandomNumber(0, 100) - nLucky;
 	int nCount = GMA_GetCandidateMA(nPos, nLevel, nDropRate);
 	if (nCount > 0)
@@ -757,12 +757,12 @@ void KItemGenerator::GMA_ChooseMA(int nPos, int nLevel, int nLucky, KItemNormalA
 		int nFinal = ::GetRandomNumber(0, nCount);
 		int nMAi = m_GMA_naryCandidateMA[nFinal];
 		int nMA = m_GMA_naryMA[nPos][nMAi];
-		if (nMA == -1)	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		if (nMA == -1)	// Ëæ»ú³öÖØ¸´µÄÊôÐÔÁË
 		{
 			pINA->nAttribType = 0;
 			return;
 		}
-		m_GMA_naryMA[nPos][nMAi] = -1;		// ï¿½ï¿½Îª-1,ï¿½ï¿½Ê¾ï¿½ï¿½MAï¿½ï¿½ï¿½ï¿½
+		m_GMA_naryMA[nPos][nMAi] = -1;		// ÖÃÎª-1,±íÊ¾¸ÃMAÒÑÓÃ
 		const KMAGICATTRIB_TABFILE* pMATF = GetMARecord(nMA);
 		if (NULL != pMATF)
 		{
@@ -776,10 +776,10 @@ void KItemGenerator::GMA_ChooseMA(int nPos, int nLevel, int nLucky, KItemNormalA
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	i: Ö¸ï¿½ï¿½ï¿½ï¿½Â¼
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¼ï¿½Â¼ï¿½ï¿½Ö¸ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄÄ§·¨ÊôÐÔ¼ÇÂ¼
+	Èë¿Ú:	i: Ö¸¶¨¼ÇÂ¼
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¼ÇÂ¼µÄÖ¸Õë
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KMAGICATTRIB_TABFILE* KItemGenerator::GetMARecord(int i) const
 {
@@ -787,23 +787,23 @@ const KMAGICATTRIB_TABFILE* KItemGenerator::GetMARecord(int i) const
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nPos: 0: Ñ¡Ç°×º, 1: Ñ¡ï¿½ï¿½×º
-			nLevel: ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄµÈ¼ï¿½Òªï¿½ï¿½
-			nDropRate: Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ê´ï¿½ï¿½Ú´ï¿½Öµï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			m_GMA_naryMAï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-			m_GMA_naryLevelï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄµÈ¼ï¿½Òªï¿½ï¿½
-			m_GMA_naryDropRateï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄ³ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	m_GMA_naryCandidateMAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½
-	Ëµï¿½ï¿½:	ï¿½ï¿½ n = m_GMA_naryMA[nPos][m_GMA_naryCandidateMA[i]]
-			ï¿½ï¿½ GetMARecord(n) ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
+	¹¦ÄÜ:	´ÓÈ«²¿¿ÉÓÃµÄÄ§·¨ÊôÐÔÖÐÑ¡³ö·ûºÏÌõ¼þµÄÄ§·¨
+	Èë¿Ú:	nPos: 0: Ñ¡Ç°×º, 1: Ñ¡ºó×º
+			nLevel: ¶ÔÄ§·¨ÊôÐÔµÄµÈ¼¶ÒªÇó
+			nDropRate: Ñ¡³ö³öÏÖ¸ÅÂÊ´óÓÚ´ËÖµµÄÄ§·¨ÊôÐÔ
+			m_GMA_naryMAÊý×é: ¸ø³öÈ«²¿¿ÉÓÃµÄÄ§·¨ÊôÐÔµÄË÷ÒýÖµ
+			m_GMA_naryLevelÊý×é: ¸ø³öÉÏÊöÄ§·¨ÊôÐÔµÄµÈ¼¶ÒªÇó
+			m_GMA_naryDropRateÊý×é: ¸ø³öÉÏÊöÄ§·¨ÊôÐÔµÄ³öÏÖ¸ÅÂÊ
+	³ö¿Ú:	m_GMA_naryCandidateMAÊý×é¸ø³ö·ûºÏÌõ¼þµÄÄ§·¨
+	ËµÃ÷:	Èô n = m_GMA_naryMA[nPos][m_GMA_naryCandidateMA[i]]
+			Ôò GetMARecord(n) ·µ»ØÖ¸ÏòÄ§·¨ÊôÐÔ½á¹¹µÄÖ¸Õë
 ******************************************************************************/
 int KItemGenerator::GMA_GetCandidateMA(int nPos, int nLevel, int nDropRate)
 {
 	int nCount = 0;
 	for (int i = 0; i < m_GMA_nCount[nPos]; i++)
 	{
-		if (m_GMA_naryMA[nPos][i] != -1 &&		// -1ï¿½ï¿½Ê¾ï¿½ï¿½MAï¿½ï¿½ï¿½Ã¹ï¿½
+		if (m_GMA_naryMA[nPos][i] != -1 &&		// -1±íÊ¾¸ÃMAÒÑÓÃ¹ý
 			m_GMA_naryLevel[nPos][i] == nLevel &&
 			m_GMA_naryDropRate[nPos][i] >= nDropRate)
 		{
@@ -834,11 +834,11 @@ BOOL KItemGenerator::GetMedicineCommonAttrib(IN int nDetailType, IN int nLevel, 
 	return TRUE;
 }
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Æ½ï¿½×°ï¿½ï¿½×°ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nCondition: Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Emf+Pmf)*Levelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			pItem: ×°ï¿½ï¿½ï¿½ï¿½Ä¿Ö¸ï¿½ë¡£
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pItem ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ø¼ï¿½
+	¹¦ÄÜ£º	Éú³ÉÖ¸¶¨»Æ½ð×°±¸×°±¸
+	Èë¿Ú:	nCondition: Ç°ÌáÌõ¼þ£¬(Emf+Pmf)*LevelµÄÔËËã½á¹û
+			pItem: ×°±¸ÏîÄ¿Ö¸Õë¡£
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÕæ, Ïà¹ØÊý¾ÝÔÚ pItem ËùÖ¸¶ÔÏóÖÐ¸ø³ö
+			Ê§°ÜÊ±·µ»Ø¼Ù
 ******************************************************************************/
 BOOL KItemGenerator::GetEquipmentCommonAttrib(IN int nDetailType, IN int nParticularType, IN int nLevel, IN int nSeries, IN OUT KItem* pItem)
 {
@@ -848,13 +848,13 @@ BOOL KItemGenerator::GetEquipmentCommonAttrib(IN int nDetailType, IN int nPartic
 		return FALSE;
 	}
 
-	int i = 0;
+	int i;
 	if (nDetailType > equip_horse)
 		i = nParticularType;
 	else
-		i = nParticularType * 10 + nLevel - 1;// ï¿½ï¿½ï¿½ï¿½Ê½ï¿½É²ß»ï¿½ï¿½ï¿½ï¿½ï¿½
-												// ï¿½ï¿½ï¿½SPE 2002ï¿½ï¿½8ï¿½ï¿½31ï¿½ï¿½7:40
-												// email: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½
+		i = nParticularType * 10 + nLevel - 1;// ±¾¹«Ê½ÓÉ²ß»®¶¨Òå
+												// Ïê¼ûSPE 2002Äê8ÔÂ31ÈÕ7:40
+												// email: »ù´¡µÀ¾ßÊýÖµ±í
 	const KBASICPROP_EQUIPMENT* pEqu = NULL;
 	switch(nDetailType)
 	{
@@ -914,11 +914,11 @@ BOOL KItemGenerator::GetEquipmentCommonAttrib(IN int nDetailType, IN int nPartic
 	}
 	if (NULL == pEqu)
 		{ _ASSERT(FALSE); return FALSE; }
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Ö±ï¿½ï¿½Ô­ï¿½ï¿½: Ö»ï¿½ï¿½nï¿½ï¿½×°ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ i ï¿½ï¿½Öµï¿½ï¿½[0,n-1]Ö®ï¿½ï¿½
-		// ï¿½ï¿½ï¿½3ï¿½ï¿½: nParticularType ï¿½ï¿½ï¿½ï¿½?
-		//			nLevel ï¿½ï¿½ï¿½ï¿½?
-		//			Ô­Ê¼ï¿½ï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ m_BPTLib.m_BPTEquipment ï¿½ï¿½
-		//			ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
+		// ÔËÐÐÖÁ´ËµÄÖ±½ÓÔ­Òò: Ö»ÓÐnÖÖ×°±¸, ¶øÉÏÃæ i µÄÖµÔÚ[0,n-1]Ö®Íâ
+		// ¼ì²é3µã: nParticularType ÓÐÎó?
+		//			nLevel ÓÐÎó?
+		//			Ô­Ê¼µÄtab fileÓÐÎóµ¼ÖÂ m_BPTLib.m_BPTEquipment Ëù
+		//			¹ÜÀíµÄÊý¾ÝÓÐÎÊÌâ?
 	pItem->SetAttrib_CBR(pEqu);
 	if (nSeries < series_metal)
 		pItem->SetSeries(::GetRandomNumber(series_metal, series_earth));
@@ -928,15 +928,15 @@ BOOL KItemGenerator::GetEquipmentCommonAttrib(IN int nDetailType, IN int nPartic
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	nDetailType: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½......
-			nParticularType: ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½
-			nSeriesReq: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nLevel: ï¿½È¼ï¿½
-			pnaryMALevel: Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÈ¼ï¿½ï¿½ï¿½ï¿½ï¿½[6]
-			nLucky: ï¿½ï¿½ï¿½ï¿½Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pItem ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ£º	Éú³ÉËæ»ú×°±¸
+	Èë¿Ú:	nDetailType: ¾ßÌåÀà±ð, Èç½ü³ÌÎäÆ÷¡¢°µÆ÷¡¢......
+			nParticularType: ÏêÏ¸Àà±ð
+			nSeriesReq: ÎåÐÐÊôÐÔ
+			nLevel: µÈ¼¶
+			pnaryMALevel: Ä§·¨ÊôÐÔµÈ¼¶Êý×é[6]
+			nLucky: ÔËÆøÖµ
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, Ïà¹ØÊý¾ÝÔÚ pItem ËùÖ¸¶ÔÏóÖÐ¸ø³ö
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KItemGenerator::Gen_ExistEquipment(IN int nItemNature,
 										IN int nDetailType,
@@ -979,15 +979,15 @@ BOOL KItemGenerator::Gen_ExistEquipment(IN int nItemNature,
 			memcpy(pItem->m_GeneratorParam.nGeneratorLevel, pnaryMALevel, sizeof(int) * MAX_ITEM_MAGICLEVEL);
 		int nGameVersion = pItem->m_GeneratorParam.nVersion;
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½, È·ï¿½ï¿½×°ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		int i = 0;
+		// ¸ù¾ÝÈë¿Ú²ÎÊý, È·¶¨×°±¸µÄ»ù±¾Êý¾Ý
+		int i;
 		if (nDetailType > equip_horse)
 			i = nParticularType;
 		else
-			i = nParticularType * 10 + nLevel - 1;// ï¿½ï¿½ï¿½ï¿½Ê½ï¿½É²ß»ï¿½ï¿½ï¿½ï¿½ï¿½
-													// ï¿½ï¿½ï¿½SPE 2002ï¿½ï¿½8ï¿½ï¿½31ï¿½ï¿½7:40
-													// email: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½
-													// ï¿½È¼ï¿½ï¿½ï¿½ï¿½Ý´ï¿½1ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			i = nParticularType * 10 + nLevel - 1;// ±¾¹«Ê½ÓÉ²ß»®¶¨Òå
+													// Ïê¼ûSPE 2002Äê8ÔÂ31ÈÕ7:40
+													// email: »ù´¡µÀ¾ßÊýÖµ±í
+													// µÈ¼¶Êý¾Ý´Ó1¿ªÊ¼£¬ËùÒÔÒª¼õ»ØÀ´
 		const KBASICPROP_EQUIPMENT* pEqu = NULL;
 		switch(nDetailType)
 		{
@@ -1047,11 +1047,11 @@ BOOL KItemGenerator::Gen_ExistEquipment(IN int nItemNature,
 		}
 		if (NULL == pEqu)
 			{ _ASSERT(FALSE); return bEC; }
-			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Ö±ï¿½ï¿½Ô­ï¿½ï¿½: Ö»ï¿½ï¿½nï¿½ï¿½×°ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ i ï¿½ï¿½Öµï¿½ï¿½[0,n-1]Ö®ï¿½ï¿½
-			// ï¿½ï¿½ï¿½3ï¿½ï¿½: nParticularType ï¿½ï¿½ï¿½ï¿½?
-			//			nLevel ï¿½ï¿½ï¿½ï¿½?
-			//			Ô­Ê¼ï¿½ï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ m_BPTLib.m_BPTEquipment ï¿½ï¿½
-			//			ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
+			// ÔËÐÐÖÁ´ËµÄÖ±½ÓÔ­Òò: Ö»ÓÐnÖÖ×°±¸, ¶øÉÏÃæ i µÄÖµÔÚ[0,n-1]Ö®Íâ
+			// ¼ì²é3µã: nParticularType ÓÐÎó?
+			//			nLevel ÓÐÎó?
+			//			Ô­Ê¼µÄtab fileÓÐÎóµ¼ÖÂ m_BPTLib.m_BPTEquipment Ëù
+			//			¹ÜÀíµÄÊý¾ÝÓÐÎÊÌâ?
 		pItem->SetAttrib_CBR(pEqu);
 		if (nSeriesReq < series_metal)
 			pItem->SetSeries(::GetRandomNumber(series_metal, series_earth));
@@ -1060,7 +1060,7 @@ BOOL KItemGenerator::Gen_ExistEquipment(IN int nItemNature,
 
 		if (NULL == pnaryMALevel)
 			return TRUE;
-		KItemNormalAttrib	sMA[MAX_ITEM_MAGICATTRIB];	// ï¿½ï¿½ï¿½ßµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		KItemNormalAttrib	sMA[MAX_ITEM_MAGICATTRIB];	// µÀ¾ßµÄÄ§·¨ÊôÐÔ
 		bEC = Gen_MagicAttrib(nDetailType, pnaryMALevel, nSeriesReq, nLucky, sMA, nGameVersion);
 		if (bEC)
 			pItem->SetAttrib_MA(sMA);

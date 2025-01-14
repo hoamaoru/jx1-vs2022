@@ -144,7 +144,7 @@ void KPlayerChat::SendGlobalSystemInfo(char *lpszSendName, char *lpszSentence, i
 	pCccSync->sentlen = nSentenceLength;
 	memcpy(pCccSync + 1, lpszSentence, nSentenceLength);
 	pCccSync->item[0] = 0;
-	pCccSync->someflag = 0;
+	pCccSync->someflag = 0; //Kenh Bang
 
 	g_NewProtocolProcess.BroadcastGlobal(pExHeader, pckgsize);
 

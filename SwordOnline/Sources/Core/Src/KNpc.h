@@ -65,6 +65,7 @@ enum NPCCMD
 	do_manyattack,
 	do_jumpattack,
 	do_revive,
+	do_goattack,
 };
 
 enum CLIENTACTION
@@ -131,6 +132,18 @@ struct KState
 	int	nTime;
 };
 
+//TamLTM Lag pos npc
+struct	KSyncPos
+{
+	DWORD	m_dwRegionID;
+	int		m_nMapX;
+	int		m_nMapY;
+	int		m_nOffX;
+	int		m_nOffY;
+	int		m_nDoing;
+};
+//end code
+
 class KStateNode : public KNode
 {
 public:
@@ -158,6 +171,7 @@ class KNpc
 {
 	friend class KNpcSet;
 public:
+	BOOL				m_IsCheckAutoPlay;		//TamLTM them check auto move maps 
 	DWORD				m_dwID;					// Npc的ID
 	int					m_Index;				// Npc的索引
 	KIndexNode			m_Node;					// Npc's Node
@@ -343,6 +357,7 @@ public:
 	int					m_MantleType;
 	BYTE				m_nPKFlag;	
 	int					m_nMissionGroup;
+	int					m_CurrentExpSkillsEnchance;//TamLTM ExpSkills x2
 #ifndef _SERVER
 	PLAYERTRADE			m_PTrade;					// Npc是否在装谔
 	int					m_MarkMask;
@@ -403,7 +418,7 @@ public:
 	BOOL				m_bClientOnly;			// 
 
 	int					m_nCurrentMeleeSkill;	// Npc当前正执行的格斗技能
-	int					m_nCurrentMeleeTime;	
+	int					m_nCurrentMeleeTime;
 	
 	// AI参数
 	int					m_AiMode;				// AI模式
@@ -416,18 +431,39 @@ public:
 	int					m_OldFightMode;
 	BOOL				m_bExchangeServer;
 
+	BOOL				m_bActivateAutoMoveBarrier1; //TamLTM Them check auto move barrier
+	BOOL				m_bActivateAutoMoveBarrier2; //TamLTM Them check auto move barrier
+	BOOL				m_bActivateAutoMoveBarrier3; //TamLTM Them check auto move barrier
+	BOOL				m_bActivateAutoMoveBarrier4; //TamLTM Them check auto move barrier
+
+	//TamLTM Them check auto
+	bool				isCheckNotBarrierPlayer;
+	bool				isCheckAutoRunPlayer;
+
+	//pos
+	int					m_nMovePosX;
+	int					m_nMovePosY;
+	//enc code
+
 	int 				m_nRankInWorld;
 	int 				m_nRepute;
 	int 				m_nFuYuan;
 	int 				m_nPKValue;
+    void			    RunWalkStopCmd();
 
 #ifdef _SERVER
+	int                 m_nNpcX;
+	int                 m_nNpcY;
+	int                 m_nNpcRadius;
+
+	NPC_COMMAND         m_NowCommand;
 	int					m_AiSkillRadiusLoadFlag;// 战斗npc技能范围是否已经初始化 只需要在构造的时候初始化一次
 	KNpcDeathCalcExp	m_cDeathCalcExp;		// 战斗npc死亡后送出经验给不同的player
 #endif
 	int					m_nCurPKPunishState;	// PK死亡时的惩罚性质，用于国战
 	BOOL				m_bReviveNow;
 #ifndef	_SERVER
+//	int					m_nPeopleIdxCheckClient;
 	int					m_SyncSignal;			// 同步信号
 	KClientNpcID		m_sClientNpcID;			// 用于标明客户端npc是哪个region的第几个npc
 	DWORD				m_dwRegionID;			// 本npc所在region的id
@@ -443,6 +479,7 @@ public:
 	BOOL				m_bIsPosEdition;
 	BYTE				m_nPacePercent;
 	BOOL				m_bTongFlag;			// 是否有招人图标
+	KSyncPos			m_sSyncPos; //TamLTM lag pos Npc
 #endif
 private:
 	int					m_LoopFrames;			// 循环帧数
@@ -492,7 +529,7 @@ private:
 	void				DoWalk();
 	void				OnWalk();
 	void				DoRun();
-	void				OnRun();
+	void				OnRun(int nAddSpeed = 0); //TamLTM fix auto xy map int nAddSpeed=0
 	void				DoSkill(int nX, int nY);
 	int					DoOrdinSkill(KSkill * pSkill, int nX, int nY);
 	void				OnSkill();
@@ -500,15 +537,19 @@ private:
 	BOOL				OnJump();
 	void				DoSit();
 	void				OnSit();
-	void				DoHurt(int nHurtFrames = 0, int nX = 0, int nY = 0);
+    void				DoHurt(int nHurtFrames = 0, int nX = 0, int nY =0,int nHurtI = 100);
 	void				OnHurt();
+
+	//TamLTM
+	void				ActiveAutoMoveBarrier(int moveX, int moveY); //TamLTM Fix move toa do xy player.
 
 	// mode == 0 npc 导致 == 1 player 导致，不掉东西 == 2 player 导致，掉东西
 	// 与 DeathPunish 的参数对应 具体参阅 enumDEATH_MODE
-	void				DoDeath(int nMode = 0);
+//	void				DoDeath(int nMode = 0);
+	void				DoDeath(int nMode = 0, int nAttacker = 0); // TamLTM fix exp
 
 	void				OnDeath();
-	void				DoDefense();
+	void				DoDefense(); //Phong thu
 	void				OnDefense();
 	void				DoIdle();
 	void				OnIdle();
@@ -527,6 +568,10 @@ private:
 
 	BOOL				DoRunAttack();
 	void				OnRunAttack();
+
+	BOOL				DoGoAttack(); //TamLTM fix auto xy map
+	void				OnGoAttack(); //TamLTM fix auto xy map
+
 	BOOL				CastMeleeSkill(KSkill * pSkill);
 
 	void				DoSpecial1();
@@ -576,6 +621,22 @@ public:
 	void				SetSkillAppendAura(int nAppendNo, int nSkillID);
 	void				SetCamp(int nCamp);
 	void				SwitchMaskFeature();
+
+	//TamLTM Fix move toa do xy player.
+//	void				CheckMoveBarrier(BOOL Obstacle_LT /*12h*/, BOOL Obstacle_RT /*6h*/, BOOL Obstacle_LB /*9h*/, BOOL Obstacle_RB /*3h*/);
+//	void				CheckMoveBarrier();
+//	void				CheckTimerMoveBarrier();
+	void				DoAutoMoveBarrier(int arrowMove);
+
+	BOOL				GetCheckAutoMoveBarr(BOOL isCheck);
+	void				MoveToBarrierPlayer(int nX, int nY, int isCheckMoveCalculator = 0);
+	void				MiniMapXY(int nX, int nY);
+	//end code
+
+	//TamLTM show name pk
+	void				ShowPKNamePlayer(char* m_nNamePK); //TamLTM Show ten va thong bao cua nhan vat dang cuu sat voi nhau
+	//end code
+
 #ifdef _SERVER
 	void				SetTempCurrentCamp(int nCamp);
 #endif
@@ -626,6 +687,7 @@ public:
 	inline bool			IsAlive() const {return (m_Doing != do_death && m_Doing != do_revive);}
 	int					GetMapX(void) const {	return m_MapX;	};
 	int					GetMapY(void) const {	return m_MapY;	};
+    void				Madnessto(int nMpsX, int nMpsY);
 	int					GetMapZ(void) const {	return m_MapZ;	};
 	int					GetOffX(void) const {	return m_OffX;	};
 	int					GetOffY(void) const {	return m_OffY;	};
@@ -636,7 +698,8 @@ public:
 	BOOL				CanSwitchRideHorse();
 	void				ExecuteRevive(){DoRevive();};
 	BOOL				SendSyncData(int nClient, BOOL bBroadCast = FALSE);						// 向一个客户端发完整同步数据
-	void				NormalSync();									// 广播小同步
+	void				NormalSync();		
+    void				BroadCastState();							// 广播小同步
 	void				BroadCastRevive(int nType);
 	int					GetPlayerIdx();
 	BOOL				CalcDamage(int nAttacker, int nMissleSeries, int nMin, int nMax, DAMAGE_TYPE nType, BOOL bIsMelee, BOOL bReturn = FALSE , int nSeries_DamageP = 0, int nStole_Life = 0, int nStole_Mana = 0, int nStole_Stamina = 0, BOOL bIsDS = FALSE, BOOL bIsFS = FALSE);
@@ -651,7 +714,8 @@ public:
 	void				DeathPunish(int nMode, int nBelongPlayer);
 
 	void				RestoreLiveData();								// 重生后恢复Npc的基本数据
-	int					SetPos(int nX, int nY);
+	int					SetPos(int nX, int nY); //TamLTM fix lag pos
+	int					SetPosU(int nX, int nY); //TamLTM fix lag posU
 	int					ChangeWorld(DWORD dwSubWorldID, int nX, int nY);	// 切换世界
 	void				TobeExchangeServer(DWORD dwMapID, int nX, int nY);
 	void				RestoreLife(){m_CurrentLife = m_CurrentLifeMax;	};
@@ -662,6 +726,16 @@ public:
 	int					FindAroundPlayer(const char* Name);// 查找周围9个Region中是否有指定的 player
 #endif
 
+//TamLTM fix add ham fix xy map
+#ifndef _SERVER
+	void				HurtAutoMove();
+	void				AutoFixXY();
+	int					m_nCheckAutoMoveBarrier;
+	int					m_nMoveToFlagMiniMapX;
+	int					m_nMoveToFlagMiniMapY;
+#endif
+//end code
+
 #ifndef _SERVER
 	void				SetSleepMode(BOOL bSleep) { m_nSleepFlag = bSleep; m_DataRes.SetSleepState(bSleep);};
 	void				SetNpcState(BYTE* pNpcState);
@@ -669,6 +743,7 @@ public:
 	void				ProcNetCommand(NPCCMD cmd, int x = 0, int y = 0, int z = 0);
 	void				Paint();
 	int					PaintInfo(int nHeightOffset, int nFontSize = 12, DWORD	dwBorderColor = 0);
+	void				PaintPaceBar(int nPercent,int nPacePercent);// thanh process core
 	void				PaintTop(int nHeightOffset, int nnHeightOffset, int nFontSize = 12, DWORD	dwBorderColor = 0);
 	int					PaintChat(int nHeightOffset);
 	int					SetChatInfo(const char* Name, const char* pMsgBuff, unsigned short nMsgLength);

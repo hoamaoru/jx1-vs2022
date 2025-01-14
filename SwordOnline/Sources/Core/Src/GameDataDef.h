@@ -56,8 +56,8 @@
 
 #define		MAX_DEATH_PUNISH_PK_VALUE			10
 
-#define		RESOLUTION_WIDTH				800//1900
-#define		RESOLUTION_HEIGHT				600//800
+#define		RESOLUTION_WIDTH				800
+#define		RESOLUTION_HEIGHT				600
 
 #define		POISON_DAMAGE_TIME				60
 #define		POISON_DAMAGE_INTERVAL			10
@@ -75,6 +75,9 @@
 #define		MAX_TONG_NATIONALEMBLEM			6
 
 #define		MAX_COMPOUND_ITEM				3
+
+#define		OBJ_NAME_LENGHT					80 // TamLTM Kham nam xanh
+#define		MAX_PART_BUILD					9 //TamLTM Kham nam xanh // Max so part item kham nam TamLTM
 
 #define REGION_PIXEL_WIDTH	512
 #define REGION_PIXEL_HEIGHT	1024
@@ -178,6 +181,22 @@ enum ITEM_PART
 	itempart_num,
 };
 
+//TamLTM kham nam code
+enum BUILD_PART
+{
+	itempart_build1 = 0,
+	itempart_build2,
+	itempart_build3,
+	itempart_build4,
+	itempart_build5,
+	itempart_build6,
+	itempart_build7,
+	itempart_build8,
+	itempart_build9,
+	buildpart_num,
+};
+//End code
+
 enum COMPOUND_ACTION
 {
 	CPA_FUSION,
@@ -202,6 +221,18 @@ enum COMPOUND_PART //Box Kham do tim
 	compound_num,
 };
 
+//TamLTM kham nam xanh
+enum ITEMKIND
+{
+	gold_item   = 0,
+	purple_item,	
+	normal_item,
+	green_item,
+	kind_number,
+};
+
+//End code
+
 enum ITEMGENRE
 {
 	item_equip = 0,
@@ -212,6 +243,7 @@ enum ITEMGENRE
 	item_townportal,
 	item_magicscript,
 	item_number,
+	item_mine,	//TamLTM Kham nam xanh
 };
 
 enum EQUIPNATURE
@@ -266,6 +298,15 @@ enum MEDICINEDETAILTYPE
 	medicine_detailnum,
 };
 
+//TamLTM code kham nam xanh
+enum SPECIALITEM_TASK
+{
+	SP_TUTHUYTINH 	= 239,
+	SP_LUCTHUYTINH 	= 240,
+	SP_LAMTHUYTINH 	= 238,
+};
+//End code
+
 enum TOWNPORTALDETAILTYPE
 {
 	townportal_normal,
@@ -304,6 +345,7 @@ enum INVENTORY_ROOM
 	room_trade1,
 	room_immediacy,
 	room_give,
+	room_builditem,		// TamLTM Kham nam
 	room_compound,
 	room_num,
 };
@@ -325,6 +367,7 @@ enum ITEM_POSITION
 	pos_immediacy,
 	pos_give,
 	pos_compound,
+	pos_builditem, //TamLTM Kham nam xanh
 	pos_compoundroom,
 	pos_num,
 };
@@ -444,6 +487,7 @@ enum NPCBOSS
 	npc_normal,
 	npc_blue,				// 新手阵营（加入门派前的玩家）
 	npc_gold,			// 正派阵营
+	npc_pink,			// 正派阵营
 	npcboss_num,				// 阵营数
 };
 
@@ -537,6 +581,7 @@ enum UIOBJECT_CONTAINER
 	UOC_SKILL_LIST,			//列出全部拥有技能的窗口，技能窗口
 	UOC_SKILL_TREE,
 	UOC_ITEM_GIVE,
+	UOC_BUILD_ITEM, //TamLTM kham nam xanh
 	UOC_COMPOUND,
 	UOC_COMPOUND_BOX,
 	//左、右可用技能树
@@ -852,6 +897,21 @@ enum UI_EQUIPMENT_POSITION
 	UIEP_CLOAK,
 };
 
+//TamLTM Code kham nam xanh
+enum UI_BUILDITEM_POSITION
+{
+	UIEP_BUILDITEM1 = 0,
+	UIEP_BUILDITEM2 = 1,
+	UIEP_BUILDITEM3 = 2,
+	UIEP_BUILDITEM4 = 3,
+	UIEP_BUILDITEM5 = 4,
+	UIEP_BUILDITEM6 = 5,
+	UIEP_BUILDITEM7 = 6,
+	UIEP_BUILDITEM8 = 7,
+	UIEP_BUILDITEM9 = 8,	
+};
+// End code
+
 enum MOSAICENCRUSTED_POSITION
 {
 	MOSAICENCRUSTED_UIEP_BOX_1 = 0,
@@ -988,6 +1048,7 @@ enum OPTIONS_LIST
 	OPTION_SOUND_VALUE,		//音效音量	nParam = 音量大小（取值为0到-10000）
 	OPTION_BRIGHTNESS,		//亮度调节	nParam = 亮度大小（取值为0到-100）
 	OPTION_WEATHER,			//天气效果开关 nParam = (int)(bool)bEnable 是否开启
+	OPTION_OTHER,			//TamLTM Toi uu hinh anh
 };
 
 //==================================
@@ -1001,6 +1062,13 @@ struct KUiSceneTimeInfo
 	int		nScenePos0;				//场景当前坐标（东）
 	int		nScenePos1;				//场景当前坐标（南）
 	int		nGameSpaceTime;			//以分钟为单位
+
+	//TamLTM Bang hoi chiem linh
+	char    szTongName[32];
+	char    szTongNameBC[32];
+	int     szTongT;
+	int     szTongVG;
+	//end code
 };
 
 
@@ -1406,6 +1474,7 @@ struct KLockItem
 	};
 };
 
+//#define MAX_DATAGROUP_VALUE 4
 #define MAX_DATAGROUP_VALUE 4
 struct KDataGroup
 {
@@ -1461,6 +1530,7 @@ typedef struct
 	DWORD	m_SubWorldID;
 	int		m_nMpsX;
 	int		m_nMpsY;
+	int		m_nBuyIdx;
 	void	Clear() {
 		memset(m_nShopIdx, -1, sizeof(m_nShopIdx)); 
 		m_nMoneyUnit = moneyunit_money; m_SubWorldID = -1; m_nMpsX = 0; m_nMpsY = 0;

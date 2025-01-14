@@ -44,6 +44,7 @@ typedef struct
 	int		m_nSoundFlag;
 	BOOL	m_bOverLook;
 	char	m_szName[FILE_NAME_LENGTH];
+	DWORD	m_dwNpcId; // TamLTM Kham nam xanh
 } KObjItemInfo;
 
 class KObjSet
@@ -77,7 +78,7 @@ public:
 	BOOL	ServerLoadRegionObj(char *lpszMapPath, int nRegionX, int nRegionY, int nSubWorld);
 
 	// 服务器端载入一个Region的所有Obj
-	BOOL	ServerLoadRegionObj(int nSubWorld, KFile*pFile, DWORD dwDataSize);
+	BOOL	ServerLoadRegionObj(int nSubWorld, KPakFile *pFile, DWORD dwDataSize);
 
 	// 设定obj所带的物件信息，包括物件id，物件在装备栏中的长、宽
 	BOOL	SetObjItem(int nObjIndex, int nItemID, int nItemWidth, int nItemHeight);

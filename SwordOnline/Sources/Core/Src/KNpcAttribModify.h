@@ -102,6 +102,7 @@ private:
 	void	DynamicMagicShieldV(KNpc* pNpc, void* pData);
 	void	StaticMagicShieldP(KNpc* pNpc, void* pData);
 	void	ExpEnhanceP(KNpc* pNpc, void* pData);
+	void	ExpSkillsEnhanceP(KNpc* pNpc, void* pData); //TamLTM ExpSkills x2
 	void	LifeReplenishP(KNpc* pNpc, void* pData);
 	void	IgnoreSkillP(KNpc* pNpc, void* pData);
 	void	PoisonDamageReturnP(KNpc* pNpc, void* pData);

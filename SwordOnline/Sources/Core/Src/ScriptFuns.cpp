@@ -54,6 +54,7 @@
 #ifndef __linux
 #include "Shlwapi.h"
 #include "windows.h"
+#include "lmcons.h"//Get computer Name	
 #include "winbase.h"
 #include <direct.h>
 #else
@@ -1423,13 +1424,11 @@ int LuaNewSale(Lua_State * L)
 		nShopNum = MAX_SUPERSHOP_SHOPTAB;
 
 	int nShopId[MAX_SUPERSHOP_SHOPTAB];
-	for (int i = 0; i < nShopNum; i++)	
-		nShopId[i] = (int)Lua_ValueToNumber(L, 4 + i) - 1;
-	
+	for (int i= 0; i< nShopNum; i++)
+		nShopId[i] = (int)Lua_ValueToNumber(L, 4+i) - 1;
 
-	for (int i = 0; i < MAX_SUPERSHOP_SHOPTAB; i++)
+	for(i; i < MAX_SUPERSHOP_SHOPTAB; i++)
 		nShopId[i] = -1;
-	
 
 	BuySell.OpenSale(nPlayerIndex, (int)Lua_ValueToNumber(L, 1), (int)Lua_ValueToNumber(L, 2), nShopNum, nShopId);
 	return 0;
@@ -1450,6 +1449,177 @@ int LuaOpenBox(Lua_State * L)
 	return 0;
 }
 
+//TamLTM kham nam xanh
+//SetPItemID
+int LuaGetPOItem(Lua_State * L)
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0) return 0;
+	BYTE nX, nY, nPos;
+	int nIndex = 0;
+	nPos = (BYTE)Lua_ValueToNumber(L,1);
+	if (nPos < pos_equip /*|| nPos > pos_compound_item*/)
+	{
+		Lua_PushNumber(L,0);
+		return 0;
+	}	
+	nX = (BYTE)Lua_ValueToNumber(L,2);
+
+//	g_DebugLog("Debug abc xyz %d + %d - %d", nPos, pos_equip, pos_builditem);
+	if (nPos) 
+	{
+		if (pos_equip == 2) 
+		{
+			nIndex = Player[nPlayerIndex].m_ItemList.GetEquipment(nX);
+		//	g_DebugLog("Debug abc xyz");
+		}
+
+		if (pos_builditem == 16) {
+			nIndex = Player[nPlayerIndex].m_ItemList.GetBuildItem(nX);
+		//	g_DebugLog("Debug abc xyz 2");
+		}
+	} // */
+
+/*	switch (nPos)
+	{
+	case pos_equip:
+		nIndex = Player[nPlayerIndex].m_ItemList.GetEquipment(nX);
+		g_DebugLog("Debug abc xyz");
+		break;
+	case pos_builditem:
+		nIndex = Player[nPlayerIndex].m_ItemList.GetBuildItem(nX);
+		break;
+/*	case pos_compound_item:
+		nIndex = Player[nPlayerIndex].m_ItemList.GetComPoundItem(nX);
+		break; */
+/*	default:
+	//	g_DebugLog("Debug defaulf");
+		break;
+	} // */ 
+
+	Lua_PushNumber(L,nIndex);
+	return 1; 
+}
+
+int LuaSetPItemID(Lua_State * L)
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	
+	if (nPlayerIndex <= 0)
+	{
+		Lua_PushNumber(L,0);
+		return 1;
+	}
+	BOOL bExist = FALSE;
+	int nIndex = (int)Lua_ValueToNumber(L, 1);
+	
+	if (nIndex <= 0)
+	{
+		Lua_PushNumber(L, 0);
+		return 1;
+	}
+	BYTE nX, nY, nPos;
+	nPos = (BYTE)Lua_ValueToNumber(L,2);
+	if (nPos < pos_equip /*|| nPos > pos_compound_item*/)
+	{
+		Lua_PushNumber(L,0);
+		return 0;
+	}	
+	nX = (BYTE)Lua_ValueToNumber(L,3);
+
+	if (nPos == 12) 
+	{
+		if (pos_equip == 2) {
+			nIndex = Player[nPlayerIndex].m_ItemList.GetEquipment(nX);
+		//	g_DebugLog("Debug abc xyz");
+		}
+
+		if (pos_builditem == 16) {
+			bExist = (BOOL)Player[nPlayerIndex].m_ItemList.GetBuildItem(nX);
+		//	g_DebugLog("Debug abc xyz 2");
+		}
+	} //*/
+
+/*	switch (nPos)
+	{
+	case pos_equip:
+		bExist = (BOOL)Player[nPlayerIndex].m_ItemList.GetEquipment(nX);
+		break;
+	case pos_builditem:
+		bExist = (BOOL)Player[nPlayerIndex].m_ItemList.GetBuildItem(nX);
+		break;
+/*	case pos_compound_item:
+		bExist = (BOOL)Player[nPlayerIndex].m_ItemList.GetComPoundItem(nX);
+		break; */
+/*	default:
+		break;
+	} // */
+
+	if (!bExist)
+		Player[nPlayerIndex].m_ItemList.Add(nIndex, nPos, nX, 0, false);
+	else
+	{
+		int	nIdx = Player[nPlayerIndex].m_ItemList.Hand();
+		if (nIdx)
+		{
+			Player[nPlayerIndex].m_ItemList.Remove(nIdx);
+			
+			KMapPos sMapPos;
+			KObjItemInfo	sInfo;
+			char	szNameTemp[OBJ_NAME_LENGHT];			
+			Player[nPlayerIndex].GetAboutPos(&sMapPos);
+			
+			sInfo.m_nItemID = nIdx;
+			sInfo.m_nItemWidth = Item[nIdx].GetWidth();
+			sInfo.m_nItemHeight = Item[nIdx].GetHeight();
+			sInfo.m_nMoneyNum = 0;
+			if (Item[nIdx].GetStackNum() > 1)
+			{
+				sprintf(szNameTemp, "%s x %d", Item[nIdx].GetName(), Item[nIdx].GetStackNum());
+				strcpy(sInfo.m_szName, szNameTemp);
+			}
+			else
+				strcpy(sInfo.m_szName, Item[nIdx].GetName());
+			sInfo.m_nColorID = Item[nIdx].GetColorItem();
+			sInfo.m_nGenre = Item[nIdx].GetGenre();
+			sInfo.m_nDetailType = Item[nIdx].GetDetailType();
+			sInfo.m_nMovieFlag = 1;
+			sInfo.m_nSoundFlag = 1;
+			sInfo.m_dwNpcId = 0;
+			
+			int nObj = ObjSet.Add(Item[nIdx].GetObjIdx(), sMapPos, sInfo);
+			if (nObj >= 0)
+			{
+				if (Item[nIdx].GetGenre() == item_task || 
+					Item[nIdx].GetGenre() == item_mine)
+					Object[nObj].SetEntireBelong(nPlayerIndex);
+				else
+					Object[nObj].SetItemBelong(nPlayerIndex);
+			}
+		}
+		Player[nPlayerIndex].m_ItemList.Add(nIndex, pos_hand, 0 ,0);	
+	}
+	Lua_PushNumber(L,1);
+	return 1; 
+}
+
+
+int LuaOpenTrembleItem(Lua_State * L) 
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0) return 0;
+	int nParamNum = Lua_GetTopIndex(L);
+
+	S2C_OTHER_BOX NetCommand;
+	NetCommand.ProtocolType = s2c_otherbox;
+	NetCommand.nValue = 0;
+	if(g_pServer && Player[nPlayerIndex].m_nNetConnectIdx != -1)
+		g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx,&NetCommand,sizeof(S2C_OTHER_BOX));
+	
+	return 0;
+}
+//end code kham nam xanh
+
 int LuaOpenEquipEx(Lua_State * L)
 {
 	int nPlayerIndex = GetPlayerIndex(L);
@@ -1462,6 +1632,131 @@ int LuaOpenEquipEx(Lua_State * L)
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &command, sizeof(SOME_BOX_SYNC));
 	return 0;
 }
+
+//TamLTM Bang hoi chiem linh
+int LuaLoadTongMap(Lua_State * L)
+{
+	int nNumberPrama = Lua_GetTopIndex(L);
+
+//	g_DebugLog("0 -> %d", nNumberPrama);
+
+	if (nNumberPrama < 7)
+     return 0;
+
+	int nIdMap = (int) Lua_ValueToNumber(L,1);
+	int nMapTongId = (int) Lua_ValueToNumber(L,3);
+	int nMapTongT  =  (int) Lua_ValueToNumber(L,4);
+	int nMapTongVG  =  (int) Lua_ValueToNumber(L,5);
+	int nMapTongBCId = (int) Lua_ValueToNumber(L,7);
+	int nCheckMap = (int) Lua_ValueToNumber(L,8);
+
+//	g_DebugLog("1");
+	
+	char szMapTongName[32];
+	char szMapTongNameBC[32];
+
+	g_StrCpyLen(szMapTongName, (char*)Lua_ValueToString(L,2), 32);
+	g_StrCpyLen(szMapTongNameBC, (char*)Lua_ValueToString(L,6), 32);
+
+	int nIdxMap = g_SubWorldSet.SearchWorld(nIdMap);
+//	g_DebugLog("nIdxMap %d - nIdMap %d", nIdxMap, nIdMap);
+
+	if (nIdxMap != -1)
+	{
+//		g_DebugLog("2 %d", nIdxMap);
+		SubWorld[nIdxMap].LoadTong(szMapTongName,nMapTongId,nMapTongT,nMapTongVG,szMapTongNameBC,nMapTongBCId,nCheckMap);
+	}
+
+	return 0;
+}
+
+int LuaGetTongMap(Lua_State * L)
+{
+	int nNumberPrama = Lua_GetTopIndex(L);
+
+	if (nNumberPrama < 1)
+     return 0;
+
+	int nIdMap = (int) Lua_ValueToNumber(L,1);
+
+	int nIdxMap = g_SubWorldSet.SearchWorld(nIdMap);
+
+	if (nIdxMap != -1)
+	{
+
+		Lua_PushNumber(L, SubWorld[nIdxMap].m_bCheckTong);
+		Lua_PushString(L, SubWorld[nIdxMap].m_szTongName);
+		Lua_PushNumber(L, SubWorld[nIdxMap].m_dwTongName);
+		Lua_PushString(L, SubWorld[nIdxMap].m_szTongNameBC);
+		Lua_PushNumber(L, SubWorld[nIdxMap].m_dwTongNameBC);
+		Lua_PushNumber(L, SubWorld[nIdxMap].m_nTongT);
+		Lua_PushNumber(L, SubWorld[nIdxMap].m_nTongVG);
+
+		return 7;
+	}
+   
+	return 0;
+}
+
+int LuaSetTongMap(Lua_State * L)
+{
+	int nNumberPrama = Lua_GetTopIndex(L);
+
+//	g_DebugLog("LuaSetTongMap -> %d", nNumberPrama);
+
+	if (nNumberPrama < 7)
+     return 0;
+
+	int nIdMap = (int) Lua_ValueToNumber(L,1);
+
+
+	int nIdxMap = g_SubWorldSet.SearchWorld(nIdMap);
+
+	if (nIdxMap != -1)
+	{
+		int nMapTongId = (int) Lua_ValueToNumber(L,3);
+
+		int nMapTongT  =  (int) Lua_ValueToNumber(L,6);
+		int nMapTongVG  =  (int) Lua_ValueToNumber(L,7);
+		int nMapTongBCId = (int) Lua_ValueToNumber(L,5);
+		
+		char szMapTongName[32];
+		char szMapTongNameBC[32];
+
+		g_StrCpyLen(szMapTongName, Lua_ValueToString(L,2), 32);
+		g_StrCpyLen(szMapTongNameBC, Lua_ValueToString(L,4), 32);
+
+		try
+		{
+			bool bExecuteScriptMistake = true;
+			KLuaScript * pScript = (KLuaScript* )g_GetScript("\\script\\item\\banghoi\\banghoi.lua");;
+			if (pScript)
+			{
+		//		g_DebugLog("\\script\\item\\banghoi\\banghoi.lua");
+				int nTopIndex = 0;
+				
+				pScript->SafeCallBegin(&nTopIndex);
+
+				if (pScript->CallFunction("SetTongMapMain",0, "dsdsddd",nIdMap,szMapTongName,nMapTongId,szMapTongNameBC,nMapTongBCId,nMapTongT,nMapTongVG));
+				{
+					bExecuteScriptMistake = false;
+				}
+
+				pScript->SafeCallEnd(nTopIndex);
+			}
+		}	
+		catch(...)
+		{
+			printf("Exception Have Caught When Execute Script[%d]!!!!!", g_FileName2Id("\\script\\item\\banghoi\\banghoi.lua"));
+		//	g_DebugLog("error \\script\\admin\\banghoi\\banghoi.lua");
+		}
+		return 0;
+	}
+   
+	return 0;
+}
+
+//end code
 
 //---------------------------------时间任务-------------------------------------
 //SetTimer(Time, TimerTaskId)
@@ -1875,7 +2170,7 @@ nPosX:
 nPosY:
 */
 //NewWorld(WorldId, X,Y)
-int LuaEnterNewWorld(Lua_State * L) 
+LuaEnterNewWorld(Lua_State * L) 
 {
 	int nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex < 0) 
@@ -1891,7 +2186,7 @@ int LuaEnterNewWorld(Lua_State * L)
 	return 1;
 }
 
-int LuaNpcEnterNewWorld(Lua_State * L) 
+LuaNpcEnterNewWorld(Lua_State * L) 
 {
 	int nParamCount = 0;
 	if ((nParamCount = Lua_GetTopIndex(L)) < 3) return 0;
@@ -4637,6 +4932,33 @@ int LuaGetPlayerExp(Lua_State *L)
 	return 1;
 }
 
+//TamLTM Get luyen Exp X2 skill
+int LuaGetNpcExpSkillsRate(Lua_State * L)//TamLTM expskills x2
+{	
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex < 0) 
+	{
+		Lua_PushNumber(L,0);
+		return 0;
+	}
+	Lua_PushNumber(L, Npc[Player[nPlayerIndex].m_nIndex].m_CurrentExpSkillsEnchance);
+	return 1;
+}
+//Set false
+/*int LuaSetExpSkill(Lua_State* L)
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex > 0)
+	{
+		Npc[Player[nPlayerIndex].m_nIndex].SetExpX1Skill();
+	//	Lua_PushNumber(L, Npc[Player[nPlayerIndex].m_nIndex].SetExpX1Skill();)
+	}
+	else
+		Lua_PushNil(L); //
+	return 1; 
+}
+//end code */
+
 //AddExp(200,10,0)
 int LuaModifyPlayerExp(Lua_State * L)
 {
@@ -4884,6 +5206,81 @@ int LuaGetPlayerAccount(Lua_State * L)
 	return 1;
 	
 }
+//anti 1 acc tong kim PC Name
+int	LuaGetKeyPc(Lua_State * L)
+{
+//	char nPlayerIndex = GetPlayerIndex(L);
+//	int nIndex = nPlayerIndex;
+
+	//Get user computer
+	// TCHAR compUser[UNLEN+1];
+	// DWORD compUser_len=UNLEN+1;
+		// GetUserName((TCHAR*)compUser,&compUser_len);
+		// printf("compUser: %s ",compUser);
+		
+/*	//Get computer Name	
+	TCHAR compname[UNLEN+1];
+	DWORD compname_len=UNLEN+1;
+	if (nPlayerIndex > 0)
+	{
+		GetComputerName((TCHAR*)compname,&compname_len);
+		if (Lua_GetTopIndex(L) > 1)
+			nIndex = (int)Lua_ValueToNumber(L, 1);
+        Lua_PushString(L,compname);
+	}	
+	else
+		Lua_PushNil(L);
+	return 1;*/
+
+	//TamLTM Get PC Name
+	int nResult = 0;
+	int nPlayerIndex = 0;
+	nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0)
+		goto lab_getpcname;
+	
+	nResult = Player[nPlayerIndex].GetMacSQL();
+	
+	lab_getpcname:
+	Lua_PushNumber(L, nResult);
+	return 1;
+	//end code
+}
+
+//TamLTM Update version game
+int	LuaGetVersionUpdateGame(Lua_State * L)
+{
+	int nResult = 0;
+	int nPlayerIndex = 0;
+	nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0)
+		goto lab_getversiongame;
+	
+	nResult = Player[nPlayerIndex].GetVersionGame();
+	
+	lab_getversiongame:
+	Lua_PushNumber(L, nResult);
+	return 1;
+}
+//end code
+
+//TamLTM call fix lag posu
+int LuaSetPosU(Lua_State* L)
+{
+	int nParamCount = Lua_GetTopIndex(L);
+	if (nParamCount < 2) return 0;
+	int nPlayerIndex = GetPlayerIndex(L);
+
+	int nX = (int)Lua_ValueToNumber(L, 1);
+	int nY = (int)Lua_ValueToNumber(L, 2);
+
+	if (nPlayerIndex > 0)
+	{
+		Npc[Player[nPlayerIndex].m_nIndex].SetPosU(nX * 32, nY * 32);
+	}
+	return 0;
+}
+//end code
 
 int LuaGetPlayerSeries(Lua_State * L)
 {
@@ -4980,6 +5377,35 @@ int LuaFindPlayer(Lua_State * L)
 		}
 	}
 	Lua_PushNumber(L, nIndex);
+	return 1;
+}
+
+int LuaFindNamePlayer(Lua_State* L)
+{
+	if (Lua_GetTopIndex(L) > 2)
+		return 0;
+
+	const char* szName = (const char*)Lua_ValueToString(L, 1);
+
+	int nPlayerIndex = PlayerSet.GetFirstPlayer();
+
+	while (nPlayerIndex > 0)
+	{
+		if (strcmp(Player[nPlayerIndex].Name, szName) == 0)
+			break;
+
+		nPlayerIndex = PlayerSet.GetNextPlayer();
+	}
+
+	if (nPlayerIndex > 0 && Player[nPlayerIndex].m_nNetConnectIdx >= 0)
+	{
+		Lua_PushNumber(L, nPlayerIndex);
+	}
+	else
+	{
+		Lua_PushNumber(L, 0);
+		return 1;
+	}
 	return 1;
 }
 
@@ -7270,6 +7696,22 @@ int LuaOfflineLive(Lua_State * L)
 	return 0;
 }
 
+/*int LuaOfflineLive(Lua_State* L) // offlive
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0)
+		return 0;
+
+	S2C_PLAYER_SYNC_OFFLINE_LIVE	sMsg;
+	sMsg.ProtocolType = s2c_playersyncofflive; // TamLTM Fix
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_OFFLINE_LIVE) - 1;
+	sMsg.m_lpBuf = 0;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_EXIT;
+	//	g_DebugLog("s2c_playersync %d", s2c_playersync); //TamLTM Debug error packet
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	return 0;
+}*/
+
 int LuaSetValue(Lua_State * L)
 {
 	if (Lua_GetTopIndex(L) < 2) 
@@ -7782,11 +8224,36 @@ int LuaAddMagicPoint(Lua_State * L)
 	S2C_PLAYER_SYNC	sMsg;
 	sMsg.ProtocolType = s2c_playersync;
 	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC) - 1;
-	sMsg.m_lpBuf = (LPVOID)Player[nPlayerIndex].m_nSkillPoint ;
+	sMsg.m_lpBuf = (LPVOID*)Player[nPlayerIndex].m_nSkillPoint ;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_MAGICPOINT;
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 	return 0;
 }
+
+/*//TamLTM fix send packet
+int LuaAddMagicPoint(Lua_State* L)
+{
+	if (Lua_GetTopIndex(L) < 1)
+		return 0;
+
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0)
+		return 0;
+
+	Player[nPlayerIndex].m_nSkillPoint += (int)Lua_ValueToNumber(L, 1);
+	if (Player[nPlayerIndex].m_nSkillPoint < 0)
+		Player[nPlayerIndex].m_nSkillPoint = 0;
+
+	S2C_PLAYER_SYNC_MAGIC_POINT	sMsg;
+	sMsg.ProtocolType = s2c_playersyncmagicpoint;
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_MAGIC_POINT) - 1;
+	sMsg.m_lpBuf = (LPVOID)Player[nPlayerIndex].m_nSkillPoint;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_MAGICPOINT;
+	//	g_DebugLog("LuaAddMagicPoint s2c_playersync %d", s2c_playersync); //TamLTM Debug error packet
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	return 0;
+}
+//end code */
 
 int LuaGetMagicPoint(Lua_State * L)
 {
@@ -7814,13 +8281,35 @@ int LuaAddPropPoint(Lua_State * L)
 	S2C_PLAYER_SYNC	sMsg;
 	sMsg.ProtocolType = s2c_playersync;
 	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC) - 1;
-	sMsg.m_lpBuf = (LPVOID)Player[nPlayerIndex].m_nAttributePoint ;
+	sMsg.m_lpBuf = (LPVOID*)Player[nPlayerIndex].m_nAttributePoint ;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_PROPPOINT;
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 	return 0;
 }
 
-int LuaSetExtPoint(Lua_State * L)
+/*//TamLTM fix send packet 
+int LuaAddPropPoint(Lua_State* L)
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	int nPropPoint = 0;
+	if (nPlayerIndex <= 0)
+		return 0;
+
+	Player[nPlayerIndex].m_nAttributePoint += (int)Lua_ValueToNumber(L, 1);
+	if (Player[nPlayerIndex].m_nAttributePoint < 0)
+		Player[nPlayerIndex].m_nAttributePoint = 0;
+
+	S2C_PLAYER_SYNC_PROP_POINT	sMsg;
+	sMsg.ProtocolType = s2c_playersyncproppoint;
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_PROP_POINT) - 1;
+	sMsg.m_lpBuf = (LPVOID)Player[nPlayerIndex].m_nAttributePoint;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_PROPPOINT;
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	return 0;
+}
+//end code */
+
+int LuaSetExtPoint(Lua_State * L) // TamLTM fix xu;
 {
 	int nResult = 0;
 	int nExtPoint = 0;
@@ -7828,7 +8317,7 @@ int LuaSetExtPoint(Lua_State * L)
 	int nPlayerIndex = 0;
 	if (Lua_GetTopIndex(L) < 1)
 		goto lab_setextpoint;
-	
+
 	nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex <= 0)
 		goto lab_setextpoint;
@@ -7842,7 +8331,7 @@ lab_setextpoint:
 	return 1;
 }
 
-int LuaAddExtPoint(Lua_State * L)
+int LuaAddExtPoint(Lua_State * L) //TamLTM fix xu;
 {
 	int nResult = 0;
 	int nExtPoint = 0;
@@ -7850,17 +8339,17 @@ int LuaAddExtPoint(Lua_State * L)
 	int nPlayerIndex = 0;
 	if (Lua_GetTopIndex(L) < 1)
 		goto lab_setextpoint;
-	
+
 	nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex <= 0)
 		goto lab_setextpoint;
 	nExtPoint = Lua_ValueToNumber(L, 1);
 	if (nExtPoint < 0)
 		goto lab_setextpoint;
-	Player[nPlayerIndex].AddExtPoint(nExtPoint, nChange);
+	Player[nPlayerIndex].SetExtPoint(Player[nPlayerIndex].GetExtPoint() + nExtPoint, nChange);
 
 lab_setextpoint:
-	Lua_PushNumber(L, 0);
+	Lua_PushNumber(L, nResult);
 	return 1;
 }
 
@@ -7871,7 +8360,7 @@ int LuaPayExtPoint(Lua_State * L)
 	int nPlayerIndex = 0;
 	if (Lua_GetTopIndex(L) < 1)
 		goto lab_payextpoint;
-	
+
 	nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex <= 0)
 		goto lab_payextpoint;
@@ -7893,9 +8382,9 @@ int LuaGetExtPoint(Lua_State * L)
 	nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex <= 0)
 		goto lab_getextpoint;
-	
+
 	nResult = Player[nPlayerIndex].GetExtPoint();
-	
+
 lab_getextpoint:
 	Lua_PushNumber(L, nResult);
 	return 1;
@@ -8024,6 +8513,51 @@ int LuaSetReviveNow(Lua_State * L)
 	return 0;
 }
 
+//TamLTM Add money truong muc bang hoi
+int LuaAddTongMoney(Lua_State* L)
+{
+/*	int nPlayerIndex = GetPlayerIndex(L);
+
+	if (nPlayerIndex > 0)
+	{
+		int nMoney = (int)Lua_ValueToNumber(L, 1);
+		if (nMoney <= 0) 
+			return 0;
+	//	Player[nPlayerIndex].Earn(nMoney);
+		Player[nPlayerIndex].m_ItemList.CostMoney(nMoney);
+	}
+	return 0;*/
+
+	int nPlayerIndex = GetPlayerIndex(L);
+	int nAddMoney = (int)Lua_ValueToNumber(L, 1);
+
+	if (nPlayerIndex > 0)
+	{
+		int nParamNum = Lua_GetTopIndex(L);
+
+		if (nAddMoney <= 0)
+			return 0;
+	//	Player[nPlayerIndex].m_ItemList.CostMoney(nAddMoney);
+
+		if (nParamNum > 1)
+		{
+			STONG_CHANGE_TONG_INFO_COMMAND	sMoney;
+			sMoney.ProtocolID = enumC2S_CHANGE_TONG_MONEY;
+			sMoney.ProtocolFamily = pf_tong;
+			sMoney.m_dwTongNameID = g_FileName2Id(Player[nPlayerIndex].m_cTong.m_szName);
+			sMoney.m_dwParam = nPlayerIndex;
+			sMoney.m_AddMoneyThue = nAddMoney;
+			sMoney.m_nValue = Player[nPlayerIndex].m_cTong.m_dwMoney + nAddMoney;
+			sMoney.m_MessStr = 1;
+			//g_DebugLog("Player[nPlayerIndex].m_cTong.m_dwMoney %d", Player[nPlayerIndex].m_cTong.m_dwMoney);
+			if (g_pTongClient)
+				g_pTongClient->SendPackToServer((const void*)&sMoney, sizeof(STONG_CHANGE_TONG_INFO_COMMAND));
+		}
+	}
+	return 0;
+}
+//end code
+
 
 int LuaNpcChat(Lua_State * L)
 {
@@ -8084,6 +8618,10 @@ int LuaHideNpc(Lua_State * L)
 	return 0;
 }
 
+//TamLTM add bien luu tam skill id
+int skillIdStateNumber = 0;
+//end code
+
 int LuaAddSkillState(Lua_State * L)
 {
 	int nPlayerIndex = GetPlayerIndex(L);
@@ -8109,6 +8647,8 @@ int LuaAddSkillState(Lua_State * L)
 	{
 		KSkill *pSkill = (KSkill*)g_SkillManager.GetSkill(nSkillId, nSkillLevel);
 		pSkill->CastStateSkill(Player[nPlayerIndex].m_nIndex, 0, 0, nTime, bOverLook);
+
+		skillIdStateNumber = nSkillId; //TamLTM Set skill id bien tam
 	}
 	else
 	{
@@ -8120,6 +8660,26 @@ int LuaAddSkillState(Lua_State * L)
 	}
 	return 0;
 }
+
+//TamLTM Get SkillId state 
+int LuaGetSkillState(Lua_State* L)
+{
+	int nResult = 0;
+	int nPlayerIndex = 0;
+	nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0)
+		goto lab_getskillid;
+
+	nResult = skillIdStateNumber;
+
+	lab_getskillid:
+	Lua_PushNumber(L, nResult);
+
+	g_DebugLog("nSkillId nResult %d", nResult);
+
+	return 1;
+}
+//end code
 
 int LuaAddNpcSkillState(Lua_State * L)
 {
@@ -8409,10 +8969,58 @@ int LuaOpenGive(Lua_State * L)
 	strcpy(PGive.m_szInitString, (char *)Lua_ValueToString(L,2));
 	strcpy(Player[nPlayerIndex].m_szTaskExcuteFun, (char *)Lua_ValueToString(L, 3));
 	Player[nPlayerIndex].m_dwTaskExcuteScriptId = Npc[Player[nPlayerIndex].m_nIndex].m_ActionScriptID;
+//	g_DebugLog("(BYTE)s2c_opengive %d", (BYTE)s2c_opengive); //TamLTM Debug error packet
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &PGive, sizeof(PLAYER_GIVE));
 
 	return 0;
 }
+
+//TamLTM hien thi nhan do da tau VNG
+int LuaFinishQuest(Lua_State* L)
+{
+	if (Lua_GetTopIndex(L) <= 0) return 0;
+
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0) return 0;
+	int nDT = 0;
+	if (Lua_IsNumber(L, 1))
+	{
+		nDT = (int)Lua_ValueToNumber(L, 1);
+	}
+	if (nDT)
+	{
+		FINISH_QUEST_SYNC DTSync;
+		DTSync.ProtocolType = s2c_finishquest;
+		DTSync.nIdQuestIndex = nDT;
+		g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &DTSync, sizeof(FINISH_QUEST_SYNC));
+	}
+	return 0;
+}
+//end code
+
+
+//TamLTM LuaOpenProgressBar
+int LuaOpenProgressBar(Lua_State* L)
+{
+	if (Lua_GetTopIndex(L) <= 0) return 0;
+
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0) return 0;
+	int nPrBar = 0;
+	if (Lua_IsNumber(L, 1))
+	{
+		nPrBar = (int)Lua_ValueToNumber(L, 1);
+	}
+	if (nPrBar)
+	{
+		OPEN_PROGRESS_BAR_SYNC ProBarSync;
+		ProBarSync.ProtocolType = s2c_openprogressbar;
+		ProBarSync.nIdQuestIndex = nPrBar;
+		g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &ProBarSync, sizeof(OPEN_PROGRESS_BAR_SYNC));
+	}
+	return 0;
+}
+//end code
 
 int LuaRemoveRoom(Lua_State * L)
 {
@@ -8639,11 +9247,38 @@ int LuaInput(Lua_State * L)
 	sMsg.ProtocolType = s2c_playersync;
 	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC) - 1;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_INPUT;
-	sMsg.m_lpBuf = (LPVOID)max;
+	sMsg.m_lpBuf = (LPVOID*)max;
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		
 	return 0;
 }
+
+/*//TamLTM fix send packet 
+int LuaInput(Lua_State* L)
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0) return 0;
+	int nParamNum = Lua_GetTopIndex(L);
+	if (nParamNum < 2)
+		return 0;
+
+	Player[nPlayerIndex].m_dwTaskExcuteScriptId = Npc[Player[nPlayerIndex].m_nIndex].m_ActionScriptID;
+	strcpy(Player[nPlayerIndex].m_szTaskExcuteFun, (char*)Lua_ValueToString(L, 1));
+	int max = 0;
+	if (nParamNum > 2)
+		max = (int)Lua_ValueToNumber(L, 2);
+
+	S2C_PLAYER_SYNC_INPUT	sMsg;
+	sMsg.ProtocolType = s2c_playersyncinput;
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_INPUT) - 1;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_INPUT;
+	sMsg.m_lpBuf = (LPVOID)max;
+	//	g_DebugLog("s2c_playersync %d", s2c_playersync); //TamLTM Debug error packet
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+
+	return 0;
+}
+//end code */
 
 int LuaGetInput(Lua_State * L)
 {
@@ -8654,7 +9289,7 @@ int LuaGetInput(Lua_State * L)
 	return 1;
 }
 
-int LuaOpenEnchase(Lua_State * L)
+int LuaOpenEnchase(Lua_State * L) //Ep do tim
 {
 	int nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex < 0)
@@ -8669,12 +9304,29 @@ int LuaOpenEnchase(Lua_State * L)
 	return 0;
 }
 
-int LuaEnchase(Lua_State * L)
+/*//TamLTM fix send packet
+int LuaOpenEnchase(Lua_State* L) //Ep do tim
 {
 	int nPlayerIndex = GetPlayerIndex(L);
 	if (nPlayerIndex < 0)
 		return 0;
-	Player[nPlayerIndex].Enchase(2,(int)Lua_ValueToNumber(L,1),(int)Lua_ValueToNumber(L,2),(int)Lua_ValueToNumber(L,3));
+
+	S2C_PLAYER_SYNC_ENCHASE	sMsg;
+	sMsg.ProtocolType = s2c_playersyncopenenchase;
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_ENCHASE) - 1;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_ENCHASE;
+	sMsg.m_lpBuf = 0;
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	return 0;
+}
+//end code */
+
+int LuaEnchase(Lua_State * L) // Nhan test do tim
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex < 0)
+		return 0;
+	Player[nPlayerIndex].Enchase(2,(int)Lua_ValueToNumber(L,1),(int)Lua_ValueToNumber(L,2),(int)Lua_ValueToNumber(L,3)); // 3 thong so item get do tim
 	return 0;	
 }
 
@@ -9105,6 +9757,24 @@ int LuaOpenRankData(Lua_State * L)
 
 	return 0;
 }
+
+/*//TamLTM fix send packet
+int LuaOpenRankData(Lua_State* L)
+{
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0) return 0;
+
+	S2C_PLAYER_SYNC_RANK_DATA	sMsg;
+	sMsg.ProtocolType = s2c_playersyncrankdata;
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC_RANK_DATA) - 1;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_RANKDATA;
+	sMsg.m_lpBuf = 0;
+	//	g_DebugLog("s2c_playersync %d", s2c_playersync); //TamLTM Debug error packet
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+
+	return 0;
+}
+//end code */
 
 int LuaSetSavePw(Lua_State * L)
 {
@@ -9818,7 +10488,7 @@ int LuaFindDataId(Lua_State * L)
 
 int LuaSaveDataFile(Lua_State * L)
 {
-	GameData.Save();
+	GameData.Save(); //TamLTM save 7
 	return 0;
 }
 
@@ -10283,6 +10953,12 @@ TLua_Funcs GameScriptFuns[] =
 	{"NewWorld",		LuaEnterNewWorld},
 	{"NpcNewWorld",		LuaNpcEnterNewWorld},
 
+	//TamLTM Bang hoi chiem linh
+	{"LoadTongMap",LuaLoadTongMap},
+	{"GetTongMap",LuaGetTongMap},
+	{"SetTongMap",LuaSetTongMap},
+	//end code
+
 	{"DropMoney",		LuaDropMoney},
 	{"DropItem",		LuaDropItem},	
 	{"DropMapItem",		LuaDropMapItem},	
@@ -10414,8 +11090,10 @@ TLua_Funcs GameScriptFuns[] =
 	{"GetPlayerNpcIdx",	LuaGetPlayerNpcIdx},
 	{"GetMateName",		LuaGetMateName},
 	{"GetAccount",		LuaGetPlayerAccount},
+	{"GetKeyPc",		LuaGetKeyPc},				//anti 1 acc tong kim
 	{"GetUUID",			LuaGetPlayerID},			//GetUUID()获得玩家的唯一ID
 	{"FindPlayer",		LuaFindPlayer},			//GetUUID()获得玩家的唯一ID
+	{ "FindNamePlayer",	LuaFindNamePlayer },			//Ham su dung duoc cho ca Player dat ten la Number
 	{"FindNearNpc",		LuaFindNearNpc},
 	{"FindAroundNpc",	LuaFindAroundNpc},
 	{"GetLeadExp",		LuaGetPlayerLeadExp},		//GetLeadExp()获得玩家的统率经验值
@@ -10454,6 +11132,19 @@ TLua_Funcs GameScriptFuns[] =
 	{"AddTermini",		LuaAddPlayerWayPoint},
 	{"GetStation",		LuaGetPlayerStation	},
 	{"GetStationCount", LuaGetPlayerStationCount},
+
+	{"TrembleItem",		LuaOpenTrembleItem}, // TamLTM Kham nam Xanh
+	{"GetPOItem",		LuaGetPOItem}, // TamLTM Kham nam
+	{"SetPItemID",		LuaSetPItemID}, // TamLTM Kham nam
+
+	// get set x2 skill LuaGetExp2Skill LuaSetExpSkill
+	{"GetNpcSkillsExpRate",		LuaGetNpcExpSkillsRate },			//GetExp2Skill():获得玩家的当前经验值
+	//{"SetExpSkill",			LuaSetExpSkill},			//SetExpSkill():获得玩家的当前经验值
+
+	{"OpenProgressBar",	LuaOpenProgressBar},//TamLTM Mo loading progress bar OpenProgressBar(1)
+
+	//{"GetVersionUpdateGame",	LuaGetVersionUpdateGame},//TamLTM Lua Get Version Update Game
+	{"SetNpcPosU",		LuaSetPosU },//TamLTM Lua Set posu npc
 	
 	{"GetCityCount",	LuaGetAllStationCount},
 	{"GetCity",			LuaGetCity},
@@ -10575,6 +11266,7 @@ TLua_Funcs GameScriptFuns[] =
 	{"GetTongMemEff",		LuaGetTongMemEff},
 	{"SetPunish",			LuaSetDeathPunish},// SetPunish(0/1)
 	{"SetReviveNow",		LuaSetReviveNow},
+	{"AddTongMoney",		LuaAddTongMoney}, // Add money bang hoi / thue suat bang hoi
 	//-------------------------------------------------
 	//结拜
 	//{"SwearBrother", LuaSwearBrother}, // ret = SwearBrother(TeamId);
@@ -10592,6 +11284,10 @@ TLua_Funcs GameScriptFuns[] =
 	{"AddExtPoint",	LuaAddExtPoint},
 	{"GetExtPoint",	LuaGetExtPoint},
 	{"PayExtPoint",	LuaPayExtPoint},
+
+	//TamLTM Get skill id
+	{ "GetSkillState",	LuaGetSkillState },
+	//end code
 
 	{"AddSkillState",	LuaAddSkillState},
 	{"AddNpcSkillState",LuaAddNpcSkillState},
@@ -10635,9 +11331,11 @@ TLua_Funcs GameScriptFuns[] =
 	{"OpenRankData",		LuaOpenRankData},
 	{"Input",				LuaInput},
 	{"GetInput",			LuaGetInput},
-	{"OpenEnchase",			LuaOpenEnchase},
-	{"Enchase",				LuaEnchase},
+	{"OpenEnchase",			LuaOpenEnchase}, // Box Ep do tiem
+	{"Enchase",				LuaEnchase}, // Nhan test do tim
 	{"GiveItemUI",			LuaOpenGive},
+
+	{"OpenFinishDatauBox",	LuaFinishQuest}, //TamLTM hien thi khung da tau finish cach su dung OpenFinishDatauBox(1); 	local indexRan = RANDOM(8)	OpenFinishDatauBox(indexRan);
 
 	{"SetPKMode",			LuaSetPKState},
 	{"ForbidChangePK",		LuaForbidChangePK},
@@ -10645,7 +11343,7 @@ TLua_Funcs GameScriptFuns[] =
 	{"GetNormalPKState",	LuaGetNormalPKState},
 
 	{"IsHideNpc",			LuaIsHideNpc},
-	{"PaceBar",				LuaPaceBar},
+	{"PaceBar",				LuaPaceBar}, //Progress bar on thanh mau player
 	{"GetTrade",			LuaGetTrade},
 	{"ForbidUseTownP",		LuaForbidUseTownP},
 	{"ForbidTrade",			LuaForbidTrade},

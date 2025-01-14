@@ -24,6 +24,10 @@ public:
 	
 #ifndef _SERVER
 	KMapMusic	m_cMusic;
+	//them
+	static unsigned long s_uLastTime;
+	static float s_fScale;
+	//end
 #endif
 private:
 	KTimer	m_Timer;			// ¼ÆÊ±Æ÷

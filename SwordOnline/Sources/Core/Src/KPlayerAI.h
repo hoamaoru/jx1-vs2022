@@ -19,6 +19,7 @@ enum
 	OverLookAllBoss,
 	OverLookBlueBoss,
 	OverLookGoldBoss,
+	OverLookPinkBoss,
 };
 
 enum
@@ -26,6 +27,7 @@ enum
 	Step_Training,
 	Step_Repair,
 	Step_InventoryMoney,
+	Step_WithDrawaMoney,
 	Step_InventoryItem,
 	Step_Return,
 };
@@ -77,8 +79,12 @@ public:
 	BOOL			m_bReturnPortal;
 	int				m_nReturnPortalSec;
 	int				m_nCurReturnPortalSec;
+	BOOL			m_bWithDrawa; // rut tien;
+	int				m_bWithDrawaMoney; // rut tien;
+	char*			m_bPassReposion; // rut tien;
 	BOOL			m_bFightNear;
 	int				m_nRadiusAuto;
+	int				m_nRadiusQuanhDiemXY;
 	int				m_nDistanceAuto;
 	int				m_nSupportSkills[MAX_AUTO_STATESKILL];
 	int				m_nFightSkill;
@@ -120,16 +126,24 @@ public:
 	BOOL			m_bFollowPeople;
 	char			m_szFollowName[32];
 	int				m_nFollowRadius;
+	BOOL			m_bFollowRadius;
 	BOOL			m_bAutoParty;
 	BOOL			m_bAutoInvite;
 	BOOL			m_bAutoInviteList;
 	char			m_szPartyList[MAX_AUTO_LIST][32];
 	BOOL			m_bOverTarget;
 	BOOL			m_bFollowTarget;
+	BOOL			m_bQuanhDiem; //Chay quanh diem
 	BOOL			m_bOpenMedicine;
 	BOOL 			m_bRepairEquip;
 	BOOL			m_bSortEquipment;
 	KEquipmentArray	m_sListEquipment;
+
+	BOOL			m_bNotGetEquipment; //TamLTM
+	
+	//TamLTM get pos npc
+	int				m_nMovePosX;
+	int				m_nMovePosY;
 	
 	BOOL			m_bMoveMps;
 	int				m_nMoveMps[MAX_AUTO_LIST][3];
@@ -137,12 +151,32 @@ public:
 	int				m_nMoveCount;	
 	
 	int				m_nReturnPortalStep;
+
+	//TamLTM check Attack miss npc
+	int				m_AttackNumberMiss; // thoi gian tan cong
+	int				m_IgnoreAttackMiss; // Lo di khi tan cong miss
+	int				m_RadiusAttackMapLag; // Check lai pham vi goc lag
+	int				m_IgnoreCornerLag; // ne' goc lag auto
+	BOOL			m_IsIgnoreMoveMpsLag; //Lo goc lag
+	//Check Auto Run
+	BOOL			m_bAutoRunMap;
+	int				m_nMapX;
+	int				m_nMapY;
+	BOOL			m_bAutoRunFlagMap;
+	int				m_nFlagMapX;
+	int				m_nFlagMapY;
+	//end code
+
 public:
 	KPlayerAI() {};	
 	~KPlayerAI() {}
 	void	Init();		
 	void	Release();
 	void	Active();
+
+	//TamLTM Move To Run
+	void	MoveToRunPlayer();
+	void	MoveQuanhDiem();
 
 	void			ClearArrayNpcOverLook(){memset(m_nArrayNpcOverLook, 0, sizeof(m_nArrayNpcOverLook));};
 	void			ClearArrayObjectOverLook(){memset(m_nArrayObjectOverLook, 0, sizeof(m_nArrayObjectOverLook));};

@@ -308,7 +308,7 @@ void	KObj::SetItemDataID(int nItemDataID)
 void KObj::DrawInfo(int nFontSize)
 {
 	int		nMpsX, nMpsY, nHeightOff;
-	DWORD	dwColor;
+//	DWORD	dwColor;
 	if (m_nKind != Obj_Kind_Item && m_nKind != Obj_Kind_Money)
 		return;
 
@@ -396,6 +396,24 @@ void KObj::Draw()
 		g_pRepresent->DrawPrimitives(1, &m_Image, RU_T_IMAGE, 0);	
 		break;
 	}
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
+	if (Player[CLIENT_PLAYER_INDEX].m_bDebugMode)
+	{
+		KRULine	Line;
+		int nX, nY;
+		SubWorld[0].Map2Mps(m_nRegionIdx, m_nMapX, m_nMapY, 0, 0, &nX, &nY);
+		Line.Color.Color_dw = 0xffffffff;
+		Line.oPosition.nZ = 0;
+		Line.oEndPos.nZ = 0;
+
+		Line.oPosition.nX = nX;
+		Line.oPosition.nY = nY;
+		Line.oEndPos.nX = nX + 32;
+		Line.oEndPos.nY = nY + 32;
+		g_pRepresent->DrawPrimitives(1, &Line, RU_T_LINE, 0);
+
+	}
+#endif
 }
 
 #endif

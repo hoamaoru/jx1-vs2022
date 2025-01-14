@@ -12,6 +12,7 @@ private:
 public:
 	KNpcAI();	
 	void			Activate(int nIndex);
+	void			NotActivate(int nIndex);
 	void			Enable(){ m_bActivate = TRUE; }
 	void			Disable(){ m_bActivate = FALSE; }	
 private:	
@@ -35,6 +36,8 @@ private:
 	void			ProcessAIType04();		// 普通被动类1
 	void			ProcessAIType05();		// 普通被动类2
 	void			ProcessAIType06();		// 普通被动类3
+	void			TriggerObjectTrap();
+	void			TriggerMapTrap();
 	void			FollowAttack(int nIdx);
 	BOOL			InEyeshot(int nIdx);
 	void			CommonAction();

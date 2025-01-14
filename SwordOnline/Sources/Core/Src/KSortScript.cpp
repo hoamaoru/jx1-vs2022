@@ -30,7 +30,7 @@ int	operator<(KSortScriptNode ScriptLeft, KSortScriptNode ScriptRight)
 		return ScriptLeft.GetScriptID() == ScriptRight.GetScriptID();
 	};
 
-//ï¿½ï¿½szFilePathÄ¿Â¼ï¿½Âµï¿½ï¿½ï¿½ï¿½Ð½Å±ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ø½ï¿½ScriptBinTreeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//½«szFilePathÄ¿Â¼ÏÂµÄËùÓÐ½Å±¾ÎÄ¼þ¼ÓÔØ½øScriptBinTree¶þ²æÊ÷ÖÐ
 static unsigned long LoadAllScript(char * szFilePath)
 {
 	g_SetFilePath("\\");
@@ -76,7 +76,7 @@ const KScript * g_GetScript(const char * szRelativeScriptFile)
 
 extern int LuaIncludeFile(Lua_State * L);
 
-//ï¿½ï¿½ï¿½Ø½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½Ä¿Â¼
+//¼ÓÔØ½Å±¾£¬¸ÃÎÄ¼þÃû²ÎÊýÎªÏà¶ÔÄ¿Â¼
 static BOOL LoadScriptToSortListA(char * szRelativeFile)
 {
 	if (!szRelativeFile || !szRelativeFile[0]) return FALSE;
@@ -106,7 +106,7 @@ static BOOL LoadScriptToSortListA(char * szRelativeFile)
 	}
 	else
 	{
-		g_DebugLog("[ï¿½Å±ï¿½]ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ï¿½!ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½%dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", MAX_SCRIPT_IN_SET);
+		g_DebugLog("[½Å±¾]ÑÏÖØ´íÎó!½Å±¾ÊýÁ¿³¬ÏÞÖÆ%d£¡ÇëÁ¢¼´½â¾ö£¡£¡", MAX_SCRIPT_IN_SET);
 		return FALSE;
 	}
 	
@@ -115,7 +115,7 @@ static BOOL LoadScriptToSortListA(char * szRelativeFile)
 	return TRUE;
 }
 
-//ï¿½ï¿½ï¿½Ø½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªÊµï¿½ï¿½Ä¿Â¼
+//¼ÓÔØ½Å±¾£¬¸ÃÎÄ¼þÃû²ÎÊýÎªÊµ¼ÊÄ¿Â¼
 static BOOL LoadScriptToSortList(char * szFileName)
 {
 	if (!szFileName || !szFileName[0]) return FALSE;
@@ -213,7 +213,7 @@ void	LoadScriptInDirectory(LPSTR lpszRootDir, LPSTR lpszSubDir)
 	chdir(lpszRootDir);
 #else
      DIR *dp;
-     int i = 0;
+     int i;
      struct dirent *ep;
      if(chdir(szRealDir)) return;
      dp = opendir(".");

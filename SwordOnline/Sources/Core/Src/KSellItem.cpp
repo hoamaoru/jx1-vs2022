@@ -51,7 +51,7 @@ void	KSellItem::GetData(BYTE* pMsg)
 	if (!pMsg)
 		return;
 	
-	int					i, j,nNewIdx;
+	int					nNewIdx;
 	PLAYER_TRADE_ITEM_SYNC		*pSellItem = (PLAYER_TRADE_ITEM_SYNC*)pMsg;
 
 	if (pSellItem->m_sInfo.m_nID == 0)

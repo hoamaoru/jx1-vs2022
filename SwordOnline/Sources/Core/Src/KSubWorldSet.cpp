@@ -11,6 +11,13 @@
 #include "KPlayer.h"
 KSubWorldSet g_SubWorldSet;
 
+//TamLTM delay timer them
+/*#ifndef _SERVER
+unsigned long KSubWorldSet::s_uLastTime = 0L;
+float KSubWorldSet::s_fScale = 1.0f;
+#endif
+//end */
+
 KSubWorldSet::KSubWorldSet()
 {
 	m_nLoopRate = 0;
@@ -66,6 +73,31 @@ BOOL KSubWorldSet::Load(LPSTR szFileName)
 		}
 #endif
 	}
+
+//TamLTM Bang hoi chiem linh -> load gia tri bang hoi
+#ifdef _SERVER
+	try
+	{
+		KLuaScript * pPlayScript =(KLuaScript*) g_GetScript("\\script\\item\\banghoi\\banghoi.lua");
+		if (!pPlayScript)
+		{
+		}
+		else
+		{
+			int nTopIndex = 0;	
+			pPlayScript->SafeCallBegin(&nTopIndex);	
+			pPlayScript->CallFunction("LoadTongMapMain",0,"");
+			pPlayScript->SafeCallEnd(nTopIndex);
+		}
+	}
+	catch(...)
+	{
+		printf("Xay ra loi chay Spcrit dieu khien \\script\\item\\banghoi\\banghoi.lua !!!!!");
+	}
+
+#endif
+//end code
+
 	return TRUE;
 }
 
@@ -76,7 +108,8 @@ BOOL KSubWorldSet::LoadFile()
 	KIniFile Ini;
 	if (Ini.Load(MAPLIST_SETTING_FILE))
 	{
-
+		char szKeyName[8];
+		char szMapType[12];
 		
 		Ini.GetInteger("List", "Count", 0, &m_MapListCount);
 		if (m_MapListCount <= 0)
@@ -86,8 +119,6 @@ BOOL KSubWorldSet::LoadFile()
 			
 		for (int i = 0; i <= m_MapListCount; i++)
 		{
-			char szKeyName[32];
-			char szMapType[32];
 			sprintf(szKeyName, "%d_name", i);
 			Ini.GetString("List", szKeyName, "", m_sMapListInfo[i].szName, sizeof(m_sMapListInfo[i].szName));
 			m_sMapListInfo[i].nKind = MAPID_UNKNOWN;
@@ -129,6 +160,24 @@ void KSubWorldSet::MainLoop()
 //		printf("Region:%d:%d\n", m_nLoopRate, nActiveRegionCount);
 #ifdef _SERVER
 	PlayerSet.AutoSave();
+	
+//TamLTM them delay timer
+/*#else
+	NpcSet.CheckBalance();
+	static	KTimer	s_Timer;
+	unsigned long uTimeNow = s_Timer.GetElapse();
+	KSubWorldSet::s_fScale = (float)(uTimeNow - KSubWorldSet::s_uLastTime)/(float)(1000.0/GAME_FPS);
+	if(KSubWorldSet::s_fScale > 10.0f)
+	{
+		KSubWorldSet::s_fScale = 10.0f;
+	}
+	else if(KSubWorldSet::s_fScale < 0.03f)
+	{
+		KSubWorldSet::s_fScale = 0.03f;
+	}
+	
+	KSubWorldSet::s_uLastTime = uTimeNow;
+//end */
 #endif
 }
 
@@ -187,14 +236,21 @@ void KSubWorldSet::GetRevivalPosFromId(DWORD dwSubWorldId, int nRevivalId, POINT
 	KIniFile IniFile;
 	char	szKeyName[32];
 	char	szSection[32];
-	
+	int nX = 0;//51200;
+	int nY = 0;//102400;
 	g_SetFilePath(SETTING_PATH);
 	IniFile.Load("RevivePos.ini");
 	sprintf(szSection, "%d", dwSubWorldId);
 	sprintf(szKeyName, "%d", nRevivalId);
 	
-	int nX = 51200;
-	int nY = 102400;
+	if (nRevivalId < 1)		// luc tao nhan vat
+	{
+		int nMin = 0;
+		int nMax = 0;
+		IniFile.GetInteger2(szSection, "region", &nMin, &nMax);	// fix by AlexKing
+		sprintf(szKeyName, "%d", nMin);
+	}
+
 	IniFile.GetInteger2(szSection, szKeyName, &nX, &nY);
 	
 	pPos->x = nX;

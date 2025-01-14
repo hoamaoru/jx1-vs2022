@@ -42,7 +42,7 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(PLAYER_APPLY_TEAM_INFO_FALSE),	// s2c_teamapplyinfofalse,
 	sizeof(PLAYER_SEND_CREATE_TEAM_SUCCESS),// s2c_teamcreatesuccess,
 	sizeof(PLAYER_SEND_CREATE_TEAM_FALSE),	// s2c_teamcreatefalse,
-	sizeof(PLAYER_TEAM_CHANGE_STATE),		// s2c_teamchangestate,
+	sizeof(PLAYER_TEAM_OPEN_CLOSE),			// s2c_teamchangestate,
 	sizeof(PLAYER_APPLY_ADD_TEAM),			// s2c_teamgetapply,
 	sizeof(PLAYER_TEAM_ADD_MEMBER),			// s2c_teamaddmember,
 	sizeof(PLAYER_LEAVE_TEAM),				// s2c_teamleave,
@@ -70,9 +70,9 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(TRADE_STATE_SYNC),				// s2c_tradepressoksync
 	sizeof(PING_COMMAND),					// s2c_ping
 	sizeof(NPC_SIT_SYNC),					// s2c_npcsit
-	sizeof(NPC_PLAYER_TYPE_NORMAL_SYNC),	// s2c_npcstand
+	sizeof(NPC_PLAYER_TYPE_NORMAL_STAND_SYNC),	// s2c_npcstand
 	sizeof(NPC_CHAT_SYNC),					// s2c_npcchat
-	sizeof(NPC_PLAYER_TYPE_NORMAL_SYNC),	// s2c_npcsetpos
+	sizeof(NPC_PLAYER_TYPE_NORMAL_SET_POS_SYNC),	// s2c_npcsetpos
 	sizeof(SALE_BOX_SYNC),					// s2c_opensalebox
 	sizeof(NPC_SKILL_SYNC),					// s2c_castskilldirectly
 	-1,										// s2c_msgshow
@@ -108,7 +108,18 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(NPC_HORSE_SYNC),					// s2c_npchorsesync
 	sizeof(S2C_SYNCTASKVALUE),				// s2c_synctaskvalue
 	sizeof(S2C_PLAYER_SYNC),				// s2c_playersync
-	sizeof(S2C_EXTPOINT),					// s2c_extpoint
+/*	sizeof(S2C_PLAYER_SYNC_OFFLINE_LIVE),	// s2c_playersync//TamLTM Fix tach packet s2c 1
+	sizeof(S2C_PLAYER_SYNC_MAGIC_POINT),	// s2c_playersync//TamLTM Fix tach packet s2c 2
+	sizeof(S2C_PLAYER_SYNC_PROP_POINT),		// s2c_playersync//TamLTM Fix tach packet s2c 3
+	sizeof(S2C_PLAYER_SYNC_INPUT),			// s2c_playersync//TamLTM Fix tach packet s2c 4
+	sizeof(S2C_PLAYER_SYNC_ENCHASE),		// s2c_playersync//TamLTM Fix tach packet s2c 5
+	sizeof(S2C_PLAYER_SYNC_RANK_DATA),		// s2c_playersync//TamLTM Fix tach packet s2c 6
+	sizeof(S2C_PLAYER_SYNC_MASK_FEATURE),	// s2c_playersync//TamLTM Fix tach packet s2c 7
+	sizeof(S2C_PLAYER_SYNC_LOCK_STATE),		// s2c_playersync//TamLTM Fix tach packet s2c 8
+	sizeof(S2C_PLAYER_SYNC_EQUIP_EXPAND),	// s2c_playersync//TamLTM Fix tach packet s2c 9
+	sizeof(S2C_PLAYER_SYNC_EXPAND_BOX),		// s2c_playersync//TamLTM Fix tach packet s2c 10
+	sizeof(S2C_PLAYER_SYNC_GIVE),			// s2c_playersync//TamLTM Fix tach packet s2c 11*/
+	sizeof(EXTPOINT_VALUE_SYNC),			// s2c_extpointsync  TamLTM fix xu;
 	sizeof(PLAYER_GIVE),					// s2c_opengive
 	sizeof(NPC_MASK_SYNC),					// s2c_syncmasklock
 	sizeof(PLAYER_MISSION_RANKDATA),		// s2c_syncrankdata
@@ -120,7 +131,11 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(PLAYER_REQUEST_CHATROOM_LIST),		//s2c_requestchatroomlist,
 	sizeof(PLAYER_REQUEST_LIST),			//s2c_requestmemberlist,
 	sizeof(PLAYER_REQUEST_LIST),			//s2c_requestblacklist,
-	-1
+	sizeof(FINISH_QUEST_SYNC),				//TamLTM s2c_finishquest da tau vng server send xuong client
+	sizeof(S2C_OTHER_BOX),					// s2c_otherbox TamLTM Xanh
+	sizeof(OPEN_PROGRESS_BAR_SYNC),			//TamLTM s2c_openProgressBar server open send xuong client
+	sizeof(NPC_POS_SYNC),					//TamLTM s2c_npcpossycn server open send xuong client
+//	sizeof(NPC_SYNC_STATEINFO),				// s2c_syncnpcstate,
 #else
 	sizeof(LOGIN_COMMAND),		//	c2s_login,
 	sizeof(tagLogicLogin),		//	c2s_logicLogin,
@@ -137,7 +152,7 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(NPC_SKILL_COMMAND),	//	c2s_npcskill,
 	sizeof(PLAYER_APPLY_TEAM_INFO),				// c2s_teamapplyinfo,
 	sizeof(PLAYER_APPLY_CREATE_TEAM),			// c2s_teamapplycreate,
-	sizeof(PLAYER_TEAM_CHANGE_STATE),			// c2s_teamapplychangestate,
+	sizeof(PLAYER_TEAM_OPEN_CLOSE),				// c2s_teamapplychangestate,
 	sizeof(PLAYER_APPLY_ADD_TEAM),				// c2s_teamapplyadd,
 	sizeof(PLAYER_ACCEPT_TEAM_MEMBER),			// c2s_teamacceptmember,
 	sizeof(PLAYER_APPLY_LEAVE_TEAM),			// c2s_teamapplyleave,
@@ -168,6 +183,7 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(NPC_SIT_COMMAND),					// c2s_npcsit
 	sizeof(OBJ_MOUSE_CLICK_SYNC),				// c2s_objmouseclick
 	sizeof(STORE_MONEY_COMMAND),				// c2s_storemoney
+	sizeof(WITHDRAWA_MONEY_COMMAND),			// c2s_withdrawamoney rut tien;
 	sizeof(NPC_REVIVE_COMMAND),					// c2s_playerrevive
 	sizeof(TRADE_REPLY_START_COMMAND),			// c2s_tradereplystart
 	sizeof(PK_APPLY_NORMAL_FLAG_COMMAND),		// c2s_pkapplychangenormalflag
@@ -182,6 +198,8 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(BYTE),								// c2s_playertradeviewend
 	sizeof(NPC_HORSE_COMMAND),					// c2s_npchorse
 	sizeof(PLAYER_COMMAND),						// c2s_playercommand
+	sizeof(PLAYER_LOCK_ITEM),						// c2s_LockItem
+	sizeof(PLAYER_UNLOCK_ITEM),						// c2s_UnLockItem
 	sizeof(C2S_BUF_COMMAND),					// c2s_inputcommand
 	sizeof(C2S_BUF_COMMAND),					// c2s_unlockcommand
 	sizeof(PLAYER_BREAK_COMMAND),				// c2s_playerbreakcommand
@@ -189,7 +207,14 @@ int	g_nProtocolSize[MAX_PROTOCOL_NUM] =
 	sizeof(SPAR_APPLY_START_COMMAND),			// c2s_sparapplystart
 	sizeof(PLAYER_LOCKMOVE),					// c2s_lockmove
 	sizeof(PLAYER_CHATROOM_DECISION_COMMAND),	// c2s_chatroomdecision
-	sizeof(CP_DATAU),					// c2s_cpsetimage
+	sizeof(CP_DATAU),							// c2s_cpsetimage
+	sizeof(PLAYER_REQUEST_LOAD_DATAU),			//TamLTM c2s_DATAU Send packet len server
+	sizeof(GET_STRING),							//TamLTM ma doc
+	sizeof(PLAYER_UI_CMD_SCRIPT),				// c2s_uicmdscript TamLTM kham
+	sizeof(RECOVERY_BOX_CMD),					// c2s_recoverybox TamLTM
+	sizeof(C2S_PLAYER_INPUT_INFO),				// c2s_inputinfo
+	sizeof(PLAYER_REQUEST_LOAD_PROGRESS_BAR),	//TamLTM c2s_OpenProgressBar Send packet len server
+	sizeof(PLAYER_REQUEST_OFFLINE),				//TamLTM c2s_offline uy thac offline
 #endif
 };
 
@@ -235,7 +260,7 @@ void SendClientCmdWalk(int nX, int nY)
 		g_pClient->SendPackToServer((BYTE*)&NetCommand, sizeof(NetCommand));
 }
 
-void SendClientCmdSkill(int nSkillID, int nX, int nY)
+void SendClientCmdSkill(int nSkillID, int nX, int nY, int nX0, int nY0,int nRadius)
 {
 	NPC_SKILL_COMMAND	NetCommand;
 	
@@ -243,6 +268,10 @@ void SendClientCmdSkill(int nSkillID, int nX, int nY)
 	NetCommand.nSkillID = nSkillID;
 	NetCommand.nMpsX = nX;
 	NetCommand.nMpsY = nY;
+	NetCommand.nNpcX = nX0;
+	NetCommand.nNpcY = nY0;
+	NetCommand.nNpcRadius = nRadius;
+
 	if (g_pClient)
 		g_pClient->SendPackToServer((BYTE*)&NetCommand, sizeof(NPC_SKILL_COMMAND));	
 }
@@ -271,7 +300,7 @@ void SendClientCmdSell(int nId, int nNumber)
 	Player[CLIENT_PLAYER_INDEX].m_ItemList.LockOperation();
 }
 
-void SendClientCmdBuy(int nShop, int nBuyIdx, BYTE nNumber)
+void SendClientCmdBuy(int nShop, int nBuyIdx, BYTE nNumber) // TamLTM Add bang hoi chiem linh , int nX, int nY
 {
 	if (Player[CLIENT_PLAYER_INDEX].m_ItemList.IsLockOperation())
 		return;
@@ -280,6 +309,7 @@ void SendClientCmdBuy(int nShop, int nBuyIdx, BYTE nNumber)
 	PlayerBuy.m_Shop = nShop;
 	PlayerBuy.m_BuyIdx = (BYTE)nBuyIdx;
 	PlayerBuy.m_Number = (BYTE)nNumber;
+
 	if (g_pClient)
 		g_pClient->SendPackToServer((BYTE*)&PlayerBuy, sizeof(PLAYER_BUY_ITEM_COMMAND));
 	Player[CLIENT_PLAYER_INDEX].m_ItemList.LockOperation();
@@ -315,6 +345,18 @@ void SendClientCmdStoreMoney(int nDir, int nMoney)
 	if (g_pClient)
 		g_pClient->SendPackToServer((BYTE*)&StoreMoneyCmd, sizeof(STORE_MONEY_COMMAND));
 }
+
+//rut tien auto
+void SendClientCmdWithDrawaMoney(int nDir, int nMoney)// rut tien;
+{
+	WITHDRAWA_MONEY_COMMAND	StoreMoneyCmd;
+	StoreMoneyCmd.ProtocolType = c2s_withdrawamoney;
+	StoreMoneyCmd.m_byDir = (BYTE)nDir;
+	StoreMoneyCmd.m_dwMoney = nMoney;
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&StoreMoneyCmd, sizeof(WITHDRAWA_MONEY_COMMAND));
+}
+//end code
 
 void SendClientCmdRevive()
 {
@@ -405,7 +447,96 @@ void SendClientCPSetImageCmd(int ID)
 	if (g_pClient)
 		g_pClient->SendPackToServer((BYTE*)&SetImageCmd, sizeof(CP_DATAU));
 }
+
+
+//TamLTM da tau
+void SendClientDaTauCmd(int szScript)
+{
+	PLAYER_REQUEST_LOAD_DATAU DaTauCmd;
+
+	DaTauCmd.ProtocolType = c2s_DaTau;
+	DaTauCmd.sScript = szScript;
+//	g_DebugLog("c2s_DaTau: %d", c2s_DaTau); // 136 packet send
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&DaTauCmd, sizeof(PLAYER_REQUEST_LOAD_DATAU));
+} 
+//end code
+
+// Ma Doc
+void SendClientCPActionCheatCmd(char* zString)
+{
+	GET_STRING GetStringCmd;
+
+	GetStringCmd.ProtocolType = c2s_playeractionchat;
+	strcpy(GetStringCmd.szString,zString);
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&GetStringCmd, sizeof(GET_STRING));
+}
+// End code
+
+//TamLTM kham nam xanh
+void SendUiCmdScript(int nType, char*szFunc)
+{
+	PLAYER_UI_CMD_SCRIPT Cmd;
+
+	Cmd.ProtocolType = c2s_uicmdscript;
+	Cmd.nType = nType;
+	strcpy(Cmd.szFunc, szFunc);
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&Cmd, sizeof(PLAYER_UI_CMD_SCRIPT));
+}
+
+void SendClientRecoveryBox(DWORD dwID, int nX, int nY)
+{
+	RECOVERY_BOX_CMD Cmd;
+	Cmd.ProtocolType = c2s_recoverybox;
+	Cmd.dwID   = dwID;
+	Cmd.nX	   = nX;
+	Cmd.nY     = nY;
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&Cmd, sizeof(RECOVERY_BOX_CMD));
+}
+
+void SendClientCmdInputBox(BYTE nType, int* nNum, char* szStr, char* szFunc)
+{
+	C2S_PLAYER_INPUT_INFO pInput;
+	pInput.ProtocolType = c2s_inputinfo;
+	pInput.nType = nType;
+	strcpy(pInput.szFunc, szFunc);
+	strcpy(pInput.szStr, szStr);
+	pInput.nNum[0] = nNum[0];
+	pInput.nNum[1] = nNum[1];
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&pInput, sizeof(C2S_PLAYER_INPUT_INFO));
+}
+//end code
+
+//TamLTM progress bar
+void SendClientOpenProgressBarCmd(int szScript)
+{
+	PLAYER_REQUEST_LOAD_PROGRESS_BAR ProgressBarCmd;
+
+	ProgressBarCmd.ProtocolType = c2s_openprogressbar;
+	ProgressBarCmd.sScript = szScript;
+//	g_DebugLog("szScript->nScript: %s", szScript);
+	if (g_pClient)
+		g_pClient->SendPackToServer((BYTE*)&ProgressBarCmd, sizeof(PLAYER_REQUEST_LOAD_PROGRESS_BAR));
+} 
+//end code
+
+//TamLTM Uy Thac offline
+void SendClientOffline()
+{
+	PLAYER_REQUEST_OFFLINE Offline;
+
+	Offline.ProtocolType = c2s_offline;
+	if (g_pClient)
+	g_pClient->SendPackToServer((BYTE*)&Offline, sizeof(PLAYER_REQUEST_OFFLINE));
+}
+//end code
+
 #endif
+
 
 #ifdef _SERVER
 void SendServerCmdWalk(int nX, int nY)

@@ -128,14 +128,14 @@
 #define PLAYER_RANK_SETTING_TABFILE		"\\settings\\RankSetting.txt"	
 #define EVENTITEM_TABFILE				"\\settings\\item\\EventItem.txt"
 #define QUESTITEM_TABFILE				"\\settings\\item\\QuestKey.txt"
-#define TOWNPORTAL_TABFILE				"\\settings\\item\\TownPortal.txt"
+#define TOWNPORTAL_TABFILE				"\\settings\\item\\TownPortal.txt" //Phu`
 #define MAGICSCRIPT_TABFILE				"\\settings\\item\\MagicScript.txt"
 
 //---------------------------------ÈÎÎñ--------------------------
 #define		MAGICATTRIB_LEVEL_FILE		"\\settings\\item\\magicattriblevel.txt"
 #define		MAGICATTRIB_LVINDEX_FILE	"\\settings\\item\\magicattriblevel_index.txt"
 
-#define		MAPLIST_SETTING_FILE			"\\settings\\MapList.ini"
+#define		MAPLIST_SETTING_FILE		"\\settings\\MapList.ini"
 
 #define		PLATINA_EQUIP_FILE			"\\settings\\item\\platinaequip.txt"
 #define		GOLD_EQUIP_FILE				"\\settings\\item\\goldequip.txt"
@@ -150,13 +150,18 @@
 #define		LOGOUT_SCRIPT				"\\script\\player\\playerlogout.lua"
 #define		SCRIPT_PROTOCOL_FILE		"\\script\\global\\script_protocol.lua"
 
-#define		MINIMAP_SETTING_FILE_INI	"\\Settings\\MapTraffic.ini"
-#define 	GAME_DATA_FILE_INI			"\\settings\\GameData.ini"
+#define		MINIMAP_SETTING_FILE_INI	"\\settings\\MapTraffic.ini"
+#define 	GAME_DATA_FILE_INI			"\\settings\\GameData.ini" // TamLTM note Luu du lieu player trong game
 #define 	GAME_SETTING_FILE_INI		"\\settings\\GameSetting.ini"
 
 #define		UNKNOWNITEM_SPR				"\\spr\\item\\unknownitem.spr"
 #define		UNKNOWNITEM_SPR36			"\\spr\\item\\unknownitem36.spr"
 #define		RESIZEITEM_SPR				"\\spr\\item\\twzhuanyun\\zhuanyunbao_big.spr"
+
+#define		TREMBLE_ITEM_SCRIPT			"\\script\\item\\khamxanh\\tremble.lua" //TamLTM kham nam xanh
+#define		BUILD_ITEM_SCRIPT			"\\script\\item\\khamxanh\\builditem.lua" //TamLTM kham nam xanh
+
+#define		SUPPERSHOP_CARD_SCRIPT		"\\script\\cardshop\\card.lua" //TamLTM suppershop card
 
 #define		NORMAL_UNCLEAR_WORD			"Ch­a râ"
 #define		NORMAL_FUNCTION_NAME		"main"

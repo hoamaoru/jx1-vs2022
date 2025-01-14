@@ -25,6 +25,22 @@ KNpcAI::KNpcAI()
 
 // flying modified this function.
 // Jun.4.2003
+
+void KNpcAI::NotActivate(int nIndex)
+{
+	m_nIndex = nIndex;	
+	if (Npc[m_nIndex].IsPlayer())
+	{
+	#ifdef _SERVER
+	TriggerObjectTrap();
+	TriggerMapTrap();
+	#endif
+	}
+
+}
+
+
+
 void KNpcAI::Activate(int nIndex)
 {
 	m_nIndex = nIndex;	
@@ -706,7 +722,10 @@ Exit0:
 // flying comment
 void KNpcAI::ProcessPlayer()
 {
-#ifndef _SERVER
+#ifdef _SERVER
+	TriggerObjectTrap();
+	TriggerMapTrap();
+#else
 	int i = Npc[m_nIndex].m_nPeopleIdx;
 	if (i > 0)
 	{
@@ -780,10 +799,26 @@ void KNpcAI::FollowPeople(int nIdx)
 	// ¾àÀëÐ¡ÓÚ¹¥»÷·¶Î§¾Í¿ªÊ¼¹¥»÷
 	if (nRelation == relation_enemy)
 	{
+
+
+
+
+	ISkill * pSkillCheck = Npc[m_nIndex].GetActiveSkill();
+	if(pSkillCheck)
+	{
+
+	if (pSkillCheck->GetAttackRadius() >= Npc[m_nIndex].m_CurrentAttackRadius)
+	{
+
+
 		if (distance <= Npc[m_nIndex].m_CurrentAttackRadius)
 		{
 			Npc[m_nIndex].SendCommand(do_skill, Npc[m_nIndex].m_ActiveSkillID, -1, nIdx);
-			SendClientCmdSkill(Npc[m_nIndex].m_ActiveSkillID, -1, Npc[nIdx].m_dwID);
+
+			// Send to Server
+			int nX0,nY0;
+			Npc[m_nIndex].GetMpsPos(&nX0,&nY0);
+			SendClientCmdSkill(Npc[m_nIndex].m_ActiveSkillID, -1, Npc[nIdx].m_dwID,nX0,nY0,Npc[m_nIndex].m_CurrentAttackRadius);
 		}
 		// à»à»×·
 		else
@@ -802,6 +837,15 @@ void KNpcAI::FollowPeople(int nIdx)
 				SendClientCmdWalk(nDesX, nDesY);
 			}
 		}
+
+
+
+	}
+
+	}
+
+
+
 		return;
 	}
 	// ¸úËæ
@@ -834,6 +878,19 @@ void KNpcAI::FollowPeople(int nIdx)
 	return;
 }
 #endif
+
+void KNpcAI::TriggerMapTrap()
+{
+    int nDesX, nDesY;
+    Npc[m_nIndex].GetMpsPos(&nDesX, &nDesY);
+	Npc[m_nIndex].CheckTrap(nDesX,nDesY);
+}
+
+
+void KNpcAI::TriggerObjectTrap()
+{
+	return;
+}
 
 int KNpcAI::GetNearestNpc(int nRelation)
 {

@@ -377,7 +377,7 @@ public:
 
 	unsigned long	AddPlayer(unsigned long ulPlayerIndex, unsigned long ulPlayerID, unsigned char ucPlayerGroup, int ulJoinTime = 0);
 	unsigned long	AddNpc(unsigned long ulNpcIndex, unsigned long ulNpcID, unsigned char ucNpcGroup, int ulJoinTime = 0);
-	BOOL			RemovePlayer(unsigned long ulPlayerIndex, unsigned long ulPlayerID);
+	BOOL			RemovePlayer(unsigned long ulPlayerIndex, unsigned long ulPlayerID = 0);
 	BOOL			RemoveNpc(unsigned long ulNpcIndex, unsigned long ulNpcID = 0);
 	void 			SetPlayerParam(unsigned long ulIndex, int nParam, int nValue);
 	unsigned long GetMissionPlayer_DataIndex(const char* szName, unsigned long ulPlayerIndex, unsigned long ulPlayerID)//

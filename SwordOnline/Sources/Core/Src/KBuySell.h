@@ -44,7 +44,7 @@ public:
 	BOOL			CanBuy(int nPlayerIdx, int nBuy, int nBuyIdx, int nBuyNumber);
 	void			OpenSale(int nPlayerIdx, int nShop, int nShopMoneyUnit);
 	void			OpenSale(int nPlayerIdx, int nSaleType, int nMoneyUnit, int nShopNum, int *nShopId);
-	BOOL			Buy(int nPlayerIdx, int nBuy, int nBuyIdx, BYTE nBuyNumber);	// 买第几个买卖列表中的第几项道具
+	BOOL			Buy(int nPlayerIdx, int nBuy, int nBuyIdx, BYTE nBuyNumber); // TamLTM Bang hoi chiem linh Add nX nY	// 买第几个买卖列表中的第几项道具
 	BOOL			Sell(int nPlayerIdx, int nBuy, int nIdx, int nBuyNumber);
 #endif
 #ifndef _SERVER

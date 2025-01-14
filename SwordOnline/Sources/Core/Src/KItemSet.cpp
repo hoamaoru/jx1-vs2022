@@ -69,7 +69,7 @@ void KItemSet::Init()
 	IniFile.GetInteger("Repair", "MagicPriceScale", 10, &m_sRepairParam.nMagicScale);
 	IniFile.GetInteger("Repair", "GoldPriceScale", 10, &m_sRepairParam.nGoldScale);
 	IniFile.GetInteger("Repair", "PlatinaPriceScale", 10, &m_sRepairParam.nPlatinaScale);
-	IniFile.GetInteger("Repair", "WarningBaseline", 10, &m_sRepairParam.nWarningBaseline);
+	IniFile.GetInteger("Repair", "WarningBaseline", 10, &m_sRepairParam.nWarningBaseline); // sua do ben trang bi
 //	¹¥»÷Ä¥Ëð
 	IniFile.GetInteger("Attack", "Weapon", 256, &m_nItemAbradeRate[enumAbradeAttack][itempart_weapon]);
 	IniFile.GetInteger("Attack", "Head", 0, &m_nItemAbradeRate[enumAbradeAttack][itempart_head]);

@@ -17,8 +17,8 @@
 #include "KItemList.h"
 #include "KNpc.h"
 #include "KSkills.h"
-
-
+#include <fstream> // TamLTM
+#include <string> // TamLTM
 #include "KPlayerDef.h"
 
 #define		PLAYER_LIFE_REPLENISH			0
@@ -86,8 +86,8 @@ private:
 	int				m_nRightSkillID;
 	int				m_nRightSkillLevel;
 	BOOL			m_MouseDown[2];
-
-
+	int				m_nExtPoint;// TamLTM fix xu;
+	int				m_nChangeExtPoint;
 			
 #endif
 
@@ -96,6 +96,8 @@ private:
 	PLAYER_REVIVAL_POS		m_sDeathRevivalPos;	// 死亡重生点（默认为登入重生点，不存盘）
 	PLAYER_TOWNPORTAL_POS	m_sPortalPos;		// 传送门位置
 	BOOL			m_bUseReviveIdWhenLogin;
+	int				m_nExtPoint;// TamLTM fix xu;
+	int				m_nChangeExtPoint; // TamLTM fix xu;
 #endif
 	int				m_nPhysicsSkillID;		//当前玩家的物理攻击技能
 	int				m_nPeapleIdx;
@@ -107,11 +109,11 @@ private:
 public:
 
 #ifdef _SERVER
-	char			m_szLastName[32];
+	char			m_szLastName[32];//Doi ten nhan vat
 	DWORD			m_dwTaskExcuteScriptId;
 	char			m_szTaskExcuteFun[32];
 	char			m_szLastInput[32];
-	BYTE			m_byLixian;
+//	BYTE			m_byLixian;
 	PLAYER_EXCHANGE_POS		m_sExchangePos;
 	KTimerTaskFun	m_TimerTask;
 	BOOL			m_bIsQuiting;
@@ -152,6 +154,7 @@ public:
 	int				m_nLastNpcIndex;
 	TMissionLadderSelfInfo m_MissionData;
 	TMissionLadderInfo m_MissionRank[MISSION_STATNUM];
+	BOOL			m_bDebugMode;
 #endif
 
 	KIndexNode		m_Node;
@@ -164,6 +167,12 @@ public:
 	BuySellInfo		m_BuyInfo;					// 进行的交易列表
 	KPlayerMenuState	m_cMenuState;			// 是否处于交易或队伍开放状态
 	KTrade			m_cTrade;					// 交易模块
+
+	//TamLTM check nhat do cua nguoi khac
+	BOOL			m_bNotPickUpItem;
+	BOOL			m_bNotPickUpMoney;
+	//end code
+
 #ifdef _SERVER
 	PLAYERTRADE		m_PTrade;			// 是否处于交易或队伍开放状态
 #endif
@@ -203,6 +212,16 @@ public:
 	KPlayerTong		m_cTong;					// 自己的帮会信息
 
 	KPlayerChatRoom	m_cRoom;					// 自己的帮会信息
+
+	//TamLTM Toi uu hinh anh game
+	BOOL            m_bIsHideNpc;    //hide noc
+	BOOL            m_bIsHidePlayer; // hide player
+	//end code
+
+	//TamLTM Fix set save pass Khoa ruong
+	BOOL			m_bLock; //1 SetSaveVal
+	BOOL			m_bOk; //2 CheckSavePw
+	//end code
 	
 	DWORD			m_dwDeathScriptId;			// 
 	DWORD			m_dwDamageScriptId;			// 
@@ -224,6 +243,7 @@ public:
 
 	int				m_nPaceBarTime;
 	int				m_nPaceBarTimeMax;
+	int				m_nIndexProgressBarIndex;
 public:
 	KPlayer();
 	~KPlayer();
@@ -232,16 +252,29 @@ public:
 	LockMoveItem*	GetLockMove() {return &m_LockMove;};
 #ifdef _SERVER
 	void			SetLevel(int nLevel);
+	void			UpdateSQL(IN char *cAccName, IN int nExtPoint, bool iCheckExtPoint); //TamLTM add update sql
+	void			GetMacInSQL(IN char *cAccountName); //TamLTM sql
+	void			GetHardwareIDPC(); //Get id cho phan cung trong pc 1 may
+	void			GetNameForDatabase(int numberChange); //Get id cho phan cung trong pc 1 may
+	// Fetches the MAC address and prints it
+	void			GetMACaddress();
+	void			SetExtPoint(int nPoint, int nChangePoint); //TamLTM fix xu;
+	int				GetExtPoint();//TamLTM fix xu;
+	int				GetExtPointChanged();//TamLTM fix xu;
+	BOOL			PayExtPoint(int nPoint);
 #endif
 	void			SetLockState(BOOL bLock);
 	BOOL			GetLockState();
 	void			SetEquipExpandTime(int dwTime);
 	void			SetExpandBoxNum(int nNum);
 
-	void			SetExtPoint(int nPoint, int nChangePoint);
-	void			AddExtPoint(int nPoint, int nChangePoint);
-	int				GetExtPoint();
-	int				GetExtPointChanged();
+	void			GetDataSQL();
+
+	//TamLTM Get SQL Database
+	int				GetMacSQL();
+
+	//TamLTM Get Update Version game
+	int				GetVersionGame();
 
 	void			SetPlayerIndex(int nNo);					// 设定 m_nPlayerIndex
 	void			GetAboutPos(KMapPos *pMapPos);			// 获得玩家附近一个空位置
@@ -262,6 +295,13 @@ public:
 	BOOL			ExecuteScript3Param(char * ScriptFileName, char * szFunName, int nResultCount, int nParam1 = 0, int nParam2 = 0, int nParam3 = 0);
 	BOOL 			ExecuteScript3Param(DWORD dwScriptId, char * cFuncName, int nResultCount, int nParam1, int nParam2, int nParam3);
 
+	// TamLTM kham
+	BOOL			ExecuteScript2(char * ScriptFileName, char * szFunName, int nParam1 = 0, int nParam2 = 0);
+	BOOL			ExecuteScript2(char * ScriptFileName, char * szFunName, char * szParams1, char * szParams2);
+	BOOL			ExecuteScript2(DWORD dwScriptId, char * szFunName, char *  szParams1, char *  szParams2);
+	BOOL			ExecuteScript2(DWORD dwScriptId,  char * szFunName, int nParam1, int nParam2);
+	//end code
+
 	BOOL			DoScript(char * ScriptCommand);				//执行某个脚本指令
 	void			SendTitle();
 
@@ -279,7 +319,8 @@ public:
 	BOOL			NewPlayerGetBaseAttribute(int Series);	// 新玩家登陆时根据五行属性产生 力量 敏捷 活力 精力 四项数值
 	void			AddBaseLucky(int nData);				// 增加基本运气
 #ifdef _SERVER
-	void			AddExp(int nExp, int nTarLevel);		// 增加经验(原始数据，还未经过处理)
+//	void			AddExp(int nExp, int nTarLevel);		// 增加经验(原始数据，还未经过处理)
+	void			AddExp(int nExp, int nTarLevel, BOOL bCheck = FALSE);		// TamLTM fix exp
 	void			AddSelfExp(int nExp, int nTarLevel);	// 增加经验(不需要再经过队伍分配的处理，但需要考虑被砍死npc的等级)
 	void			AddSkillExp(int nExp);
 	void			DirectAddExp(int nExp);					// 直接增加经验值，不考虑其他因素
@@ -312,13 +353,15 @@ public:
 			m_nPhysicsSkillID = nPhysicsSkillID;
 	};
 
-	int				m_nExtPoint;		
-	int				m_nChangeExtPoint;
+	int				m_nMacDatabase;//TamLTM Get nMac database
+	int				m_nVersionGame;//TamLTM Get m_nVersionGame database
 	BOOL			m_bLockState;
 	int				m_dwEquipExpandTime;
 	int				m_btRepositoryNum;
 	LockMoveItem	m_LockMove;
 #ifndef _SERVER
+	void			SetExtPoint(int nPoint); // set gia tri xu
+	int				GetExtPoint() { return m_nExtPoint; }; // lay gia tri xu
 	int				GetTargetNpc() { return m_nPeapleIdx; };
 	int				GetTargetObj() { return m_nObjectIdx; };
 	void			SetTargetNpc(int n) { m_nPeapleIdx = n; };
@@ -331,6 +374,11 @@ public:
 	void			TurnBack();
 	BOOL			ConformIdx(int nIdx);	
 	void			GetEchoDamage(int* nMin, int* nMax, int nType);// 获取界面需要显示的伤害值
+	
+	// TamLTM damage Attack ho tro skill 5x 6x do chinh xac
+	void			GetEchoAttack(int* nAttack, int nType);
+	//end code
+
 	void			ProcessInputMsg(UINT uMsg, WPARAM wParam, LPARAM lParam);// 处理键盘鼠标消息
 	void			RecvSyncData();								// 接收同步数据
 
@@ -378,6 +426,7 @@ public:
 	void			s2cTradeMoneySync(BYTE* pMsg);
 	void			s2cTradeDecision(BYTE* pMsg);				// 收到服务器通知交易完成或取消
 	void			SyncCurPlayer(BYTE* pMsg);
+	//BOOL			dacheck;
 	void			s2cLevelUp(BYTE* pMsg);
 	void			s2cGetCurAttribute(BYTE* pMsg);
 	void			s2cSetExp(int nExp);
@@ -389,7 +438,6 @@ public:
 	void			PickObjectNear();
 #endif
 #ifdef _SERVER
-	BOOL			PayExtPoint(int nPoint);
 	void			RepairItem(DWORD dwItemID);
 	void			AutoLoseItem(DWORD dwItemID);
 	void			PlayerBreakItem(DWORD dwItemID, int nNum, BOOL bIsBreakAll = FALSE);
@@ -490,11 +538,17 @@ public:
 	void			SendTradeCount(int nIndex);
 	int				GetTradeCount();
 
+	void			LoadScript( int nScript); //TamLTM da tau vng
+	void			LoadScriptProgressBar(int nScript); //TamLTM Load progress bar
+	void			Offline();//TamLTM Uy Thac offline
+
 	void			SendMSGroup();
 	void			SendMSRank(TMissionLadderSelfInfo* SelfData, TMissionLadderInfo* RankData);
 
 	void			SetSavePw(char* szTask, BOOL bShow);
 	BOOL			CheckSavePw(const char* szTask);
+
+	void			RecoveryBox(DWORD dwID, int nX, int nY); // TamLTM Kham nam xanh
 
 	int				Compound(int);
 	int				Enchase(int,int,int,int);

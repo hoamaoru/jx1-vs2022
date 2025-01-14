@@ -39,6 +39,7 @@ private:
 	KLinkArray	m_UseIdx;
 	int			m_nListCurIdx;									// 用于 GetFirstItem 和 GetNextItem
 	BOOL		m_bMaskLock;
+	int			m_BuildItem[MAX_PART_BUILD]; //TamLTM kham nam xanh
 #ifndef _SERVER
 	BOOL		m_bLockOperation;
 #endif
@@ -92,6 +93,7 @@ public:
 	PlayerItem*	GetNextItem();
 	int			SearchID(int nID);
 	void		ExchangeMoney(int nSrcRoom, int DesRoom, int nMoney);
+	void		WithDrawaMoney(int nSrcRoom, int DesRoom, int nMoney); // rut tien + pass ruong;
 	void		ExchangeItem(ItemPos* SrcPos,ItemPos* DesPos);
 	int			GetMoneyAmount();					// 得到物品栏和储物箱的总钱数
 	int			GetRepositoryMoney();
@@ -124,6 +126,9 @@ public:
 	}
 	void		RemoveRoom(int nRoom);
 	int			CalcFreeItemCellCount(int nWidth, int nHeight, int nRoom);
+	int			GetBuildItem(int nIdx) { return m_BuildItem[nIdx];} //TamLTM kham nam xanh
+	BOOL		BuildItem(int nIdx, int nPlace = -1);	//TamLTM kham nam xanh
+	void		UnBuildItem(int nIdx, int nPlace = -1); //TamLTM kham nam xanh
 	BOOL		IsEnoughToActive();
 	int			GetPlayerFortune();
 	int			HaveDamageItem(int nDur = 3);
@@ -146,10 +151,12 @@ public:
 	void		AutoLoseItemFromEquipmentRoom(int nRate);
 	// 丢失一个穿在身上的装备(马不会掉)
 	void		AutoLoseEquip();
+    void		AutoDurationItem(int nRate);
 
 	BOOL		RemoveItem(int nItemGenre,int nDetailType,int nParticularType,int nLevel);
 	BOOL		RemoveItem(int nIdx, int nNum);
 	BOOL		Lock(int nIdx, BOOL bLock);
+	BOOL		UnLock(int nIdx, BOOL bUnLock);
 	void		SyncItem(int nIdx, BOOL bIsNew = FALSE, int nPlace = 0, int nX = 0, int nY = 0, int nPlayerIndex = 0);
 	void		SyncItemMagicAttrib(int nIdx);
 
@@ -163,7 +170,7 @@ public:
 #ifndef	_SERVER
 	int			UseItem(int nIdx);					// nIdx指游戏世界中道具数组的编号
 	BOOL		SearchEquipment(int nWidth, int nHeight);
-	int 		ChangeItemInPlayer(int nIdx);//edit by phong kieu mac trang bi vao nguoi
+    int			ChangeItemInPlayer(int nIdx);//edit by phong kieu mac trang bi vao nguoi	
 	BOOL		SearchStoreBox(int nRepositoryNum, int nWidth, int nHeight, ItemPos* pPos);
 	BOOL		AutoMoveItem(ItemPos SrcPos,ItemPos DesPos);
 	void		MenuSetMouseItem();

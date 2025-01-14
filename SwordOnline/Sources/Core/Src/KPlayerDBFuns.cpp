@@ -85,10 +85,10 @@ int KPlayer::LoadDBPlayerInfo(BYTE *pPlayerInfo, int &nStep, unsigned int &nPara
 				nParam = 0;
 				return 0;
 			}
-//			else
-//			{
-//				nRetValue = SendSyncData(nStep, nParam);
-//			}
+			else
+			{
+				nRetValue = SendSyncData(nStep, nParam);
+			}
 		}
 		break;
 	case STEP_STATE_SKILL_LIST:
@@ -359,17 +359,15 @@ label_retry:
 		pNpc->m_ExpandRank.Release();
 	m_nWorldStat					= pRoleData->BaseInfo.nWorldStat;
 	m_nSectStat						= pRoleData->BaseInfo.nSectStat;
-	m_nKillPeopleNumber				= pRoleData->BaseInfo.nKillPeopleNumber;
+	m_nKillPeopleNumber				= pRoleData->BaseInfo.nKillPeopleNumber;  //Pk 10
 	m_dwEquipExpandTime				= pRoleData->BaseInfo.iexitemrole;
-	m_btRepositoryNum					= pRoleData->BaseInfo.iexboxrole;
+	m_btRepositoryNum				= pRoleData->BaseInfo.iexboxrole;
 	m_cTong.m_dwLeaveTime			= pRoleData->BaseInfo.ileavetongtime; 
 	m_ImagePlayer   = pRoleData->BaseInfo.ihelmres;
-	//m_nExtPoint			= pRoleData->BaseInfo.iextpoint;
-	SetExtPoint(m_nExtPoint, 0);
 	//现金和贮物箱中的钱
 	int nCashMoney = 0;
 	int nSaveMoney = 0;
-//	this->m_ItemList.Init(GetPlayerIndex());
+    this->m_ItemList.Init(GetPlayerIndex());
 	nCashMoney		= pRoleData->BaseInfo.imoney;
 	nSaveMoney		= pRoleData->BaseInfo.isavemoney;
 	m_ItemList.SetMoney(nCashMoney, nSaveMoney,0);
@@ -408,8 +406,12 @@ label_retry:
 	m_cMenuState.Release();
 	m_cChat.Release();
 	m_cTeam.Release();
+
+	//TamLTM auto pt to doi
 	m_cTeam.SetCreatTeamFlag(m_nPlayerIndex, TRUE);
 	m_cTeam.SetFreezeTeamFlag(m_nPlayerIndex, TRUE);
+	//end code
+
 	m_nPeapleIdx = 0;
 	m_nObjectIdx = 0;
 	memset(m_szTaskAnswerFun, 0, sizeof(m_szTaskAnswerFun));
@@ -424,7 +426,7 @@ label_retry:
 	pNpc->m_ArmorType = g_ItemChangeRes.GetArmorRes(0, 0);
 	pNpc->m_HelmType = g_ItemChangeRes.GetHelmRes(0, 0);
 	pNpc->m_HorseType = g_ItemChangeRes.GetHorseRes(0, 0);
-
+	SetExtPoint(m_nExtPoint, m_nChangeExtPoint); //TamLTM fix xu;
 	nParam = 1;
 	pCurData = (BYTE *)&pRoleData->pBuffer;
 	// 登入游戏时战斗模式
@@ -749,8 +751,10 @@ int	KPlayer::SavePlayerBaseInfo(BYTE * pRoleBuffer)
 	pRoleData->bBaseNeedUpdate = 1;
 	pRoleData->BaseInfo.iroletm = dwRoleTm;
 	strcpy(pRoleData->BaseInfo.szName, Name);
+
 	if (AccountName[0])
 		strcpy(pRoleData->BaseInfo.caccname, AccountName);
+
 	pRoleData->BaseInfo.nForbiddenTm = m_nForbiddenTm;
 	pRoleData->BaseInfo.ileftprop = m_nAttributePoint;
 	pRoleData->BaseInfo.ileftfight = m_nSkillPoint;
@@ -789,9 +793,7 @@ int	KPlayer::SavePlayerBaseInfo(BYTE * pRoleBuffer)
 	pRoleData->BaseInfo.ilockpkstate = m_nLockPKState;
 	
 	pRoleData->BaseInfo.ihelmres =  m_ImagePlayer;
-	
-	pRoleData->BaseInfo.iextpoint = m_nExtPoint;
-	
+		
 	//现金和贮物箱中的钱
 	int nCashMoney = 0;
 	int nSaveMoney = 0;
@@ -901,7 +903,7 @@ int	KPlayer::SavePlayerItemList(BYTE * pRoleBuffer)
 		memset(pItemData->iparam, 0, sizeof(pItemData->iparam));
 		memcpy(pItemData->iparam, Item[nItemIndex].GetItemParam()->nGeneratorLevel, sizeof(pItemData->iparam));
 		pItemData->ilucky = 	 Item[nItemIndex].GetItemParam()->nLuck;
-		pItemData->idurability = Item[nItemIndex].GetDurability();
+		pItemData->idurability = Item[nItemIndex].GetDurability(); //Do ben trang bi
 		pItemData->iidentify = 0;
 		pItemData->istacknum	= Item[nItemIndex].GetStackNum();
 		pItemData->iexpire = Item[nItemIndex].GetExpireTime();

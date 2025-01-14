@@ -29,6 +29,7 @@ class KIniFile;
 
 typedef struct
 {
+	BYTE	nKind; //TamLTM Kham nam xanh
 	BOOL	bTemp;
 	int		nItemNature;
 	int		nTradePrice;
@@ -70,6 +71,7 @@ typedef struct
 	int		nUpgradeLvl;
 	int		nPhysicVal;
 	int		nMagicVal;
+	int		nLine; // TamLTM Kham nam xanh
 	unsigned uFlash;
 } KItemCommonAttrib;
 
@@ -115,6 +117,8 @@ public:
 	void	RemoveMagicAttribFromNPC(IN KNpc*, IN int = 0, IN int = 0) const;
 	void	ApplyHiddenMagicAttribToNPC(IN KNpc*, IN int) const;
 	void	RemoveHiddenMagicAttribFromNPC(IN KNpc*, IN int) const;
+	BYTE	GetKind() const { return m_CommonAttrib.nKind; }; // TamLTM Kham nam xanh
+	int		GetLine() const { return m_CommonAttrib.nLine; }; // TamLTM Kham nam xanh
 	KItemGeneratorParam * GetItemParam(){return &m_GeneratorParam;};
 	void	SetTemp(BOOL bFlag) { m_CommonAttrib.bTemp = bFlag; };
 	BOOL	IsTemp() const { return m_CommonAttrib.bTemp; };	
@@ -137,6 +141,7 @@ public:
 	void	SetHeight(int nHeight) { m_CommonAttrib.nHeight = nHeight; };
 	int		GetWidth() const { return m_CommonAttrib.nWidth; };
 	int		GetHeight() const { return m_CommonAttrib.nHeight; };
+//	int		GetPrice() const { return m_CommonAttrib.nPrice; }; // TamLTM Bang hoi chiem linh
 	int		GetOrgPrice() const {return m_CommonAttrib.nPrice; };
 	int		GetCurPrice() const 
 	{
@@ -311,6 +316,7 @@ public:
 
 	void	SetFortune(int i) { m_CommonAttrib.nFortune = i;};
 	int		GetFortune() {return m_CommonAttrib.nFortune;};
+	int		GetColorItem(); // TamLTM Kham nam xanh
 #ifndef _SERVER
 	void	Paint(int nX, int nY, bool bResize = false, bool bPaintStack = true);
 	void	GetDesc(char* pszMsg, bool bShowPrice = false, bool bPriceScale = false, int nActiveAttrib = 0, int nGoldActiveAttrib = 0);

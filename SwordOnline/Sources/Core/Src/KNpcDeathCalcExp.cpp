@@ -22,6 +22,7 @@ void	KNpcDeathCalcExp::Init(int nNpcIdx)
 
 void	KNpcDeathCalcExp::Active()
 {
+//	g_DebugLog("player Active"); //Chay lien tuc
 	if (Npc[m_nNpcIdx].m_Kind != kind_normal)
 		return;
 	for (int i = 0; i < defMAX_CALC_EXP_NUM; i++)
@@ -41,7 +42,8 @@ void	KNpcDeathCalcExp::Active()
 #ifdef _SERVER
 void	KNpcDeathCalcExp::AddDamage(int nPlayerIdx, int nDamage)
 {
-	g_DebugLog("player damage: %s",Npc[Player[nPlayerIdx].m_nIndex].Name);
+//	g_DebugLog("player damage: %s",Npc[Player[nPlayerIdx].m_nIndex].Name);
+
 	if (Npc[m_nNpcIdx].m_Kind != kind_normal)
 		return;
 	if (nPlayerIdx <= 0 || nPlayerIdx >= MAX_PLAYER || Player[nPlayerIdx].m_nIndex <= 0)
@@ -76,8 +78,10 @@ void	KNpcDeathCalcExp::AddDamage(int nPlayerIdx, int nDamage)
 	m_sCalcInfo[i].m_nTime = defMAX_CALC_EXP_TIME;
 }
 
-int		KNpcDeathCalcExp::CalcExp()
+int		KNpcDeathCalcExp::CalcExp(int nAttacker) // TamLTM fix exp
+//int		KNpcDeathCalcExp::CalcExp() // kinnox fix exp
 {
+//	g_DebugLog("player CalcExp");
 	if (Npc[m_nNpcIdx].m_CurrentLifeMax <= 0)
 		return 0;
 	int i, j, nDamage = 0, nMaxPlayer = 0;
@@ -88,13 +92,30 @@ int		KNpcDeathCalcExp::CalcExp()
 		// 如果组队
 		if (Player[m_sCalcInfo[i].m_nAttackIdx].m_cTeam.m_nFlag && Player[m_sCalcInfo[i].m_nAttackIdx].m_cTeam.m_nID >= 0)
 		{
-			int		nTeam, nPlayer, nDistance, nMinDistance;
+//			int		nTeam, nPlayer, nDistance, nMinDistance;
+			int		nTeam, nPlayer, nDistance, nMinDistance, nPlayerP; // TamLTM fix exp
+
+		//	g_DebugLog("player m_nAttackIdx");
 
 			nPlayer = 0;
 			nMinDistance = PLAYER_SHARE_EXP_DISTANCE * PLAYER_SHARE_EXP_DISTANCE;
 			nTeam = Player[m_sCalcInfo[i].m_nAttackIdx].m_cTeam.m_nID;
 			// 队长
 			nDistance = KNpcSet::GetDistanceSquare(m_nNpcIdx, Player[g_Team[nTeam].m_nCaptain].m_nIndex);
+
+			// TamLTM fix exp
+			if (nDistance >= 0 && nDistance < nMinDistance)
+			{
+				nMinDistance = nDistance;
+				nPlayerP = g_Team[nTeam].m_nCaptain;
+			}
+
+			if (nAttacker == Player[g_Team[nTeam].m_nCaptain].m_nIndex)
+			{
+				nPlayer = g_Team[nTeam].m_nCaptain;
+			}
+			//end code;*/
+
 			if (nDistance >= 0 && nDistance < nMinDistance)
 			{
 				nMinDistance = nDistance;
@@ -106,6 +127,20 @@ int		KNpcDeathCalcExp::CalcExp()
 				if (g_Team[nTeam].m_nMember[j] <= 0)
 					continue;
 				nDistance = KNpcSet::GetDistanceSquare(m_nNpcIdx, Player[g_Team[nTeam].m_nMember[j]].m_nIndex);
+
+				// TamLTM fix exp
+				if (nDistance >= 0 && nDistance < nMinDistance)
+				{
+					nMinDistance = nDistance;
+					nPlayerP = g_Team[nTeam].m_nMember[j];
+				}
+				
+				if (nAttacker == Player[g_Team[nTeam].m_nMember[j]].m_nIndex)
+				{
+				    nPlayer = g_Team[nTeam].m_nMember[j];
+				}
+				//end code;*/
+
 				if (nDistance >= 0 && nDistance < nMinDistance)
 				{
 					nMinDistance = nDistance;

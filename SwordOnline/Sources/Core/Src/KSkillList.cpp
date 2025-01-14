@@ -144,7 +144,7 @@ int KSkillList::GetCount()
 }
 
 #ifndef _SERVER
-void KSkillList::SetSkillLevel(int nId/*ï¿½ï¿½ï¿½Üµï¿½IDï¿½ï¿½*/, int nLevel)
+void KSkillList::SetSkillLevel(int nId/*¼¼ÄÜµÄIDºÅ*/, int nLevel)
 {
 	int i = FindSame(nId);
 	
@@ -160,7 +160,7 @@ void KSkillList::SetSkillLevel(int nId/*ï¿½ï¿½ï¿½Üµï¿½IDï¿½ï¿½*/, int nLevel)
 #endif
 
 #ifndef _SERVER
-BOOL KSkillList::SetLevel(int nIndex/*ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/, int nLevel)
+BOOL KSkillList::SetLevel(int nIndex/*¼¼ÄÜÁÐ±íµÄË÷ÒýºÅ*/, int nLevel)
 {
 	if (nIndex <= 0 || nIndex >= MAX_NPCSKILL)
 		return FALSE;
@@ -172,7 +172,7 @@ BOOL KSkillList::SetLevel(int nIndex/*ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï
 	return TRUE;
 }
 
-BOOL KSkillList::SetExp(int nIndex/*ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/, int nExp)
+BOOL KSkillList::SetExp(int nIndex/*¼¼ÄÜÁÐ±íµÄË÷ÒýºÅ*/, int nExp)
 {
 	if (nIndex <= 0 || nIndex >= MAX_NPCSKILL)
 		return FALSE;
@@ -384,7 +384,7 @@ BOOL KSkillList::SetTempSkill(int nIdx, BOOL bTempSkill)
 
 int KSkillList::Add(int nSkillID, int nSkillLevel, int nSkillExp, BOOL bTempSkill, int nMaxTimes, int RemainTimes)
 {
-	int i = 0;
+	int i;
 	if (nSkillID <= 0 || nSkillLevel < 0)
 		return 0;
 	i = FindSame(nSkillID);
@@ -403,7 +403,7 @@ int KSkillList::Add(int nSkillID, int nSkillLevel, int nSkillExp, BOOL bTempSkil
 			ISkill * pSkill = g_SkillManager.GetSkill(nSkillID, m_Skills[i].CurrentSkillLevel);
 			if (!pSkill) 
 				return 0;
-			//ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Npc×´Ì¬
+			//Èç¹û¸Ä¼¼ÄÜÊôÓÚ±»¶¯¸¨Öú¼¼ÄÜÊ±£¬ÔòÉèÖÃNpc×´Ì¬
 			if (pSkill->GetSkillStyle() == SKILL_SS_PassivityNpcState)
 			{
 				((KSkill *)pSkill)->Cast(m_nNpcIndex, -1, m_nNpcIndex);
@@ -446,7 +446,7 @@ int KSkillList::Add(int nSkillID, int nSkillLevel, int nSkillExp, BOOL bTempSkil
 
 int KSkillList::GetLevel(int nSkillID)
 {
-	int i = 0;
+	int i;
 	
 	if (!nSkillID)
 		return 0;
@@ -463,7 +463,7 @@ int KSkillList::GetLevel(int nSkillID)
 
 int KSkillList::GetExp(int nSkillID)
 {
-	int i = 0;
+	int i;
 	
 	if (!nSkillID)
 		return 0;
@@ -479,7 +479,7 @@ int KSkillList::GetExp(int nSkillID)
 
 int KSkillList::GetNextExp(int nSkillID)
 {
-	int i = 0;
+	int i;
 	
 	if (!nSkillID)
 		return 0;
@@ -495,7 +495,7 @@ int KSkillList::GetNextExp(int nSkillID)
 
 BOOL KSkillList::IsTempSkill(int nSkillID)
 {
-	int i = 0;
+	int i;
 	
 	if (!nSkillID)
 		return FALSE;
@@ -511,7 +511,7 @@ BOOL KSkillList::IsTempSkill(int nSkillID)
 
 int KSkillList::GetCurrentLevel(int nSkillID)
 {
-	int i = 0;
+	int i;
 	
 	if (!nSkillID)
 		return 0;
@@ -565,6 +565,8 @@ void KSkillList::SetNextCastTime(int nSkillID, DWORD dwCurrentTime, DWORD dwNext
 #endif
 }	
 
+
+
 #ifndef _SERVER
 #define MAX_FIGHTSKILL_SORTLIST 50
 #define MAX_LRSKILL_SORTLIST 65
@@ -599,16 +601,16 @@ int	KSkillList::GetSkillSortList(KUiSkillData * pSkillList)
 			
 			switch(eStyle)
 			{
-			case SKILL_SS_Missles:			//	ï¿½Óµï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½
+			case SKILL_SS_Missles:			//	×Óµ¯Àà		±¾¼¼ÄÜÓÃÓÚ·¢ËÍ×Óµ¯Àà
 			case SKILL_SS_Melee:
-			case SKILL_SS_InitiativeNpcState:	//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±äµ±Ç°Npcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-			case SKILL_SS_PassivityNpcState:		//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±ï¿½Npcï¿½Ä±ï¿½ï¿½ï¿½×´Ì¬
+			case SKILL_SS_InitiativeNpcState:	//	Ö÷¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äµ±Ç°NpcµÄÖ÷¶¯×´Ì¬
+			case SKILL_SS_PassivityNpcState:		//	±»¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äNpcµÄ±»¶¯×´Ì¬
 				{
 					pOrdinSkill = (KSkill * ) pSkill;
 					if(pOrdinSkill->IsBase())
 						continue;
 				}break;
-			case SKILL_SS_Thief:					//	Íµï¿½ï¿½ï¿½ï¿½
+			case SKILL_SS_Thief:					//	ÍµÇÔÀà
 				{
 					
 				}
@@ -637,7 +639,7 @@ int KSkillList::GetLeftSkillSortList(KUiSkillData* pSkillList)
 	int nCount = 1;
 	
 	pSkillList->uGenre = CGOG_SKILL_SHORTCUT;
-	pSkillList->uId = Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].GetCurActiveWeaponSkill();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°!
+	pSkillList->uId = Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].GetCurActiveWeaponSkill();//ÎïÀí¼¼ÄÜÖÃÇ°!
 	pSkillList->nData = 0;
 	
 	ISkill * pISkill = NULL;
@@ -660,10 +662,10 @@ int KSkillList::GetLeftSkillSortList(KUiSkillData* pSkillList)
 			eSkillStyle eStyle = (eSkillStyle)pISkill->GetSkillStyle();
 			switch(eStyle)
 			{
-			case SKILL_SS_Missles:			//	ï¿½Óµï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½
+			case SKILL_SS_Missles:			//	×Óµ¯Àà		±¾¼¼ÄÜÓÃÓÚ·¢ËÍ×Óµ¯Àà
 			case SKILL_SS_Melee:
-			case SKILL_SS_InitiativeNpcState:	//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±äµ±Ç°Npcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-			case SKILL_SS_PassivityNpcState:		//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±ï¿½Npcï¿½Ä±ï¿½ï¿½ï¿½×´Ì¬
+			case SKILL_SS_InitiativeNpcState:	//	Ö÷¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äµ±Ç°NpcµÄÖ÷¶¯×´Ì¬
+			case SKILL_SS_PassivityNpcState:		//	±»¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äNpcµÄ±»¶¯×´Ì¬
 				{	
 					if ((!pOrdinSkill->IsBase()) && 
 						(pOrdinSkill->GetSkillLRInfo() == BothSkill) || 
@@ -704,8 +706,8 @@ int KSkillList::GetRightSkillSortList(KUiSkillData* pSkillList)
 	
 	int nCount = 1;
 	pSkillList->uGenre = CGOG_SKILL_SHORTCUT;
-	//pSkillList->uId = (unsigned int)-1;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°!
-	pSkillList->uId = Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].GetCurActiveWeaponSkill();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°!;	 
+	//pSkillList->uId = (unsigned int)-1;//ÎïÀí¼¼ÄÜÖÃÇ°!
+	pSkillList->uId = Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].GetCurActiveWeaponSkill();//ÎïÀí¼¼ÄÜÖÃÇ°!;	 
 	pSkillList->nData = 0;
 	ISkill * pISkill = NULL;
 	KSkill * pOrdinSkill = NULL;
@@ -729,10 +731,10 @@ int KSkillList::GetRightSkillSortList(KUiSkillData* pSkillList)
 
 			switch(eStyle)
 			{
-			case SKILL_SS_Missles:			//	ï¿½Óµï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½
+			case SKILL_SS_Missles:			//	×Óµ¯Àà		±¾¼¼ÄÜÓÃÓÚ·¢ËÍ×Óµ¯Àà
 			case SKILL_SS_Melee:
-			case SKILL_SS_InitiativeNpcState:	//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±äµ±Ç°Npcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-			case SKILL_SS_PassivityNpcState:		//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±ï¿½Npcï¿½Ä±ï¿½ï¿½ï¿½×´Ì¬
+			case SKILL_SS_InitiativeNpcState:	//	Ö÷¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äµ±Ç°NpcµÄÖ÷¶¯×´Ì¬
+			case SKILL_SS_PassivityNpcState:		//	±»¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äNpcµÄ±»¶¯×´Ì¬
 				{
 					if ((!pOrdinSkill->IsBase()) &&	
 						(pOrdinSkill->GetSkillLRInfo() == BothSkill) || 
@@ -761,7 +763,7 @@ int KSkillList::GetRightSkillSortList(KUiSkillData* pSkillList)
 }
 
 
-int KSkillList::GetSkillPosition(int nSkillId)//ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ü½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+int KSkillList::GetSkillPosition(int nSkillId)//»ñµÃ¼¼ÄÜÔÚ¼¼ÄÜ½çÃæµÄÎ»ÖÃ
 {
 	if (nSkillId <= 0) return -1;
 	KSkill * pOrdinSkill = NULL;
@@ -789,10 +791,10 @@ int KSkillList::GetSkillPosition(int nSkillId)//ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ü½ï¿
 		eSkillStyle eStyle = ( eSkillStyle ) pISkill->GetSkillStyle();
 		switch(eStyle)
 		{
-		case SKILL_SS_Missles:			//	ï¿½Óµï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½
+		case SKILL_SS_Missles:			//	×Óµ¯Àà		±¾¼¼ÄÜÓÃÓÚ·¢ËÍ×Óµ¯Àà
 		case SKILL_SS_Melee:
-		case SKILL_SS_InitiativeNpcState:	//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±äµ±Ç°Npcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-		case SKILL_SS_PassivityNpcState:		//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸Ä±ï¿½Npcï¿½Ä±ï¿½ï¿½ï¿½×´Ì¬
+		case SKILL_SS_InitiativeNpcState:	//	Ö÷¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äµ±Ç°NpcµÄÖ÷¶¯×´Ì¬
+		case SKILL_SS_PassivityNpcState:		//	±»¶¯Àà		±¾¼¼ÄÜÓÃÓÚ¸Ä±äNpcµÄ±»¶¯×´Ì¬
 			{
 				pOrdinSkill = (KSkill * ) pISkill;
 				if (
@@ -892,7 +894,7 @@ int		KSkillList::RollBackSkills(bool bRbAll)
 }
 #endif
 
-int KSkillList::GetAddSkillDamage(int nSkillID) 
+int KSkillList::GetAddSkillDamage(int nSkillID) // add damage ky nang
 { 
     int nAddP = 0; 
 
@@ -922,6 +924,7 @@ int KSkillList::GetAddSkillDamage(int nSkillID)
     return nAddP; 
 }  
 
+//TamLTM auto
 #ifndef _SERVER
 int KSkillList::GetNextSkillState(int nIndex)
 {
@@ -1011,6 +1014,9 @@ int KSkillList::GetNextSkillFight(int nIndex)
 						pOrdinSkill->GetSkillStyle() == SKILL_SS_Melee) && pOrdinSkill->IsTargetEnemy())
 					{
 						j++;
+
+						g_DebugLog("m_Skills[i].SkillId = %d", m_Skills[i].SkillId);
+
 						if (j == nIndex)
 							return m_Skills[i].SkillId;
 					}
@@ -1021,6 +1027,7 @@ int KSkillList::GetNextSkillFight(int nIndex)
 		}
 		return 0;
 	}
+
 	int _nCount = 0;
 	for (int i = 1; i < MAX_NPCSKILL; i++)
 	{
@@ -1043,6 +1050,8 @@ int KSkillList::GetNextSkillFight(int nIndex)
 				if ((pOrdinSkill->GetSkillStyle() == SKILL_SS_Missles || 
 					pOrdinSkill->GetSkillStyle() == SKILL_SS_Melee) && pOrdinSkill->IsTargetEnemy())
 					_nCount++;
+
+				g_DebugLog("int _nCount = %d", _nCount);
 			}
 			else
 				continue;
@@ -1118,6 +1127,8 @@ int KSkillList::FindSkillLifeReplenish()
 				KSkill * pOrdinSkill = (KSkill *)g_SkillManager.GetSkill(m_Skills[i].SkillId, nCurLevel);
 				if (!pOrdinSkill) 
 					continue;
+
+			//	g_DebugLog("pOrdinSkill %d - %d", pOrdinSkill, m_Skills[i].SkillId);
 	
 				if (pOrdinSkill->IsSkillLifeReplenish()) 
 					return m_Skills[i].SkillId;
@@ -1129,3 +1140,4 @@ int KSkillList::FindSkillLifeReplenish()
 	return 0;
 }
 #endif
+//end code

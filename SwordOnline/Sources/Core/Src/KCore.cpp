@@ -621,6 +621,10 @@ int PositionToRoom(int P)
 		return room_give;
 	case pos_compound:
 		return room_equipment;
+	//TamLTM kham nam
+	case pos_builditem:
+		return room_builditem;
+	//end
 	case pos_compoundroom:
 		return room_compound;
 	default:

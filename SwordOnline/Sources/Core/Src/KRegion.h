@@ -1,4 +1,4 @@
-ï»¿#ifndef	KRegionH
+#ifndef	KRegionH
 #define	KRegionH
 
 //-----------------------------------------------------------------------
@@ -29,72 +29,72 @@ class CORE_API KRegion
 {
 	friend class	KSubWorld;
 public:
-	int			m_nIndex;							// ÂµÃ˜ÃÂ¼Ã‹Ã·Ã’Ã½
+	int			m_nIndex;							// µØÍ¼Ë÷Òı
 	int			m_RegionID;
-	KList		m_NpcList;							// ÃˆÃ‹ÃÃ¯ÃÃÂ±Ã­
-	KList		m_ObjList;							// ÃÃ¯Â¼Ã¾ÃÃÂ±Ã­
-	KList		m_MissleList;						// Ã—Ã“ÂµÂ¯ÃÃÂ±Ã­
-	KList		m_PlayerList;						// ÃÃ¦Â¼Ã’ÃÃÂ±Ã­
-	int			m_nConnectRegion[8];				// ÃÃ ÃÃšÂµÃ„ÂµÃ˜ÃÂ¼Ã‹Ã·Ã’Ã½
-	int			m_nConRegionID[8];					// ÃÃ ÃÃšÂµÃ„ÂµÃ˜ÃÂ¼ID
-	KRegion*	m_pConRegion[8];
-	int			m_nRegionX;							// Ã”ÃšÃŠÃ€Â½Ã§Ã–ÃÂµÃ„ÃÂ»Ã–ÃƒXÂ£Â¨ÃÃ³Ã‹Ã˜ÂµÃ£Â£Â©
-	int			m_nRegionY;							// Ã”ÃšÃŠÃ€Â½Ã§Ã–ÃÂµÃ„ÃÂ»Ã–ÃƒYÂ£Â¨ÃÃ³Ã‹Ã˜ÂµÃ£Â£Â©
+	KList		m_NpcList;							// ÈËÎïÁĞ±í
+	KList		m_ObjList;							// Îï¼şÁĞ±í
+	KList		m_MissleList;						// ×Óµ¯ÁĞ±í
+	KList		m_PlayerList;						// Íæ¼ÒÁĞ±í
+	int			m_nConnectRegion[8];				// ÏàÁÚµÄµØÍ¼Ë÷Òı
+	int			m_nConRegionID[8];					// ÏàÁÚµÄµØÍ¼ID
+	int			m_nRegionX;							// ÔÚÊÀ½çÖĞµÄÎ»ÖÃX£¨ÏóËØµã£©
+	int			m_nRegionY;							// ÔÚÊÀ½çÖĞµÄÎ»ÖÃY£¨ÏóËØµã£©
 	int			m_nWidth;
 	int			m_nHeight;
 private:
 #ifdef _SERVER
-	long		m_Obstacle[REGION_GRID_WIDTH][REGION_GRID_HEIGHT];	// ÂµÃ˜ÃÂ¼Ã•ÃÂ°Â­ÃÃ…ÃÂ¢Â±Ã­
-	DWORD		m_dwTrap[REGION_GRID_WIDTH][REGION_GRID_HEIGHT];	// ÂµÃ˜ÃÂ¼trapÃÃ…ÃÂ¢Â±Ã­
+	long		m_Obstacle[REGION_GRID_WIDTH][REGION_GRID_HEIGHT];	// µØÍ¼ÕÏ°­ĞÅÏ¢±í
+	DWORD		m_dwTrap[REGION_GRID_WIDTH][REGION_GRID_HEIGHT];	// µØÍ¼trapĞÅÏ¢±í
 #endif
-	int			m_nNpcSyncCounter;					// ÃÂ¬Â²Â½Â¼Ã†ÃŠÃ½Ã†Ã·
+
+	int			m_nNpcSyncCounter;					// Í¬²½¼ÆÊıÆ÷
 	int			m_nObjSyncCounter;
-	int			m_nActive;							// ÃŠÃ‡Â·Ã±Â¼Â¤Â»Ã®Â£Â¨ÃŠÃ‡Â·Ã±Ã“ÃÃÃ¦Â¼Ã’Ã”ÃšÂ¸Â½Â½Ã¼Â£Â©
-	BYTE*		m_pNpcRef;							// ÃƒÂ¿Â¸Ã¶Â¸Ã±Ã—Ã“Ã‰ÃÂµÃ„NPCÃŠÃ½Ã„Â¿
-	BYTE*		m_pObjRef;							// ÃƒÂ¿Â¸Ã¶Â¸Ã±Ã—Ã“Ã‰ÃÂµÃ„OBJÃŠÃ½Ã„Â¿
-	BYTE*		m_pObstacleRef;							// ÃƒÂ¿Â¸Ã¶Â¸Ã±Ã—Ã“Ã‰ÃÂµÃ„OBJÃŠÃ½Ã„Â¿
-	BYTE*		m_pMslRef;							// ÃƒÂ¿Â¸Ã¶Â¸Ã±Ã—Ã“Ã‰ÃÂµÃ„MISSLEÃŠÃ½Ã„Â¿
+	int			m_nActive;							// ÊÇ·ñ¼¤»î£¨ÊÇ·ñÓĞÍæ¼ÒÔÚ¸½½ü£©
+	BYTE*		m_pNpcRef;							// Ã¿¸ö¸ñ×ÓÉÏµÄNPCÊıÄ¿
+	BYTE*		m_pObjRef;							// Ã¿¸ö¸ñ×ÓÉÏµÄOBJÊıÄ¿
+	BYTE*		m_pObstacleRef;							// Ã¿¸ö¸ñ×ÓÉÏµÄOBJÊıÄ¿
+	BYTE*		m_pMslRef;							// Ã¿¸ö¸ñ×ÓÉÏµÄMISSLEÊıÄ¿
 public:
 	KRegion();
 	~KRegion();
 	BOOL		Init(int nWidth, int nHeight);
 	BOOL		Load(int nX, int nY);
 #ifdef _SERVER
-	// Ã”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾region ÂµÃ„ objectÃŠÃ½Â¾ÃÂ£Â¨Â°Ã¼Ã€Â¨npcÂ¡Â¢trapÂ¡Â¢boxÂµÃˆÂ£Â©
+	// ÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾region µÄ objectÊı¾İ£¨°üÀ¨npc¡¢trap¡¢boxµÈ£©
 	BOOL		LoadObject(int nSubWorld, int nX, int nY);
-	// Ã”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„Ã•ÃÂ°Â­ÃŠÃ½Â¾Ã
-	BOOL		LoadServerObstacle(KFile*pFile, DWORD dwDataSize);
-	// Ã”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ trap ÃŠÃ½Â¾Ã
-	BOOL		LoadServerTrap(KFile*pFile, DWORD dwDataSize);
-	// Ã”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ npc ÃŠÃ½Â¾Ã
-	BOOL		LoadServerNpc(int nSubWorld, KFile*pFile, DWORD dwDataSize);
-	// Ã”Ã˜ÃˆÃ«Â·Ã¾ÃÃ±Ã†Ã·Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ obj ÃŠÃ½Â¾Ã
-	BOOL		LoadServerObj(int nSubWorld, KFile*pFile, DWORD dwDataSize);
+	// ÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄÕÏ°­Êı¾İ
+	BOOL		LoadServerObstacle(KPakFile *pFile, DWORD dwDataSize);
+	// ÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄ trap Êı¾İ
+	BOOL		LoadServerTrap(KPakFile *pFile, DWORD dwDataSize);
+	// ÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄ npc Êı¾İ
+	BOOL		LoadServerNpc(int nSubWorld, KPakFile *pFile, DWORD dwDataSize);
+	// ÔØÈë·şÎñÆ÷¶ËµØÍ¼ÉÏ±¾ region µÄ obj Êı¾İ
+	BOOL		LoadServerObj(int nSubWorld, KPakFile *pFile, DWORD dwDataSize);
 #endif
 
 #ifndef _SERVER
-	// Ã”Ã˜ÃˆÃ«Â¿ÃÂ»Â§Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾region ÂµÃ„ objectÃŠÃ½Â¾ÃÂ£Â¨Â°Ã¼Ã€Â¨npcÂ¡Â¢boxÂµÃˆÂ£Â©
-	// ÃˆÃ§Â¹Ã» bLoadNpcFlag == TRUE ÃÃ¨Ã’ÂªÃ”Ã˜ÃˆÃ« clientonly npc else Â²Â»Ã”Ã˜ÃˆÃ«
+	// ÔØÈë¿Í»§¶ËµØÍ¼ÉÏ±¾region µÄ objectÊı¾İ£¨°üÀ¨npc¡¢boxµÈ£©
+	// Èç¹û bLoadNpcFlag == TRUE ĞèÒªÔØÈë clientonly npc else ²»ÔØÈë
 	BOOL		LoadObject(int nSubWorld, int nX, int nY, char *lpszPath);
-	// Ã”Ã˜ÃˆÃ«Â¿ÃÂ»Â§Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ clientonlynpc ÃŠÃ½Â¾Ã
+	// ÔØÈë¿Í»§¶ËµØÍ¼ÉÏ±¾ region µÄ clientonlynpc Êı¾İ
 	BOOL		LoadClientNpc(KPakFile *pFile, DWORD dwDataSize);
-	// Ã”Ã˜ÃˆÃ«Â¿ÃÂ»Â§Â¶Ã‹ÂµÃ˜ÃÂ¼Ã‰ÃÂ±Â¾ region ÂµÃ„ clientonlyobj ÃŠÃ½Â¾Ã
+	// ÔØÈë¿Í»§¶ËµØÍ¼ÉÏ±¾ region µÄ clientonlyobj Êı¾İ
 	BOOL		LoadClientObj(KPakFile *pFile, DWORD dwDataSize);
-	// Ã”Ã˜ÃˆÃ«Ã•ÃÂ°Â­ÃŠÃ½Â¾ÃÂ¸Ã¸ÃÂ¡ÂµÃ˜ÃÂ¼
+	// ÔØÈëÕÏ°­Êı¾İ¸øĞ¡µØÍ¼
 	static void		LoadLittleMapData(int nX, int nY, char *lpszPath, BYTE *lpbtObstacle);
 #endif
 	void		Close();
 	void		Activate();
-	BYTE		GetBarrier(int MapX, int MapY, int nDx, int nDy);	//	ÂµÃ˜ÃÂ¼Â¸ÃŸÂ¶Ãˆ
+	BYTE		GetBarrier(int MapX, int MapY, int nDx, int nDy);	//	µØÍ¼¸ß¶È
 
-	// Â°Â´ ÃÃ±Ã‹Ã˜ÂµÃ£Ã—Ã¸Â±Ãª * 1024 ÂµÃ„Â¾Â«Â¶ÃˆÃ…ÃÂ¶ÃÃ„Â³Â¸Ã¶ÃÂ»Ã–ÃƒÃŠÃ‡Â·Ã±Ã•ÃÂ°Â­
-	// Â²ÃÃŠÃ½Â£ÂºnGridX nGirdY Â£ÂºÂ±Â¾regionÂ¸Ã±Ã—Ã“Ã—Ã¸Â±Ãª
-	// Â²ÃÃŠÃ½Â£ÂºnOffX nOffY Â£ÂºÂ¸Ã±Ã—Ã“Ã„ÃšÂµÃ„Ã†Â«Ã’Ã†ÃÂ¿(ÃÃ±Ã‹Ã˜ÂµÃ£ * 1024 Â¾Â«Â¶Ãˆ)
-	// Â²ÃÃŠÃ½Â£ÂºbCheckNpc Â£ÂºÃŠÃ‡Â·Ã±Ã…ÃÂ¶ÃnpcÃÃÂ³Ã‰ÂµÃ„Ã•ÃÂ°Â­
-	// Â·ÂµÂ»Ã˜Ã–ÂµÂ£ÂºÃ•ÃÂ°Â­Ã€Ã ÃÃ(if Ã€Ã ÃÃ == Obstacle_NULL ÃÃÃ•ÃÂ°Â­)
+	// °´ ÏñËØµã×ø±ê * 1024 µÄ¾«¶ÈÅĞ¶ÏÄ³¸öÎ»ÖÃÊÇ·ñÕÏ°­
+	// ²ÎÊı£ºnGridX nGirdY £º±¾region¸ñ×Ó×ø±ê
+	// ²ÎÊı£ºnOffX nOffY £º¸ñ×ÓÄÚµÄÆ«ÒÆÁ¿(ÏñËØµã * 1024 ¾«¶È)
+	// ²ÎÊı£ºbCheckNpc £ºÊÇ·ñÅĞ¶ÏnpcĞÎ³ÉµÄÕÏ°­
+	// ·µ»ØÖµ£ºÕÏ°­ÀàĞÍ(if ÀàĞÍ == Obstacle_NULL ÎŞÕÏ°­)
 	BYTE		GetBarrierMin(int nGridX, int nGridY, int nOffX, int nOffY, BOOL bCheckNpc, BOOL bCheckObs);
 
-	DWORD		GetTrap(int MapX, int MapY);						//	ÂµÃƒÂµÂ½TrapÂ±Ã ÂºÃ…
+	DWORD		GetTrap(int MapX, int MapY);						//	µÃµ½Trap±àºÅ
 	inline BOOL		IsActive() 
 	{
 #ifdef _SERVER
@@ -112,7 +112,7 @@ public:
 	int			FindObjectNear(int nX1, int nY1);
 	int			FindObject(int nObjID);
 	void*		GetObjNode(int nIdx);
-	int			SearchNpc(DWORD dwNpcID);		// Ã‘Â°Ã•Ã’Â±Â¾Ã‡Ã¸Ã“Ã²Ã„ÃšÃŠÃ‡Â·Ã±Ã“ÃÃ„Â³Â¸Ã¶Ã–Â¸Â¶Â¨ id ÂµÃ„ npc (zroc add)
+	int			SearchNpc(DWORD dwNpcID);		// Ñ°ÕÒ±¾ÇøÓòÄÚÊÇ·ñÓĞÄ³¸öÖ¸¶¨ id µÄ npc (zroc add)
 	int			SearchNpcSettingIdx(int  nNpcSettingIdx);
 	int			SearchNpcName(const char* szName);
 #ifdef _SERVER

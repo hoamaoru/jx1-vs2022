@@ -8,21 +8,6 @@
 //---------------------------------------------------------------------------
 #ifndef KCore_H
 #define KCore_H
-#include <winsock2.h>
-#include <windows.h>
-//---------------------------------------------------------------------------
-#pragma warning (disable: 4512)
-#pragma warning (disable: 4786)
-#pragma warning (disable: 4244)
-//---------------------------------------------------------------------------
-#ifndef MAX
-#define MAX(x, y)					((x) > (y) ? (x) : (y))
-#define MIN(x, y)					((x) < (y) ? (x) : (y))
-#endif
-
-#ifndef ZeroStruct
-#define ZeroStruct(buf)					ZeroMemory(&(buf), sizeof(buf))
-#endif
 //---------------------------------------------------------------------------
 #ifdef _STANDALONE
 #define CORE_API

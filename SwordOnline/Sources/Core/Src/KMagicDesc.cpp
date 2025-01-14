@@ -313,7 +313,8 @@ const char MAGIC_ATTRIB_STRING[][100] =
 	"missle_exp_rev5",					//300
 	"missle_exp_end",					//301
 	"ignorenegativestate_p",			//302
-	"normal_end",						//303
+	"expenhance_s",						//303
+	"normal_end",						//304
 };
 
 

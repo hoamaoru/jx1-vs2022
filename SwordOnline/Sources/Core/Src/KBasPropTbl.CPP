@@ -4,8 +4,8 @@
 // File:	KBasPropTbl.CPP
 // Date:	2002.08.14
 // Code:	DongBo
-// Desc:    cpp file. ï¿½ï¿½ï¿½Ä¼ï¿½Êµï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½tab fileï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ßµÄ³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½,
-//			ï¿½ï¿½ï¿½ï¿½ï¿½É¶ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½
+// Desc:    cpp file. ±¾ÎÄ¼þÊµÏÖµÄÀàÓÃÓÚ´Ótab fileÖÐ¶Á³öµÀ¾ßµÄ³õÊ¼ÊôÐÔ,
+//			²¢Éú³É¶ÔÓ¦µÄÊôÐÔ±í
 //---------------------------------------------------------------------------
 
 #include "KCore.h"
@@ -40,16 +40,16 @@
 #define		TABFILE_HOODS				"Hoods.txt"
 #define		TABFILE_CLOAK				"Cloak.txt"
 
-// ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½Ä½á¹¹ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ï¿½ï¿½tabfileï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÔµÄ³ï¿½Ê¼Öµ
+// ÒÔÏÂ¶¨ÒåµÄ½á¹¹ÓÃÓÚ¸¨Öú´ÓtabfileÖÐ¶Á³öÊôÐÔµÄ³õÊ¼Öµ
 typedef struct tagPROPINFO
 {
-	int		m_nType;		// ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ PI_VARTYPE_...Ïµï¿½Ð¶ï¿½ï¿½ï¿½
+	int		m_nType;		// ÊôÐÔµÄÀàÐÍ. Ïê¼û PI_VARTYPE_...ÏµÁÐ¶¨Òå
 	union
 	{
-	char*	m_pszBuf;		// Ö¸ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
-	int*	m_pnData;		// Ö¸ï¿½ï¿½intï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
+	char*	m_pszBuf;		// Ö¸Ïò×Ö·û´®»º³åÇøµÄÖ¸Õë
+	int*	m_pnData;		// Ö¸Ïòint±äÁ¿µÄÖ¸Õë
 	}m_pData;
-	int		m_nBufSize;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½
+	int		m_nBufSize;		// »º³åÇøµÄ³¤¶È
 } PROPINFO;
 #define		PI_VARTYPE_CHAR		0
 #define		PI_VARTYPE_INT		1
@@ -80,33 +80,33 @@ char*	TABFILE_EQUIPMENT[] =
 //=============================================================================
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½tab fileï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	pTF: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½, ï¿½Ã´Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡tab file
-			nRow: ï¿½ï¿½ï¿½ï¿½nRowï¿½ï¿½ï¿½Â¼
-			pPI[i].m_nType: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â¼ï¿½Ðµï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
-			pPI[i].m_pData: ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			cbFields: Ã¿ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, m_pBuf Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	´Ótab fileÖÐ¶ÁÈëÌØ¶¨µÄÊý¾Ý¼ÇÂ¼
+	Èë¿Ú:	pTF: ¹¤¾ßÀàÖ¸Õë, ÓÃ´Ë¹¤¾ßÀà¶ÁÈ¡tab file
+			nRow: ¶ÁµÚnRowÏî¼ÇÂ¼
+			pPI[i].m_nType: ¸ø³öÓû¶ÁµÄ¼ÇÂ¼ÖÐµÚi¸öÓòµÄÀàÐÍ, ¿ÉÄÜÊÇÕûÐÍ»ò×Ö·û´®
+			pPI[i].m_pData: ½«Êý¾Ý¶Áµ½´Ë»º³åÇøÖÐ
+			cbFields: Ã¿Ïî¼ÇÂ¼°üº¬ÕâÃ´¶àµÄÓò
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, m_pBuf Ö¸Ïò·ÖÅäµÄÄÚ´æ
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL LoadRecord(IN KTabFile* pTF, IN int nRow,
 				IN OUT const PROPINFO* pPI, IN int cbFields)
 {
 	BOOL bEC = TRUE;
 
-	nRow += 2;	// ï¿½ï¿½1: ï¿½ï¿½ï¿½ï¿½tabfileï¿½Äµï¿½Ò»ï¿½ï¿½. ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½
-				// ï¿½Ù¼ï¿½1: KTabFile::GetInteger()ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½nRowï¿½ï¿½1ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
+	nRow += 2;	// ¼Ó1: Ìø¹ýtabfileµÄµÚÒ»ÐÐ. ¸ÃÐÐ¸ø³öµÄÊÇ¸÷ÁÐµÄÃû³Æ
+				// ÔÙ¼Ó1: KTabFile::GetInteger()º¯ÊýÒªÇónRow´Ó1¿ªÊ¼ËãÆð
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	for (int n = 0; n < cbFields; n++)
 	{
 		if (PI_VARTYPE_INT == (pPI+n)->m_nType)
-		{	// ï¿½ï¿½ï¿½ï¿½ int ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		{	// ¶ÁÈë int ÐÍÊý¾Ý
 			if (FALSE == pTF->GetInteger(nRow, n+1, -1, (pPI+n)->m_pData.m_pnData))
 				{ _ASSERT(FALSE); bEC = FALSE; break; }
 		}
 		else
-		{	// ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		{	// ¶ÁÈë×Ö·û´®ÐÍÊý¾Ý
 			_ASSERT(PI_VARTYPE_CHAR == (pPI+n)->m_nType);
 
 			if (FALSE == pTF->GetString(nRow, n+1, "", (pPI+n)->m_pData.m_pszBuf,
@@ -128,12 +128,12 @@ KLibOfBPT::~KLibOfBPT()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½Ü¿Ø£ï¿½ï¿½ï¿½tab fileï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ä§ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½m_BPTWeapon,m_BPTWeaponDirtyï¿½È³ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ£º	×Ü¿Ø£¬´Ótab fileÖÐ¶ÁÈëµÀ¾ß,Ä§·¨µÈÔ­Ê¼Êý¾Ý
+	³ö¿Ú:	Ïà¹ØÊý¾Ý´æÔÚm_BPTWeapon,m_BPTWeaponDirtyµÈ³ÉÔ±±äÁ¿ÖÐ
 ******************************************************************************/
 BOOL KLibOfBPT::Init()
 {
-	// ï¿½ï¿½Ê¼ï¿½ï¿½
+	// ³õÊ¼»¯
 	KBasicPropertyTable*	paryBPT[] = {	
 											&m_BPTMeleeWeapon,
 											&m_BPTRangeWeapon,
@@ -161,11 +161,11 @@ BOOL KLibOfBPT::Init()
 											&m_BPTMagicScript,
 											&m_BPTMagicAttrib,
 										};
-	// ï¿½ï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ½«tab fileÖð¸ö¶ÁÈë
 	const int cbNumOfTables = sizeof(paryBPT)/sizeof(paryBPT[0]);
 	for (int i = 0; i < cbNumOfTables; i++)
 	{
-		if (i < 17)	// ×°ï¿½ï¿½ï¿½ï¿½ï¿½â´¦ï¿½ï¿½
+		if (i < 17)	// ×°±¸ÌØÊâ´¦Àí
 		{
 			KBPT_Equipment* pTemp = (KBPT_Equipment *)paryBPT[i];
 			pTemp->Init(i);
@@ -184,10 +184,10 @@ BOOL KLibOfBPT::Init()
 			{ _ASSERT(FALSE); return FALSE; }
 	}
 
-	// ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½
+	// ¹¹ÔìÄ§·¨ÊôÐÔ±í
 	InitMALib();
     
-    // ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ¹¹ÔìÄ§·¨ÊôÐÔË÷Òý±í
     // add by Freeway Chen in 2003.5.30
     InitMAIT();
 
@@ -195,10 +195,10 @@ BOOL KLibOfBPT::Init()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ï¿½é£¬ï¿½ï¿½ï¿½ï¿½(Ç°ï¿½ï¿½×ºï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Í¡ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½)
-            È·ï¿½ï¿½Ò»ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ð±ï¿½
-	ï¿½ï¿½ï¿½:	m_BPTMagicAttrib: ï¿½Úºï¿½ï¿½ï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ m_CMAIT ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ð±ï¿½
+	¹¦ÄÜ£º	½¨Á¢Ò»¸öËÄÎ¬µÄÊý×é£¬ÀûÓÃ(Ç°ºó×º¡¢ÎïÆ·ÀàÐÍ¡¢ÎåÐÐ¡¢¼¶±ð)
+            È·¶¨Ò»¸öÄ§·¨ÊôÐÔµÄË÷ÒýÖµÁÐ±í
+	Èë¿Ú:	m_BPTMagicAttrib: ÄÚº¬´Ótab file¶ÁÈëµÄÈ«²¿Ä§·¨ÊôÐÔ
+	³ö¿Ú:	ËÄÎ¬Êý×é m_CMAIT ·Ö±ðÌî³äÏàÓ¦µÄË÷ÒýÖµÁÐ±í
 ******************************************************************************/
 // Add by Freeway Chen in 2003.5.30
 BOOL KLibOfBPT::InitMAIT()
@@ -234,7 +234,7 @@ BOOL KLibOfBPT::InitMAIT()
         for (nType = 0; nType < MATF_CBDR; nType++)
         {
             if ((pItem->m_DropRate[nType]) == 0)
-                continue; // ï¿½ï¿½ï¿½Ã»ï¿½Ð¸ï¿½ï¿½Ê³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
+                continue; // Èç¹ûÃ»ÓÐ¸ÅÂÊ³öÏÖÕâ¸öÀàÐÍ¾ÍÌøµ½ÏÂÒ»¸ö
             
             nSeriesMin = nSeriesMax = pItem->m_nClass;
             if ((pItem->m_nClass) == -1)
@@ -287,7 +287,7 @@ BOOL KLibOfBPT::InitMAIT()
                     }
 
                     sprintf(szOutputString, 
-                        "[Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]m_CMAIT[%d][%d][%d][%d]: Count = %3d, %s  \n",
+                        "[Ä§·¨ÊôÐÔ]m_CMAIT[%d][%d][%d][%d]: Count = %3d, %s  \n",
                         nPrefixPostfix,
                         nType,
                         nSeries,
@@ -312,43 +312,43 @@ BOOL KLibOfBPT::InitMAIT()
 
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½Í³ï¿½Æ³ï¿½Ã¿ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð©ï¿½ï¿½ï¿½Üµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	m_BPTMagicAttrib: ï¿½Úºï¿½ï¿½ï¿½tab fileï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	Ô­Ê¼ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½m_CMATï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			m_CMAT[i]ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½iï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ£º	¸ù¾ÝÔ­Ê¼µÄÄ§·¨ÊôÐÔ±í£¬Í³¼Æ³öÃ¿ÖÖ×°±¸¸÷ÓÐÄÄÐ©¿ÉÄÜµÄÄ§·¨ÊôÐÔ
+	Èë¿Ú:	m_BPTMagicAttrib: ÄÚº¬´Ótab file¶ÁÈëµÄÈ«²¿Ä§·¨ÊôÐÔ
+	³ö¿Ú:	Ô­Ê¼µÄÄ§·¨ÊôÐÔ±í±»·ÖÀà, ·ÖÀàºóµÄÊý¾Ý´æÈëm_CMATÊý×éÖÐ
+			m_CMAT[i]ÖÐ¸ø³öÁËÊÊÓÃÓÚµÚiÖÖ×°±¸µÄÈ«²¿Ä§·¨ÊôÐÔ
 ******************************************************************************/
 BOOL KLibOfBPT::InitMALib()
 {
 	BOOL bEC = FALSE;
 
-	// È·ï¿½ï¿½Ã¿ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ö¿ï¿½ï¿½Üµï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    int naryMACount[2][MATF_CBDR];	// ï¿½ï¿½iï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½naryMACount[0][i]ï¿½Ö¿ï¿½ï¿½Üµï¿½Ç°×º
-									//			  ï¿½ï¿½naryMACount[1][i]ï¿½Ö¿ï¿½ï¿½ÜµÄºï¿½×º
+	// È·¶¨Ã¿ÖÖ×°±¸¸÷ÓÐ¶àÉÙÖÖ¿ÉÄÜµÄÄ§·¨ÊôÐÔ
+    int naryMACount[2][MATF_CBDR];	// µÚiÖÖ×°±¸¹²ÓÐnaryMACount[0][i]ÖÖ¿ÉÄÜµÄÇ°×º
+									//			  ºÍnaryMACount[1][i]ÖÖ¿ÉÄÜµÄºó×º
 	m_BPTMagicAttrib.GetMACount((int*)naryMACount);
 
-	// ï¿½ï¿½ï¿½ï¿½È¡ï¿½Øµï¿½ï¿½ï¿½Öµï¿½ï¿½Îªï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ¸ù¾ÝÈ¡»ØµÄÊýÖµ£¬Îª¸÷×°±¸µÄÄ§·¨ÊôÐÔË÷Òý±í·ÖÅäÄÚÈÝ
 	for (int i = 0; i < MATF_CBDR - 1; i++)	// -1 because of horse
 	{
-		_ASSERT(naryMACount[0][i] > 0);	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ò»ï¿½ï¿½Ä§ï¿½ï¿½Ç°×ºï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½×°ï¿½ï¿½
-		_ASSERT(naryMACount[1][i] > 0);	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ò»ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½×°ï¿½ï¿½
+		_ASSERT(naryMACount[0][i] > 0);	// ²»¿ÉÄÜÃ»ÓÐÒ»¸öÄ§·¨Ç°×ºÊÊÓÃÓÚ¸Ã×°±¸
+		_ASSERT(naryMACount[1][i] > 0);	// ²»¿ÉÄÜÃ»ÓÐÒ»¸öÄ§·¨ºó×ºÊÊÓÃÓÚ¸Ã×°±¸
 		if (FALSE == m_CMAT[0][i].GetMemory(naryMACount[0][i]))
 			return bEC;
 		if (FALSE == m_CMAT[1][i].GetMemory(naryMACount[1][i]))
 			return bEC;
 	}
 
-	// ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	const int nNumOfMA = m_BPTMagicAttrib.NumOfEntries();	// Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½
+	// ±éÀúÄ§·¨ÊôÐÔ±í£¬½¨Á¢Æð¸÷×°±¸µÄÄ§·¨ÊôÐÔË÷Òý±í
+	const int nNumOfMA = m_BPTMagicAttrib.NumOfEntries();	// Ä§·¨ÊôÐÔµÄ×ÜÊý
 	_ASSERT(nNumOfMA > 0);
-	int m, n;		// ï¿½ï¿½mï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½nï¿½ï¿½×°ï¿½ï¿½
-	for (m = 0; m < nNumOfMA; m++)				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int m, n;		// µÚmÏîÄ§·¨ÊôÐÔÊÊÓÃÓÚµÚnÖÖ×°±¸
+	for (m = 0; m < nNumOfMA; m++)				// ±éÀúËùÓÐÄ§·¨ÊôÐÔ
 	{
 		const KMAGICATTRIB_TABFILE* pRec;
 		pRec = m_BPTMagicAttrib.GetRecord(m);		
-		for (n = 0; n < MATF_CBDR; n++)			// ï¿½ï¿½ï¿½ï¿½MATF_CBDRï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½
-		{	// È·ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð©×°ï¿½ï¿½
+		for (n = 0; n < MATF_CBDR; n++)			// ¹²ÓÐMATF_CBDRÖÖ×°±¸´øÄ§·¨
+		{	// È·ÈÏÄ§·¨ÊôÐÔÊÊÓÃÓÚÄÄÐ©×°±¸
 			if (0 != pRec->m_DropRate[n])
-			{	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ëµï¿½ï¿½ï¿½ï¿½mï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½nï¿½ï¿½×°ï¿½ï¿½
+			{	// ÔËÐÐÖÁ´Ë, ËµÃ÷µÚmÏîÄ§·¨ÊôÐÔÊÊÓÃÓÚµÚnÖÖ×°±¸
 				int nPos;
 				nPos = (0 == pRec->m_nPos) ? 1 : 0;
 				m_CMAT[nPos][n].Set(m);
@@ -379,7 +379,7 @@ const int KLibOfBPT::GetPlatinaEquipNumber() const
 	return m_BPTPlatinaEquip.GetRecordCount();
 }
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½CMAT
+	¹¦ÄÜ£º	»ñÈ¡Ö¸¶¨µÄCMAT
 ******************************************************************************/
 const KBPT_ClassifiedMAT* KLibOfBPT::GetCMAT(int nPos, int i) const
 {
@@ -393,7 +393,7 @@ const KBPT_ClassifiedMAT* KLibOfBPT::GetCMAT(int nPos, int i) const
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½Ü£ï¿½	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½CMAIT
+	¹¦ÄÜ£º	»ñÈ¡Ö¸¶¨µÄCMAIT
 ******************************************************************************/
 // Add by Freeway Chen in 2003.5.30
 const KBPT_ClassMAIT*       KLibOfBPT::GetCMIT(IN int nPrefixPostfix, IN int nType, IN int nSeries, int nLevel) const
@@ -649,11 +649,11 @@ const KBASICPROP_EQUIPMENT_PLATINA* KLibOfBPT::FindEquipmentUnique(IN int a, IN 
 	return 0;// TODO:m_BPTEquipment_Unique.FindRecord(a, b, c);
 }
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½Ò©Æ·ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	nType: Ò©Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nLevel: Ò©Æ·ï¿½Ä¼ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¼ï¿½Â¼ï¿½ï¿½Ö¸ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄÒ©Æ·µÄÊôÐÔ¼ÇÂ¼
+	Èë¿Ú:	nType: Ò©Æ·µÄÀàÐÍ
+			nLevel: Ò©Æ·µÄ¼¶±ð
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¼ÇÂ¼µÄÖ¸Õë
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_MEDICINE* KLibOfBPT::FindMedicine(IN int nType, IN int nLevel) const
 {
@@ -661,10 +661,10 @@ const KBASICPROP_MEDICINE* KLibOfBPT::FindMedicine(IN int nType, IN int nLevel) 
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½Ä¿ï¿½Ê¯ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	i: Ö¸ï¿½ï¿½ï¿½ï¿½Ê¯
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¼ï¿½Â¼ï¿½ï¿½Ö¸ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄ¿óÊ¯µÄÊôÐÔ¼ÇÂ¼
+	Èë¿Ú:	i: Ö¸¶¨¿óÊ¯
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¼ÇÂ¼µÄÖ¸Õë
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EVENTITEM* KLibOfBPT::GetEvent(IN int i) const
 {
@@ -691,7 +691,7 @@ KBasicPropertyTable::~KBasicPropertyTable()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½Â¼tab fileï¿½Ð¹ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½Â¼
+	¹¦ÄÜ:	¼ÇÂ¼tab fileÖÐ¹²ÓÐ¶àÉÙÏîÊý¾Ý¼ÇÂ¼
 ******************************************************************************/
 void KBasicPropertyTable::SetCount(int cbCount)
 {
@@ -701,11 +701,11 @@ void KBasicPropertyTable::SetCount(int cbCount)
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½,ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½tab fileï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	m_nNumOfEntries: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½Â¼
-			m_nSizeOfEntry: Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½Â¼ï¿½Ä´ï¿½Ð¡(ï¿½Ö½ï¿½)
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, m_pBuf Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	·ÖÅäÄÚ´æ,ÓÃÓÚ±£´æ´Ótab fileÖÐ¶ÁÈëµÄÊý¾Ý
+	Èë¿Ú:	m_nNumOfEntries: ¹²ÓÐÕâÃ´¶àÏîÊý¾Ý¼ÇÂ¼
+			m_nSizeOfEntry: Ã¿ÏîÊý¾Ý¼ÇÂ¼µÄ´óÐ¡(×Ö½Ú)
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, m_pBuf Ö¸Ïò·ÖÅäµÄÄÚ´æ
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KBasicPropertyTable::GetMemory()
 {
@@ -725,7 +725,7 @@ BOOL KBasicPropertyTable::GetMemory()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½Í·ï¿½ï¿½Ú´ï¿½
+	¹¦ÄÜ:	ÊÍ·ÅÄÚ´æ
 ******************************************************************************/
 void KBasicPropertyTable::ReleaseMemory()
 {
@@ -738,18 +738,18 @@ void KBasicPropertyTable::ReleaseMemory()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½tab fileï¿½Ðµï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	m_szTabFile: ï¿½Ä¼ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, È«ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½ï¿½m_pBufï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
-				m_nNumOfEntries ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	¶ÁÈëtab fileÖÐµÄÈ«²¿Êý¾Ý
+	Èë¿Ú:	m_szTabFile: ÎÄ¼þÃû
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, È«²¿Êý¾Ý¶ÁÈëm_pBufËùÖ¸»º³åÇøÖÐ.
+				m_nNumOfEntries ¸ø³ö¹²¶ÁÈë¶àÉÙÏîÊý¾Ý
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KBasicPropertyTable::Load()
 {
 	BOOL bEC = FALSE;
 	KTabFile	theLoader;
 
-	// ï¿½ï¿½ï¿½ï¿½tab file
+	// ¼ÓÔØtab file
 	g_SetRootPath(NULL);
 
 //	::g_SetFilePath(TABFILE_PATH);
@@ -758,18 +758,18 @@ BOOL KBasicPropertyTable::Load()
 	if (FALSE == theLoader.Load(szFileName))
 		{ _ASSERT(FALSE); return bEC; }
 
-	// È·ï¿½ï¿½fileï¿½Ú¸ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼
-	const int cbItems = theLoader.GetHeight() - 1;	// ï¿½ï¿½Ò»ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,
-	if (cbItems <= 0)							// Êµï¿½ï¿½ï¿½ï¿½ï¿½Ý´Óµï¿½2ï¿½Ð¿ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½.
+	// È·¶¨fileÄÚ¸ø³öÁË¶àÉÙÏî¼ÇÂ¼
+	const int cbItems = theLoader.GetHeight() - 1;	// µÚÒ»ÐÐ¸ø³ö¸÷ÁÐÃû³Æ,
+	if (cbItems <= 0)							// Êµ¼ÊÊý¾Ý´ÓµÚ2ÐÐ¿ªÊ¼¸ø³ö.
 		{ _ASSERT(FALSE); return bEC; }
 	SetCount(cbItems);
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½
+	// ·ÖÅäÄÚ´æ£¬¹¹½¨ÊôÐÔ±í
 	if (FALSE == GetMemory())
 		{ _ASSERT(FALSE); return bEC; }
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int i = 0;
+	// ½«ÊôÐÔ¼ÇÂ¼ÖðÌõ¶ÁÈë
+	int i;
 	for (i = 0; i < cbItems; i++)
 	{
 		if (FALSE == LoadRecord(i, &theLoader))
@@ -814,15 +814,15 @@ BOOL KBPT_Event::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_nMaxStack), 0},
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½Ä¿ï¿½Ê¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	i: Òªï¿½ï¿½ï¿½È¡ï¿½ï¿½iï¿½ï¿½ï¿½Ê¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½Îª-1ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½È¡Ò»ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¿ï¿½Ê¯ï¿½ï¿½ï¿½Ôµï¿½Ö¸ï¿½ï¿½(Ò»ï¿½ï¿½KBASICPROP_EVENTï¿½á¹¹)
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄ¿óÊ¯µÄÊôÐÔ
+	Èë¿Ú:	i: ÒªÇó»ñÈ¡µÚiÏî¿óÊ¯µÄÊôÐÔ. ÈôÎª-1±íÊ¾Ëæ»úÈ¡Ò»¸ö
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¿óÊ¯ÊôÐÔµÄÖ¸Õë(Ò»¸öKBASICPROP_EVENT½á¹¹)
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EVENTITEM* KBPT_Event::GetRecord(int i) const
 {
@@ -870,7 +870,7 @@ BOOL KBPT_MagicScript::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
 	KBASICPROP_MAGICSCRIPT* pBuf = (KBASICPROP_MAGICSCRIPT*)m_pBuf;
-	pBuf = pBuf + i;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;			// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -887,7 +887,7 @@ BOOL KBPT_MagicScript::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_nMaxStack), 0},
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
@@ -937,7 +937,7 @@ BOOL KBPT_TownPortal::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
 	KBASICPROP_TOWNPORTAL* pBuf = (KBASICPROP_TOWNPORTAL*)m_pBuf;
-	pBuf = pBuf + i;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;			// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -954,7 +954,7 @@ BOOL KBPT_TownPortal::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_nMaxStack), 0},
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
@@ -983,7 +983,7 @@ BOOL KBPT_Quest::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
 	KBASICPROP_QUEST* pBuf = (KBASICPROP_QUEST*)m_pBuf;
-	pBuf = pBuf + i;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;			// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -999,7 +999,7 @@ BOOL KBPT_Quest::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_nMaxStack), 0},
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 
 }
@@ -1016,8 +1016,8 @@ const KBASICPROP_QUEST* KBPT_Quest::GetRecord(IN int i) const
 const KBASICPROP_QUEST* KBPT_Quest::FindRecord(IN int nDetailType) const
 {
 	const KBASICPROP_QUEST* pData = NULL;
-	// ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ã·¨. ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½m_nDetailTypeï¿½ï¿½ï¿½ï¿½ï¿½,
-	// ï¿½ï¿½É½ï¿½ï¿½ï¿½ï¿½ã·¨ï¿½Å»ï¿½
+	// ÒÔÏÂÊ¹ÓÃË³Ðò²éÕÒµÄËã·¨. ÈôÔ­Ê¼Êý¾ÝÊÇ°´m_nDetailTypeÅÅÐòµÄ,
+	// Ôò¿É½øÐÐËã·¨ÓÅ»¯
 	for (int i = 0; i < m_nNumOfEntries; i++)
 	{
 		const KBASICPROP_QUEST* pQst;
@@ -1025,7 +1025,7 @@ const KBASICPROP_QUEST* KBPT_Quest::FindRecord(IN int nDetailType) const
 		_ASSERT(NULL != pQst);
 		if (nDetailType == pQst->m_nDetailType)
 		{
-			// ï¿½ï¿½ï¿½Ý²ß»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ == ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤
+			// ¸ù¾Ý²ß»®µÄÉè¼Æ, ÊôÐÔ1ÀàÐÍ == ¾ßÌåÀà±ð. ½øÐÐÑéÖ¤
 //			_ASSERT(nType == pMed->m_nAttrib1_Type);
 			pData = pQst;
 			break;
@@ -1051,9 +1051,9 @@ BOOL KBPT_Medicine::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(pTF != NULL);
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
-	// ï¿½ï¿½Ê¼ï¿½ï¿½
+	// ³õÊ¼»¯
 	KBASICPROP_MEDICINE* pBuf = (KBASICPROP_MEDICINE*)m_pBuf;
-	pBuf = pBuf + i;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;	// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO	aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -1079,15 +1079,15 @@ BOOL KBPT_Medicine::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_aryAttrib[1].nTime), 0},
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½Ò©Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	i: Òªï¿½ï¿½ï¿½È¡ï¿½ï¿½iï¿½ï¿½Ò©Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ò©ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ö¸ï¿½ï¿½(Ò»ï¿½ï¿½KBASICPROP_MEDICINEï¿½á¹¹)
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄÒ©Æ·µÄÊôÐÔ
+	Èë¿Ú:	i: ÒªÇó»ñÈ¡µÚiÏîÒ©Æ·µÄÊôÐÔ
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸ÃÒ©²ÄÊôÐÔµÄÖ¸Õë(Ò»¸öKBASICPROP_MEDICINE½á¹¹)
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_MEDICINE* KBPT_Medicine::GetRecord(int i) const
 {
@@ -1101,8 +1101,8 @@ const KBASICPROP_MEDICINE* KBPT_Medicine::FindRecord(IN int nType,
 													 IN int nLevel) const
 {
 	const KBASICPROP_MEDICINE* pData = NULL;
-	// ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ã·¨. ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½m_nDetailTypeï¿½ï¿½m_nLevelï¿½ï¿½ï¿½ï¿½ï¿½,
-	// ï¿½ï¿½É½ï¿½ï¿½ï¿½ï¿½ã·¨ï¿½Å»ï¿½
+	// ÒÔÏÂÊ¹ÓÃË³Ðò²éÕÒµÄËã·¨. ÈôÔ­Ê¼Êý¾ÝÊÇ°´m_nDetailType¼°m_nLevelÅÅÐòµÄ,
+	// Ôò¿É½øÐÐËã·¨ÓÅ»¯
 	for (int i = 0; i < m_nNumOfEntries; i++)
 	{
 		const KBASICPROP_MEDICINE* pMed;
@@ -1110,7 +1110,7 @@ const KBASICPROP_MEDICINE* KBPT_Medicine::FindRecord(IN int nType,
 		_ASSERT(NULL != pMed);
 		if (nType == pMed->m_nDetailType && nLevel == pMed->m_nLevel)
 		{
-			// ï¿½ï¿½ï¿½Ý²ß»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ == ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤
+			// ¸ù¾Ý²ß»®µÄÉè¼Æ, ÊôÐÔ1ÀàÐÍ == ¾ßÌåÀà±ð. ½øÐÐÑéÖ¤
 //			_ASSERT(nType == pMed->m_nAttrib1_Type);
 			pData = pMed;
 			break;
@@ -1139,9 +1139,9 @@ BOOL KBPT_Equipment::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(pTF != NULL);
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
-	// ï¿½ï¿½Ê¼ï¿½ï¿½
+	// ³õÊ¼»¯
 	KBASICPROP_EQUIPMENT* pBuf = (KBASICPROP_EQUIPMENT*)m_pBuf;
-	pBuf = pBuf + i;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;	// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO	aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -1193,15 +1193,15 @@ BOOL KBPT_Equipment::LoadRecord(int i, KTabFile* pTF)
 
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	i: Òªï¿½ï¿½ï¿½È¡ï¿½ï¿½iï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ö¸ï¿½ï¿½(Ò»ï¿½ï¿½KBASICPROP_EQUIPMENTï¿½á¹¹)
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄ×°±¸µÄÊôÐÔ
+	Èë¿Ú:	i: ÒªÇó»ñÈ¡µÚiÏî×°±¸µÄÊôÐÔ
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã×°±¸ÊôÐÔµÄÖ¸Õë(Ò»¸öKBASICPROP_EQUIPMENT½á¹¹)
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EQUIPMENT* KBPT_Equipment::GetRecord(int i) const
 {
@@ -1212,12 +1212,12 @@ const KBASICPROP_EQUIPMENT* KBPT_Equipment::GetRecord(int i) const
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	nDetailType: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nParticularType: ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½
-			nLevel: ï¿½È¼ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¼ï¿½Â¼ï¿½ï¿½Ö¸ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄ×°±¸ÊôÐÔ¼ÇÂ¼
+	Èë¿Ú:	nDetailType: ¾ßÌåÀà±ð
+			nParticularType: ÏêÏ¸Àà±ð
+			nLevel: µÈ¼¶
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¼ÇÂ¼µÄÖ¸Õë
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EQUIPMENT* KBPT_Equipment::FindRecord( IN int nDetailType,
 														IN int nParticularType,
@@ -1226,8 +1226,8 @@ const KBASICPROP_EQUIPMENT* KBPT_Equipment::FindRecord( IN int nDetailType,
 	_ASSERT(this != NULL);
 	
 	const KBASICPROP_EQUIPMENT* pData = NULL;
-	// ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ã·¨. ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½m_nDetailTypeï¿½ï¿½m_nLevelï¿½ï¿½ï¿½ï¿½ï¿½,
-	// ï¿½ï¿½É½ï¿½ï¿½ï¿½ï¿½ã·¨ï¿½Å»ï¿½
+	// ÒÔÏÂÊ¹ÓÃË³Ðò²éÕÒµÄËã·¨. ÈôÔ­Ê¼Êý¾ÝÊÇ°´m_nDetailType¼°m_nLevelÅÅÐòµÄ,
+	// Ôò¿É½øÐÐËã·¨ÓÅ»¯
 	for (int i = 0; i < m_nNumOfEntries; i++)
 	{
 		const KBASICPROP_EQUIPMENT* pEqu;
@@ -1261,9 +1261,9 @@ BOOL KBPT_Equipment_Gold::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(pTF != NULL);
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
-	// ï¿½ï¿½Ê¼ï¿½ï¿½
+	// ³õÊ¼»¯
 	KBASICPROP_EQUIPMENT_GOLD* pBuf = (KBASICPROP_EQUIPMENT_GOLD*)m_pBuf;
-	pBuf = pBuf + i;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;	// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO	aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -1330,15 +1330,15 @@ BOOL KBPT_Equipment_Gold::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_aryMagicAttribs[7]), 0},
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	i: Òªï¿½ï¿½ï¿½È¡ï¿½ï¿½iï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ö¸ï¿½ï¿½(Ò»ï¿½ï¿½KBASICPROP_EQUIPMENTï¿½á¹¹)
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄ×°±¸µÄÊôÐÔ
+	Èë¿Ú:	i: ÒªÇó»ñÈ¡µÚiÏî×°±¸µÄÊôÐÔ
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã×°±¸ÊôÐÔµÄÖ¸Õë(Ò»¸öKBASICPROP_EQUIPMENT½á¹¹)
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EQUIPMENT_GOLD* KBPT_Equipment_Gold::GetRecord(int i) const
 {
@@ -1349,12 +1349,12 @@ const KBASICPROP_EQUIPMENT_GOLD* KBPT_Equipment_Gold::GetRecord(int i) const
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½Î¨Ò»×°ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	nDetailType: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nParticularType: ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½
-			nLevel: ï¿½È¼ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¼ï¿½Â¼ï¿½ï¿½Ö¸ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄÎ¨Ò»×°±¸ÊôÐÔ¼ÇÂ¼
+	Èë¿Ú:	nDetailType: ¾ßÌåÀà±ð
+			nParticularType: ÏêÏ¸Àà±ð
+			nLevel: µÈ¼¶
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¼ÇÂ¼µÄÖ¸Õë
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EQUIPMENT_GOLD*
 		KBPT_Equipment_Gold::FindRecord(IN int nDetailType,
@@ -1402,9 +1402,9 @@ BOOL KBPT_Equipment_Platina::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(pTF != NULL);
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
-	// ï¿½ï¿½Ê¼ï¿½ï¿½
+	// ³õÊ¼»¯
 	KBASICPROP_EQUIPMENT_PLATINA* pBuf = (KBASICPROP_EQUIPMENT_PLATINA*)m_pBuf;
-	pBuf = pBuf + i;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;	// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO	aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -1479,15 +1479,15 @@ BOOL KBPT_Equipment_Platina::LoadRecord(int i, KTabFile* pTF)
 		//pBuf->m_aryMagicAttribs_10[7] = pBuf->m_aryMagicAttribs_10[7];
 	};
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	return ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0]));
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	i: Òªï¿½ï¿½ï¿½È¡ï¿½ï¿½iï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ö¸ï¿½ï¿½(Ò»ï¿½ï¿½KBASICPROP_EQUIPMENTï¿½á¹¹)
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄ×°±¸µÄÊôÐÔ
+	Èë¿Ú:	i: ÒªÇó»ñÈ¡µÚiÏî×°±¸µÄÊôÐÔ
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã×°±¸ÊôÐÔµÄÖ¸Õë(Ò»¸öKBASICPROP_EQUIPMENT½á¹¹)
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EQUIPMENT_PLATINA* KBPT_Equipment_Platina::GetRecord(int i) const
 {
@@ -1498,12 +1498,12 @@ const KBASICPROP_EQUIPMENT_PLATINA* KBPT_Equipment_Platina::GetRecord(int i) con
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½Î¨Ò»×°ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Â¼
-	ï¿½ï¿½ï¿½:	nDetailType: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			nParticularType: ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½
-			nLevel: ï¿½È¼ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Ã¼ï¿½Â¼ï¿½ï¿½Ö¸ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄÎ¨Ò»×°±¸ÊôÐÔ¼ÇÂ¼
+	Èë¿Ú:	nDetailType: ¾ßÌåÀà±ð
+			nParticularType: ÏêÏ¸Àà±ð
+			nLevel: µÈ¼¶
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸Ã¼ÇÂ¼µÄÖ¸Õë
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KBASICPROP_EQUIPMENT_PLATINA*
 		KBPT_Equipment_Platina::FindRecord(IN int nDetailType,
@@ -1554,9 +1554,9 @@ BOOL KBPT_MagicAttrib_TF::LoadRecord(int i, KTabFile* pTF)
 	_ASSERT(pTF != NULL);
 	_ASSERT(i >= 0 && i < m_nNumOfEntries);
 
-	// ï¿½ï¿½Ê¼ï¿½ï¿½
+	// ³õÊ¼»¯
 	KMAGICATTRIB_TABFILE* pBuf = (KMAGICATTRIB_TABFILE*)m_pBuf;
-	pBuf = pBuf + i;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ pBuf ï¿½ï¿½Ö¸ï¿½á¹¹ï¿½ï¿½
+	pBuf = pBuf + i;	// ¶ÁÈëµÄÊôÐÔ¼ÇÔÚ pBuf ËùÖ¸½á¹¹ÖÐ
 	const PROPINFO	aryPI[] =
 	{
 		{ PI_VARTYPE_CHAR,			pBuf->m_szName, sizeof(pBuf->m_szName)},
@@ -1587,13 +1587,13 @@ BOOL KBPT_MagicAttrib_TF::LoadRecord(int i, KTabFile* pTF)
 		{ PI_VARTYPE_INT,  (char*)&(pBuf->m_DropRate[10]), 0}
 	};
 	
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Öð¸ö¶ÁÈë¸÷ÏîÊôÐÔ
 	if (FALSE == ::LoadRecord(pTF, i, aryPI, sizeof(aryPI)/ sizeof(aryPI[0])))
 		return FALSE;
 
-    pBuf->m_nUseFlag = false;       // ï¿½ï¿½Ê¼ï¿½ï¿½ÎªÃ»ï¿½ï¿½Ê¹ï¿½ï¿½
+    pBuf->m_nUseFlag = false;       // ³õÊ¼»¯ÎªÃ»ÓÐÊ¹ÓÃ
 
-	// ï¿½ï¿½ï¿½ï¿½Í³ï¿½Æ£ï¿½Ã¿ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ä§ï¿½ï¿½ï¿½ï¿½Ä¿
+	// Êý¾ÝÍ³¼Æ£ºÃ¿ÖÖ×°±¸¿ÉÊÊÓÃµÄÄ§·¨ÊýÄ¿
 	for (int n = 0; n < MATF_CBDR; n++)
 	{
 		if (0 != pBuf->m_DropRate[n])
@@ -1607,10 +1607,10 @@ BOOL KBPT_MagicAttrib_TF::LoadRecord(int i, KTabFile* pTF)
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	i: Òªï¿½ï¿½ï¿½È¡ï¿½ï¿½iï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ö¸ï¿½ï¿½(Ò»ï¿½ï¿½KMAGICATTRIB_TABFILEï¿½á¹¹)
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½NULL
+	¹¦ÄÜ:	»ñÈ¡Ö¸¶¨µÄÄ§·¨ÊôÐÔ
+	Èë¿Ú:	i: ÒªÇó»ñÈ¡µÚiÏîÄ§·¨ÊôÐÔ
+	³ö¿Ú:	³É¹¦Ê±·µ»ØÖ¸Ïò¸ÃÄ§·¨ÊôÐÔµÄÖ¸Õë(Ò»¸öKMAGICATTRIB_TABFILE½á¹¹)
+			Ê§°ÜÊ±·µ»ØNULL
 ******************************************************************************/
 const KMAGICATTRIB_TABFILE* KBPT_MagicAttrib_TF::GetRecord(int i) const
 {
@@ -1649,10 +1649,10 @@ KBPT_ClassMAIT::~KBPT_ClassMAIT()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ú´ï¿½
-	ï¿½ï¿½ï¿½:	
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ã£¬Ê§ï¿½Ü·ï¿½ï¿½ï¿½ï¿½ï¿½
-	Ëµï¿½ï¿½:	
+	¹¦ÄÜ:	½«Ë÷Òý±íÇå¿Õ£¬²¢²»ÊÍ·ÅÄÚ´æ
+	Èë¿Ú:	
+	³ö¿Ú:	³É¹¦·µ»Ø·ÇÁã£¬Ê§°Ü·µ»ØÁã
+	ËµÃ÷:	
 ******************************************************************************/
 BOOL KBPT_ClassMAIT::Clear()
 {
@@ -1663,11 +1663,11 @@ BOOL KBPT_ClassMAIT::Clear()
 
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Öµ
-	ï¿½ï¿½ï¿½:	i: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½Î»ï¿½ï¿½È¡Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Öµ
-	Ëµï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎªnItemIndex, ï¿½ï¿½ï¿½ï¿½ï¿½KLibOfBPT::m_BPTMagicAttrib.GetRecord(nItemIndex)
-            ï¿½É»ï¿½Ã¶ï¿½Ó¦ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	´ÓË÷Òý±íÖÐÈ¡Öµ
+	Èë¿Ú:	i: ´ÓË÷Òý±íÖÐ¸ÃÎ»ÖÃÈ¡Öµ
+	³ö¿Ú:	·µ»ØËùÈ¡µÄÖµ
+	ËµÃ÷:	Èô·µ»ØÖµÎªnItemIndex, Ôòµ÷ÓÃKLibOfBPT::m_BPTMagicAttrib.GetRecord(nItemIndex)
+            ¿É»ñµÃ¶ÔÓ¦µÄÄ§·¨ÊôÐÔ
 ******************************************************************************/
 int KBPT_ClassMAIT::Get(int i) const
 {
@@ -1679,18 +1679,18 @@ int KBPT_ClassMAIT::Get(int i) const
 
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½Öµ
-	ï¿½ï¿½ï¿½:	nItemIndex: ï¿½ï¿½ï¿½ï¿½Ö®Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, m_pnTable[m_nNumOfValidData]Îªï¿½ï¿½ï¿½ï¿½Ö®Öµ
-			m_nNumOfValidDataÖ¸ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Î»
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	¸øË÷Òý±í²åÈëÒ»¸öÐÂµÄÖµ
+	Èë¿Ú:	nItemIndex: Óû¸³Ö®Öµ
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, m_pnTable[m_nNumOfValidData]ÎªËù¸³Ö®Öµ
+			m_nNumOfValidDataÖ¸ÏòÏÂÒ»¿ÕÎ»
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KBPT_ClassMAIT::Insert(int nItemIndex)
 {
     int nResult = false;
 
 	_ASSERT(this != NULL);
-	_ASSERT(nItemIndex >= 0);	// nData Îªï¿½ï¿½ï¿½ï¿½ï¿½Â±ï¿½
+	_ASSERT(nItemIndex >= 0);	// nData ÎªÊý×éÏÂ±ê
 
     if (!m_pnTable)
     {
@@ -1740,9 +1740,9 @@ KBPT_ClassifiedMAT::~KBPT_ClassifiedMAT()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
-	ï¿½ï¿½ï¿½:	nCount: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿)
-	ï¿½ï¿½ï¿½ï¿½:	m_pnTable Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
+	¹¦ÄÜ:	ÎªË÷Òý±í·ÖÅäÄÚ´æ
+	Èë¿Ú:	nCount: Ë÷Òý±í´óÐ¡(Êý¾ÝÏîµÄÊýÄ¿)
+	³ö¿Ú:	m_pnTable Ö¸Ïò·ÖÅäµÄÄÚ´æ
 			m_nSize = nCount
 ******************************************************************************/
 BOOL KBPT_ClassifiedMAT::GetMemory(int nCount)
@@ -1764,7 +1764,7 @@ BOOL KBPT_ClassifiedMAT::GetMemory(int nCount)
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½Ú´ï¿½
+	¹¦ÄÜ:	ÊÍ·ÅË÷Òý±íËùÓÃµÄÄÚ´æ
 ******************************************************************************/
 void KBPT_ClassifiedMAT::ReleaseMemory()
 {
@@ -1777,27 +1777,27 @@ void KBPT_ClassifiedMAT::ReleaseMemory()
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	ï¿½ï¿½ï¿½:	nData: ï¿½ï¿½ï¿½ï¿½Ö®Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, m_pnTable[m_nNumOfValidData]Îªï¿½ï¿½ï¿½ï¿½Ö®Öµ
-			m_nNumOfValidDataÖ¸ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Î»
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	¸øË÷Òý±í¸³Öµ
+	Èë¿Ú:	nData: Óû¸³Ö®Öµ
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, m_pnTable[m_nNumOfValidData]ÎªËù¸³Ö®Öµ
+			m_nNumOfValidDataÖ¸ÏòÏÂÒ»¿ÕÎ»
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KBPT_ClassifiedMAT::Set(int nData)
 {
 	_ASSERT(this != NULL);
-	_ASSERT(nData >= 0);	// nData Îªï¿½ï¿½ï¿½ï¿½ï¿½Â±ï¿½
+	_ASSERT(nData >= 0);	// nData ÎªÊý×éÏÂ±ê
 	_ASSERT(m_nNumOfValidData >= 0 && m_nNumOfValidData < m_nSize);
 	m_pnTable[m_nNumOfValidData++] = nData;
 	return TRUE;
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Öµ
-	ï¿½ï¿½ï¿½:	nIndex: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½Î»ï¿½ï¿½È¡Öµ
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Öµ
-	Ëµï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎªi, ï¿½ï¿½ï¿½ï¿½ï¿½KLibOfBPT::m_BPTMagicAttrib.GetRecord(i)ï¿½É»ï¿½ï¿½
-			ï¿½ï¿½Ó¦ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	´ÓË÷Òý±íÖÐÈ¡Öµ
+	Èë¿Ú:	nIndex: ´ÓË÷Òý±íÖÐ¸ÃÎ»ÖÃÈ¡Öµ
+	³ö¿Ú:	·µ»ØËùÈ¡µÄÖµ
+	ËµÃ÷:	Èô·µ»ØÖµÎªi, Ôòµ÷ÓÃKLibOfBPT::m_BPTMagicAttrib.GetRecord(i)¿É»ñµÃ
+			¶ÔÓ¦µÄÄ§·¨ÊôÐÔ
 ******************************************************************************/
 int KBPT_ClassifiedMAT::Get(int nIndex) const
 {
@@ -1807,11 +1807,11 @@ int KBPT_ClassifiedMAT::Get(int nIndex) const
 }
 
 /******************************************************************************
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½:	pnaryBuf: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
-			*pnCount: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¶ï¿½ï¿½Ù¸ï¿½intï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	ï¿½ï¿½ï¿½ï¿½:	ï¿½É¹ï¿½Ê±ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, *pnCount ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¸ï¿½ï¿½ï¿½
-			Ê§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	¹¦ÄÜ:	½«Êý¾Ýµ¼³öµ½¸ø¶¨µÄ»º³åÇøÖÐ
+	Èë¿Ú:	pnaryBuf: ¼¶³åÇøÖ¸Õë
+			*pnCount: »º³åÇø¿ÉÈÝÄÉ¶àÉÙ¸öintÐÍÊý¾Ý
+	³ö¿Ú:	³É¹¦Ê±·µ»Ø·ÇÁã, Êý¾Ý±»µ¼³öµ½»º³åÇøÖÐ, *pnCount ¸ø³öÊý¾Ý¸öÊý
+			Ê§°ÜÊ±·µ»ØÁã
 ******************************************************************************/
 BOOL KBPT_ClassifiedMAT::GetAll(int* pnaryBuf, int* pnCount) const
 {

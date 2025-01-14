@@ -207,7 +207,10 @@ int g_PlayerTimerCallBackFun(void * pOwner, char * szScriptFileName, DWORD dwTim
 	if (!pOwner)
 		return 0;
 	KPlayer * pPlayer = (KPlayer * )pOwner;
-	pPlayer->ExecuteScript(szScriptFileName, "OnTimer", dwTimerTaskId);
+	KNpc *pNpc = (KNpc *)pOwner;
+//	if (!pPlayer || pNpc->m_Index == 0)	// anti bug khi nv ontimer nhung khong online
+//		return 0;
+	pPlayer->ExecuteScript(szScriptFileName, "OnTimer", pNpc->m_Index);
 	return 1;
 };
 

@@ -45,19 +45,23 @@ KPlayerSet::~KPlayerSet()
 
 BOOL	KPlayerSet::Init()
 {
-	int i = 0;
+	int i;
 	
 #ifdef _SERVER
+	m_nNumPlayer = 0;
+	m_nPlayerNumMax = 0;
 	m_ulNextSaveTime = 0;
-	m_ulMaxSaveTimePerPlayer = 60 * 20 * 30;
+	m_ulMaxSaveTimePerPlayer = 30 * 18 ;// * 30
 	m_ulDelayTimePerSave = m_ulMaxSaveTimePerPlayer / MAX_PLAYER;
+
+//	printf("MAX_PLAYER : %d\n",MAX_PLAYER);
 #endif
 
-	// ï¿½Å»ï¿½ï¿½ï¿½ï¿½Ò±ï¿½
+	// ÓÅ»¯²éÕÒ±í
 	m_FreeIdx.Init(MAX_PLAYER);
 	m_UseIdx.Init(MAX_PLAYER);
 
-	// ï¿½ï¿½Ê¼Ê±ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Ø¶ï¿½Îªï¿½ï¿½
+	// ¿ªÊ¼Ê±ËùÓÐµÄÊý×éÔªËØ¶¼Îª¿Õ
 	for (i = MAX_PLAYER - 1; i > 0; i--)
 	{
 		m_FreeIdx.Insert(i);
@@ -174,7 +178,7 @@ int KPlayerSet::Add(LPSTR szPlayerID, void* pGuid)
 	if (!pGuid || !szPlayerID || !szPlayerID[0])
 		return 0;
 
-	int i = 0;
+	int i;
 
 	DWORD dwID = g_FileName2Id(szPlayerID);
 
@@ -193,6 +197,14 @@ int KPlayerSet::Add(LPSTR szPlayerID, void* pGuid)
 		Player[i].SetPlayerIndex(i);
 		m_FreeIdx.Remove(i);
 		m_UseIdx.Insert(i);
+		m_nNumPlayer ++;
+
+
+		if (i > m_nPlayerNumMax)
+		{
+		m_nPlayerNumMax = i;
+		}
+
 		return i;
 	}
 	return 0;
@@ -224,13 +236,13 @@ void KPlayerSet::PrepareRemove(int nIndex)
 	Player[nIndex].ExecuteScript(LOGOUT_SCRIPT, "OnLogout", 0);
 
 //	g_DebugLog("SERVER:Player[%s] has been removed!", Npc[Player[nIndex].m_nIndex].Name);
-	// Í¨Öªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ë¿ªï¿½ï¿½ï¿½ï¿½
+	// Í¨ÖªÁÄÌìºÃÓÑ×Ô¼ºÏÂÏßÁË
+	// Èç¹û×é¶Ó£¬Àë¿ª¶ÓÎé
 	PLAYER_APPLY_LEAVE_TEAM	sLeaveTeam;
 	sLeaveTeam.ProtocolType = c2s_teamapplyleave;
 	sLeaveTeam.bMySelf = FALSE;
 	Player[nIndex].LeaveTeam((BYTE*)&sLeaveTeam);
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Ð£ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Èç¹û½»Ò×ÕýÔÚ½øÐÐ£¬È¡Ïû½»Ò×
 	TRADE_DECISION_COMMAND	sTrade;
 	sTrade.ProtocolType = c2s_tradedecision;
 	sTrade.m_btDecision = 0;
@@ -240,10 +252,10 @@ void KPlayerSet::PrepareRemove(int nIndex)
 		Player[nIndex].SendTradeCancel();
 	if(Player[nIndex].m_cRoom.m_nFlag)
 		Player[nIndex].m_cRoom.LeaveRoom();
-	// PK×´Ì¬È¡ï¿½ï¿½
+	// PK×´Ì¬È¡Ïû
 	Player[nIndex].m_cPK.CloseAll();
 
-//	Player[nIndex].Save();
+	Player[nIndex].Save();
 	Player[nIndex].WaitForRemove();
 }
 
@@ -253,24 +265,24 @@ void KPlayerSet::PrepareLoginFailed(int nIndex)
 		return;
 
 //	g_DebugLog("SERVER:Player[%s] has been removed!", Npc[Player[nIndex].m_nIndex].Name);
-	// Í¨Öªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ë¿ªï¿½ï¿½ï¿½ï¿½
+	// Í¨ÖªÁÄÌìºÃÓÑ×Ô¼ºÏÂÏßÁË
+	// Èç¹û×é¶Ó£¬Àë¿ª¶ÓÎé
 	PLAYER_APPLY_LEAVE_TEAM	sLeaveTeam;
 	sLeaveTeam.ProtocolType = c2s_teamapplyleave;
 	sLeaveTeam.bMySelf = FALSE;
 	Player[nIndex].LeaveTeam((BYTE*)&sLeaveTeam);
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Ð£ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Èç¹û½»Ò×ÕýÔÚ½øÐÐ£¬È¡Ïû½»Ò×
 	TRADE_DECISION_COMMAND	sTrade;
 	sTrade.ProtocolType = c2s_tradedecision;
 	sTrade.m_btDecision = 0;
 	sTrade.m_btFolkGame = 0;
 	Player[nIndex].TradeDecision((BYTE*)&sTrade);
-	// PK×´Ì¬È¡ï¿½ï¿½
+	// PK×´Ì¬È¡Ïû
 	Player[nIndex].m_cPK.CloseAll();
-	// ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½
+	// °ï»á×´Ì¬´¦Àí
 	Player[nIndex].m_cTong.Clear();
 
-	// ï¿½ï¿½ï¿½ï¿½TimeOutï¿½ï¿½ï¿½ï¿½Player
+	// ÀûÓÃTimeOutÀ´ÇåPlayer
 	Player[nIndex].m_nNetConnectIdx = -1;
 	Player[nIndex].m_dwLoginTime = 0;
 }
@@ -280,29 +292,29 @@ void KPlayerSet::PrepareExchange(int i)
 	if (!Player[i].m_bExchangeServer || !Npc[Player[i].m_nIndex].m_bExchangeServer)
 		return;
 
-	// ï¿½ï¿½ï¿½PK×´Ì¬
+	// Çå³ýPK×´Ì¬
 	Player[i].m_cPK.CloseAll();
 
-	// ï¿½ï¿½ï¿½
+	// Àë¶Ó
 	PLAYER_APPLY_LEAVE_TEAM	sLeaveTeam;
 	sLeaveTeam.ProtocolType = c2s_teamapplyleave;
 	sLeaveTeam.bMySelf = FALSE;
 	Player[i].LeaveTeam((BYTE*)&sLeaveTeam);
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Ð£ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	// Èç¹û½»Ò×ÕýÔÚ½øÐÐ£¬È¡Ïû½»Ò×
 	TRADE_DECISION_COMMAND	sTrade;
 	sTrade.ProtocolType = c2s_tradedecision;
 	sTrade.m_btDecision = 0;
 	sTrade.m_btFolkGame = 0;
 	Player[i].TradeDecision((BYTE*)&sTrade);
 
-	Player[i].Save();
+	Player[i].Save(); //TamLTM save 6
 }
 
 
 void KPlayerSet::RemoveQuiting(int nIndex)
 {
-	if (Player[nIndex].m_nNetConnectIdx == -1 || Player[nIndex].m_dwID == 0 || Player[nIndex].m_byLixian != LIXIAN_IDLE)
+	if (Player[nIndex].m_nNetConnectIdx == -1 || Player[nIndex].m_dwID == 0 /*|| Player[nIndex].m_byLixian != LIXIAN_IDLE*/)
 		return;
 
 	if (Player[nIndex].IsWaitingRemove())
@@ -315,12 +327,13 @@ void KPlayerSet::RemoveQuiting(int nIndex)
 			if (nSubWorld >= 0 && nRegion >= 0)
 			{
 				SubWorld[nSubWorld].RemovePlayer(nRegion, nIndex);
+				SubWorld[nSubWorld].m_MissionArray.RemovePlayer(nIndex, Player[nIndex].m_dwID);
 				SubWorld[nSubWorld].m_Region[nRegion].RemoveNpc(Player[nIndex].m_nIndex);
 				SubWorld[nSubWorld].m_Region[nRegion].DecRef(Npc[Player[nIndex].m_nIndex].m_MapX, Npc[Player[nIndex].m_nIndex].m_MapY, obj_npc);
 			}	
 			NpcSet.Remove(Player[nIndex].m_nIndex);
 		}
-		// ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½
+		// °ï»á×´Ì¬´¦Àí
 		Player[nIndex].m_cTong.Clear();
 
 		Player[nIndex].m_ItemList.RemoveAll();
@@ -331,6 +344,7 @@ void KPlayerSet::RemoveQuiting(int nIndex)
 		
 		m_FreeIdx.Insert(nIndex);
 		m_UseIdx.Remove(nIndex);
+		m_nNumPlayer --;
 	}
 }	
 
@@ -343,8 +357,8 @@ void KPlayerSet::RemoveLoginTimeOut(int nIndex)
 			int nRegion = Npc[Player[nIndex].m_nIndex].m_RegionIndex;
 			int nSubWorld = Npc[Player[nIndex].m_nIndex].m_SubWorldIndex;
 		
-		if (nSubWorld >= 0)
-			SubWorld[nSubWorld].RemovePlayer(nRegion, nIndex);
+/*		if (nSubWorld >= 0)
+			SubWorld[nSubWorld].RemovePlayer(nRegion, nIndex);*/
 		
 			if (nSubWorld >= 0 && nRegion >= 0)
 			{
@@ -361,6 +375,7 @@ void KPlayerSet::RemoveLoginTimeOut(int nIndex)
 		
 		m_FreeIdx.Insert(nIndex);
 		m_UseIdx.Remove(nIndex);
+		m_nNumPlayer --;
 	}
 }
 
@@ -377,6 +392,7 @@ void KPlayerSet::RemoveExchanging(int nIndex)
 		if (nSubWorld >= 0 && nRegion >= 0)
 		{
 			SubWorld[nSubWorld].RemovePlayer(nRegion, nIndex);
+			SubWorld[nSubWorld].m_MissionArray.RemovePlayer(nIndex, Player[nIndex].m_dwID);
 			SubWorld[nSubWorld].m_Region[nRegion].RemoveNpc(Player[nIndex].m_nIndex);
 			SubWorld[nSubWorld].m_Region[nRegion].DecRef(Npc[Player[nIndex].m_nIndex].m_MapX, Npc[Player[nIndex].m_nIndex].m_MapY, obj_npc);
 		}
@@ -392,6 +408,7 @@ void KPlayerSet::RemoveExchanging(int nIndex)
 		
 		m_FreeIdx.Insert(nIndex);
 		m_UseIdx.Remove(nIndex);
+		m_nNumPlayer --;
 	}
 }
 #endif
@@ -399,7 +416,7 @@ void KPlayerSet::RemoveExchanging(int nIndex)
 /*
 int KPlayerSet::FindClient(int nClient)
 {
-	int i = 0;
+	int i;
 
 	i = m_UseIdx.GetNext(0);
 	while(i)
@@ -430,7 +447,7 @@ void KPlayerSet::ProcessClientMessage(int nIndex, const char* pChar, int nSize)
 #endif
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KLevelAdd::KLevelAdd()
 {
@@ -448,7 +465,7 @@ KLevelAdd::KLevelAdd()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
+//	¹¦ÄÜ£º³õÊ¼»¯
 //---------------------------------------------------------------------------
 BOOL	KLevelAdd::Init()
 {
@@ -491,8 +508,8 @@ BOOL	KLevelAdd::Init()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ä³ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½nLevel  Ä¿ï¿½ï¿½È¼ï¿½
+//	¹¦ÄÜ£º»ñµÃÄ³µÈ¼¶µÄÉý¼¶¾­Ñé
+//	²ÎÊý£ºnLevel  Ä¿±êµÈ¼¶
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetLevelExp(int nLevel, int nTranslife)
 {
@@ -502,7 +519,7 @@ int		KLevelAdd::GetLevelExp(int nLevel, int nTranslife)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º»ñµÃÃ¿¸öÏµÉý¼¶¼ÓÉúÃüµã
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetLifePerLevel(int nSeries)
 {
@@ -512,7 +529,7 @@ int		KLevelAdd::GetLifePerLevel(int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º»ñµÃÃ¿¸öÏµÉý¼¶¼ÓÌåÁ¦µã
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetStaminaPerLevel(int nSex, int nSeries)
 {
@@ -527,7 +544,7 @@ int		KLevelAdd::GetStaminaPerLevel(int nSex, int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º»ñµÃÃ¿¸öÏµÉý¼¶¼ÓÄÚÁ¦µã
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetManaPerLevel(int nSeries)
 {
@@ -537,7 +554,7 @@ int		KLevelAdd::GetManaPerLevel(int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµ»îÁ¦µãÔö¼ÓÒ»µãºóÉúÃüµãÔö³¤
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetLifePerVitality(int nSeries)
 {
@@ -547,7 +564,7 @@ int		KLevelAdd::GetLifePerVitality(int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµ»îÁ¦µãÔö¼ÓÒ»µãºóÌåÁ¦µãÔö³¤
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetStaminaPerVitality(int nSeries)
 {
@@ -557,7 +574,7 @@ int		KLevelAdd::GetStaminaPerVitality(int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµ¾«Á¦µãÔö¼ÓÒ»µãºóÄÚÁ¦µãÔö³¤
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetManaPerEnergy(int nSeries)
 {
@@ -567,7 +584,7 @@ int		KLevelAdd::GetManaPerEnergy(int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµ¾«Á¦µãÔö¼ÓÒ»µãºóÄÚÁ¦µãÔö³¤
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetLeadExpShare(int nSeries)
 {
@@ -577,7 +594,7 @@ int		KLevelAdd::GetLeadExpShare(int nSeries)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½ÏµÄ³ï¿½ï¿½ï¿½È¼ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµÄ³¸öµÈ¼¶µÄ»ù±¾»ð¿¹ÐÔ
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetFireResist(int nSeries, int nLevel)
 {
@@ -589,7 +606,7 @@ int		KLevelAdd::GetFireResist(int nSeries, int nLevel)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½ÏµÄ³ï¿½ï¿½ï¿½È¼ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµÄ³¸öµÈ¼¶µÄ»ù±¾±ù¿¹ÐÔ
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetColdResist(int nSeries, int nLevel)
 {
@@ -601,7 +618,7 @@ int		KLevelAdd::GetColdResist(int nSeries, int nLevel)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½ÏµÄ³ï¿½ï¿½ï¿½È¼ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµÄ³¸öµÈ¼¶µÄ»ù±¾¶¾¿¹ÐÔ
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetPoisonResist(int nSeries, int nLevel)
 {
@@ -613,7 +630,7 @@ int		KLevelAdd::GetPoisonResist(int nSeries, int nLevel)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½ÏµÄ³ï¿½ï¿½ï¿½È¼ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ç¿¹ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµÄ³¸öµÈ¼¶µÄ»ù±¾µç¿¹ÐÔ
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetLightResist(int nSeries, int nLevel)
 {
@@ -625,7 +642,7 @@ int		KLevelAdd::GetLightResist(int nSeries, int nLevel)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½Ã¿ï¿½ï¿½ÏµÄ³ï¿½ï¿½ï¿½È¼ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£ºÃ¿¸öÏµÄ³¸öµÈ¼¶µÄ»ù±¾ÎïÀí¿¹ÐÔ
 //---------------------------------------------------------------------------
 int		KLevelAdd::GetPhysicsResist(int nSeries, int nLevel)
 {
@@ -650,14 +667,14 @@ int		KLevelAdd::GetStaminaBase(int nSex, int nSeries)
 
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KMagicLevelExp::KMagicLevelExp()
 {
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
+//	¹¦ÄÜ£º³õÊ¼»¯
 //---------------------------------------------------------------------------
 BOOL	KMagicLevelExp::Init()
 {
@@ -684,7 +701,7 @@ int		KMagicLevelExp::GetNextExp(int nSkillId, int nLevel)
 	return nExp;
 }
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
+//	¹¦ÄÜ£º¹¹Ôìº¯Êý
 //---------------------------------------------------------------------------
 KTeamLeadExp::KTeamLeadExp()
 {
@@ -696,7 +713,7 @@ KTeamLeadExp::KTeamLeadExp()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Í³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º³õÊ¼»¯£¬¶ÁÈ¡Í³ÂÊÁ¦Êý¾Ý
 //---------------------------------------------------------------------------
 BOOL	KTeamLeadExp::Init()
 {
@@ -715,7 +732,7 @@ BOOL	KTeamLeadExp::Init()
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ë¾­ï¿½ï¿½ï¿½ÃµÈ¼ï¿½ï¿½ï¿½
+//	¹¦ÄÜ£º´«Èë¾­Ñé»ñµÃµÈ¼¶Êý
 //---------------------------------------------------------------------------
 int		KTeamLeadExp::GetLevel(DWORD dwExp, int nCurLeadLevel)
 {
@@ -741,7 +758,7 @@ int		KTeamLeadExp::GetLevel(DWORD dwExp, int nCurLeadLevel)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ë¾­ï¿½ï¿½ï¿½Ã¿É´ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
+//	¹¦ÄÜ£º´«Èë¾­Ñé»ñµÃ¿É´ø¶ÓÔ±Êý
 //---------------------------------------------------------------------------
 int		KTeamLeadExp::GetMemNumFromExp(DWORD dwExp)
 {
@@ -751,7 +768,7 @@ int		KTeamLeadExp::GetMemNumFromExp(DWORD dwExp)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½Ã¿É´ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
+//	¹¦ÄÜ£º´«ÈëµÈ¼¶»ñµÃ¿É´ø¶ÓÔ±Êý
 //---------------------------------------------------------------------------
 int		KTeamLeadExp::GetMemNumFromLevel(int nLevel)
 {
@@ -761,7 +778,7 @@ int		KTeamLeadExp::GetMemNumFromLevel(int nLevel)
 }
 
 //---------------------------------------------------------------------------
-//	ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è¾­ï¿½ï¿½Öµ
+//	¹¦ÄÜ£º´«ÈëµÈ¼¶»ñµÃÉý¼¶ËùÐè¾­ÑéÖµ
 //---------------------------------------------------------------------------
 int		KTeamLeadExp::GetLevelExp(int nLevel)
 {

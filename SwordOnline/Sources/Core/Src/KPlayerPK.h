@@ -105,6 +105,7 @@ public:
 	char*	GetExercisePKName()	{return m_szExerciseAimName;}	// 获得切磋目标名字
 	void	SetPKValue(int nValue);			// 设定PK值
 	int		GetPKValue()	{return m_nPKValue;}	// 获得PK值
+	char*	GetPKNamePlayer(); //TamLTM
 
 	void	Active();
 };
