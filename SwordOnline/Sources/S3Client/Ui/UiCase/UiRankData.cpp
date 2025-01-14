@@ -82,8 +82,8 @@ void KUiRankData::Initialize()
 	AddChild(&m_ReportItem);
 	AddChild(&m_ObjNum);
 	AddChild(&m_SelfGrade);
-	
-	for (int i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
+	int i;
+	for (i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
 	{
 		AddChild(&m_SelfInfoItemName[i]);
 		AddChild(&m_SelfInfoObj[i]);
@@ -107,7 +107,7 @@ void KUiRankData::Initialize()
 	AddChild(&m_TopTenGetFlag);
 	AddChild(&m_TopTenDeath);
 
-	for (int i = 0; i < MISSION_STATNUM; i ++)
+	for (i = 0; i < MISSION_STATNUM; i ++)
 	{
 		AddChild(&m_TopTenPlayFaction[i]);
 		AddChild(&m_TopTenPlayNameTxt[i]);
@@ -150,7 +150,8 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TopPos", "LinePos2", 0, &m_nLinePos2);
 		Ini.GetInteger("TopPos", "TopTenPos", 0, &m_nTopTenPos);	
 		char szKey[6];
-		for (int i = 0; i < 2; i ++)
+		int i;
+		for (i = 0; i < 2; i ++)
 		{
 			sprintf(szKey, "%d", i);		
 			Ini.GetString("FactionName", szKey, "", m_szFaction[i], sizeof(m_szFaction[i]));
@@ -193,7 +194,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("SelfTypeSet", "ReportItem", 0, &nValue);
 		m_ReportItem.SetPosition(nValue, m_nSelfInfoPos);
 		
-		for (int i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
+		for (i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
 		{
 		sprintf(szKey, "%d", i+1);
 		m_SelfInfoItemName[i].Init(&Ini, "WhiteTxt");
@@ -208,7 +209,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		m_ObjNum.SetText(Buff);
 		Ini.GetInteger("SelfTypeSet", "ObjNum", 0, &nValue);
 		m_ObjNum.SetPosition(nValue, m_nSelfInfoPos);
-		for (int i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
+		for (i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
 		{
 			m_SelfInfoObj[i].Init(&Ini, "WhiteTxt");
 			m_SelfInfoObj[i].SetHAlign(WNDTEXT_ES_HALIGN_CENTRE);
@@ -221,7 +222,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		m_SelfGrade.SetText(Buff);
 		Ini.GetInteger("SelfTypeSet", "Grade", 0, &nValue);
 		m_SelfGrade.SetPosition(nValue, m_nSelfInfoPos);
-		for (int i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
+		for (i = 0; i < MAX_SELFINFO_ITEMNAME; i ++)
 		{
 			m_SelfInfoGrade[i].Init(&Ini, "WhiteTxt");
 			m_SelfInfoGrade[i].SetHAlign(WNDTEXT_ES_HALIGN_CENTRE);
@@ -260,7 +261,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("SelfGradeSet", "OperateRemind", 0, &nValue);
 		m_OperateRemind.SetPosition(nValue, m_nSelfGradePos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenPlayFaction[i].Init(&Ini, "WhiteTxt");
@@ -276,7 +277,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "PlayerName", 0, &nValue);
 		m_TopTenPlayName.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenPlayNameTxt[i].Init(&Ini, "WhiteTxt");
@@ -293,7 +294,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "Grade", 0, &nValue);
 		m_TopTenGrade.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenGradeVal[i].Init(&Ini, "WhiteTxt");
@@ -310,7 +311,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "KillNpc", 0, &nValue);
 		m_TopTenKillNpc.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenKillNpcVal[i].Init(&Ini, "WhiteTxt");
@@ -327,7 +328,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "PkPlayer", 0, &nValue);
 		m_TopTenPkPlayer.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenPkPlayerVal[i].Init(&Ini, "WhiteTxt");
@@ -344,7 +345,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "MaxKill", 0, &nValue);
 		m_TopTenMaxKill.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenMaxKillVal[i].Init(&Ini, "WhiteTxt");
@@ -361,7 +362,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "GetItem", 0, &nValue);
 		m_TopTenGetItem.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenGetItemVal[i].Init(&Ini, "WhiteTxt");
@@ -378,7 +379,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "GetFlag", 0, &nValue);
 		m_TopTenGetFlag.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenGetFlagVal[i].Init(&Ini, "WhiteTxt");
@@ -395,7 +396,7 @@ void KUiRankData::LoadScheme(const char* pScheme)
 		Ini.GetInteger("TenTypeSet", "Death", 0, &nValue);
 		m_TopTenDeath.SetPosition(nValue, m_nTopTenPos);
 		
-		for (int i = 0; i < MISSION_STATNUM; i ++)
+		for (i = 0; i < MISSION_STATNUM; i ++)
 		{
 			if(i % m_nLeft_Right)
 				m_TopTenDeathVal[i].Init(&Ini, "WhiteTxt");

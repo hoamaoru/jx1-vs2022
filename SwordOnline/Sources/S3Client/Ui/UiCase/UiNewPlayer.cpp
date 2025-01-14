@@ -22,6 +22,9 @@ extern iCoreShell*		g_pCoreShell;
 #define	SCHEME_INI_NEWPLAYER 	"UiNewPlayer.ini"
 #define	SERIES_INI				"\\Ui\\Series.ini"
 
+//TamLTM check ky tu dat biet
+#define CHECK_KEY_KY_TU_DAT_BIET_INPUT_LOGIN	"!@#$%^&*()|?'{ },./;<>"
+
 static const char* s_szSeriesSectionList[series_num] = 
 {
 	"Gold",
@@ -257,8 +260,7 @@ void KUiNewPlayer::OnClickButton(KWndWindow* pWnd)
 		OnCancel();
 	else
 	{
-		int i;
-		for (i = 0; i < series_num; i++)
+		for (int i = 0; i < series_num; i++)
 		{
 			if (pWnd == m_propTypeInfoTable[i].pBtn)
 			{
@@ -318,10 +320,16 @@ void KUiNewPlayer::UpdateProperty()
 //--------------------------------------------------------------------------
 void KUiNewPlayer::OnOk()
 {
+	//TamLTM add sleep waint create nhan vat.
+	Sleep(2);
+
 	if (GetInputInfo())
 	{
+		//Create nhan vat thanh cong.
 		g_LoginLogic.CreateRole(&m_Info);
+		//Thong bao dang tao nhan vat hoac xoa nhan vat
 		KUiConnectInfo::OpenWindow(CI_MI_CREATING_ROLE, LL_S_IN_GAME, m_Info.NativePlaceId);
+		//An cua so
 		CloseWindow(false);
 	}
 }
@@ -359,13 +367,49 @@ void KUiNewPlayer::Breathe()
 	}
 }
 
+//TamLTM Check ky tu dat biet khi dat ten nhan vat
+/*
+* Cach su dung Ham check ky tu - chuoi ky tu dc kiem tra hop le -> "!@#$"
+	if (-1 != CheckKyTuDatBieString( password, "!@#$" ) )
+	{
+		// Xu lý truong hop ky tu or password hop le
+	}
+	else
+	{ 
+		// ky or password không hop le
+	}
+*/
+int KUiNewPlayer::CheckKyTuDatBieString(char *lpstrBuffer, char *lpstrControl) 
+{
+	char *pSet = NULL;
+    char *lpstrScan = lpstrBuffer;
+ 
+    if ( (lpstrControl == NULL) || (lpstrBuffer == NULL) )
+        return -1;
+ 
+    //Tìm thay ki tu dau tien thì dung lai
+    while (*lpstrScan)
+    {
+        for ( pSet = lpstrControl; *pSet; ++pSet )
+        {
+            if (*pSet == *lpstrScan)
+                return (int)(lpstrScan - lpstrBuffer);
+        }
+        lpstrScan++;
+    }
+	
+	return -1;
+}
+// End code
+
 #include "../ChatFilter.h"
 extern CChatFilter g_ChatFilter;
 
 int KUiNewPlayer::GetInputInfo()
 {
 	int nLen = m_Name.GetText(m_Info.Name, sizeof(m_Info.Name), false);
-	int i;
+
+	int i = 0;
 	for (i = 0; i < nLen;)
 	{
 		unsigned char	cCode = (unsigned char)m_Info.Name[i];
@@ -380,18 +424,44 @@ int KUiNewPlayer::GetInputInfo()
 	if(!g_ChatFilter.IsTextPass(m_Info.Name))
 		i = 0;
 
-	if (i < nLen)
+	// Check ky tu dat biet here
+	if (-1 != CheckKyTuDatBieString(m_Info.Name, CHECK_KEY_KY_TU_DAT_BIET_INPUT_LOGIN))
 	{
+		// Xu lý truong hop ky tu or password hop le
+		//g_DebugLog("Xu lý truong hop ky tu or password không hop le %d + %d", i, nLen);
 		CloseWindow(false);
-		//"ÐÕÃûÖÐ²»¿ÉÒÔ°üº¬¿Õ¸ñ¡¢ÖÆ±í¸ñµÈ×Ö·û£¡"
-		KUiConnectInfo::OpenWindow(CI_MI_INVALID_LOGIN_INPUT1, CI_NS_NEW_ROLE_WND, m_Info.NativePlaceId);	
-		return false;
+
+		//Show error check ky tu dat biet
+		KUiConnectInfo::OpenWindow(CI_MI_INVALID_KYTU_DACBIET_INPUT, CI_NS_NEW_ROLE_WND, m_Info.NativePlaceId);
 	}
-	// ÒÔÏÂÅÐ¶ÏºÏ·¨ÐÔµÄ¹æÔòÓÐ´ýÐÞ¸Ä
-	if (nLen >= LOGIN_ROLE_NAME_MIN_LEN && nLen <= LOGIN_ROLE_NAME_MAX_LEN)
-		return true;
-	CloseWindow(false);
-	//"ÐÕÃû³¤¶È±ØÐëÔÚ3µ½8¸öºº×ÖÒÔÄÚ£¬ÔÊÐíÊäÈëÓ¢ÎÄ×Ö·û£¬ÇëÖØÐÂÊäÈëÐÕÃû£¡"
-	KUiConnectInfo::OpenWindow(CI_MI_INVALID_LOGIN_INPUT2, CI_NS_NEW_ROLE_WND, m_Info.NativePlaceId);
+	else
+	{ 
+		if (i < nLen)
+		{
+			CloseWindow(false);
+			//g_DebugLog("i < nLen %d < %d", i < nLen);
+
+			//Neu nLen ma nho hon input hoac ky tu khong hop le co khoang trong' thi return.
+			//CI_MI_INVALID_LOGIN_INPUT1 -> Tªn nh©n vËt kh«ng thÕ chøa kho¶ng trèng! = 17
+			KUiConnectInfo::OpenWindow(CI_MI_INVALID_LOGIN_INPUT1, CI_NS_NEW_ROLE_WND, m_Info.NativePlaceId);
+
+			return false;
+		}
+
+		if (nLen >= LOGIN_ROLE_NAME_MIN_LEN && nLen <= LOGIN_ROLE_NAME_MAX_LEN)
+			return true;
+
+		// ky or password không hop le
+		//g_DebugLog("ky tu dat biet or password hop le");
+			
+		// Close windown khi input hop le
+		CloseWindow(false);
+
+		//input phai 6 -> 16 ky tu create nhan vat ko hop le thong bao, id: 18=§é dµi tªn ph¶i tõ 6 ®Õn 16 ký tù.
+		KUiConnectInfo::OpenWindow(CI_MI_INVALID_LOGIN_INPUT2, CI_NS_NEW_ROLE_WND, m_Info.NativePlaceId);
+	}
+
+	//end code
+
 	return false;
 } 

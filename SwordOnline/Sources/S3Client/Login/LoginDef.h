@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
+/*****************************************************************************************
 //	界面--login窗口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -79,7 +79,7 @@
 // Add by Freeway Chen in 2003.7.1
 #define LOGIN_R_INVALID_PROTOCOLVERSION     10   //协议版本不兼容，详见 KProtocolDef.h's KPROTOCOL_VERSION
 #define LOGIN_R_FREEZE						11	//被冻结
-
+#define LOGIN_R_ENOUGH						12
 
 struct KLoginStructHead
 {

@@ -1,8 +1,8 @@
-Ôªø// -------------------------------------------------------------------------
-//	√é√Ñ¬º√æ√É√ª		¬£¬∫	UiItem.cpp
-//	Author		¬£¬∫	√Ç√Ä¬π√∞¬ª¬™, Wooy(Wu yue)
-//	¬¥¬¥¬Ω¬®√ä¬±¬º√§	¬£¬∫	2002-9-16 11:26:43
-//	¬π¬¶√Ñ√ú√É√®√ä√∂	¬£¬∫	
+// -------------------------------------------------------------------------
+//	Œƒº˛√˚		£∫	UiItem.cpp
+//	Author		£∫	¬¿πª™, Wooy(Wu yue)
+//	¥¥Ω® ±º‰	£∫	2002-9-16 11:26:43
+//	π¶ƒ‹√Ë ˆ	£∫	
 // -------------------------------------------------------------------------
 #include "KWin32.h"
 #include "KIniFile.h"
@@ -45,9 +45,9 @@ enum WAIT_OTHER_WND_OPER_PARAM
 	UIITEM_WAIT_GETADV,
 };
 
-
+//TamLTM Khung F4
 //--------------------------------------------------------------------------
-//	¬π¬¶√Ñ√ú¬£¬∫√à√ß¬π√ª¬¥¬∞¬ø√ö√ï√Ω¬±¬ª√è√î√ä¬æ¬£¬¨√î√≤¬∑¬µ¬ª√ò√ä¬µ√Ä√Ω√ñ¬∏√ï√´
+//	π¶ƒ‹£∫»Áπ˚¥∞ø⁄’˝±ªœ‘ æ£¨‘Ú∑µªÿ µ¿˝÷∏’Î
 //--------------------------------------------------------------------------
 KUiItem* KUiItem::GetIfVisible()
 {
@@ -57,7 +57,7 @@ KUiItem* KUiItem::GetIfVisible()
 }
 
 //--------------------------------------------------------------------------
-//	¬π¬¶√Ñ√ú¬£¬∫¬¥√≤¬ø¬™¬¥¬∞¬ø√ö¬£¬¨¬∑¬µ¬ª√ò√é¬®√í¬ª¬µ√Ñ√í¬ª¬∏√∂√Ä√†¬∂√î√è√≥√ä¬µ√Ä√Ω
+//	π¶ƒ‹£∫¥Úø™¥∞ø⁄£¨∑µªÿŒ®“ªµƒ“ª∏ˆ¿‡∂‘œÛ µ¿˝
 //--------------------------------------------------------------------------
 KUiItem* KUiItem::OpenWindow(bool bFlag)
 {
@@ -83,7 +83,7 @@ KUiItem* KUiItem::OpenWindow(bool bFlag)
 }
 
 //--------------------------------------------------------------------------
-//	¬π¬¶√Ñ√ú¬£¬∫¬π√ò¬±√ï¬¥¬∞¬ø√ö¬£¬¨√ç¬¨√ä¬±¬ø√â√í√î√ë¬°√î√≤√ä√á¬∑√±√â¬æ¬≥√Ω¬∂√î√è√≥√ä¬µ√Ä√Ω
+//	π¶ƒ‹£∫πÿ±’¥∞ø⁄£¨Õ¨ ±ø…“‘—°‘Ú «∑Ò…æ≥˝∂‘œÛ µ¿˝
 //--------------------------------------------------------------------------
 void KUiItem::CloseWindow(bool bDestroy)
 {
@@ -102,13 +102,13 @@ void KUiItem::CloseWindow(bool bDestroy)
 }
 
 // -------------------------------------------------------------------------
-// ¬π¬¶√Ñ√ú	: ¬≥√µ√ä¬º¬ª¬Ø
+// π¶ƒ‹	: ≥ı ºªØ
 // -------------------------------------------------------------------------
 void KUiItem::Initialize()
 {
 	AddChild(&m_TitleIcon);
 	AddChild(&m_Money);
-	AddChild(&m_Gold);
+	AddChild(&m_ExtPoint);//TamLTm fix xu;
 	AddChild(&m_MoneyIcon);
 	AddChild(&m_GoldIcon);
 	AddChild(&m_GetMoneyBtn);
@@ -127,10 +127,11 @@ void KUiItem::Initialize()
 
 	m_ItemBox.SetContainerId((int)UOC_ITEM_TAKE_WITH);
 	m_nMoney = 0;
+	m_nExtPoint = 0; //TamLTM fix xu;
 	Wnd_AddWindow(this);
 }
 
-//¬ª√Æ¬∂¬Ø¬∫¬Ø√ä√Ω
+//ªÓ∂Ø∫Ø ˝
 void KUiItem::Breathe()
 {
 	if (!g_pCoreShell->GetTradeState())
@@ -148,7 +149,11 @@ void KUiItem::Breathe()
 	}
 	m_nMoney = g_pCoreShell->GetGameData(GDI_PLAYER_HOLD_MONEY, 0, 0);
 	m_Money.Set3IntText(m_nMoney);	
-	m_Gold.SetExtPointText(g_pCoreShell->GetExtPoint());
+
+	m_nExtPoint = g_pCoreShell->GetGameData(GDI_PLAYER_HOLD_MONEY, 1, 0);
+	m_ExtPoint.SetExtPointText(m_nExtPoint);	 //TamLTM fix xu;
+
+//	Sleep(5);
 }
 
 void KUiItem::OnNpcTradeMode(bool bTrue)
@@ -159,7 +164,7 @@ void KUiItem::OnNpcTradeMode(bool bTrue)
 }
 
 //--------------------------------------------------------------------------
-//	¬π¬¶√Ñ√ú¬£¬∫¬π¬π√î√¨¬∫¬Ø√ä√Ω
+//	π¶ƒ‹£∫ππ‘Ï∫Ø ˝
 //--------------------------------------------------------------------------
 void KUiItem::UpdateData()
 {
@@ -168,6 +173,9 @@ void KUiItem::UpdateData()
 	m_nMoney = g_pCoreShell->GetGameData(GDI_PLAYER_HOLD_MONEY, 0, 0);
 	m_Money.Set3IntText(m_nMoney);
 
+	m_nExtPoint = g_pCoreShell->GetGameData(GDI_PLAYER_HOLD_MONEY, 1, 0); //TamLTM fix xu;
+	m_ExtPoint.SetExtPointText(m_nExtPoint);//TamLTM fix xu;
+
 	KUiObjAtRegion* pObjs = NULL;
 	int nCount = g_pCoreShell->GetGameData(GDI_ITEM_TAKEN_WITH, 0, 0);
 	if (nCount == 0)
@@ -175,7 +183,7 @@ void KUiItem::UpdateData()
 
 	if (pObjs = (KUiObjAtRegion*)malloc(sizeof(KUiObjAtRegion) * nCount))
 	{
-		g_pCoreShell->GetGameData(GDI_ITEM_TAKEN_WITH, (unsigned int)pObjs, nCount);//¬µ¬•√è√ü¬≥√å√ñ¬¥√ê√ê¬£¬¨nCount√ñ¬µ¬≤¬ª¬±√§
+		g_pCoreShell->GetGameData(GDI_ITEM_TAKEN_WITH, (unsigned int)pObjs, nCount);//µ•œﬂ≥Ã÷¥––£¨nCount÷µ≤ª±‰
 		for (int i = 0; i < nCount; i++)
 		{
 			KUiDraggedObject no;
@@ -193,7 +201,7 @@ void KUiItem::UpdateData()
 }
 
 // -------------------------------------------------------------------------
-// ¬π¬¶√Ñ√ú	: √é√Ø√Ü¬∑¬±√§¬ª¬Ø¬∏√º√ê√Ç
+// π¶ƒ‹	: ŒÔ∆∑±‰ªØ∏¸–¬
 // -------------------------------------------------------------------------
 void KUiItem::UpdateItem(KUiObjAtRegion* pItem, int bAdd)
 {
@@ -207,9 +215,9 @@ void KUiItem::UpdateItem(KUiObjAtRegion* pItem, int bAdd)
 		Obj.DataW = pItem->Region.Width;
 		Obj.DataH = pItem->Region.Height;
 		if (bAdd)
-			m_ItemBox.AddObject(&Obj, 1);//MrChuBo: Add ƒë·ªì v√†o r∆∞∆°ng
+			m_ItemBox.AddObject(&Obj, 1);
 		else
-			m_ItemBox.RemoveObject(&Obj);//MrChuBo: x√≥a item kh·ªèi r∆∞∆°ng
+			m_ItemBox.RemoveObject(&Obj);
 
 		UiSoundPlay(UI_SI_PICKPUT_ITEM);
 	}
@@ -218,7 +226,7 @@ void KUiItem::UpdateItem(KUiObjAtRegion* pItem, int bAdd)
 }
 
 // -------------------------------------------------------------------------
-// ¬π¬¶√Ñ√ú	: √î√ò√à√´¬Ω√ß√É√¶¬∑¬Ω¬∞¬∏
+// π¶ƒ‹	: ‘ÿ»ÎΩÁ√Ê∑Ω∞∏
 // -------------------------------------------------------------------------
 void KUiItem::LoadScheme(const char* pScheme)
 {
@@ -230,7 +238,7 @@ void KUiItem::LoadScheme(const char* pScheme)
 		m_pSelf->Init(&Ini, "Main");
 		m_pSelf->m_TitleIcon.Init(&Ini, "TitleIcon");
 		m_pSelf->m_Money.Init(&Ini, "Money");
-		m_pSelf->m_Gold.Init(&Ini, "Gold");
+		m_pSelf->m_ExtPoint.Init(&Ini, "Gold");
 		m_pSelf->m_MoneyIcon.Init(&Ini, "MoneyIcon");
 		m_pSelf->m_GoldIcon.Init(&Ini, "GoldIcon");
 		m_pSelf->m_GetMoneyBtn.Init(&Ini, "GetMoneyBtn");
@@ -244,7 +252,7 @@ void KUiItem::LoadScheme(const char* pScheme)
 	}
 }
 
-void KUiItem::OnClickItem(KUiDraggedObject* pItem, bool bDoImmed)//MrChuBo: chuot phai Item
+void KUiItem::OnClickItem(KUiDraggedObject* pItem, bool bDoImmed)
 {
 	if (pItem == NULL || g_pCoreShell == NULL)
 		return;
@@ -295,7 +303,7 @@ void KUiItem::OnClickItem(KUiDraggedObject* pItem, bool bDoImmed)//MrChuBo: chuo
 					Msg.byPriority = 0;
 					Msg.eType = SMT_NORMAL;
 					Msg.uReservedForUi = 0;
-					strcpy(Msg.szMessage, "Nh√än gi√∑ ph√ùm Shift ¬Æ√•ng th√™i nh√än chu√©t ph¬∂i l√ãp t√∏c b¬∏n ¬Æ¬≠√Æc v√ãt ph√àm!");
+					strcpy(Msg.szMessage, "Nh n gi˜ ph›m Shift ÆÂng thÍi nh n chuÈt ph∂i lÀp t¯c b∏n Æ≠Óc vÀt ph»m!");
 					KUiSysMsgCentre::AMessageArrival(&Msg, NULL);
 				}
 			}
@@ -330,7 +338,7 @@ void KUiItem::OnRepairItem(KUiDraggedObject* pItem)
 }
 
 // -------------------------------------------------------------------------
-// ¬π¬¶√Ñ√ú	: ¬¥¬∞¬ø√ö¬∫¬Ø√ä√Ω
+// π¶ƒ‹	: ¥∞ø⁄∫Ø ˝
 // -------------------------------------------------------------------------
 int KUiItem::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
@@ -512,12 +520,14 @@ void KUiItem::OnItemPickDrop(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_PLACE*
 		}
 		else if (eStatus == UIS_S_LOCK_ITEM)
 		{
+			g_UiBase.SetStatus(UIS_S_IDLE);
 			g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 1);
 			return;
 		}
 		else if (eStatus == UIS_S_UNLOCK_ITEM)
 		{
-			g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 0);
+			g_UiBase.SetStatus(UIS_S_IDLE);
+			g_pCoreShell->OperationRequest(GOI_UNLOCKITEM, (unsigned int)(&Pick), 2);
 			return;
 		}
 		else if (GetKeyState(VK_SHIFT) & 0x8000 && !g_UiBase.GetStatus())

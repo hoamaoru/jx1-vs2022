@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
+/*****************************************************************************************
 //	游戏的登陆连接功能逻辑模块
 //	Copyright : Kingsoft 2002-2003
 //	Author	:   Wooy(Wu yue)
@@ -53,7 +53,7 @@ enum LOGIN_LOGIC_RESULT_INFO
 	LL_R_CREATE_ROLE_SUCCESS,		//创建角色成功
 	LL_R_LOGIN_TO_GAMESERVER,		//开始了与游戏世界服务器的连接
 	LL_R_ACCOUNT_NOT_ENOUGH_POINT,	//账号点数不足
-
+	LL_R_ACCOUNT_ENOUGH,			//only 3 acc
 };
 
 #ifndef MAX_PLAYER_PER_ACCOUNT

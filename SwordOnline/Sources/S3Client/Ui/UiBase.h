@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
+/*****************************************************************************************
 //	剑侠界面系统
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -94,6 +94,8 @@ public:
 	void		CloseCommSettingFile(bool bSave);			//关闭保存界面公共设置的文件
 	KIniFile*	GetPrivateSettingFile();					//打开打开当前账号的设置文件
 	void		ClosePrivateSettingFile(bool bSave);		//关闭打开当前账号的设置文件
+	KIniFile*	GetAutoSettingFile();					//save settings AUTO PLAY
+	void		CloseAutoSettingFile(bool bSave);		//??????j??w??????l?
 	KIniFile*	GetCommConfigFile();
 	void		CloseCommConfigFile();
 
@@ -129,7 +131,7 @@ private:
 	KIniFile*	m_pUiCommSettingFile;		//界面公共设置的文件
 	KIniFile*	m_pUiPrivateSettingFile;	//当前账号的设置文件
 	KIniFile*	m_pUiCommConfigFile;
-
+	KIniFile*	m_pUiAutoSettingFile;
 	typedef std::map<std::string, HANDLE> EVENTWNDLIST;
 	EVENTWNDLIST m_EventWndList;
 };

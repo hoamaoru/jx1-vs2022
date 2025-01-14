@@ -11,8 +11,8 @@
 #include "../../../Represent/iRepresent/iRepresentShell.h"
 
 
-extern iRepresentShell*	g_pRepresentShell;
-extern iCoreShell*		g_pCoreShell;
+extern iRepresentShell* g_pRepresentShell;
+extern iCoreShell* g_pCoreShell;
 #define 	SCHEME_INI		"UiAutoPlay.ini"
 
 #define		MENU_ROOM		0x00
@@ -38,7 +38,7 @@ extern iCoreShell*		g_pCoreShell;
 #define		MOVEMPS_KEYNAME				"%d:%d/%d"
 #define		SAVE_SECTION				"AutoPlay"
 
-char szArray_SelRoom[][64] = 
+char szArray_SelRoom[][64] =
 {
 	"Hµnh trang hÕt chç 1 «",
 	"Hµnh trang hÕt chç 2 «",
@@ -47,7 +47,9 @@ char szArray_SelRoom[][64] =
 };
 
 KUiRecovery* KUiRecovery::m_pSelf = NULL;
-
+//TamLTM check
+char* m_GetChatNhamText;
+bool isCheckChatNham;
 void KUiRecovery::Initialize()
 {
 	AddChild(&m_LifeGuide);
@@ -56,50 +58,50 @@ void KUiRecovery::Initialize()
 	AddChild(&m_LifeEdit1);
 	AddChild(&m_LifeEdit2);
 	AddChild(&m_LifeEdit3);
-	
+
 	AddChild(&m_ManaText);
 	AddChild(&m_ManaChecker);
 	AddChild(&m_ManaEdit1);
 	AddChild(&m_ManaEdit2);
 	AddChild(&m_ManaEdit3);
-	
+
 	AddChild(&m_TownPortalGuide);
-	
+
 	AddChild(&m_TPLifeLessCK);
 	AddChild(&m_TPLifeLessTxt);
 	AddChild(&m_TPLifeEdit);
-	
+
 	AddChild(&m_TPManaLessCK);
 	AddChild(&m_TPManaLessTxt);
 	AddChild(&m_TPManaEdit);
-	
+
 	AddChild(&m_TPNotMedicineBloodCK);
 	AddChild(&m_TPNotMedicineBloodTxt);
-	
+
 	AddChild(&m_TPNotMedicineManaCK);
 	AddChild(&m_TPNotMedicineManaTxt);
-	
+
 	AddChild(&m_TPHightMoneyCK);
 	AddChild(&m_TPHightMoneyTxt);
 	AddChild(&m_TPHightMoneyEdit);
-	
+
 	AddChild(&m_TPDamageEquipCK);
 	AddChild(&m_TPDamageEquipTxt);
 	AddChild(&m_TPDamageEquipEdit);
-	
+
 	AddChild(&m_TPNotEquipmentChecker);
 	AddChild(&m_TPNotEquipmentShadow);
 	AddChild(&m_TPNotEquipmentText);
 	AddChild(&m_TPNotEquipmentPopup);
-	
+
 	AddChild(&m_OtherGuide);
-	
+
 	AddChild(&m_OtherAntiPoisonCK);
 	AddChild(&m_OtherAntiPoisonTxt);
-	
+
 	AddChild(&m_OtherEnchaseExpCK);
 	AddChild(&m_OtherEnchaseExpTxt);
-	
+
 	AddChild(&m_OtherRepairEqCK);
 	AddChild(&m_OtherRepairEqTxt);
 
@@ -113,8 +115,25 @@ void KUiRecovery::Initialize()
 	AddChild(&m_OtherInventoryItemTxt); */
 
 	AddChild(&m_OtherReturnFromPortalCK);
-	AddChild(&m_OtherReturnFromPortalTxt);	
+	AddChild(&m_OtherReturnFromPortalTxt);
 	AddChild(&m_OtherReturnFromPortalEdit);
+
+	//Pass ruong
+	AddChild(&m_PassStoreBoxTxt);
+	AddChild(&m_PassStoreBoxEdit);
+
+	//TamLTM rut tien
+	AddChild(&m_RutTienBoxCK);
+	AddChild(&m_RutTienBoxTxt);
+	AddChild(&m_RutTienBoxEdit);
+
+	//end code
+
+	//TamLTM Chat nham
+	AddChild(&m_ChatNhamText); //Chat nham
+	AddChild(&m_ChatNhamShadow); // Chat nham
+	AddChild(&m_ChatNhamEdit); // Chat nham
+	AddChild(&m_ChatNhamButton); //Chat nham button */
 
 	m_nSelRoom = 0;
 }
@@ -127,8 +146,8 @@ void KUiRecovery::LoadScheme(KIniFile* pIni)
 	m_LifeChecker.Init(pIni, "LifeChecker");
 	m_LifeEdit1.Init(pIni, "LifeEdit1");
 	m_LifeEdit2.Init(pIni, "LifeEdit2");
-	m_LifeEdit3.Init(pIni, "LifeEdit3");	
-	
+	m_LifeEdit3.Init(pIni, "LifeEdit3");
+
 	m_ManaText.Init(pIni, "ManaText");
 	m_ManaChecker.Init(pIni, "ManaChecker");
 	m_ManaEdit1.Init(pIni, "ManaEdit1");
@@ -139,52 +158,77 @@ void KUiRecovery::LoadScheme(KIniFile* pIni)
 	m_TPLifeLessCK.Init(pIni, "TPLifeLessCK");
 	m_TPLifeLessTxt.Init(pIni, "TPLifeLessTxt");
 	m_TPLifeEdit.Init(pIni, "TPLifeEdit");
-	
+
 	m_TPManaLessCK.Init(pIni, "TPManaLessCK");
 	m_TPManaLessTxt.Init(pIni, "TPManaLessTxt");
 	m_TPManaEdit.Init(pIni, "TPManaEdit");
-	
+
 	m_TPNotMedicineBloodCK.Init(pIni, "TPNotMedicineBloodCK");
 	m_TPNotMedicineBloodTxt.Init(pIni, "TPNotMedicineBloodTxt");
 
 	m_TPNotMedicineManaCK.Init(pIni, "TPNotMedicineManaCK");
 	m_TPNotMedicineManaTxt.Init(pIni, "TPNotMedicineManaTxt");
-	
+
 	m_TPHightMoneyCK.Init(pIni, "TPHightMoneyCK");
 	m_TPHightMoneyTxt.Init(pIni, "TPHightMoneyTxt");
 	m_TPHightMoneyEdit.Init(pIni, "TPHightMoneyEdit");
-	
+
 	m_TPDamageEquipCK.Init(pIni, "TPDamageEquipCK");
 	m_TPDamageEquipTxt.Init(pIni, "TPDamageEquipTxt");
 	m_TPDamageEquipEdit.Init(pIni, "TPDamageEquipEdit");
-	
+
 	m_TPNotEquipmentChecker.Init(pIni, "TPNotEquipmentChecker");
 	m_TPNotEquipmentText.Init(pIni, "TPNotEquipmentText");
 	m_TPNotEquipmentShadow.Init(pIni, "TPNotEquipmentShadow");
 	m_TPNotEquipmentPopup.Init(pIni, "TPNotEquipmentPopup");
-	
+
 	m_OtherGuide.Init(pIni, "OtherGuide");
 	m_OtherAntiPoisonCK.Init(pIni, "OtherAntiPoisonCK");
 	m_OtherAntiPoisonTxt.Init(pIni, "OtherAntiPoisonTxt");
-	
+
 	m_OtherEnchaseExpCK.Init(pIni, "OtherEnchaseExpCK");
 	m_OtherEnchaseExpTxt.Init(pIni, "OtherEnchaseExpTxt");
-	
+
 	m_OtherRepairEqCK.Init(pIni, "OtherRepairEqCK");
 	m_OtherRepairEqTxt.Init(pIni, "OtherRepairEqTxt");
-	
+
 	m_OtherOpenMedicineCK.Init(pIni, "OtherOpenMedicineCK");
 	m_OtherOpenMedicineTxt.Init(pIni, "OtherOpenMedicineTxt");
 
-	m_OtherInventoryMoneyCK.Init(pIni, "OtherInventoryMoneyCK");		
+	m_OtherInventoryMoneyCK.Init(pIni, "OtherInventoryMoneyCK");
 	m_OtherInventoryMoneyTxt.Init(pIni, "OtherInventoryMoneyTxt");
 
-	m_OtherInventoryItemCK.Init(pIni, "OtherInventoryItemCK");		
+	m_OtherInventoryItemCK.Init(pIni, "OtherInventoryItemCK");
 	m_OtherInventoryItemTxt.Init(pIni, "OtherInventoryItemTxt");
 
-	m_OtherReturnFromPortalCK.Init(pIni, "OtherReturnFromPortalCK");		
+	m_OtherReturnFromPortalCK.Init(pIni, "OtherReturnFromPortalCK");
 	m_OtherReturnFromPortalTxt.Init(pIni, "OtherReturnFromPortalTxt");
 	m_OtherReturnFromPortalEdit.Init(pIni, "OtherReturnFromPortalEdit");
+
+	//Noi nham
+//	m_ChatNhamText.Init(pIni, "ChatNhamText");
+//	m_ChatNhamShadow.Init(pIni, "ChatNhamShadow");
+//	m_ChatNhamEdit.Init(pIni, "ChatNhamEdit");
+//	m_ChatNhamButton.Init(pIni, "ChatNhamButton");
+
+	//Pass ruong
+	m_PassStoreBoxTxt.Init(pIni, "PassStoreBoxTxt");
+	m_PassStoreBoxEdit.Init(pIni, "PassStoreBoxEdit");
+	m_PassStoreBoxEdit.SetMaskCharacter(true);
+
+	//TamLTM rut tien
+	m_RutTienBoxCK.Init(pIni, "RutTienBoxCK");
+	m_RutTienBoxTxt.Init(pIni, "RutTienBoxTxt");
+	m_RutTienBoxEdit.Init(pIni, "RutTienBoxEdit");
+
+	//end
+	//TamLTM check button auto text chat nham
+	isCheckChatNham = false;
+	m_ChatNhamButton.CheckButton(true);
+	m_ChatNhamInputText = ":0ChÕ ®é:0, (xh) Auto (xh) Vâ L©m (!xh) Thiªn §iÓu (!xh).";
+	m_ChatNhamEdit.SetText(m_ChatNhamInputText, 256);
+	m_GetChatNhamText = m_ChatNhamInputText;
+	//end code */
 }
 
 void KUiRecovery::PopupSelRoomNE()
@@ -198,9 +242,9 @@ void KUiRecovery::PopupSelRoomNE()
 	pSelUnitMenu->usMenuFlag |= PM_F_AUTO_DEL_WHEN_HIDE;
 	for (int i = 0; i < nActionDataCount; i++)
 	{
-		if ((i == enumRoomNotEnough1) || 
-			(i == enumRoomNotEnough2) || 
-			(i == enumRoomNotEnough4) || 
+		if ((i == enumRoomNotEnough1) ||
+			(i == enumRoomNotEnough2) ||
+			(i == enumRoomNotEnough4) ||
 			(i == enumRoomNotEnough6)
 			)
 		{
@@ -226,32 +270,32 @@ void KUiRecovery::SetPortalRoomNE(int nSel)
 
 void KUiRecovery::PaintWindow()
 {
-/*	KWndPage::PaintWindow();
-	if	(g_pRepresentShell)
+	KWndPage::PaintWindow();
+	if (g_pRepresentShell)
 	{
 		KRURect	Rect;
 		GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
 		Rect.oPosition.nX += 5;
-		Rect.oPosition.nY += 18;
-		Rect.Color.Color_dw = 0xff808080;
+		Rect.oPosition.nY += 48;
+		Rect.Color.Color_dw = 0xffc0c9ce;
 		GetSize(&Rect.oEndPos.nX, &Rect.oEndPos.nY);
 		Rect.oEndPos.nX += Rect.oPosition.nX - 10;
-		Rect.oEndPos.nY = Rect.oPosition.nY + 32;
+		Rect.oEndPos.nY = Rect.oPosition.nY + 38;
 		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
-		
+
 		Rect.oPosition.nY = Rect.oEndPos.nY + 18;
-		Rect.oEndPos.nY += 80;
+		Rect.oEndPos.nY += 90;
 		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
-		
+
 		Rect.oPosition.nY = Rect.oEndPos.nY + 18;
-		Rect.oEndPos.nY += 80;
-		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);		
-	}*/
+		Rect.oEndPos.nY += 120;
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+	}
 }
 
 int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
 		if (uParam == (unsigned int)(KWndWindow*)&m_LifeChecker)
@@ -265,7 +309,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				m_LifeChecker.CheckButton(false);
 				g_pCoreShell->PAIOperation(GPI_EAT_LIFE, FALSE, NULL, NULL);
-			}			
+			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_ManaChecker)
 		{
@@ -278,7 +322,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				m_ManaChecker.CheckButton(false);
 				g_pCoreShell->PAIOperation(GPI_EAT_MANA, FALSE, NULL, NULL);
-			}			
+			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_TPNotEquipmentChecker)
 		{
@@ -290,7 +334,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			else
 			{
 				m_TPNotEquipmentChecker.CheckButton(false);
-				g_pCoreShell->PAIOperation(GPI_TP_NOT_EQUIPMENT, FALSE, NULL, NULL);				
+				g_pCoreShell->PAIOperation(GPI_TP_NOT_EQUIPMENT, FALSE, NULL, NULL);
 			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_TPNotEquipmentPopup)
@@ -300,12 +344,12 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			if (m_OtherAntiPoisonCK.IsButtonChecked())
 			{
 				m_OtherAntiPoisonCK.CheckButton(true);
-				g_pCoreShell->PAIOperation(GPI_ANTI_POISON, TRUE, NULL, NULL);				
+				g_pCoreShell->PAIOperation(GPI_ANTI_POISON, TRUE, NULL, NULL);
 			}
 			else
 			{
 				m_OtherAntiPoisonCK.CheckButton(false);
-				g_pCoreShell->PAIOperation(GPI_ANTI_POISON, FALSE, NULL, NULL);				
+				g_pCoreShell->PAIOperation(GPI_ANTI_POISON, FALSE, NULL, NULL);
 			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_OtherEnchaseExpCK)
@@ -318,7 +362,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			else
 			{
 				m_OtherEnchaseExpCK.CheckButton(false);
-				g_pCoreShell->PAIOperation(GPI_ENCHASEEXP, FALSE, NULL, NULL);				
+				g_pCoreShell->PAIOperation(GPI_ENCHASEEXP, FALSE, NULL, NULL);
 			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_OtherRepairEqCK)
@@ -345,7 +389,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				m_TPDamageEquipCK.CheckButton(false);
 				g_pCoreShell->PAIOperation(GPI_TP_DAMAGEEQUIP, FALSE, NULL, NULL);
-			}		
+			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_TPHightMoneyCK)
 		{
@@ -378,7 +422,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			if (m_TPNotMedicineManaCK.IsButtonChecked())
 			{
 				m_TPNotMedicineManaCK.CheckButton(true);
-				g_pCoreShell->PAIOperation(GPI_TP_NOT_MEDICINEMANA, TRUE, NULL, NULL);				
+				g_pCoreShell->PAIOperation(GPI_TP_NOT_MEDICINEMANA, TRUE, NULL, NULL);
 			}
 			else
 			{
@@ -391,13 +435,13 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			if (m_TPLifeLessCK.IsButtonChecked())
 			{
 				m_TPLifeLessCK.CheckButton(true);
-				g_pCoreShell->PAIOperation(GPI_TP_LIFE, TRUE, NULL, NULL);				
+				g_pCoreShell->PAIOperation(GPI_TP_LIFE, TRUE, NULL, NULL);
 
 			}
 			else
 			{
 				m_TPLifeLessCK.CheckButton(false);
-				g_pCoreShell->PAIOperation(GPI_TP_LIFE, FALSE, NULL, NULL);			
+				g_pCoreShell->PAIOperation(GPI_TP_LIFE, FALSE, NULL, NULL);
 			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_TPManaLessCK)
@@ -410,8 +454,8 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			else
 			{
 				m_TPManaLessCK.CheckButton(false);
-				g_pCoreShell->PAIOperation(GPI_TP_MANA, FALSE, NULL, NULL);	
-			}		
+				g_pCoreShell->PAIOperation(GPI_TP_MANA, FALSE, NULL, NULL);
+			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_OtherOpenMedicineCK)
 		{
@@ -465,7 +509,43 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				g_pCoreShell->PAIOperation(GPI_RETURNPORTAL, FALSE, NULL, NULL);
 			}
 		}
+		//TamLTM rut tien + pass ruong
+		else if (uParam == (unsigned int)(KWndWindow*)&m_RutTienBoxCK)
+		{
+			if (m_RutTienBoxCK.IsButtonChecked())
+			{
+				m_RutTienBoxCK.CheckButton(true);
+				g_pCoreShell->PAIOperation(GPI_WITHDRAWA, TRUE, NULL, NULL);
+				SendPassInventory();
+			}
+			else
+			{
+				m_RutTienBoxCK.CheckButton(false);
+				g_pCoreShell->PAIOperation(GPI_WITHDRAWA, FALSE, NULL, NULL);
+			}
+		}
+		//end code
+		//TamLTM chat nham button
+		else if (uParam == (unsigned int)(KWndWindow*)&m_ChatNhamButton)
+		{
+			if (m_ChatNhamButton.IsButtonChecked())
+			{
+				m_ChatNhamButton.CheckButton(true);
+				isCheckChatNham = true;
+				m_ChatNhamInputText = " ";
+				m_ChatNhamEdit.GetText(m_ChatNhamInputText, 256, true);
+				m_GetChatNhamText = m_ChatNhamInputText;
+			}
+			else
+			{
+				m_ChatNhamButton.CheckButton(false);
+				isCheckChatNham = false;
+				m_ChatNhamInputText = " ";
+				m_GetChatNhamText = m_ChatNhamInputText;
+			}
+		}
 		break;
+
 	case WND_N_EDIT_CHANGE:
 		OnCheckInput();
 		break;
@@ -476,7 +556,7 @@ int KUiRecovery::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				SetPortalRoomNE(LOWORD(nParam));
 			}
-		}		
+		}
 	default:
 		return KWndPage::WndProc(uMsg, uParam, nParam);
 	}
@@ -488,11 +568,11 @@ void KUiRecovery::LoadSetting(KIniFile* pFile)
 	if (pFile)
 	{
 		int nValue;
-		
+
 		KUiPlayerRuntimeInfo	Info;
 		memset(&Info, 0, sizeof(KUiPlayerRuntimeInfo));
 		g_pCoreShell->GetGameData(GDI_PLAYER_RT_INFO, (int)&Info, 0);
-	
+
 		pFile->GetInteger(SAVE_SECTION, "LifeCK", 1, &nValue);
 		m_LifeChecker.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_EAT_LIFE, nValue > 0, NULL, NULL);
@@ -557,19 +637,19 @@ void KUiRecovery::LoadSetting(KIniFile* pFile)
 		g_pCoreShell->PAIOperation(GPI_TP_DAMAGEEQUIP, nValue > 0, NULL, NULL);
 
 		pFile->GetInteger(SAVE_SECTION, "TPDmgEqV", 3, &nValue);
-		m_TPDamageEquipEdit.SetIntText(nValue);		
-		
+		m_TPDamageEquipEdit.SetIntText(nValue);
+
 		pFile->GetInteger(SAVE_SECTION, "TPRoomNECK", 0, &nValue);
 		m_TPNotEquipmentChecker.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_TP_NOT_EQUIPMENT, nValue > 0, NULL, NULL);
-		
+
 		pFile->GetInteger(SAVE_SECTION, "TPRoomNEV", 0, &nValue);
-		SetPortalRoomNE(nValue);		
-		
+		SetPortalRoomNE(nValue);
+
 		pFile->GetInteger(SAVE_SECTION, "UsePoisonCK", 0, &nValue);
 		m_OtherAntiPoisonCK.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_ANTI_POISON, nValue > 0, NULL, NULL);
-			
+
 		pFile->GetInteger(SAVE_SECTION, "UseEnchaseExpCK", 0, &nValue);
 		m_OtherEnchaseExpCK.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_ENCHASEEXP, nValue > 0, NULL, NULL);
@@ -577,7 +657,7 @@ void KUiRecovery::LoadSetting(KIniFile* pFile)
 		pFile->GetInteger(SAVE_SECTION, "RepairEqCK", 1, &nValue);
 		g_pCoreShell->PAIOperation(GPI_AUTO_REPAIR, nValue > 0, NULL, NULL);
 		m_OtherRepairEqCK.CheckButton(nValue > 0);
-		
+
 		pFile->GetInteger(SAVE_SECTION, "OpenMdc", 1, &nValue);
 		m_OtherOpenMedicineCK.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_OPEN_MEDICINE, nValue > 0, NULL, NULL);
@@ -596,41 +676,45 @@ void KUiRecovery::LoadSetting(KIniFile* pFile)
 
 		pFile->GetInteger(SAVE_SECTION, "ReturnPortalV", 15, &nValue);
 		m_OtherReturnFromPortalEdit.SetIntText(nValue);
-	}	
+
+		//Save rut tien
+		pFile->GetInteger(SAVE_SECTION, "WithDrawaMoney", 0, &nValue);
+		m_RutTienBoxEdit.SetIntText(nValue);
+		//end code
+	}
 }
-		
+
 void KUiRecovery::SaveSetting(KIniFile* pFile)
 {
 	if (pFile)
 	{
-		pFile->WriteInteger(SAVE_SECTION, "LifeCK", 					m_LifeChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "Life1", 						m_LifeEdit1.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "Life2", 						m_LifeEdit2.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "Life3", 						m_LifeEdit3.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "ManaCK", 					m_ManaChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "Mana1", 						m_ManaEdit1.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "Mana2", 						m_ManaEdit2.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "Mana3", 						m_ManaEdit3.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "TPLife", 					m_TPLifeEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "TPMana", 					m_TPManaEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "TPMoney", 					m_TPHightMoneyEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "TPLifeLCK", 					m_TPLifeLessCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPManaLCK", 					m_TPManaLessCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPBloodCK",					m_TPNotMedicineBloodCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPManaCK", 					m_TPNotMedicineManaCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPMoneyCK", 					m_TPHightMoneyCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPDmgEqCK", 					m_TPDamageEquipCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPDmgEqV", 					m_TPDamageEquipEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "TPRoomNECK", 				m_TPNotEquipmentChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "TPRoomNEV", 					m_nSelRoom);		
-		pFile->WriteInteger(SAVE_SECTION, "UsePoisonCK", 				m_OtherAntiPoisonCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "UseEnchaseExpCK",			m_OtherEnchaseExpCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "RepairEqCK", 				m_OtherRepairEqCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "OpenMdc",					m_OtherOpenMedicineCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "InventoryMoney",				m_OtherInventoryMoneyCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "InventoryItem",				m_OtherInventoryItemCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "ReturnPortal",				m_OtherReturnFromPortalCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "ReturnPortalV",				m_OtherReturnFromPortalEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "LifeCK", m_LifeChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "Life1", m_LifeEdit1.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "Life2", m_LifeEdit2.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "Life3", m_LifeEdit3.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "ManaCK", m_ManaChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "Mana1", m_ManaEdit1.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "Mana2", m_ManaEdit2.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "Mana3", m_ManaEdit3.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "TPLife", m_TPLifeEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "TPMana", m_TPManaEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "TPMoney", m_TPHightMoneyEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "TPLifeLCK", m_TPLifeLessCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPManaLCK", m_TPManaLessCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPBloodCK", m_TPNotMedicineBloodCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPManaCK", m_TPNotMedicineManaCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPMoneyCK", m_TPHightMoneyCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPDmgEqCK", m_TPDamageEquipCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPDmgEqV", m_TPDamageEquipEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "TPRoomNECK", m_TPNotEquipmentChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "TPRoomNEV", m_nSelRoom);
+		pFile->WriteInteger(SAVE_SECTION, "UsePoisonCK", m_OtherAntiPoisonCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "UseEnchaseExpCK", m_OtherEnchaseExpCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "RepairEqCK", m_OtherRepairEqCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "OpenMdc", m_OtherOpenMedicineCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "InventoryMoney", m_OtherInventoryMoneyCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "InventoryItem", m_OtherInventoryItemCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "ReturnPortal", m_OtherReturnFromPortalCK.IsButtonChecked());
 	}
 }
 
@@ -653,34 +737,92 @@ void KUiRecovery::OnCheckInput()
 		g_pCoreShell->PAIOperation(GPI_TP_HIGHTMONEYV, m_TPHightMoneyEdit.GetIntNumber(), NULL, NULL);
 		g_pCoreShell->PAIOperation(GPI_TP_DAMAGEEQUIPV, m_TPDamageEquipEdit.GetIntNumber(), NULL, NULL);
 		g_pCoreShell->PAIOperation(GPI_RETURNPORTALSEC, m_OtherReturnFromPortalEdit.GetIntNumber(), NULL, NULL);
+		g_pCoreShell->PAIOperation(GPI_WITHDRAWA_MONEY, m_RutTienBoxEdit.GetIntNumber(), NULL, NULL); // rut tien
+		//Change edit chat nham
+		m_ChatNhamEdit.GetText(m_ChatNhamInputText, 256, true);
+		m_GetChatNhamText = m_ChatNhamInputText;
+		//end code
 	}
 }
+
+//Send pass ruong neu khoa mo? khoa de rut tien
+void KUiRecovery::SendPassInventory()
+{
+	m_PassStoreBoxEdit.GetText(lpszInfo, sizeof(lpszInfo), true);
+	g_pCoreShell->PAIOperation(GPI_PASSREPOSITORY, (unsigned int)lpszInfo, NULL, NULL);
+}
+//end code
+
 ///////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
-char szArray_Pickkind[][64] = 
+char szArray_Pickkind[][64] =
 {
 	"TÊt c¶ trang bÞ",
 	"Trang bÞ trang søc",
 	"Trang bÞ thuéc tÝnh",
 };
 
-char szArray_Equipmagic[MAX_AUTO_FILTERL][2][64] = 
+// char szArray_Equipmagic[MAX_AUTO_FILTERL][2][64] = 
+// {
+	// "Sinh lùc(®)", 		"lifemax_v",
+	// "Néi lùc(®)", 		"manamax_v",
+	// "ThÓ lùc(®)", 		"staminamax_v",
+	// "Phôc håi SL(®)", 	"lifereplenish_v",
+	// "Phôc håi NL(®)", 	"manareplenish_v",
+	// "Phôc håi TL(®)", 	"staminareplenish_v",
+	// "Hót sinh lùc(%)", 	"steallifeenhance_p",
+	// "Hót néi lùc(%)", 	"stealmanaenhance_p",
+	// "Hót thÓ lùc(%)", 	"stealstaminaenhance_p",
+	// "Søc m¹nh(®)", 		"strength_v",
+	// "Th©n ph¸p(®)", 	"dexterity_v",
+	// "Sinh khÝ(®)", 		"vitality_v",
+	// "Néi c«ng(®)", 		"energy_v",
+	// "Phßng thñ(%)", 	"physicsres_p",
+	// "Kh¸ng ®éc(%)", 	"poisonres_p",
+	// "Kh¸ng b¨ng(%)", 	"coldres_p",
+	// "Kh¸ng háa(%)", 	"fireres_p",
+	// "Kh¸ng l«i(%)", 	"lightingres_p",
+	// "Kh¸ng tÊt c¶(%)", 	"allres_p",
+	// "Tèc ®é ch¹y(%)", 	"fastwalkrun_p",
+	// "Tèc ®é ®¸nh(%)", 	"attackspeed_v",
+	// "Ph¶n ®ßn cËn(®)", 	"meleedamagereturn_v",
+	// "STVL ngo¹i(®)", 	"addphysicsdamage_v",
+	// "B¨ng s¸t ngo¹i(®)", "addcolddamage_v",
+	// "§éc s¸t ngo¹i(®)", "addpoisondamage_v",
+	// "STVL ngo¹i(%)", 	"addphysicsdamage_p",
+	// "CHSTTNL(%)", 		"damage2addmana_p",
+	// "May m¾n(%)", 		"lucky_v",
+	// "Bá qua nÐ tr¸nh(%)", "ignoredefense_p",
+	// "§é chÝnh x¸c(®)", 	"attackrating_v",
+	// "STLV néi(®)", 		"addphysicsmagic_v",
+	// "B¨ng s¸t néi(®)", 	"addcoldmagic_v",
+	// "Háa s¸t néi(®)", 	"addfiremagic_v",
+	// "L«i s¸t néi(®)", 	"addlightingmagic_v",
+	// "§éc s¸t néi(®)", 	"addpoisonmagic_v",
+	// "Gi¶m chËm(%)", 	"freezetimereduce_p",
+	// "Gi¶m tróng ®éc(%)", "poisontimereduce_p",
+	// "Gi¶m cho¸ng(%)", 	"stuntimereduce_p",
+	// "Gi¶m th­¬ng(%)", 	"fasthitrecover_v",
+	// "Kü n¨ng vèn cã(®)", "allskill_v",
+// };
+
+char szArray_Equipmagic[MAX_AUTO_FILTERL][2][64] =
 {
 	"Sinh lùc(®)", 		"lifemax_v",
 	"Néi lùc(®)", 		"manamax_v",
 	"ThÓ lùc(®)", 		"staminamax_v",
-	"Phôc håi SL(®)", 	"lifereplenish_v",
-	"Phôc håi NL(®)", 	"manareplenish_v",
-	"Phôc håi TL(®)", 	"staminareplenish_v",
+	"Phôc håi sinh lùc(®)", 	"lifereplenish_v",
+	"Phôc håi néi lùc(®)", 	"manareplenish_v",
+	"Phôc håi thÓ lùc(®)", 	"staminareplenish_v",
 	"Hót sinh lùc(%)", 	"steallifeenhance_p",
 	"Hót néi lùc(%)", 	"stealmanaenhance_p",
-	"Hót thÓ lùc(%)", 	"stealstaminaenhance_p",
+	// "Hót thÓ lùc(%)", 	"stealstaminaenhance_p",
 	"Søc m¹nh(®)", 		"strength_v",
 	"Th©n ph¸p(®)", 	"dexterity_v",
 	"Sinh khÝ(®)", 		"vitality_v",
 	"Néi c«ng(®)", 		"energy_v",
-	"Phßng thñ(%)", 	"physicsres_p",
+	"Phßng thñ vËt lý(%)", 	"physicsres_p",
 	"Kh¸ng ®éc(%)", 	"poisonres_p",
 	"Kh¸ng b¨ng(%)", 	"coldres_p",
 	"Kh¸ng háa(%)", 	"fireres_p",
@@ -688,31 +830,31 @@ char szArray_Equipmagic[MAX_AUTO_FILTERL][2][64] =
 	"Kh¸ng tÊt c¶(%)", 	"allres_p",
 	"Tèc ®é ch¹y(%)", 	"fastwalkrun_p",
 	"Tèc ®é ®¸nh(%)", 	"attackspeed_v",
-	"Ph¶n ®ßn cËn(®)", 	"meleedamagereturn_v",
-	"STVL ngo¹i(®)", 	"addphysicsdamage_v",
-	"B¨ng s¸t ngo¹i(®)", "addcolddamage_v",
-	"§éc s¸t ngo¹i(®)", "addpoisondamage_v",
-	"STVL ngo¹i(%)", 	"addphysicsdamage_p",
-	"CHSTTNL(%)", 		"damage2addmana_p",
+	"Ph¶n ®ßn cËn chiÕn(®)", 	"meleedamagereturn_v",
+	"STVL ngo¹i c«ng(®)", 	"addphysicsdamage_v",
+	"B¨ng s¸t ngo¹i c«ng(®)", "addcolddamage_v",
+	"§éc s¸t ngo¹i c«ng(®)", "addpoisondamage_v",
+	"STVL ngo¹i c«ng(%)", 	"addphysicsdamage_p",
+	"ChuyÓn hãa s¸t th­¬ng thµnh néi lùc(%)", 		"damage2addmana_p",
 	"May m¾n(%)", 		"lucky_v",
 	"Bá qua nÐ tr¸nh(%)", "ignoredefense_p",
 	"§é chÝnh x¸c(®)", 	"attackrating_v",
-	"STLV néi(®)", 		"addphysicsmagic_v",
-	"B¨ng s¸t néi(®)", 	"addcoldmagic_v",
-	"Háa s¸t néi(®)", 	"addfiremagic_v",
-	"L«i s¸t néi(®)", 	"addlightingmagic_v",
-	"§éc s¸t néi(®)", 	"addpoisonmagic_v",
-	"Gi¶m chËm(%)", 	"freezetimereduce_p",
-	"Gi¶m tróng ®éc(%)", "poisontimereduce_p",
-	"Gi¶m cho¸ng(%)", 	"stuntimereduce_p",
-	"Gi¶m th­¬ng(%)", 	"fasthitrecover_v",
+	"STLV néi c«ng(®)", 		"addphysicsmagic_v",
+	"B¨ng s¸t néi c«ng(®)", 	"addcoldmagic_v",
+	"Háa s¸t néi c«ng(®)", 	"addfiremagic_v",
+	"L«i s¸t néi c«ng(®)", 	"addlightingmagic_v",
+	"§éc s¸t néi c«ng(®)", 	"addpoisonmagic_v",
+	"Thêi gian lµm chËm(%)", 	"freezetimereduce_p",
+	"Thêi gian tróng ®éc(%)", "poisontimereduce_p",
+	"Thêi gian cho¸ng(%)", 	"stuntimereduce_p",
+	"Thêi gian phôc håi(%)", 	"fasthitrecover_v",
 	"Kü n¨ng vèn cã(®)", "allskill_v",
 };
 void KUiPick::Initialize()
 {
 	AddChild(&m_PickFightNoneCK);
 	AddChild(&m_PickFightNoneTxt);
-	
+
 	AddChild(&m_PickNoteTxt);
 
 	/* AddChild(&m_SortEquipmentCK);
@@ -725,37 +867,37 @@ void KUiPick::Initialize()
 	AddChild(&m_PickMoneyText);
 	AddChild(&m_PickNotEquipChecker);
 	AddChild(&m_PickNotEquipText);
-	
+
 	AddChild(&m_PickChecker);
 	AddChild(&m_PickShadow);
 	AddChild(&m_PickEdit);
 	AddChild(&m_PickPopupBtn);
-	
+
 	AddChild(&m_FollowPickCK);
 	AddChild(&m_FollowPickTxt);
 
 	AddChild(&m_FilterShadow);
-	AddChild(&m_FilterEdit);	
+	AddChild(&m_FilterEdit);
 	AddChild(&m_FilterPopupBtn);
-	
+
 	AddChild(&m_FilterNumSdw);
 	AddChild(&m_FilterNum);
-	
+
 	AddChild(&m_FilterDelBtn);
 	AddChild(&m_FilterDelAll);
-	AddChild(&m_FilterAddBtn);	
+	AddChild(&m_FilterAddBtn);
 	AddChild(&m_FilterListSdw);
 	AddChild(&m_FilterL);
 	AddChild(&m_FilterL_Scroll);
 	m_FilterL.SetScrollbar(&m_FilterL_Scroll);
-	
+
 	AddChild(&m_SaveTrashCK);
-	AddChild(&m_SaveTrashText);	
-	AddChild(&m_SaveTrashPrice);	
-	
+	AddChild(&m_SaveTrashText);
+	AddChild(&m_SaveTrashPrice);
+
 	AddChild(&m_SaveJewelryCK);
-	AddChild(&m_SaveJewelryText);	
-	
+	AddChild(&m_SaveJewelryText);
+
 	m_nPickKind = enumPickEquipHaveMagic;
 	m_nSelMagic = 0;
 	memset(m_nFltMagicIndex, 0, sizeof(m_nFltMagicIndex));
@@ -769,7 +911,7 @@ void KUiPick::LoadScheme(KIniFile* pIni)
 
 	m_PickFightNoneCK.Init(pIni, "PickFightNoneCK");
 	m_PickFightNoneTxt.Init(pIni, "PickFightNoneTxt");
-	
+
 	m_PickNoteTxt.Init(pIni, "PickNoteTxt");
 
 	m_SortEquipmentCK.Init(pIni, "SortEquipmentCK");
@@ -782,40 +924,40 @@ void KUiPick::LoadScheme(KIniFile* pIni)
 	m_PickMoneyText.Init(pIni, "PickMoneyText");
 	m_PickNotEquipChecker.Init(pIni, "PickNotEquipChecker");
 	m_PickNotEquipText.Init(pIni, "PickNotEquipText");
-	
+
 	m_PickChecker.Init(pIni, "PickChecker");
 	m_PickShadow.Init(pIni, "PickShadow");
 	m_PickEdit.Init(pIni, "PickEdit");
 	m_PickPopupBtn.Init(pIni, "PickPopupBtn");
-	
+
 	m_FollowPickCK.Init(pIni, "FollowPickCK");
 	m_FollowPickTxt.Init(pIni, "FollowPickTxt");
 
 	m_FilterShadow.Init(pIni, "FilterShadow");
 	m_FilterEdit.Init(pIni, "FilterEdit");
 	m_FilterPopupBtn.Init(pIni, "FilterPopupBtn");
-	
+
 	m_FilterNumSdw.Init(pIni, "FilterNumSdw");
 	m_FilterNum.Init(pIni, "FilterNum");
-	
+
 	m_FilterDelBtn.Init(pIni, "FilterDelBtn");
 	m_FilterDelAll.Init(pIni, "FilterDelAll");
 	m_FilterAddBtn.Init(pIni, "FilterAddBtn");
 	m_FilterListSdw.Init(pIni, "FilterListSdw");
 	m_FilterL.Init(pIni, "FilterL");
 	m_FilterL_Scroll.Init(pIni, "FilterL_Scroll");
-	
+
 	m_SaveTrashCK.Init(pIni, "SaveTrashCK");
 	m_SaveTrashText.Init(pIni, "SaveTrashText");
 	m_SaveTrashPrice.Init(pIni, "SaveTrashPrice");
-	
+
 	m_SaveJewelryCK.Init(pIni, "SaveJewelryCK");
-	m_SaveJewelryText.Init(pIni, "SaveJewelryText");		
+	m_SaveJewelryText.Init(pIni, "SaveJewelryText");
 }
 
 int KUiPick::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
 		if (uParam == (unsigned int)(KWndWindow*)&m_PickFightNoneCK)
@@ -1004,8 +1146,8 @@ void KUiPick::SetFilterMagicList()
 		{
 			g_pCoreShell->PAIOperation(GPI_AUTO_FILTERMAGIC, (unsigned int)m_szFltMagic[i], m_nFltMagicV[i], nCount);
 
-			sprintf(Buff, MAGIC_KEYNAME, szArray_Equipmagic[FindSameMagic(m_szFltMagic[i])][0], 
-			m_nFltMagicV[i]);
+			sprintf(Buff, MAGIC_KEYNAME, szArray_Equipmagic[FindSameMagic(m_szFltMagic[i])][0],
+				m_nFltMagicV[i]);
 			m_FilterL.AddString(nCount, Buff);
 			m_nFltMagicIndex[nCount] = i;
 			nCount++;
@@ -1015,7 +1157,7 @@ void KUiPick::SetFilterMagicList()
 
 int KUiPick::FilterSameMagic(const char* szMagic)
 {
-	for (int i = 0; i < MAX_AUTO_FILTERL; i ++)
+	for (int i = 0; i < MAX_AUTO_FILTERL; i++)
 	{
 		if (strcmp(szMagic, m_szFltMagic[i]) == 0)
 			return i;
@@ -1025,7 +1167,7 @@ int KUiPick::FilterSameMagic(const char* szMagic)
 
 int KUiPick::FindSameMagic(const char* szMagic)
 {
-	for (int i = 0; i < MAX_AUTO_FILTERL; i ++)
+	for (int i = 0; i < MAX_AUTO_FILTERL; i++)
 	{
 		if (strcmp(szMagic, szArray_Equipmagic[i][1]) == 0)
 			return i;
@@ -1071,40 +1213,40 @@ void KUiPick::SetPick(int nIndex, int nSel)
 {
 	switch (nIndex)
 	{
-		case MENU_PICK:
-			if (nSel >= enumPickEquipAll && nSel < enumPickNum)
-			{
-				m_nPickKind = nSel;
-				m_PickEdit.SetText(szArray_Pickkind[m_nPickKind]);
-				g_pCoreShell->PAIOperation(GPI_PICK_KIND, m_nPickKind, NULL, NULL);
-			}
-			break;
-		case MENU_MAGIC:
-			m_nSelMagic = nSel;
-			m_FilterEdit.SetText(szArray_Equipmagic[m_nSelMagic][0]);
-			break;
+	case MENU_PICK:
+		if (nSel >= enumPickEquipAll && nSel < enumPickNum)
+		{
+			m_nPickKind = nSel;
+			m_PickEdit.SetText(szArray_Pickkind[m_nPickKind]);
+			g_pCoreShell->PAIOperation(GPI_PICK_KIND, m_nPickKind, NULL, NULL);
+		}
+		break;
+	case MENU_MAGIC:
+		m_nSelMagic = nSel;
+		m_FilterEdit.SetText(szArray_Equipmagic[m_nSelMagic][0]);
+		break;
 	}
 }
 
 void KUiPick::PaintWindow()
 {
 	KWndPage::PaintWindow();
-	if	(g_pRepresentShell)
+	if (g_pRepresentShell)
 	{
 		KRURect	Rect;
-		Rect.Color.Color_dw = 0xff808080;
+		Rect.Color.Color_dw = 0xffc0c9ce;
 		m_PickFightNoneCK.GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
 		Rect.oPosition.nX -= 5;
-		Rect.oPosition.nY -= 3;
+		Rect.oPosition.nY -= 18;
 		m_FilterEquipmentCK.GetAbsolutePos(NULL, &Rect.oEndPos.nY);
-//		Rect.oEndPos.nY -= 4;
-//		GetSize(&Rect.oEndPos.nX, NULL);
-//		Rect.oEndPos.nX += (Rect.oPosition.nX - 10);
-//		Rect.oEndPos.nY -= 4;
-//		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
-//		Rect.oPosition.nY = Rect.oEndPos.nY + 4;
-//		Rect.oEndPos.nY += 172;
-//		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+		Rect.oEndPos.nY -= 5;
+		GetSize(&Rect.oEndPos.nX, NULL);
+		Rect.oEndPos.nX += (Rect.oPosition.nX - 10);
+		Rect.oEndPos.nY -= 4;
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+		Rect.oPosition.nY = Rect.oEndPos.nY + 5;
+		Rect.oEndPos.nY += 152;
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
 		m_FilterL_Scroll.GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
 		m_FilterL_Scroll.GetSize(&Rect.oEndPos.nX, &Rect.oEndPos.nY);
 		Rect.oEndPos.nX += Rect.oPosition.nX;
@@ -1159,7 +1301,7 @@ void KUiPick::LoadSetting(KIniFile* pFile)
 			pFile->GetString("FilterMagic", szKeyName, "", m_szFltMagic[i], sizeof(m_szFltMagic[i]));
 			sprintf(szKeyName, "Value%d", i);
 			pFile->GetInteger("FilterMagic", szKeyName, 0, &m_nFltMagicV[i]);
-		}	
+		}
 		SetFilterMagicList();
 
 		pFile->GetInteger(SAVE_SECTION, "SaveTrash", 0, &nValue);
@@ -1171,23 +1313,23 @@ void KUiPick::LoadSetting(KIniFile* pFile)
 		g_pCoreShell->PAIOperation(GPI_SAVE_TRASH_PRICE, nValue, NULL, NULL);
 		pFile->GetInteger(SAVE_SECTION, "SaveJewelry", 0, &nValue);
 		m_SaveJewelryCK.CheckButton(nValue > 0);
-		g_pCoreShell->PAIOperation(GPI_SAVE_JEWELRY, nValue > 0, NULL, NULL);		
-	}	
+		g_pCoreShell->PAIOperation(GPI_SAVE_JEWELRY, nValue > 0, NULL, NULL);
+	}
 }
-		
+
 void KUiPick::SaveSetting(KIniFile* pFile)
 {
 	if (pFile)
-	{	
-		pFile->WriteInteger(SAVE_SECTION, "PickFN", 			m_PickFightNoneCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "FilterEq", 			m_FilterEquipmentCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "PickMoney", 			m_PickMoneyChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "PickNotEquip", 		m_PickNotEquipChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "PickEquip", 			m_PickChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "FollowPick", 		m_FollowPickCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "PickKind", 			m_nPickKind);
-		pFile->WriteInteger(SAVE_SECTION, "SelMagic", 			m_nSelMagic);
-		pFile->WriteInteger(SAVE_SECTION, "MagicValue",			m_FilterNum.GetIntNumber());
+	{
+		pFile->WriteInteger(SAVE_SECTION, "PickFN", m_PickFightNoneCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "FilterEq", m_FilterEquipmentCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "PickMoney", m_PickMoneyChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "PickNotEquip", m_PickNotEquipChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "PickEquip", m_PickChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "FollowPick", m_FollowPickCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "PickKind", m_nPickKind);
+		pFile->WriteInteger(SAVE_SECTION, "SelMagic", m_nSelMagic);
+		pFile->WriteInteger(SAVE_SECTION, "MagicValue", m_FilterNum.GetIntNumber());
 		char szKeyName[10];
 		int nCount = 0;
 		for (int i = 0; i < MAX_AUTO_FILTERL; i++)
@@ -1201,83 +1343,101 @@ void KUiPick::SaveSetting(KIniFile* pFile)
 				nCount++;
 			}
 		}
-		pFile->WriteInteger(SAVE_SECTION, "SaveTrash", 		m_SaveTrashCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "SaveTrash", m_SaveTrashCK.IsButtonChecked());
 		pFile->WriteInteger(SAVE_SECTION, "SaveTrashPrice", m_SaveTrashPrice.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "SaveJewelry", 	m_SaveJewelryCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "SaveJewelry", m_SaveJewelryCK.IsButtonChecked());
 	}
 }
 ////////////////////////////////////////////
 ////////////////////////////////////////////
-char szArray_FightBack[][64] = 
+char szArray_FightBack[][64] =
 {
 	NO_SETTINGS,
 	"Thæ ®Þa phï",
+	"Nhæ l«ng kÎ ®Þch",
 };
 
-char szArray_FightBoss[][64] = 
+char szArray_FightBoss[][64] =
 {
 	NO_SETTINGS,
 	"Tr¸nh tÊt c¶ Boss",
-	"ChØ tr¸nh Boss Xanh",
-	"ChØ tr¸nh Boss Vµng",
+	"Tr¸nh Boss Xanh",
+	"Tr¸nh Boss Vµng",
+	"Tr¸nh Boss TÝm",
 };
 
 void KUiFight::Initialize()
 {
 	AddChild(&m_FightGuide);
-	
+
 	AddChild(&m_FightUseSBCK);
 	AddChild(&m_FightUseSBTxt);
-	
+
+	//An npc
+	AddChild(&m_HiddenNpcCK);
+	AddChild(&m_HiddenNpcTxt);
+
+	//An Player
+	AddChild(&m_HiddenPlayerCK);
+	AddChild(&m_HiddenPlayerTxt);
+	//end code
+
 	AddChild(&m_RadiusText);
 	AddChild(&m_RadiusShadow);
 	AddChild(&m_RadiusEdit);
 
+	//Khoanh cach
+	AddChild(&m_DistanceText);
+	AddChild(&m_DistanceEdit);
+
 	AddChild(&m_OverTargetCK);
 	AddChild(&m_OverTargetTxt);
 
-	AddChild(&m_FollowTargetCK);
+	AddChild(&m_FollowTargetCK); //Duoi theo
 	AddChild(&m_FollowTargetTxt);
-	
+
+	AddChild(&m_QuanhDiemCK); //Quanh diem
+	AddChild(&m_QuanhDiemTxt);
+
 	AddChild(&m_FightNearCK);
 	AddChild(&m_FightNearTxt);
 	AddChild(&m_FightNearEdit);
-	
-	AddChild(&m_KillNpcCK);
+
+	AddChild(&m_KillNpcCK); // Danh npc
 	AddChild(&m_KillNpcTxt);
-	
+
 	AddChild(&m_SupportGuide);
-	
+
 	AddChild(&m_Support1Txt);
 	AddChild(&m_Support1Shadow);
 	AddChild(&m_Support1Edit);
 	AddChild(&m_Support1Popup);
-	
+
 	AddChild(&m_Support2Txt);
 	AddChild(&m_Support2Shadow);
 	AddChild(&m_Support2Edit);
 	AddChild(&m_Support2Popup);
-	
+
 	AddChild(&m_Support3Txt);
 	AddChild(&m_Support3Shadow);
 	AddChild(&m_Support3Edit);
 	AddChild(&m_Support3Popup);
-	
+
 	AddChild(&m_SupportFightTxt);
 	AddChild(&m_SupportFightShadow);
 	AddChild(&m_SupportFEdit);
 	AddChild(&m_SupportFightPopup);
-	
+
 	AddChild(&m_SupportPTxt);
 	AddChild(&m_SupportPShadow);
 	AddChild(&m_SupportPEdit);
 	AddChild(&m_SupportPPopupBtn);
-	
+
 	AddChild(&m_SupportBTxt);
 	AddChild(&m_SupportBShadow);
 	AddChild(&m_SupportBEdit);
 	AddChild(&m_SupportBPopupBtn);
-	
+
 	AddChild(&m_AuraTxt);
 	AddChild(&m_Aura1Shadow);
 	AddChild(&m_Aura1Edit);
@@ -1290,7 +1450,7 @@ void KUiFight::Initialize()
 	AddChild(&m_LifeReplenishCK);
 	AddChild(&m_LifeReplenishTxt);
 	AddChild(&m_LifeReplenishEdit);
-	
+
 	memset(m_nSelMagic, 0, sizeof(m_nSelMagic));
 }
 
@@ -1300,73 +1460,91 @@ void KUiFight::LoadScheme(KIniFile* pIni)
 	m_FightGuide.Init(pIni, "FightGuide");
 	m_FightUseSBCK.Init(pIni, "FightUseSBCK");
 	m_FightUseSBTxt.Init(pIni, "FightUseSBTxt");
-	
+
+	//An npc
+	m_HiddenNpcCK.Init(pIni, "HiddenNpcCK");
+	m_HiddenNpcTxt.Init(pIni, "HiddenNpcTxt");
+
+	//An Player
+	m_HiddenPlayerCK.Init(pIni, "HiddenPlayerCK");
+	m_HiddenPlayerTxt.Init(pIni, "HiddenPlayerTxt");
+	//end code
+
 	m_RadiusText.Init(pIni, "RadiusText");
 	m_RadiusShadow.Init(pIni, "RadiusShadow");
 	m_RadiusEdit.Init(pIni, "RadiusEdit");
-	
+
+	// Khoang cach Distance
+//	m_DistanceText.Init(pIni, "DistanceText");
+//	m_DistanceEdit.Init(pIni, "DistanceEdit");
+
 	m_OverTargetCK.Init(pIni, "OverTargetCK");
 	m_OverTargetTxt.Init(pIni, "OverTargetTxt");
 
 	m_FollowTargetCK.Init(pIni, "FollowTargetCK");
 	m_FollowTargetTxt.Init(pIni, "FollowTargetTxt");
-	
+
+	//Quanh diem
+	m_QuanhDiemCK.Init(pIni, "QuanhDiemCK");
+	m_QuanhDiemTxt.Init(pIni, "QuanhDiemTxt");
+
 	m_FightNearCK.Init(pIni, "FightNearCK");
 	m_FightNearTxt.Init(pIni, "FightNearTxt");
 	m_FightNearEdit.Init(pIni, "FightNearEdit");
-	
+
 	m_KillNpcCK.Init(pIni, "KillNpcCK");
 	m_KillNpcTxt.Init(pIni, "KillNpcTxt");
-	
+
 	m_SupportGuide.Init(pIni, "SupportGuide");
-	
+
 	m_Support1Txt.Init(pIni, "Support1Txt");
 	m_Support1Shadow.Init(pIni, "Support1Shadow");
 	m_Support1Edit.Init(pIni, "Support1Edit");
 	m_Support1Popup.Init(pIni, "Support1Popup");
-	
+
 	m_Support2Txt.Init(pIni, "Support2Txt");
 	m_Support2Shadow.Init(pIni, "Support2Shadow");
 	m_Support2Edit.Init(pIni, "Support2Edit");
 	m_Support2Popup.Init(pIni, "Support2Popup");
-	
+
 	m_Support3Txt.Init(pIni, "Support3Txt");
 	m_Support3Shadow.Init(pIni, "Support3Shadow");
 	m_Support3Edit.Init(pIni, "Support3Edit");
 	m_Support3Popup.Init(pIni, "Support3Popup");
-	
+
 	m_SupportFightTxt.Init(pIni, "SupportFightTxt");
 	m_SupportFightShadow.Init(pIni, "SupportFightShadow");
 	m_SupportFEdit.Init(pIni, "SupportFEdit");
 	m_SupportFightPopup.Init(pIni, "SupportFightPopup");
-	
+
 	m_SupportPTxt.Init(pIni, "SupportPTxt");
 	m_SupportPShadow.Init(pIni, "SupportPShadow");
 	m_SupportPEdit.Init(pIni, "SupportPEdit");
 	m_SupportPPopupBtn.Init(pIni, "SupportPPopupBtn");
-	
+
 	m_SupportBTxt.Init(pIni, "SupportBTxt");
 	m_SupportBShadow.Init(pIni, "SupportBShadow");
 	m_SupportBEdit.Init(pIni, "SupportBEdit");
 	m_SupportBPopupBtn.Init(pIni, "SupportBPopupBtn");
-	
+
 	m_AuraTxt.Init(pIni, "AuraTxt");
-	m_Aura1Shadow.Init(pIni, "Aura1Shadow");		
+	m_Aura1Shadow.Init(pIni, "Aura1Shadow");
 	m_Aura1Edit.Init(pIni, "Aura1Edit");
 	m_Aura1PopupBtn.Init(pIni, "Aura1PopupBtn");
 	m_Aura1Txt.Init(pIni, "Aura1Txt");
-	m_Aura2Shadow.Init(pIni, "Aura2Shadow");		
+	m_Aura2Shadow.Init(pIni, "Aura2Shadow");
 	m_Aura2Edit.Init(pIni, "Aura2Edit");
 	m_Aura2PopupBtn.Init(pIni, "Aura2PopupBtn");
 
 	m_LifeReplenishCK.Init(pIni, "LifeReplenishCK");
-	m_LifeReplenishTxt.Init(pIni, "LifeReplenishTxt");		
+	m_LifeReplenishTxt.Init(pIni, "LifeReplenishTxt");
 	m_LifeReplenishEdit.Init(pIni, "LifeReplenishEdit");
+
 }
 
 int KUiFight::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
 		if (uParam == (unsigned int)(KWndWindow*)&m_FightUseSBCK)
@@ -1434,6 +1612,21 @@ int KUiFight::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				g_pCoreShell->PAIOperation(GPI_FOLLOW_TARGET, FALSE, NULL, NULL);
 			}
 		}
+		//Quanh diem
+		else if (uParam == (unsigned int)(KWndWindow*)&m_QuanhDiemCK)
+		{
+			if (m_QuanhDiemCK.IsButtonChecked())
+			{
+				m_QuanhDiemCK.CheckButton(true);
+				g_pCoreShell->PAIOperation(GPI_QUANH_DIEM_TARGET, TRUE, NULL, NULL);
+			}
+			else
+			{
+				m_QuanhDiemCK.CheckButton(false);
+				g_pCoreShell->PAIOperation(GPI_QUANH_DIEM_TARGET, FALSE, NULL, NULL);
+			}
+		}
+		//end code
 		else if (uParam == (unsigned int)(KWndWindow*)&m_Support1Popup)
 		{
 			PopupSupportSkills(SelMagic1);
@@ -1479,6 +1672,35 @@ int KUiFight::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				m_LifeReplenishCK.CheckButton(false);
 			}
 		}
+		//An npc
+		else if (uParam == (unsigned int)(KWndWindow*)&m_HiddenNpcCK)
+		{
+			if (m_HiddenNpcCK.IsButtonChecked())
+			{
+				m_HiddenNpcCK.CheckButton(true);
+				g_pCoreShell->OperationRequest(GOI_TOI_UU_IMAGE_COMMAND, 0, false);
+			}
+			else
+			{
+				m_HiddenNpcCK.CheckButton(false);
+				g_pCoreShell->OperationRequest(GOI_TOI_UU_IMAGE_COMMAND, 0, true);
+			}
+		}
+		//An player
+		else if (uParam == (unsigned int)(KWndWindow*)&m_HiddenPlayerCK)
+		{
+			if (m_HiddenPlayerCK.IsButtonChecked())
+			{
+				m_HiddenPlayerCK.CheckButton(true);
+				g_pCoreShell->OperationRequest(GOI_TOI_UU_IMAGE_COMMAND, 1, false);
+			}
+			else
+			{
+				m_HiddenPlayerCK.CheckButton(false);
+				g_pCoreShell->OperationRequest(GOI_TOI_UU_IMAGE_COMMAND, 1, true);
+			}
+		}
+		//end code
 		break;
 	case WND_N_EDIT_CHANGE:
 		OnCheckInput();
@@ -1494,8 +1716,8 @@ int KUiFight::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				SetSupportSkills(SelMagic3, LOWORD(nParam));
 			else if (HIWORD(nParam) == MENU_SKILL4 && (short)(LOWORD(nParam)) >= 0)
 				SetFightSkills(SelMagic1, LOWORD(nParam));
-			else if (HIWORD(nParam) == MENU_SKILL5 && (short)(LOWORD(nParam)) >= 0)
-				SetFightSkills(SelMagic2, LOWORD(nParam));
+		//	else if (HIWORD(nParam) == MENU_SKILL5 && (short)(LOWORD(nParam)) >= 0)
+		//		SetFightSkills(SelMagic2, LOWORD(nParam));
 			else if (HIWORD(nParam) == MENU_SKILL6 && (short)(LOWORD(nParam)) >= 0)
 				SetSupportFightSkills(SelMagic1, LOWORD(nParam));
 			else if (HIWORD(nParam) == MENU_SKILL7 && (short)(LOWORD(nParam)) >= 0)
@@ -1514,25 +1736,26 @@ int KUiFight::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 
 void KUiFight::PaintWindow()
 {
-/*	KWndPage::PaintWindow();
-	if	(g_pRepresentShell)
+	KWndPage::PaintWindow();
+	if (g_pRepresentShell)
 	{
 		KRURect	Rect;
-		Rect.Color.Color_dw = 0xff808080;
+		Rect.Color.Color_dw = 0xffc0c9ce;
 		m_FightUseSBCK.GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
 		Rect.oPosition.nX -= 5;
-		Rect.oPosition.nY -= 4;
+		Rect.oPosition.nY -= 51;
 		GetSize(&Rect.oEndPos.nX, &Rect.oEndPos.nY);
 		Rect.oEndPos.nX += (Rect.oPosition.nX - 10);
-		Rect.oEndPos.nY = Rect.oPosition.nY + 48;
+		Rect.oEndPos.nY = Rect.oPosition.nY + 90;
 		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
 		m_Support1Txt.GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
 		Rect.oPosition.nX -= 5;
 		Rect.oPosition.nY -= 4;
 		m_LifeReplenishEdit.GetAbsolutePos(NULL, &Rect.oEndPos.nY);
 		Rect.oEndPos.nY += 16;
-		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);	
-	}*/
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+
+	}
 }
 
 void KUiFight::LoadSetting(KIniFile* pFile)
@@ -1543,18 +1766,29 @@ void KUiFight::LoadSetting(KIniFile* pFile)
 		pFile->GetInteger(SAVE_SECTION, "RadiusEdit", 800, &nValue);
 		if (nValue <= 0)
 			nValue = 800;
+
 		m_RadiusEdit.SetIntText(nValue);
 		pFile->GetInteger(SAVE_SECTION, "FightNearEdit", 75, &nValue);
 		if (nValue <= 0)
 			nValue = 75;
+
 		m_FightNearEdit.SetIntText(nValue);
+
+		//Khoan cach Distance
+		int nDistanceValue = 2500;
+		m_DistanceEdit.SetIntText(nDistanceValue);
+		pFile->GetInteger(SAVE_SECTION, "DistanceEdit", 2500, &nDistanceValue);
+		if (nDistanceValue <= 0)
+			nDistanceValue = 2500;
+		//end code
+
 		pFile->GetInteger(SAVE_SECTION, "FightUseSBCK", 0, &nValue);
 		m_FightUseSBCK.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_FIGHT_USE_SB, nValue > 0, NULL, NULL);
 
 		pFile->GetInteger(SAVE_SECTION, "OverTargetCK", 0, &nValue);
 		g_pCoreShell->PAIOperation(GPI_OVER_TARGET, nValue > 0, NULL, NULL);
-		m_OverTargetCK.CheckButton(nValue > 0);		
+		m_OverTargetCK.CheckButton(nValue > 0);
 
 		pFile->GetInteger(SAVE_SECTION, "FollowTargetCK", 1, &nValue);
 		g_pCoreShell->PAIOperation(GPI_FOLLOW_TARGET, nValue > 0, NULL, NULL);
@@ -1569,7 +1803,7 @@ void KUiFight::LoadSetting(KIniFile* pFile)
 		g_pCoreShell->PAIOperation(GPI_ATTACK_NPC_CHECK, nValue > 0, NULL, NULL);
 
 		char szKeyName[10];
-		for (int i = 0; i < SelMagicNum; i ++)
+		for (int i = 0; i < SelMagicNum; i++)
 		{
 			sprintf(szKeyName, "SelMagic%d", i);
 			pFile->GetInteger(SAVE_SECTION, szKeyName, 0, &m_nSelMagic[i]);
@@ -1591,7 +1825,7 @@ void KUiFight::LoadSetting(KIniFile* pFile)
 				SetSupportFightSkills(nValue, m_nSelMagic[i]);
 				nValue++;
 			}
-			else if (i >= SelMagicAura1 && i <= SelMagicAura2)			
+			else if (i >= SelMagicAura1 && i <= SelMagicAura2)
 			{
 				if (i == SelMagicAura1) nValue = 0;
 				SetAuraSkills(nValue, m_nSelMagic[i]);
@@ -1602,37 +1836,45 @@ void KUiFight::LoadSetting(KIniFile* pFile)
 		m_LifeReplenishCK.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_LIFEREPLENISH, nValue > 0, NULL, NULL);
 
-		pFile->GetInteger(SAVE_SECTION, "LifeRep", 50, &nValue);	
+		pFile->GetInteger(SAVE_SECTION, "LifeRep", 50, &nValue);
 		m_LifeReplenishEdit.SetIntText(nValue);
-	}	
+	}
 }
-		
+
 void KUiFight::SaveSetting(KIniFile* pFile)
 {
 	if (pFile)
 	{
-		pFile->WriteInteger(SAVE_SECTION, "RadiusEdit", 		m_RadiusEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "FightNearEdit", 	m_FightNearEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "FightUseSBCK", 		m_FightUseSBCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "OverTargetCK", 		m_OverTargetCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "FollowTargetCK", 	m_FollowTargetCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "FightNearCK", 		m_FightNearCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "KillNpcCK", 		m_KillNpcCK.IsButtonChecked());
-		
+		pFile->WriteInteger(SAVE_SECTION, "RadiusEdit", m_RadiusEdit.GetIntNumber());
+
+		//Distance
+		pFile->WriteInteger(SAVE_SECTION, "DistanceEdit", m_DistanceEdit.GetIntNumber());
+
+		pFile->WriteInteger(SAVE_SECTION, "FightNearEdit", m_FightNearEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "FightUseSBCK", m_FightUseSBCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "OverTargetCK", m_OverTargetCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "FollowTargetCK", m_FollowTargetCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "FightNearCK", m_FightNearCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "KillNpcCK", m_KillNpcCK.IsButtonChecked());
+
 		char szKeyName[10];
-		for (int i = 0; i < SelMagicNum; i ++)
+		for (int i = 0; i < SelMagicNum; i++)
 		{
 			sprintf(szKeyName, "SelMagic%d", i);
-			pFile->WriteInteger(SAVE_SECTION, szKeyName, 		m_nSelMagic[i]);		
+			pFile->WriteInteger(SAVE_SECTION, szKeyName, m_nSelMagic[i]);
 		}
-		pFile->WriteInteger(SAVE_SECTION, "LifeRepCK",					m_LifeReplenishCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "LifeRep",					m_LifeReplenishEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "LifeRepCK", m_LifeReplenishCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "LifeRep", m_LifeReplenishEdit.GetIntNumber());
 	}
 }
 
 void KUiFight::OnCheckInput()
 {
 	g_pCoreShell->PAIOperation(GPI_RANGER_AUTO, m_RadiusEdit.GetIntNumber(), NULL, NULL);
+
+	//Distance
+	g_pCoreShell->PAIOperation(GPI_DISTANCE_AUTO, m_DistanceEdit.GetIntNumber(), NULL, NULL);
+
 	g_pCoreShell->PAIOperation(GPI_FIGHT_AUTO, m_FightNearEdit.GetIntNumber(), NULL, NULL);
 	if (m_LifeReplenishEdit.GetIntNumber() > MAX_PERCENT)
 		m_LifeReplenishEdit.SetIntText(MAX_PERCENT);
@@ -1641,7 +1883,7 @@ void KUiFight::OnCheckInput()
 
 void KUiFight::PopupSupportSkills(int nIndex)
 {
-	int nActionDataCount = g_pCoreShell->GetNextSkill(0,0) + 1;
+	int nActionDataCount = g_pCoreShell->GetNextSkill(0, 0) + 1;
 	struct KPopupMenuData* pSelUnitMenu = (KPopupMenuData*)malloc(MENU_DATA_SIZE(nActionDataCount));
 	if (pSelUnitMenu == NULL)
 		return;
@@ -1657,7 +1899,7 @@ void KUiFight::PopupSupportSkills(int nIndex)
 		}
 		else
 		{
-			int _nSkillId = g_pCoreShell->GetNextSkill(0,i);
+			int _nSkillId = g_pCoreShell->GetNextSkill(0, i);
 			g_pCoreShell->GetSkillName(_nSkillId, pSelUnitMenu->Items[i].szData);
 			pSelUnitMenu->Items[i].uID = _nSkillId;
 		}
@@ -1668,24 +1910,24 @@ void KUiFight::PopupSupportSkills(int nIndex)
 	int x, y;
 	switch (nIndex)
 	{
-		case SelMagic1:
-			m_Support1Shadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL1);
-			break;
-		case SelMagic2:
-			m_Support2Shadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL2);
-			break;
-		case SelMagic3:
-			m_Support3Shadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL3);
-			break;
+	case SelMagic1:
+		m_Support1Shadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL1);
+		break;
+	case SelMagic2:
+		m_Support2Shadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL2);
+		break;
+	case SelMagic3:
+		m_Support3Shadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL3);
+		break;
 	}
 }
 
@@ -1694,48 +1936,48 @@ void KUiFight::SetSupportSkills(int nIndex, int nSkillId)
 	g_pCoreShell->PAIOperation(GPI_SUPPORT_SKILLS, nIndex, nSkillId, NULL);
 	switch (nIndex)
 	{
-		case SelMagic1:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagic1] = nSkillId;
-				char Name[128];
-				g_pCoreShell->GetSkillName(nSkillId, Name);
-				m_Support1Edit.SetText(Name);
-			}
-			else
-			{
-				m_nSelMagic[SelMagic1] = 0;
-				m_Support1Edit.SetText(NO_SETTINGS);
-			}
-			break;
-		case SelMagic2:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagic2] = nSkillId;
-				char Name[128];
-				g_pCoreShell->GetSkillName(nSkillId, Name);
-				m_Support2Edit.SetText(Name);
-			}
-			else
-			{
-				m_nSelMagic[SelMagic2] = 0;
-				m_Support2Edit.SetText(NO_SETTINGS);
-			}
-			break;
-		case SelMagic3:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagic3] = nSkillId;
-				char Name[128];
-				g_pCoreShell->GetSkillName(nSkillId, Name);
-				m_Support3Edit.SetText(Name);
-			}
-			else
-			{
-				m_nSelMagic[SelMagic3] = 0;
-				m_Support3Edit.SetText(NO_SETTINGS);
-			}
-			break;
+	case SelMagic1:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagic1] = nSkillId;
+			char Name[128];
+			g_pCoreShell->GetSkillName(nSkillId, Name);
+			m_Support1Edit.SetText(Name);
+		}
+		else
+		{
+			m_nSelMagic[SelMagic1] = 0;
+			m_Support1Edit.SetText(NO_SETTINGS);
+		}
+		break;
+	case SelMagic2:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagic2] = nSkillId;
+			char Name[128];
+			g_pCoreShell->GetSkillName(nSkillId, Name);
+			m_Support2Edit.SetText(Name);
+		}
+		else
+		{
+			m_nSelMagic[SelMagic2] = 0;
+			m_Support2Edit.SetText(NO_SETTINGS);
+		}
+		break;
+	case SelMagic3:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagic3] = nSkillId;
+			char Name[128];
+			g_pCoreShell->GetSkillName(nSkillId, Name);
+			m_Support3Edit.SetText(Name);
+		}
+		else
+		{
+			m_nSelMagic[SelMagic3] = 0;
+			m_Support3Edit.SetText(NO_SETTINGS);
+		}
+		break;
 	}
 }
 
@@ -1743,21 +1985,21 @@ void KUiFight::SetFightSkills(int nIndex, int nSkillId)
 {
 	switch (nIndex)
 	{
-		case SelMagic1:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagicFight1] = nSkillId;
-				char Name[128];
-				g_pCoreShell->GetSkillName(nSkillId, Name);
-				m_SupportFEdit.SetText(Name);
-			}
-			else
-			{
-				m_nSelMagic[SelMagicFight1] = 0;
-				m_SupportFEdit.SetText(NO_SETTINGS);
-			}	
-			g_pCoreShell->PAIOperation(GPI_FIGHT_SKILLS, nSkillId, NULL, NULL);
-			break;
+	case SelMagic1:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagicFight1] = nSkillId;
+			char Name[128];
+			g_pCoreShell->GetSkillName(nSkillId, Name);
+			m_SupportFEdit.SetText(Name);
+		}
+		else
+		{
+			m_nSelMagic[SelMagicFight1] = 0;
+			m_SupportFEdit.SetText(NO_SETTINGS);
+		}
+		g_pCoreShell->PAIOperation(GPI_FIGHT_SKILLS, nSkillId, NULL, NULL);
+		break;
 	}
 }
 
@@ -1765,32 +2007,32 @@ void KUiFight::SetSupportFightSkills(int nIndex, int nSkillId)
 {
 	switch (nIndex)
 	{
-		case SelMagic1:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagicSPF1] = nSkillId;
-				m_SupportPEdit.SetText(szArray_FightBack[nSkillId]);
-			}
-			else
-			{
-				m_nSelMagic[SelMagicSPF1] = 0;
-				m_SupportPEdit.SetText(NO_SETTINGS);
-			}	
-			g_pCoreShell->PAIOperation(GPI_FIGHTBACK, nSkillId, NULL, NULL);
-			break;
-		case SelMagic2:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagicSPF2] = nSkillId;
-				m_SupportBEdit.SetText(szArray_FightBoss[nSkillId]);
-			}
-			else
-			{
-				m_nSelMagic[SelMagicSPF2] = 0;
-				m_SupportBEdit.SetText(NO_SETTINGS);
-			}
-			g_pCoreShell->PAIOperation(GPI_FIGHTBOSS, nSkillId, NULL, NULL);
-			break;
+	case SelMagic1:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagicSPF1] = nSkillId;
+			m_SupportPEdit.SetText(szArray_FightBack[nSkillId]);
+		}
+		else
+		{
+			m_nSelMagic[SelMagicSPF1] = 0;
+			m_SupportPEdit.SetText(NO_SETTINGS);
+		}
+		g_pCoreShell->PAIOperation(GPI_FIGHTBACK, nSkillId, NULL, NULL);
+		break;
+	case SelMagic2:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagicSPF2] = nSkillId;
+			m_SupportBEdit.SetText(szArray_FightBoss[nSkillId]);
+		}
+		else
+		{
+			m_nSelMagic[SelMagicSPF2] = 0;
+			m_SupportBEdit.SetText(NO_SETTINGS);
+		}
+		g_pCoreShell->PAIOperation(GPI_FIGHTBOSS, nSkillId, NULL, NULL);
+		break;
 	}
 }
 
@@ -1798,42 +2040,42 @@ void KUiFight::SetAuraSkills(int nIndex, int nSkillId)
 {
 	switch (nIndex)
 	{
-		case SelMagic1:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagicAura1] = nSkillId;
-				char Name[128];
-				g_pCoreShell->GetSkillName(nSkillId, Name);
-				m_Aura1Edit.SetText(Name);
-			}
-			else
-			{
-				m_nSelMagic[SelMagicAura1] = 0;
-				m_Aura1Edit.SetText(NO_SETTINGS);
-			}	
-			g_pCoreShell->PAIOperation(GPI_AURA_SKILLS1, nSkillId, NULL, NULL);
-			break;
-		case SelMagic2:
-			if (nSkillId > 0)
-			{
-				m_nSelMagic[SelMagicAura2] = nSkillId;
-				char Name[128];
-				g_pCoreShell->GetSkillName(nSkillId, Name);
-				m_Aura2Edit.SetText(Name);
-			}
-			else
-			{
-				m_nSelMagic[SelMagicAura2] = 0;
-				m_Aura2Edit.SetText(NO_SETTINGS);
-			}	
-			g_pCoreShell->PAIOperation(GPI_AURA_SKILLS2, nSkillId, NULL, NULL);
-			break;
+	case SelMagic1:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagicAura1] = nSkillId;
+			char Name[128];
+			g_pCoreShell->GetSkillName(nSkillId, Name);
+			m_Aura1Edit.SetText(Name);
+		}
+		else
+		{
+			m_nSelMagic[SelMagicAura1] = 0;
+			m_Aura1Edit.SetText(NO_SETTINGS);
+		}
+		g_pCoreShell->PAIOperation(GPI_AURA_SKILLS1, nSkillId, NULL, NULL);
+		break;
+	case SelMagic2:
+		if (nSkillId > 0)
+		{
+			m_nSelMagic[SelMagicAura2] = nSkillId;
+			char Name[128];
+			g_pCoreShell->GetSkillName(nSkillId, Name);
+			m_Aura2Edit.SetText(Name);
+		}
+		else
+		{
+			m_nSelMagic[SelMagicAura2] = 0;
+			m_Aura2Edit.SetText(NO_SETTINGS);
+		}
+		g_pCoreShell->PAIOperation(GPI_AURA_SKILLS2, nSkillId, NULL, NULL);
+		break;
 	}
 }
 
 void KUiFight::PopupFightSkills(int nIndex)
 {
-	int nActionDataCount = g_pCoreShell->GetNextSkill(1,0) + 1;
+	int nActionDataCount = g_pCoreShell->GetNextSkill(1, 0) + 1;
 	struct KPopupMenuData* pSelUnitMenu = (KPopupMenuData*)malloc(MENU_DATA_SIZE(nActionDataCount));
 	if (pSelUnitMenu == NULL)
 		return;
@@ -1849,7 +2091,7 @@ void KUiFight::PopupFightSkills(int nIndex)
 		}
 		else
 		{
-			int _nSkillId = g_pCoreShell->GetNextSkill(1,i);
+			int _nSkillId = g_pCoreShell->GetNextSkill(1, i);
 			g_pCoreShell->GetSkillName(_nSkillId, pSelUnitMenu->Items[i].szData);
 			pSelUnitMenu->Items[i].uID = _nSkillId;
 		}
@@ -1860,14 +2102,14 @@ void KUiFight::PopupFightSkills(int nIndex)
 	int x, y;
 	switch (nIndex)
 	{
-		case SelMagic1:
-			m_SupportFightShadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL4);
-			break;
-		case SelMagic2:
-			break;
+	case SelMagic1:
+		m_SupportFightShadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL4);
+		break;
+	case SelMagic2:
+		break;
 	}
 }
 
@@ -1876,14 +2118,14 @@ void KUiFight::PopupSupportFightSkills(int nIndex)
 	int nActionDataCount = 0;
 	switch (nIndex)
 	{
-		case SelMagic1:
-			nActionDataCount = sizeof(szArray_FightBack) / sizeof(szArray_FightBack[0]);
-			break;
-		case SelMagic2:
-			nActionDataCount = sizeof(szArray_FightBoss) / sizeof(szArray_FightBoss[0]);
-			break;
-		default:
-			return;
+	case SelMagic1:
+		nActionDataCount = sizeof(szArray_FightBack) / sizeof(szArray_FightBack[0]);
+		break;
+	case SelMagic2:
+		nActionDataCount = sizeof(szArray_FightBoss) / sizeof(szArray_FightBoss[0]);
+		break;
+	default:
+		return;
 	}
 	struct KPopupMenuData* pSelUnitMenu = (KPopupMenuData*)malloc(MENU_DATA_SIZE(nActionDataCount));
 	if (pSelUnitMenu == NULL)
@@ -1895,12 +2137,12 @@ void KUiFight::PopupSupportFightSkills(int nIndex)
 	{
 		switch (nIndex)
 		{
-			case SelMagic1:
-				strncpy(pSelUnitMenu->Items[i].szData, szArray_FightBack[i], sizeof(szArray_FightBack[i]));
-				break;
-			case SelMagic2:
-				strncpy(pSelUnitMenu->Items[i].szData, szArray_FightBoss[i], sizeof(szArray_FightBoss[i]));
-				break;
+		case SelMagic1:
+			strncpy(pSelUnitMenu->Items[i].szData, szArray_FightBack[i], sizeof(szArray_FightBack[i]));
+			break;
+		case SelMagic2:
+			strncpy(pSelUnitMenu->Items[i].szData, szArray_FightBoss[i], sizeof(szArray_FightBoss[i]));
+			break;
 		}
 		pSelUnitMenu->Items[i].szData[sizeof(pSelUnitMenu->Items[i].szData) - 1] = 0;
 		pSelUnitMenu->Items[i].uDataLen = strlen(pSelUnitMenu->Items[i].szData);
@@ -1909,24 +2151,24 @@ void KUiFight::PopupSupportFightSkills(int nIndex)
 	int x, y;
 	switch (nIndex)
 	{
-		case SelMagic1:
-			m_SupportPShadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL6);
-			break;
-		case SelMagic2:
-			m_SupportBShadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL7);
-			break;
+	case SelMagic1:
+		m_SupportPShadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL6);
+		break;
+	case SelMagic2:
+		m_SupportBShadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL7);
+		break;
 	}
 }
 
 void KUiFight::PopupAuraSkills(int nIndex)
 {
-	int nActionDataCount = g_pCoreShell->GetNextSkill(2,0) + 1;
+	int nActionDataCount = g_pCoreShell->GetNextSkill(2, 0) + 1;
 	struct KPopupMenuData* pSelUnitMenu = (KPopupMenuData*)malloc(MENU_DATA_SIZE(nActionDataCount));
 	if (pSelUnitMenu == NULL)
 		return;
@@ -1942,7 +2184,7 @@ void KUiFight::PopupAuraSkills(int nIndex)
 		}
 		else
 		{
-			int _nSkillId = g_pCoreShell->GetNextSkill(2,i);
+			int _nSkillId = g_pCoreShell->GetNextSkill(2, i);
 			g_pCoreShell->GetSkillName(_nSkillId, pSelUnitMenu->Items[i].szData);
 			pSelUnitMenu->Items[i].uID = _nSkillId;
 		}
@@ -1953,23 +2195,23 @@ void KUiFight::PopupAuraSkills(int nIndex)
 	int x, y;
 	switch (nIndex)
 	{
-		case SelMagic1:
-			m_Aura1Shadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL8);
-			break;
-		case SelMagic2:
-			m_Aura2Shadow.GetAbsolutePos(&x, &y);
-			pSelUnitMenu->nX = x;
-			pSelUnitMenu->nY = y;
-			KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL9);
-			break;
+	case SelMagic1:
+		m_Aura1Shadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL8);
+		break;
+	case SelMagic2:
+		m_Aura2Shadow.GetAbsolutePos(&x, &y);
+		pSelUnitMenu->nX = x;
+		pSelUnitMenu->nY = y;
+		KPopupMenu::Popup(pSelUnitMenu, this, MENU_SKILL9);
+		break;
 	}
 }
 
-KUiPlayerItem*	m_pNearbyPlayersList;
-char szArray_Team[][64] = 
+KUiPlayerItem* m_pNearbyPlayersList;
+char szArray_Team[][64] =
 {
 	NO_SETTINGS,
 	"Tù nhËn tÊt c¶ lêi mêi nhãm",
@@ -1987,16 +2229,16 @@ void KUiOther::Initialize()
 	AddChild(&m_FollowEdit);
 	AddChild(&m_FollowPopupBtn);
 	AddChild(&m_FollowRadiusEdit);
-	
+
 	AddChild(&m_MoveMpsCK);
 	AddChild(&m_MoveMpsText);
 	AddChild(&m_MoveMpsShadow);
 	AddChild(&m_MoveMpsL);
 	AddChild(&m_MoveMpsL_Scroll);
 	m_MoveMpsL.SetScrollbar(&m_MoveMpsL_Scroll);
-	AddChild(&m_MoveMpsGetBtn);
-	AddChild(&m_MoveMpsDelAllBtn);		
-	
+	AddChild(&m_MoveMpsGetBtn); //Get move map quanh toa do
+	AddChild(&m_MoveMpsDelAllBtn);
+
 	AddChild(&m_PTChecker);
 	AddChild(&m_PTText);
 	AddChild(&m_PTShadow);
@@ -2007,12 +2249,12 @@ void KUiOther::Initialize()
 	AddChild(&m_PTListL_Scroll);
 	m_PTListL.SetScrollbar(&m_PTListL_Scroll);
 	AddChild(&m_PTListGetBtn);
-	AddChild(&m_PTListDelAllBtn);		
-	
+	AddChild(&m_PTListDelAllBtn);
+
 	AddChild(&m_OtherTextTS);
 	AddChild(&m_OtherTextTD);
 	AddChild(&m_FollowPVText);
-	
+
 	m_nParTySel = 0;
 	memset(m_szFollowName, 0, sizeof(m_szFollowName));
 	memset(m_szPartyList, 0, sizeof(m_szPartyList));
@@ -2022,41 +2264,41 @@ void KUiOther::Initialize()
 void KUiOther::LoadScheme(KIniFile* pIni)
 {
 	KWndPage::Init(pIni, "Page");
-	
+
 	m_OtherTextTS.Init(pIni, "OtherTextTS"); // them
 	m_OtherTextTD.Init(pIni, "OtherTextTD"); // them
 	m_FollowPVText.Init(pIni, "FollowPVText"); // them
-	
+
 	m_FollowChecker.Init(pIni, "FollowChecker");
 	m_FollowText.Init(pIni, "FollowText");
 	m_FollowShadow.Init(pIni, "FollowShadow");
 	m_FollowEdit.Init(pIni, "FollowEdit");
 	m_FollowPopupBtn.Init(pIni, "FollowPopupBtn");
 	m_FollowRadiusEdit.Init(pIni, "FollowRadiusEdit");
-	
+
 	m_MoveMpsText.Init(pIni, "MoveMpsText");
 	m_MoveMpsCK.Init(pIni, "MoveMpsCK");
 	m_MoveMpsShadow.Init(pIni, "MoveMpsShadow");
 	m_MoveMpsL.Init(pIni, "MoveMpsL");
 	m_MoveMpsL_Scroll.Init(pIni, "MoveMpsL_Scroll");
-	m_MoveMpsGetBtn.Init(pIni, "MoveMpsGetBtn");
-	m_MoveMpsDelAllBtn.Init(pIni, "MoveMpsDelAllBtn");		
-	
+	m_MoveMpsGetBtn.Init(pIni, "MoveMpsGetBtn"); //Get move map quanh toa do
+	m_MoveMpsDelAllBtn.Init(pIni, "MoveMpsDelAllBtn");
+
 	m_PTChecker.Init(pIni, "PTChecker");
 	m_PTText.Init(pIni, "PTText");
 	m_PTShadow.Init(pIni, "PTShadow");
 	m_PTEdit.Init(pIni, "PTEdit");
-	m_PTPopupBtn.Init(pIni, "PTPopupBtn");	
+	m_PTPopupBtn.Init(pIni, "PTPopupBtn");
 	m_PTListShadow.Init(pIni, "PTListShadow");
 	m_PTListL.Init(pIni, "PTListL");
 	m_PTListL_Scroll.Init(pIni, "PTListL_Scroll");
 	m_PTListGetBtn.Init(pIni, "PTListGetBtn");
-	m_PTListDelAllBtn.Init(pIni, "PTListDelAllBtn");		
+	m_PTListDelAllBtn.Init(pIni, "PTListDelAllBtn");
 }
 
 int KUiOther::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
 		if (uParam == (unsigned int)(KWndWindow*)&m_FollowChecker)
@@ -2086,17 +2328,20 @@ int KUiOther::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				m_MoveMpsCK.CheckButton(true);
 				g_pCoreShell->PAIOperation(GPI_AUTO_MOVEMPS, TRUE, NULL, NULL);
+				g_pCoreShell->PAIOperation(GPI_FOLLOW_PEOPLE_RADIUS_IS_CHECK, TRUE, NULL, NULL); // Check move map
 
 				if (m_FollowChecker.IsButtonChecked())
 				{
 					g_pCoreShell->PAIOperation(GPI_FOLLOW_PEOPLE, FALSE, NULL, NULL);
 					m_FollowChecker.CheckButton(false);
 				}
+
 			}
 			else
 			{
 				m_MoveMpsCK.CheckButton(false);
 				g_pCoreShell->PAIOperation(GPI_AUTO_MOVEMPS, FALSE, NULL, NULL);
+				g_pCoreShell->PAIOperation(GPI_FOLLOW_PEOPLE_RADIUS_IS_CHECK, FALSE, NULL, NULL); // Check move map
 			}
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_PTChecker)
@@ -2116,14 +2361,14 @@ int KUiOther::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			OpenPopup(MENU_TEAM);
 		else if (uParam == (unsigned int)(KWndWindow*)&m_PTListGetBtn)
 			PlayerList(MENU_PTADD);
-		else if (uParam == (unsigned int)(KWndWindow*)&m_MoveMpsGetBtn)
+		else if (uParam == (unsigned int)(KWndWindow*)&m_MoveMpsGetBtn) //Get move map quanh toa do
 			InsertMoveMpsList(m_SceneInfo.nSceneId, m_SceneInfo.nScenePos0, m_SceneInfo.nScenePos1);
 		else if (uParam == (unsigned int)(KWndWindow*)&m_MoveMpsDelAllBtn)
 		{
 			memset(m_nMpsList, 0, sizeof(m_nMpsList));
 			SetMoveMpsList();
 		}
-		else if(uParam == (unsigned int)(KWndWindow*)&m_PTListDelAllBtn)
+		else if (uParam == (unsigned int)(KWndWindow*)&m_PTListDelAllBtn)
 		{
 			memset(m_szPartyList, 0, sizeof(m_szPartyList));
 			SetPartyList();
@@ -2150,7 +2395,7 @@ int KUiOther::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				if (FilterSamePartyList(m_pNearbyPlayersList[(short)(LOWORD(nParam))].Name))
 					return 0;
 
-				for (int i = 0; i < MAX_AUTO_LIST; i ++)
+				for (int i = 0; i < MAX_AUTO_LIST; i++)
 				{
 					if (!m_szPartyList[i][0])
 					{
@@ -2181,21 +2426,20 @@ int KUiOther::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	return 0;
 }
 
-BOOL KUiOther::InsertMoveMpsList(int nSubWorldId, int nMpsX, int nMpsY)
+BOOL KUiOther::InsertMoveMpsList(int nSubWorldId, int nMpsX, int nMpsY) //Chen move toa do theo map
 {
-	int i;
-	for (i = 0; i < MAX_AUTO_LIST; i ++)
+	for (int i = 0; i < MAX_AUTO_LIST; i++)
 	{
-		if (m_nMpsList[i][0] == nSubWorldId && 
-			m_nMpsList[i][1] == nMpsX && 
+		if (m_nMpsList[i][0] == nSubWorldId &&
+			m_nMpsList[i][1] == nMpsX &&
 			m_nMpsList[i][2] == nMpsY)
 		{
 			i = MAX_AUTO_LIST;
 			break;
 		}
-		else if (m_nMpsList[i][0] == 0 && 
-				m_nMpsList[i][1] == 0 && 
-				m_nMpsList[i][2] == 0)
+		else if (m_nMpsList[i][0] == 0 &&
+			m_nMpsList[i][1] == 0 &&
+			m_nMpsList[i][2] == 0)
 		{
 			break;
 		}
@@ -2214,13 +2458,13 @@ void KUiOther::SetMoveMpsList()
 {
 	char szList[32];
 	m_MoveMpsL.ResetContent();
-	for (int i = 0; i < MAX_AUTO_LIST; i ++)
+	for (int i = 0; i < MAX_AUTO_LIST; i++)
 	{
 		g_pCoreShell->PAIOperation(GPI_AUTO_MOVEMPSID, i, m_nMpsList[i][0], NULL);
 		g_pCoreShell->PAIOperation(GPI_AUTO_MOVEMPSX, i, m_nMpsList[i][1], NULL);
 		g_pCoreShell->PAIOperation(GPI_AUTO_MOVEMPSY, i, m_nMpsList[i][2], NULL);
 
-		if(m_nMpsList[i][0])
+		if (m_nMpsList[i][0])
 		{
 			sprintf(szList, MOVEMPS_KEYNAME, m_nMpsList[i][0], m_nMpsList[i][1], m_nMpsList[i][2]);
 			m_MoveMpsL.AddString(i, szList);
@@ -2256,14 +2500,14 @@ void KUiOther::LoadSetting(KIniFile* pFile)
 		g_pCoreShell->PAIOperation(GPI_FOLLOW_PEOPLE_NAME, (unsigned int)&m_szFollowName, NULL, NULL);
 		pFile->GetInteger(SAVE_SECTION, "FollowRadius", 0, &nValue);
 		if (nValue <= 0)
-			nValue = 300;
+			nValue = 150; // Pham vi theo sau nguoi choi
 		m_FollowRadiusEdit.SetIntText(nValue);
-			
+
 		pFile->GetInteger(SAVE_SECTION, "Party", 0, &nValue);
 		m_PTChecker.CheckButton(nValue > 0);
 		g_pCoreShell->PAIOperation(GPI_AUTO_PARTY, nValue > 0, NULL, NULL);
-	
-		for (i = 0; i < MAX_AUTO_LIST; i ++)
+
+		for (i = 0; i < MAX_AUTO_LIST; i++)
 		{
 			sprintf(szKeyName, "%d", i);
 			pFile->GetString("PartyList", szKeyName, "", m_szPartyList[i], sizeof(m_szPartyList[i]));
@@ -2271,13 +2515,13 @@ void KUiOther::LoadSetting(KIniFile* pFile)
 		SetPartyList();
 		pFile->GetInteger(SAVE_SECTION, "PartyKind", 0, &nValue);
 		SetPTSel(nValue);
-	}	
+	}
 }
-		
+
 void KUiOther::SaveSetting(KIniFile* pFile)
 {
 	if (pFile)
-	{	
+	{
 		char szKeyName[10];
 		int nCount = 0;
 		for (int i = 0; i < MAX_AUTO_LIST; i++)
@@ -2289,14 +2533,14 @@ void KUiOther::SaveSetting(KIniFile* pFile)
 				nCount++;
 			}
 		}
-		pFile->WriteInteger(SAVE_SECTION, "Follow", 		m_FollowChecker.IsButtonChecked());
-		pFile->WriteString(SAVE_SECTION,  "FollowName", 	m_szFollowName);
-		pFile->WriteInteger(SAVE_SECTION, "FollowRadius", 	m_FollowRadiusEdit.GetIntNumber());
-		pFile->WriteInteger(SAVE_SECTION, "MoveCK", 		m_MoveMpsCK.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "Party", 			m_PTChecker.IsButtonChecked());
-		pFile->WriteInteger(SAVE_SECTION, "PartyKind", 		m_nParTySel);
+		pFile->WriteInteger(SAVE_SECTION, "Follow", m_FollowChecker.IsButtonChecked());
+		pFile->WriteString(SAVE_SECTION, "FollowName", m_szFollowName);
+		pFile->WriteInteger(SAVE_SECTION, "FollowRadius", m_FollowRadiusEdit.GetIntNumber());
+		pFile->WriteInteger(SAVE_SECTION, "MoveCK", m_MoveMpsCK.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "Party", m_PTChecker.IsButtonChecked());
+		pFile->WriteInteger(SAVE_SECTION, "PartyKind", m_nParTySel);
 		nCount = 0;
-		for (int i = 0; i < MAX_AUTO_LIST; i ++)
+		for (i = 0; i < MAX_AUTO_LIST; i++)
 		{
 			if (m_szPartyList[i][0])
 			{
@@ -2345,26 +2589,26 @@ void KUiOther::SetPTSel(int nSel)
 
 	switch (m_nParTySel)
 	{
-		case NoneSelect:
-			break;
-		case AutoAccept:
-			g_pCoreShell->PAIOperation(GPI_AUTO_ACCEPT, TRUE, NULL, NULL);
-			break;
-		case AutoAcceptWithName:
-			g_pCoreShell->PAIOperation(GPI_AUTO_ACCEPT_WITH_NAME, TRUE, NULL, NULL);
-			break;
-		case AutoInvite:
-			g_pCoreShell->PAIOperation(GPI_AUTO_INVITE, TRUE, NULL, NULL);
-			break;
-		case AutoInviteWithList:
-			g_pCoreShell->PAIOperation(GPI_AUTO_INVITE, TRUE, NULL, NULL);
-			g_pCoreShell->PAIOperation(GPI_AUTO_INVITE_LIST, TRUE, NULL, NULL);
-			break;
-		case AutoDenyInvite:
-			g_pCoreShell->TeamOperation(TEAM_OI_REFUSE_INVITE, 0, TRUE);
-			break;
-		default:
-			break;
+	case NoneSelect:
+		break;
+	case AutoAccept:
+		g_pCoreShell->PAIOperation(GPI_AUTO_ACCEPT, TRUE, NULL, NULL);
+		break;
+	case AutoAcceptWithName:
+		g_pCoreShell->PAIOperation(GPI_AUTO_ACCEPT_WITH_NAME, TRUE, NULL, NULL);
+		break;
+	case AutoInvite:
+		g_pCoreShell->PAIOperation(GPI_AUTO_INVITE, TRUE, NULL, NULL);
+		break;
+	case AutoInviteWithList:
+		g_pCoreShell->PAIOperation(GPI_AUTO_INVITE, TRUE, NULL, NULL);
+		g_pCoreShell->PAIOperation(GPI_AUTO_INVITE_LIST, TRUE, NULL, NULL);
+		break;
+	case AutoDenyInvite:
+		g_pCoreShell->TeamOperation(TEAM_OI_REFUSE_INVITE, 0, TRUE);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -2372,7 +2616,7 @@ void KUiOther::SetPartyList()
 {
 	m_PTListL.ResetContent();
 	int nCount = 0;
-	for (int i = 0; i < MAX_AUTO_LIST; i ++)
+	for (int i = 0; i < MAX_AUTO_LIST; i++)
 	{
 		g_pCoreShell->PAIOperation(GPI_SET_INVITE_LIST, (unsigned int)&m_szPartyList[i], i, NULL);
 		if (m_szPartyList[i][0])
@@ -2388,7 +2632,7 @@ BOOL KUiOther::FilterSamePartyList(const char* Name)
 	if (!Name || !Name[0])
 		return FALSE;
 
-	for (int i = 0; i < MAX_AUTO_LIST; i ++)
+	for (int i = 0; i < MAX_AUTO_LIST; i++)
 	{
 		if (m_szPartyList[i][0] && strcmp(Name, m_szPartyList[i]) == 0)
 			return TRUE;
@@ -2400,13 +2644,13 @@ void KUiOther::PlayerList(int uParam)
 {
 	if (m_pNearbyPlayersList)
 	{
-		free (m_pNearbyPlayersList);
+		free(m_pNearbyPlayersList);
 		m_pNearbyPlayersList = NULL;
 	}
 	int nActionDataCount = 0;
 	if (uParam == MENU_PLAYER)
 	{
-		for (int i = 0; i < MAX_AUTO_LIST; i ++)
+		for (int i = 0; i < MAX_AUTO_LIST; i++)
 		{
 			if (m_szPartyList[i][0])
 				nActionDataCount++;
@@ -2474,26 +2718,28 @@ void KUiOther::PlayerList(int uParam)
 void KUiOther::PaintWindow()
 {
 	KWndPage::PaintWindow();
-	if	(g_pRepresentShell)
+	if (g_pRepresentShell)
 	{
 		KRURect	Rect;
-		Rect.Color.Color_dw = 0xff808080;
+		Rect.Color.Color_dw = 0xffc0c9ce;
 		m_FollowChecker.GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
-//		Rect.oPosition.nX -= 5;
-//		Rect.oPosition.nY -= 4;
-//		m_MoveMpsCK.GetAbsolutePos(NULL, &Rect.oEndPos.nY);
-//		GetSize(&Rect.oEndPos.nX, NULL);
-//		Rect.oEndPos.nX += (Rect.oPosition.nX - 10);
-//		Rect.oEndPos.nY -= 8;
-//		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
-//		Rect.oPosition.nY = Rect.oEndPos.nY + 4;
-//		m_PTChecker.GetAbsolutePos(NULL, &Rect.oEndPos.nY);
-//		Rect.oEndPos.nY -= 14;
-//		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
-//		Rect.oPosition.nY = Rect.oEndPos.nY + 4;
-//		m_PTListL.GetSize(NULL, &Rect.oEndPos.nY);
-//		Rect.oEndPos.nY = Rect.oEndPos.nY + Rect.oPosition.nY + 28;
-//		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+
+		Rect.oPosition.nX -= 5;
+		Rect.oPosition.nY -= 4;
+		m_MoveMpsCK.GetAbsolutePos(NULL, &Rect.oEndPos.nY);
+		GetSize(&Rect.oEndPos.nX, NULL);
+		Rect.oEndPos.nX += (Rect.oPosition.nX - 10);
+		Rect.oEndPos.nY -= 8;
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+		Rect.oPosition.nY = Rect.oEndPos.nY + 4;
+		m_PTChecker.GetAbsolutePos(NULL, &Rect.oEndPos.nY);
+		Rect.oEndPos.nY -= 20; // khung 2
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
+
+		Rect.oPosition.nY = Rect.oEndPos.nY + 18;
+		m_PTListL.GetSize(NULL, &Rect.oEndPos.nY);
+		Rect.oEndPos.nY = Rect.oEndPos.nY + Rect.oPosition.nY + 20;
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
 
 		Rect.oPosition.nY = Rect.oEndPos.nY + 4;
 		m_MoveMpsL_Scroll.GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
@@ -2525,7 +2771,7 @@ KUiAutoPlay* KUiAutoPlay::OpenWindow(bool bShow)
 		if (m_pSelf)
 			m_pSelf->Initialize();
 		if (bShow)m_pSelf->m_RecoveryPad.Show();
-	
+
 	}
 	if (m_pSelf && bShow)
 	{
@@ -2547,7 +2793,7 @@ KUiAutoPlay* KUiAutoPlay::GetIfVisible()
 void KUiAutoPlay::CloseWindow(bool bDestroy)
 {
 	if (m_pSelf)
-	{	
+	{
 		if (bDestroy == false)
 			m_pSelf->Hide();
 		else
@@ -2568,14 +2814,15 @@ void KUiAutoPlay::Initialize()
 	AddPage(&m_FightPad, &m_FightBtn);
 	m_OtherPad.Initialize();
 	AddPage(&m_OtherPad, &m_OtherBtn);
-	
+
 	AddChild(&m_ActiveBtn);
+	AddChild(&m_UnActiveBtn);
 	AddChild(&m_CloseBtn);
 
 	char Scheme[128];
 	g_UiBase.GetCurSchemePath(Scheme, 256);
 	LoadScheme(Scheme);
-	
+
 	Wnd_AddWindow(this);
 }
 
@@ -2588,13 +2835,16 @@ void KUiAutoPlay::LoadScheme(const char* pScheme)
 	{
 		m_pSelf->Init(&Ini, "Main");
 		m_pSelf->m_ActiveBtn.Init(&Ini, "ActiveText");
+
+		m_pSelf->m_UnActiveBtn.Init(&Ini, "UnActiveText");
+		m_pSelf->m_UnActiveBtn.BringToTop();
 		m_pSelf->m_CloseBtn.Init(&Ini, "CloseText");
-		
+
 		m_pSelf->m_RecoveryBtn.Init(&Ini, "RecoveryBtn");
 		m_pSelf->m_PickBtn.Init(&Ini, "PickBtn");
 		m_pSelf->m_FightBtn.Init(&Ini, "FightBtn");
 		m_pSelf->m_OtherBtn.Init(&Ini, "OtherBtn");
-		
+
 		m_pSelf->m_RecoveryPad.LoadScheme(&Ini);
 		m_pSelf->m_PickPad.LoadScheme(&Ini);
 		m_pSelf->m_FightPad.LoadScheme(&Ini);
@@ -2604,12 +2854,30 @@ void KUiAutoPlay::LoadScheme(const char* pScheme)
 
 int KUiAutoPlay::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
-		if(uParam == (unsigned int)(KWndWindow*)&m_ActiveBtn)
-			g_pCoreShell->PAIOperation(GPI_SWITCH_ACTIVE, NULL, NULL, NULL);
-		else if(uParam == (unsigned int)(KWndWindow*)&m_CloseBtn)
+		if (uParam == (unsigned int)(KWndWindow*)&m_ActiveBtn)
+		{
+			m_CheckActive = 0;
+			g_pCoreShell->PAIOperation(GPI_SWITCH_ACTIVE, m_CheckActive, NULL, NULL);
+			m_ActiveBtn.Hide();
+			m_UnActiveBtn.Show();
+			//TamLTM Set ham Chat nham
+	//		isCheckChatNham = false;
+			//end
+		}
+		else if (uParam == (unsigned int)(KWndWindow*)&m_UnActiveBtn)
+		{
+			m_CheckActive = 1;
+			g_pCoreShell->PAIOperation(GPI_SWITCH_ACTIVE, m_CheckActive, NULL, NULL);
+			m_ActiveBtn.Show();
+			m_UnActiveBtn.Hide();
+			//TamLTM Set ham Chat nham
+		//	isCheckChatNham = true;
+			//end
+		}
+		else if (uParam == (unsigned int)(KWndWindow*)&m_CloseBtn)
 			CloseWindow(false);
 		break;
 	}
@@ -2619,57 +2887,134 @@ int KUiAutoPlay::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 void KUiAutoPlay::PaintWindow()
 {
 	KWndPageSet::PaintWindow();
-	if	(g_pRepresentShell)
+	if (g_pRepresentShell)
 	{
-		KRUShadow	Shadow;
-		GetAbsolutePos(&Shadow.oPosition.nX, &Shadow.oPosition.nY);
-		Shadow.Color.Color_dw = (GetColor("6,1,97") & 0xffffff) | ((192 << 21) & 0xff000000);
-		GetSize(&Shadow.oEndPos.nX, &Shadow.oEndPos.nY);
-		Shadow.oEndPos.nX += Shadow.oPosition.nX;
-		Shadow.oEndPos.nY += Shadow.oPosition.nY;
-		g_pRepresentShell->DrawPrimitives(1, &Shadow, RU_T_SHADOW, true);
+		// KRUShadow	Shadow;
+		// GetAbsolutePos(&Shadow.oPosition.nX, &Shadow.oPosition.nY);
+		// Shadow.Color.Color_dw = (GetColor("6,1,97") & 0xffffff) | ((192 << 21) & 0xff000000);
+		// GetSize(&Shadow.oEndPos.nX, &Shadow.oEndPos.nY);
+		// Shadow.oEndPos.nX += Shadow.oPosition.nX;
+		// Shadow.oEndPos.nY += Shadow.oPosition.nY;
+		// g_pRepresentShell->DrawPrimitives(1, &Shadow, RU_T_SHADOW, true);
 
 /*		KRURect	Rect;
 		GetAbsolutePos(&Rect.oPosition.nX, &Rect.oPosition.nY);
-		Rect.Color.Color_dw = 0xff808080;
+		Rect.Color.Color_dw = 0xffc0c9ce;
 		GetSize(&Rect.oEndPos.nX, &Rect.oEndPos.nY);
 		Rect.oEndPos.nX += Rect.oPosition.nX;
 		Rect.oEndPos.nY += Rect.oPosition.nY;
-		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);		
+		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);
 		Rect.oPosition.nX -= 1;
 		Rect.oPosition.nY -= 1;
 		Rect.oEndPos.nX -= 1;
 		Rect.oEndPos.nY -= 1;
 		g_pRepresentShell->DrawPrimitives(1, &Rect, RU_T_RECT, true);	*/
 	}
-	m_ActiveBtn.CheckButton(g_pCoreShell->PAIOperation(GPI_ISACTIVE, NULL, NULL, NULL));
+	m_ActiveBtn.CheckButton(g_pCoreShell->PAIOperation(GPI_ISACTIVE, 1, NULL, NULL));
+
+}
+void KUiAutoPlay::LoadSetting(KIniFile* pFile)
+{
+	if (pFile)
+	{
+		int nValue;
+
+		KUiPlayerRuntimeInfo	Info;
+		memset(&Info, 0, sizeof(KUiPlayerRuntimeInfo));
+		g_pCoreShell->GetGameData(GDI_PLAYER_RT_INFO, (int)&Info, 0);
+		pFile->GetInteger(SAVE_SECTION, "CheckAuto", 0, &nValue);
+		g_pCoreShell->PAIOperation(GPI_SWITCH_ACTIVE, nValue, NULL, NULL);
+		g_pCoreShell->PAIOperation(GPI_ISACTIVE, nValue, NULL, NULL);
+	}
+}
+void KUiAutoPlay::SaveSetting(KIniFile* pFile)
+{
+	if (pFile)
+	{
+		//Set lai active khi out game
+		if (m_CheckActive != 1)
+		{
+			m_CheckActive = 0;
+			pFile->WriteInteger(SAVE_SECTION, "CheckAuto", m_CheckActive);
+		}
+		else
+		{
+			pFile->WriteInteger(SAVE_SECTION, "CheckAuto", m_CheckActive);
+		}
+	}
+
 }
 
-int KUiAutoPlay::SavePrivateSetting(KIniFile* pFile)
+bool isCheckAutoButton = false;
+void KUiAutoPlay::Breathe()
+{
+	//	if (isCheckAutoButton)
+	//		return;
+
+	KIniFile* pFile = g_UiBase.GetAutoSettingFile();
+
+	if (GetKeyState('F') < 0)
+	{
+		m_ActiveBtn.Show();
+		m_UnActiveBtn.Hide();
+		isCheckAutoButton = true;
+		m_CheckActive = 1;
+	//	pFile->WriteInteger(SAVE_SECTION, "CheckAuto", m_CheckActive);
+	//	isCheckAutoButton = false;
+	}
+
+	if (pFile)
+	{
+		//Set lai active khi out game
+		if (m_CheckActive != 1)
+		{
+			m_CheckActive = 0;
+			pFile->WriteInteger(SAVE_SECTION, "CheckAuto", m_CheckActive);
+			isCheckAutoButton = false;
+		}
+		else
+		{
+			isCheckAutoButton = true;
+			pFile->WriteInteger(SAVE_SECTION, "CheckAuto", m_CheckActive);
+		}
+	}
+}
+
+int KUiAutoPlay::SavePrivateSetting()
 {
 	if (m_pSelf)
 	{
+		KIniFile* pFile = g_UiBase.GetAutoSettingFile();
 		if (pFile && g_pCoreShell)
 		{
+			pFile->Clear();
 			m_pSelf->m_RecoveryPad.SaveSetting(pFile);
 			m_pSelf->m_PickPad.SaveSetting(pFile);
 			m_pSelf->m_FightPad.SaveSetting(pFile);
-			m_pSelf->m_OtherPad.SaveSetting(pFile);		
+			m_pSelf->m_OtherPad.SaveSetting(pFile);
+			m_pSelf->SaveSetting(pFile);
+			g_UiBase.CloseAutoSettingFile(true);
+		}
+		else
+		{
+			g_UiBase.CloseAutoSettingFile(false);
 		}
 	}
 	return 1;
 }
 
-BOOL KUiAutoPlay::LoadPrivateSetting(KIniFile* pFile)
+BOOL KUiAutoPlay::LoadPrivateSetting()
 {
 	if (m_pSelf)
 	{
+		KIniFile* pFile = g_UiBase.GetAutoSettingFile();
 		if (pFile && g_pCoreShell)
 		{
 			m_pSelf->m_RecoveryPad.LoadSetting(pFile);
 			m_pSelf->m_PickPad.LoadSetting(pFile);
 			m_pSelf->m_FightPad.LoadSetting(pFile);
 			m_pSelf->m_OtherPad.LoadSetting(pFile);
+			m_pSelf->LoadSetting(pFile);
 		}
 	}
 	return TRUE;
@@ -2678,4 +3023,36 @@ void KUiAutoPlay::UpdateSceneTimeInfo(KUiSceneTimeInfo* pInfo)
 {
 	if (m_pSelf && pInfo)
 		m_pSelf->m_OtherPad.m_SceneInfo = *pInfo;
+
+	/*	if (GetKeyState('F') < 0) {
+			// The S key is down.
+			g_DebugLog("m_bFollowTarget ssssss");
+		}
+		else {
+			// The S key is up.
+		}*/
+
 }
+
+//TamLTM send char sample
+/*char* mycharheap()
+{
+	char* ch = new char;
+	ch = "Hello Heap";
+	return ch;
+}*/
+
+char* KUiAutoPlay::ShowChatNham()
+{
+	char* autoChatPlayer = new char;
+	autoChatPlayer = m_GetChatNhamText;
+	//g_DebugLog("chat %s", autoChatPlayer);
+	return autoChatPlayer;
+}
+
+//Is Check Button box text
+BOOL KUiAutoPlay::CheckChatNhamInputText()
+{
+	return isCheckChatNham;
+}
+//end code

@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面窗口体系结构--容纳游戏对象的窗口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -66,6 +66,10 @@ public:
 	int				GetObjectNum();
 	void			GetObjectById(KUiDraggedObject& Obj, int id);
 	KUiDraggedObject*  GetObjectByIndex(int nIndex);
+
+	//TamLTM
+	static int				GetLimitClickItem(int number);
+	static int				m_nNumObjectsLimit;		//容纳的对象的数目9
 	
 protected:
 	void			Clone(KWndObjectMatrix* pCopy);

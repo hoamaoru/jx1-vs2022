@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--储物箱界面
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -365,12 +365,14 @@ void KUiExpandItem::OnItemPickDrop(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_
 		}
 		else if (eStatus == UIS_S_LOCK_ITEM)
 		{
+			g_UiBase.SetStatus(UIS_S_IDLE);
 			g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 1);
 			return;
 		}
 		else if (eStatus == UIS_S_UNLOCK_ITEM)
 		{
-			g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 0);
+			g_UiBase.SetStatus(UIS_S_IDLE);
+			g_pCoreShell->OperationRequest(GOI_UNLOCKITEM, (unsigned int)(&Pick), 2);
 			return;
 		}
 		else if (GetKeyState(VK_SHIFT) & 0x8000 && !g_UiBase.GetStatus())

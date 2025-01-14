@@ -15,6 +15,7 @@
 #include "../Elem/WndShadow.h"
 #include "../../Login/Login.h"
 
+
 class KUiNewPlayer : protected KWndShowAnimate
 {
 public:
@@ -37,6 +38,7 @@ private:
 	static KUiNewPlayer* m_pSelf;
 	void	UpdateProperty();				//更新属性说明
 	void	Breathe();
+	int		CheckKyTuDatBieString( char *lpstrBuffer, char *lpstrControl );
 private:
 	KWndEdit32	m_Name;						// 姓名
 	KWndButton	m_OK;						// 确定

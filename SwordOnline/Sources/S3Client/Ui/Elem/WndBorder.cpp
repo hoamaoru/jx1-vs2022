@@ -8,11 +8,15 @@
 extern iRepresentShell*	g_pRepresentShell;
 
 
-#define  FRAME_BORDER_BACK 20
-#define	 FRAME_BORDER_GOBACK 6
-#define	 FRAME_BDLIGHT_BACK 16
+#define  FRAME_BORDER_BACK 50
+#define	 FRAME_BORDER_GOBACK 30
+#define	 FRAME_BDLIGHT_BACK 2
 #define	 FRAME_BDLIGHT_GOBACK 8
 
+/*#define  FRAME_BORDER_BACK 7 // vong sang chay nhanh cham
+#define	 FRAME_BORDER_GOBACK 8 // vong sang chay vong 2
+#define	 FRAME_BDLIGHT_BACK 15 // Ve vong sang boder nhap nhay
+#define	 FRAME_BDLIGHT_GOBACK 8 // boder*/
 
 
 int vsColors[][4][3] = {

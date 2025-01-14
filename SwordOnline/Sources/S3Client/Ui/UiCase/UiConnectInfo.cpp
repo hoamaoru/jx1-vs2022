@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--login过程背景窗口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -384,6 +384,10 @@ void KUiConnectInfo::Breathe()
 		break;
 	case LL_R_ACCOUNT_FREEZE:
 		SetInfoMsg(CI_MI_ACCOUNT_FREEZE);
+		m_nDesireLoginStatus = CI_NS_LOGIN_WND;
+		break;
+	case LL_R_ACCOUNT_ENOUGH:
+		SetInfoMsg(CI_MI_ACCOUNT_ENOUGH);
 		m_nDesireLoginStatus = CI_NS_LOGIN_WND;
 		break;
 	case LL_R_INVALID_ROLENAME:		//(新建)角色的名字不合法

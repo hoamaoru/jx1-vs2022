@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--游戏显示玩家信息主界面
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -20,6 +20,7 @@
 #include "../../../Core/src/GameDataDef.h"
 #include "../../../Engine/src/KIniFile.h"
 #include "UiMsgCentrePad.h"
+#include "../Elem/WndMessageListBox.h"
 
 struct CHAT_ITEM
 {
@@ -121,6 +122,10 @@ public:
 	BOOL				TextMsgFilterItem();
 	static void			InputItemMsg(unsigned int uId);
 
+	//TamLTM ham chat nham
+	void	ShowMessChatNhamPlayer(char* mess, bool isCheckBool);
+	bool	isCheckChatNhamWhenEdit;
+
 private:
 	KUiPlayerBar();
 	~KUiPlayerBar();
@@ -151,6 +156,7 @@ private:
 	void 	ReplaceSpecialName(char* szDest, size_t nDestSize, char* szSrc);
 	
 	int 	IsHasCost(BYTE cost, int nMoney, int nLevel, int nMana, int nFullMana, int& nUseMoney, int& nUseLevel, int& nUseMana);
+
 private:
 	static KUiPlayerBar* m_pSelf;
 private:
@@ -161,6 +167,7 @@ private:
 #define	UPB_IMMEDIA_ITEM_COUNT	9
 	KImmediaItem	m_ImmediaItem[UPB_IMMEDIA_ITEM_COUNT];
 	KWndObjectBox	m_ImmediaSkill[2];
+	KWndObjectMatrix m_ObjMatrix; // TamLTM Add
 	
 
 	//KWndImage		m_ImmediaFour;
@@ -174,6 +181,12 @@ private:
 	KWndEdit512	m_InputEdit;	//输入框
 	KWndPureTextBtn	m_ChannelSwitchBtn;	//切换频道
 	KWndButton	m_ChannelOpenBtn;	//频道打开
+
+	//TamLTM noi nham
+	KWndEdit512	m_InputEditNoiNham;	//输入框
+	char* showMessNoiNham;
+	int	addNoiNhamCount;
+	//end code
 	
 private:
 	KWndButton	m_SwitchBtn;	//切换大小

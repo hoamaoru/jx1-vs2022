@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--状态界面
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -34,6 +34,8 @@ extern iCoreShell*		g_pCoreShell;
 
 #define	SCHEME_INI		"UiStatus.ini"
 #define IMAGE_PLAYER	"\\Settings\\AvatarPlayer.ini"
+
+// Xem tin tuc nguoi choi
 
 enum WAIT_OTHER_WND_OPER_PARAM
 {
@@ -112,7 +114,13 @@ void KUiStatus::CloseWindow(bool bDestroy)
 	if (m_pSelf)
 	{
 		if (bDestroy == false)
+		{
+			if (g_UiBase.GetStatus() == UIS_S_LOCK_ITEM || 
+			g_UiBase.GetStatus() == UIS_S_UNLOCK_ITEM)		
+				g_UiBase.SetStatus(UIS_S_IDLE);
+				
 			m_pSelf->Hide();
+		}	
 		else
 		{
 			m_pSelf->Destroy();
@@ -306,8 +314,11 @@ int KUiStatus::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	switch(uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
-		if (uParam == (unsigned int)(KWndWindow*)&m_Close && !g_UiBase.GetStatus())
+		if (uParam == (unsigned int)(KWndWindow*)&m_Close /*&& !g_UiBase.GetStatus()*/) //Fix close status
+		{
 			CloseWindow(false);
+			//g_DebugLog("CloseWindow(false);");
+		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_OpenItemPad)
 			KShortcutKeyCentre::ExcuteScript(SCK_SHORTCUT_ITEMS);
 		
@@ -324,22 +335,24 @@ int KUiStatus::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_BtnBind && g_pCoreShell->GetTradeState() == 0)
 		{
-			if (g_UiBase.GetStatus() == UIS_S_IDLE || g_UiBase.GetStatus() == UIS_S_UNLOCK_ITEM)
+			
+			if (g_UiBase.GetStatus() != UIS_S_LOCK_ITEM)
 				g_UiBase.SetStatus(UIS_S_LOCK_ITEM);
-			else if (g_UiBase.GetStatus() == UIS_S_LOCK_ITEM)
+			else
 				g_UiBase.SetStatus(UIS_S_IDLE);
 				
-			if (KUiItem::GetIfVisible() == NULL)
+			if (!KUiItem::GetIfVisible())
 				KUiItem::OpenWindow();
+			
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_BtnUnBind && g_pCoreShell->GetTradeState() == 0)
 		{
-			if (g_UiBase.GetStatus() == UIS_S_IDLE || g_UiBase.GetStatus() == UIS_S_LOCK_ITEM)
+			if (g_UiBase.GetStatus() != UIS_S_UNLOCK_ITEM)
 				g_UiBase.SetStatus(UIS_S_UNLOCK_ITEM);
-			else if (g_UiBase.GetStatus() == UIS_S_UNLOCK_ITEM)
+			else
 				g_UiBase.SetStatus(UIS_S_IDLE);
 				
-			if (KUiItem::GetIfVisible() == NULL)
+			if (!KUiItem::GetIfVisible())
 				KUiItem::OpenWindow();
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_EquipExpandBtn)
@@ -387,7 +400,7 @@ int KUiStatus::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		break;
 	case WND_N_ITEM_PICKDROP:
 		if (g_UiBase.IsOperationEnable(UIS_O_MOVE_ITEM) || g_UiBase.GetStatus() == UIS_S_TRADE_REPAIR || 
-			g_UiBase.GetStatus() == UIS_S_LOCK_ITEM || g_UiBase.GetStatus() == UIS_S_UNLOCK_ITEM)
+			g_UiBase.IsOperationEnable(UIS_O_LOCK_ITEM)   || g_UiBase.IsOperationEnable(UIS_O_UNLOCK_ITEM) )
 			OnEquiptChanged((ITEM_PICKDROP_PLACE*)uParam, (ITEM_PICKDROP_PLACE*)nParam);
 		break;	
 	case WND_M_OTHER_WORK_RESULT:
@@ -408,6 +421,8 @@ int KUiStatus::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	}
 	return nRet;
 }
+
+
 
 //--------------------------------------------------------------------------
 //	功能：升级某项属性
@@ -606,6 +621,8 @@ void KUiStatus::Breathe()
 		m_Avatar.SetImage(ISI_T_SPR,"\\spr\\Ui3\\UiChooseFace\\Nam15.spr");
 		m_chooseavatar.SetText("");
 	}
+
+//	Sleep(5);
 }
 void KUiStatus::UpdateRuntimeInfo(KUiPlayerRuntimeInfo* pInfo)
 {
@@ -643,6 +660,8 @@ void KUiStatus::UpdateAllEquips()
 	}
 }
 
+// TamLTM Khung f3 player, cap nhat tinh nang f3.
+//(KUiPlayerAttribute* pInfo)->Core->src ->Truyen gia tri GameDataDef.h -> bien' gia tri dc luu tai day
 void KUiStatus::UpdateRuntimeAttribute(KUiPlayerAttribute* pInfo)
 {
 	if (pInfo && g_pCoreShell)	
@@ -665,13 +684,69 @@ void KUiStatus::UpdateRuntimeAttribute(KUiPlayerAttribute* pInfo)
 		m_MoveSpeed.SetIntText(pInfo->nMoveSpeed);
 		m_AttackSpeed.Set6IntText(pInfo->nAttackSpeed,pInfo->nCastSpeed);
 
+	/*	// TamLTM Fix hien thi thong tin khang damage
+		// 1 Phong thu vat ly
+		if (pInfo->nPhyDef > BASE_PHYSICS_RESIST_MAX)
+		{
+			m_PhyDef.Set6IntText(BASE_PHYSICS_RESIST_MAX, '%');
+		}
+		else
+		{
+			m_PhyDef.Set6IntText(pInfo->nPhyDef, '%');
+		}
+		// 2 Khang bang
+		if (pInfo->nCoolDef > BASE_COLD_RESIST_MAX)
+		{
+			m_CoolDef.Set6IntText(BASE_COLD_RESIST_MAX, '%');
+		}
+		else
+		{
+			m_CoolDef.Set6IntText(pInfo->nCoolDef, '%');
+		}
+		// 3 Khang loi
+		if (pInfo->nLightDef > BASE_LIGHT_RESIST_MAX)
+		{
+			m_LightDef.Set6IntText(BASE_LIGHT_RESIST_MAX, '%');
+		}
+		else 
+		{
+			m_LightDef.Set6IntText(pInfo->nLightDef, '%');
+		}
 
+		// 4 Khang hoa
+		if (pInfo->nFireDef > BASE_FIRE_RESIST_MAX)
+		{
+			m_FireDef.Set6IntText(BASE_FIRE_RESIST_MAX, '%');
+		}
+		else 
+		{
+			m_FireDef.Set6IntText(pInfo->nFireDef, '%');
+		}
+
+		// 5 Khang doc
+		if (pInfo->nPoisonDef > BASE_POISON_RESIST_MAX)
+		{
+			m_PoisonDef.Set6IntText(BASE_POISON_RESIST_MAX, '%');
+		}
+		else
+		{
+			m_PoisonDef.Set6IntText(pInfo->nPoisonDef, '%');
+		}
+		//end code */
+
+		//TamLTM Fix lai nhu cu
 		m_PhyDef.Set6IntText(pInfo->nPhyDef, '%');
 		m_CoolDef.Set6IntText(pInfo->nCoolDef, '%');
 		m_LightDef.Set6IntText(pInfo->nLightDef, '%');
 		m_FireDef.Set6IntText(pInfo->nFireDef, '%');
 		m_PoisonDef.Set6IntText(pInfo->nPoisonDef, '%');
+		//end code */
 
+	//	g_DebugLog("pInfo->nPoisonDef %d '%'", pInfo->nPoisonDef);
+	//	g_DebugLog("pInfo->nPhyDeff %d '%'", pInfo->nPhyDef);
+
+		// TamLTM 5 loai khang khung f3 cho player nhan vat
+		// Gia tri khang vuot nguong~ thi + 1
 		if (pInfo->nPhyDefPlus)
 			m_PhyDefPlus.SetResistPlus(pInfo->nPhyDefPlus, '+');
 		else
@@ -692,6 +767,9 @@ void KUiStatus::UpdateRuntimeAttribute(KUiPlayerAttribute* pInfo)
 			m_PoisonDefPlus.SetResistPlus(pInfo->nPoisonDefPlus, '+');
 		else
 			m_PoisonDefPlus.Clear();
+
+	//	g_DebugLog("pInfo->nPoisonDefPlus %d +", pInfo->nPoisonDefPlus);
+
 		m_Level.SetIntText(pInfo->nLevel);			//等级
 		m_StatusDesc.SetText(pInfo->StatusDesc);
 
@@ -765,9 +843,17 @@ void KUiStatus::OnEquiptChanged(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_PLA
 		}		
 	}
 	else if (eStatus == UIS_S_LOCK_ITEM)
+	{
+		g_UiBase.SetStatus(UIS_S_IDLE);
 		g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 1);
+		return;
+	}
 	else if (eStatus == UIS_S_UNLOCK_ITEM)
-		g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 0);
+	{
+		g_UiBase.SetStatus(UIS_S_IDLE);
+		g_pCoreShell->OperationRequest(GOI_UNLOCKITEM, (unsigned int)(&Pick), 2);
+		return;
+	}
 	else
 	{
 		//_ASSERT(i < _ITEM_COUNT);

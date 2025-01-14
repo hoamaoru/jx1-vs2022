@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--选择附近的某个玩家
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -72,7 +72,7 @@ void KUiSelPlayerNearby::Initialize()
 
 	char Buffer[256];
 	g_UiBase.GetCurSchemePath(Buffer, sizeof(Buffer));
-	strcat(Buffer, "\\" SCHEME_INI);
+	strcat(Buffer, "\\"SCHEME_INI);
 	KIniFile	Ini;
 	if (Ini.Load(Buffer))
 	{

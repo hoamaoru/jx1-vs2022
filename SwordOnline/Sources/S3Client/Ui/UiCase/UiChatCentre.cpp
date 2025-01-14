@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--聊天主界面
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -398,7 +398,7 @@ void KUiChatCentre::LoadScheme(const char* pScheme)
 	{
 		char		Buff[128];
 		KIniFile	Ini;
-		sprintf(Buff, "%s\\" SCHEME_INI, pScheme);
+		sprintf(Buff, "%s\\"SCHEME_INI, pScheme);
 		if (Ini.Load(Buff))
 			m_pSelf->LoadScheme(&Ini);
 	}

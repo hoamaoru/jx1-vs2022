@@ -21,7 +21,7 @@
 extern iCoreShell*		g_pCoreShell;
 extern iRepresentShell*	g_pRepresentShell;
 
-#define 	SCHEME_INI			"UiEnchase.ini"
+#define 	SCHEME_INI			"UiEnchase.ini" // 1
 
 static struct UE_CTRL_MAP
 {
@@ -275,7 +275,7 @@ void KUiEnchase::Breathe()
 }
 
 
-#define 	SCHEME_INI_UPGRADE		"分页图谱.ini"
+#define 	SCHEME_INI_UPGRADE		"分页图谱.ini" // 2
 
 
 KUiEnchase_Upgrade* KUiEnchase_Upgrade::ms_pSelf = NULL;
@@ -486,8 +486,11 @@ void KUiEnchase_Upgrade::UpdateItemObjBox(KUiObjAtRegion* pItem, int bAdd)
 	}
 }
 
+//Khung nang cap
 void KUiEnchase_Upgrade::OnItemPickDrop(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_PLACE* pDropPos)
 {
+//	g_DebugLog("pPickPos %d - %d pDropPos", pPickPos, pDropPos);
+
 	if (m_nStatus != STATUS_WAIT)
 		return;
 	KUiObjAtContRegion	Drop, Pick;
@@ -599,7 +602,7 @@ int KGetFarmImage_Upgrade::GetCurrentFrame()
 	return m_Image.nFrame;
 }
 
-#define 	SCHEME_INI_COMPOUND		"分页合成.ini"
+#define 	SCHEME_INI_COMPOUND		"分页合成.ini" // 3 // chon khung ep huyen tinh
 
 char szArray_Compound[][64] = 
 {
@@ -799,7 +802,7 @@ int KUiEnchase_Compound::WndProc(unsigned int uMsg, unsigned int uParam, int nPa
 	case WND_M_MENUITEM_SELECTED:
 		if (uParam == (unsigned int)(KWndWindow*)this)
 		{
-			g_DebugLog("%d",nParam);
+		//	g_DebugLog("%d",nParam); // chon khung ep huyen tinh
 			if ((short)(LOWORD(nParam)) >= 0)
 			{
 				ApplyShow((short)(LOWORD(nParam)));
@@ -817,8 +820,7 @@ void KUiEnchase_Compound::UpdateData()
 {
 	KUiObjAtRegion	Equips[MAX_COMPOUND_ITEM];
 	int nCount = g_pCoreShell->GetGameData(GDI_COMPOUND, (unsigned int)&Equips, 0);
-	int i;
-	for (i = 0; i < MAX_COMPOUND_ITEM; i++)
+	for (int i = 0; i < MAX_COMPOUND_ITEM; i++)
 		m_CompoundBox[i].Celar();
 	for (i = 0; i < nCount; i++)
 	{
@@ -1056,7 +1058,7 @@ int KGetFrameImage_Compound::GetCurrentFrame()
 	return m_Image.nFrame;
 }
 
-#define 	SCHEME_INI_DISTILL		"分页提取.ini"
+#define 	SCHEME_INI_DISTILL		"分页提取.ini" // 4
 
 
 KUiEnchase_Distill* KUiEnchase_Distill::ms_pSelf = NULL;
@@ -1490,7 +1492,7 @@ int KGetFarmImage_Distill::GetCurrentFrame()
 	return m_Image.nFrame;
 }
 
-#define 	SCHEME_INI_FORGE		"分页打造.ini"
+#define 	SCHEME_INI_FORGE		"分页打造.ini" // 5
 
 KUiEnchase_Forge*	KUiEnchase_Forge::ms_pSelf = NULL;
 
@@ -1809,7 +1811,7 @@ int KGetFarmImage_Forge::GetCurrentFrame()
 	return m_Image.nFrame;
 }
 
-#define 	SCHEME_INI_ENCHASE		"分页镶嵌.ini"
+#define 	SCHEME_INI_ENCHASE		"分页镶嵌.ini" // 6
 
 KUiEnchase_Enchase*	KUiEnchase_Enchase::ms_pSelf = NULL;
 

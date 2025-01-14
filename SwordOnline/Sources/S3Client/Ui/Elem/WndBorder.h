@@ -6,9 +6,9 @@
 #include "../../Represent/iRepresent/KRepresentUnit.h"
 enum eTypeEquip
 {
-    VioletEquip,
-    GoldEquip,
-	PlatinaEquip,
+    VioletEquip, //Tim
+    GoldEquip, //Vang
+	PlatinaEquip, // Bach kim
     NumType
 };
 

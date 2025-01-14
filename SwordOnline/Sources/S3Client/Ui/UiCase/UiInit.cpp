@@ -100,6 +100,24 @@ void KUiInit::PlayTitleMusic()
 	}
 }
 
+int limit4GameWindown = 0;
+bool isChecklimit4GameWindown = false;
+int KUiInit::LimitGameWindown(int limit)
+{
+	limit4GameWindown = limit;
+//	g_DebugLog("Enter Game m_EnterGame bg %d", limit4GameWindown);
+	if (limit4GameWindown > 4)
+	{
+		isChecklimit4GameWindown = true;
+	}
+	else
+	{
+		isChecklimit4GameWindown = false;
+	}
+
+	return limit;
+}
+
 void KUiInit::StopTitleMusic()
 {
 	if (g_pMusic)
@@ -238,6 +256,14 @@ void KUiInit::OnClickButton(KWndButton* pWnd)
 {
 	if (pWnd == &m_EnterGame)
 	{
+	//	g_DebugLog("Enter Game m_EnterGame %d", limit4GameWindown);
+		if (isChecklimit4GameWindown)
+		{
+			KUiConnectInfo::OpenWindow(CI_MI_INVALID_LIMIT_WINDOWN, CI_NS_INIT_WND, 0);
+			CloseWindow();
+			return;
+		}
+
 		if (KUiNotice::OpenWindow())
 			CloseWindow();
 	}
@@ -258,6 +284,8 @@ void KUiInit::OnClickButton(KWndButton* pWnd)
 	}
 	else if (pWnd == &m_ExitGame)
 	{
+		//TamLTM m_ExitGame
+//		g_DebugLog("Exit Game m_ExitGame");
 		CloseWindow();
 		UiPostQuitMsg();
 	}

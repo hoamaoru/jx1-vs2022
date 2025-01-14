@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面窗口体系结构-纯文字按钮
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -181,12 +181,12 @@ int KWndPureTextBtn::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	case WM_LBUTTONUP:
 		//if (g_pCoreShell->CheckMouse())
 		//	return 0;
-		if (m_Flag & WNDPTB_F_BE_PRESSEDDOWN)
+		if (m_Flag & WNDPTB_F_BE_PRESSEDDOWN) //TamLTM note Post item kenh chat
 		{
 			m_Flag &= ~WNDPTB_F_BE_PRESSEDDOWN;
 			if(m_bHaveItem && g_pCoreShell)
 			{
-				if(KUiChatItem::GetIfVisible()) KUiChatItem::CloseWindow();
+				if(KUiChatItem::GetIfVisible()) KUiChatItem::CloseWindow(false); // TamLTM fix post item;
 
 				char m_pTItem[MAX_SENTENCE_LENGTH];
 				memset(m_pTItem, 0, sizeof(m_pTItem));

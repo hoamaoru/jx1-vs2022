@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--消息中心面板
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -129,7 +129,7 @@ public:
 	static void				SystemMessageArrival(const char* pMsgBuff, unsigned short nMsgLength);
 	//用于新聊天协议到达的处理
 	static int				NewChannelMessageArrival(DWORD nChannelID, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem = 0, BYTE btSomeFlag = 0);
-	static void				NewMSNMessageArrival(char* szSourceName, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem = 0);
+	static void				NewMSNMessageArrival(char* szSourceName, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem = 0, BYTE btSomeFlag = 0);
 	static void				OpenChannel(char* channelName, DWORD nChannelID, BYTE cost);	//同时订阅
 	//用于外挂的聊天
 	static void				ShowSomeoneMessage(char* szSourceName, const char* pMsgBuff, unsigned short nMsgLength);

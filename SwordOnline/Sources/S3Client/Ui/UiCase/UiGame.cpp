@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	遊戲窗口的接口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -54,6 +54,7 @@ int KUiGameSpace::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 		{
+			//TamLTM Dieu khien theo auto chuot - ko click mouse
 			if (g_WndGameSpace.m_bHoldCursor)
 				SwitchHoldCursor();
 
@@ -118,6 +119,7 @@ int KUiGameSpace::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		else if (uParam & MK_RBUTTON)
 		{
 			KShortcutKeyCentre::HandleMouseInput(0, VK_RBUTTON, LOWORD(nParam), HIWORD(nParam));
+//			g_DebugLog("HandleMouseInput x %d y %d", LOWORD(nParam), HIWORD(nParam));
 		}
 
 		OnMouseMoveCursor(LOWORD(nParam), HIWORD(nParam));
@@ -193,13 +195,14 @@ void KUiGameSpace::OnMouseMoveCursor(int x, int y)
 
 void AddBlackList(const char* strName, const char* strGroup);
 
+//TamLTM add vao nhom
 void ProcessPeople(KUiPlayerItem* pDest, int nAction)
 {
 	if (pDest == NULL || pDest->Name[0] == 0)
 		return;
 	switch(nAction)
 	{
-	case ACTION_JOINTEAM:	//要用nIndex
+	case ACTION_JOINTEAM:	//Xin Gia nhap nhom to doi 要用nIndex
 		if (g_pCoreShell && pDest->nData == PLAYER_MENU_STATE_TEAMOPEN && pDest->nIndex != -1)
 			g_pCoreShell->ApplyAddTeam(pDest);
 		break;
@@ -217,7 +220,7 @@ void ProcessPeople(KUiPlayerItem* pDest, int nAction)
 		if (g_pCoreShell && !KUiChatCentre::IsMyFriend(pDest->Name))
 			g_pCoreShell->OperationRequest(GOI_CHAT_FRIEND_ADD,	(unsigned int)pDest, 0);
 		break;
-	case ACTION_INVITETEAM:			//要用uId
+	case ACTION_INVITETEAM:			//Moi vao to doi 要用uId
 		if (g_pCoreShell && pDest->uId != 0)
 		{
 			KUiPlayerTeam	TeamInfo;
@@ -335,6 +338,7 @@ void ProcessEmote(char* szDest, char *szDestChannel, int nEmoteIndex)
 	}
 }
 
+//TamLTM xem thong tin va tin tuc to doi nhap doi nguoi choi
 char g_ActionName[][32] = 
 {
 	"T竛 g蓇",
@@ -385,11 +389,12 @@ void PopUpContextPeopleMenu(const KUiPlayerItem& SelectPlayer, int x, int y)
 	pMenuData->nItemHeight = 0;
 	for (i = 0; i < nActionDataCount; i++)
 	{
-		if ((i == ACTION_JOINTEAM && SelectPlayer.nIndex != -1 && SelectPlayer.nData == PLAYER_MENU_STATE_TEAMOPEN && (TeamInfo.nTeamServerID == -1 || (TeamInfo.nTeamServerID != SelectPlayer.nTeamID) && !bTrade)) ||	//"申请入队", 对方未打开队伍时不能加入
+		if ((i == ACTION_JOINTEAM && SelectPlayer.nIndex != -1 && SelectPlayer.nData == PLAYER_MENU_STATE_TEAMOPEN && 
+			(TeamInfo.nTeamServerID == -1 || (TeamInfo.nTeamServerID != SelectPlayer.nTeamID) && !bTrade)) ||	// tham gia vao doi / nhap doi
 			(i == ACTION_TRADE && SelectPlayer.nIndex != -1 && SelectPlayer.nData == PLAYER_MENU_STATE_TRADEOPEN && !bTrade) ||	//"交易物品", 对方未打开交易时不能加入
-			(i == ACTION_MAKEFRIEND && !KUiChatCentre::IsMyFriend((char*)SelectPlayer.Name)) || //"加为好友", 对方已是我的好友时不能再邀请
-			(i == ACTION_INVITETEAM && SelectPlayer.uId != 0 && TeamInfo.nCaptainPower > 0 && !bTrade)	||	//"邀请加入", 队伍不可以加人了就不能邀请加入
-			(i == ACTION_FOLLOW && SelectPlayer.nIndex != -1 && !bTrade) ||
+			(i == ACTION_MAKEFRIEND && !KUiChatCentre::IsMyFriend((char*)SelectPlayer.Name)) || //Ket ban / hao huu
+			(i == ACTION_INVITETEAM && SelectPlayer.uId != 0 && TeamInfo.nCaptainPower > 0 && !bTrade)	||	//Moi vao to doi
+			(i == ACTION_FOLLOW && SelectPlayer.nIndex != -1 && !bTrade) || // Theo sau nguoi choi
 			(i == ACTION_VIEWITEM && SelectPlayer.uId != 0) ||
 			(i == ACTION_TONG && SelectPlayer.nIndex != -1 && bTongFlag && !bTrade) ||
 			(i == ACTION_BLACKLIST && !IsInBlackName((char*)SelectPlayer.Name)) ||
@@ -454,6 +459,7 @@ void PopUpContextEmoteMenu(char* szDest, int x, int y)
 	KPopupMenu::Popup(pMenuData, &g_WndGameSpace, SEL_EMOTE_MENU);
 }
 
+//TamLTM Dieu khien theo auto chuot - ko click mouse
 void SwitchHoldCursor()
 {
 	g_WndGameSpace.m_bHoldCursor = !g_WndGameSpace.m_bHoldCursor;

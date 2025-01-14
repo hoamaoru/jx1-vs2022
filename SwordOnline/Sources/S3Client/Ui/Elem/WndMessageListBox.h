@@ -49,6 +49,8 @@ public:
 	int		GetFirstShowLine();				//获取第一条被显示的文字是全部文字的第几行
 	void	SetScrollbar(KWndScrollBar* pScroll);
 
+	static int		GetLimitPostItemDelay(int nNum);
+
 	int		SetCapability(int nNumMessage);
 	int		GetCapability(){ return m_nCapability;}
 	int		GetCurSel() { return m_nSelMsgIndex; }

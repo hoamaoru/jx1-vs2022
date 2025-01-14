@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //	网络连接，汇集欲发送包与派送抵达包的代理中心
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -136,6 +136,7 @@ int	KNetConnectAgent::ClientConnectByNumericIp(const unsigned char* pIpAddress, 
 	char	Address[128];
 	sprintf(Address, "%d.%d.%d.%d", pIpAddress[0], pIpAddress[1],
 		pIpAddress[2], pIpAddress[3]);
+
 	if (SUCCEEDED(m_pClient->ConnectTo(Address, nPort)))
 	{
 		g_DebugLog("[Gateway] connectted.");
@@ -202,6 +203,30 @@ int KNetConnectAgent::ConnectToGameSvr(const unsigned char* pIpAddress, unsigned
 	tagLogicLogin ll;
 	ll.cProtocol = c2s_logiclogin;
 	memcpy( &ll.guid, pGuid, sizeof(GUID));
+	
+	/////////
+	char szServerName[60] = "";
+	unsigned long   stServerNameLen = 60;
+	GetComputerName(szServerName, &stServerNameLen);
+	
+	char szHostName[255];
+	gethostname(szHostName, 255);
+	struct hostent* host_entry;
+	host_entry = gethostbyname(szHostName);
+	if (host_entry != NULL)
+	{
+		char* szLocalIP;
+		szLocalIP = inet_ntoa(*(struct in_addr*)*host_entry->h_addr_list);
+		sprintf(ll.szName, "%s %s", szServerName, szLocalIP);
+	}
+	else
+	{
+		sprintf(ll.szName, "%s", szServerName);
+	}
+	/////////
+
+	sprintf(m_szNameConnect, "%s", ll.szName);
+
 	if (FAILED(m_pGameSvrClient->SendPackToServer(&ll, sizeof(tagLogicLogin))))
 		return false;
 
@@ -298,6 +323,41 @@ void KNetConnectAgent::Breathe()
 	//----处理来自游戏服务器的数据----
 	if (m_bIsGameServConnecting && m_pGameSvrClient)
 	{
+		//////
+	//	if ((nGameCounter % 8) == 0)
+	//	{
+
+			char szNameConnect[64] = "";
+			char szServerName[60] = "";
+			unsigned long   stServerNameLen = 60;
+			GetComputerName(szServerName, &stServerNameLen);
+			char szHostName[255];
+			gethostname(szHostName, 255);
+			struct hostent* host_entry;
+			host_entry = gethostbyname(szHostName);
+			if (host_entry != NULL)
+			{
+				char* szLocalIP;
+				szLocalIP = inet_ntoa(*(struct in_addr*)*host_entry->h_addr_list);
+				sprintf(szNameConnect, "%s %s", szServerName, szLocalIP);
+			}
+			else
+			{
+				sprintf(szNameConnect, "%s", szServerName);
+			}
+			if (strcmp(m_szNameConnect, szNameConnect) != 0)
+			{
+				g_bDisconnect = true;
+				m_bTobeDisconnect = false;
+				DisconnectClient();
+				DisconnectGameSvr();
+				return;
+			}
+
+
+	//	}
+		///////	
+		
 		while (true)
 		{
 			if (!m_pGameSvrClient)

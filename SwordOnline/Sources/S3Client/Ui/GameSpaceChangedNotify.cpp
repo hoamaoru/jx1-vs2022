@@ -53,6 +53,9 @@
 #include "UiCase/UiSuperShop.h"
 #include "UiCase/UiPlayerControlBar.h"
 #include "UiCase/UiChatRoom.h"
+#include "UiCase/UiDaTau.h"//TamLTM da tau vng
+#include "UiCase/UiTrembleItem.h" //TamLTM Kham Nam
+#include "UiCase/UiProgressBarLoading.h" //TamLTM open progress bar
 
 #include "../S3Client.h"
 #include "UiShell.h"
@@ -64,6 +67,10 @@ bool UiCloseWndsInGame(bool bAll);
 extern iCoreShell*		g_pCoreShell;
 
 void GameWorldTips(unsigned int uParam, int nParam);
+
+//TamLTM check post item
+//int m_LimitSendPostItem2 = 0;
+//end code
 
 //--------------------------------------------------------------------------
 //	功能：接受游戏世界数据改变通知的函数
@@ -249,6 +256,14 @@ void CoreDataChangedCallback(unsigned int uDataId, unsigned int uParam, int nPar
 				if (pGive)
 					pGive->UpdateItem((KUiObjAtRegion*)uParam, nParam);
 			}
+			//TamLTM code kham nam xanh
+			else if (pObject->eContainer == UOC_BUILD_ITEM)
+			{
+				KUiTrembleItem* pTremble = KUiTrembleItem::GetIfVisible();
+				if (pTremble)
+					pTremble->UpdateItem((KUiObjAtRegion*)uParam, nParam);
+			}
+			//End code
 			else if (pObject->eContainer == UOC_COMPOUND)
 			{
 				KUiEnchase* pEnchase = KUiEnchase::GetIfVisible();
@@ -307,6 +322,16 @@ void CoreDataChangedCallback(unsigned int uDataId, unsigned int uParam, int nPar
 			KUiShop::CloseWindow();
 			
 		break;
+	//TamLTM da tau vng
+	case GDCNI_FINISH_QUEST:
+			KUiDaTau::OpenWindow(uParam);
+		break;
+	//end code
+	//TamLTM open progress bar
+	case GDCNI_PROGRESS_BAR:
+			KUiProgressBarLoading::OpenWindow(uParam);
+		break;
+	//end code
 	case GDCNI_NPC_TRADE_ITEM:
 		{
 			KUiShop* pShop = KUiShop::GetIfVisible();
@@ -424,7 +449,7 @@ void CoreDataChangedCallback(unsigned int uDataId, unsigned int uParam, int nPar
 		break;		
 	case GDCNII_RANK_INDEX_LIST_ARRIVE:
 		KUiStrengthRank::OpenWindow();
-		KUiStrengthRank::NewIndexArrive(uParam, (KRankIndex *)nParam, true);
+		KUiStrengthRank::NewIndexArrive(uParam, (KRankIndex *)nParam /*, true*/);
 		break;
 	case GDCNII_RANK_INFORMATION_ARRIVE:
 		KUiStrengthRank::NewRankArrive(uParam, (KRankMessage *)nParam);
@@ -447,7 +472,7 @@ void CoreDataChangedCallback(unsigned int uDataId, unsigned int uParam, int nPar
 	case GDCNI_RANKDATA:		
 		KUiRankData::OpenWindow();
 		break; 
-	case GDCNI_ENCHASE:
+	case GDCNI_ENCHASE: // Ep do tim
 		KUiEnchase::OpenWindow();
 		break;
 	case GDCNI_INPUT:
@@ -514,6 +539,9 @@ void CoreDataChangedCallback(unsigned int uDataId, unsigned int uParam, int nPar
 		break;
 	case GDCNI_CHATROOM_LEAVE:
 		KUiChatRoom::Leave();
+		break;
+	case GDCNI_OPEN_TREMBLE: //TamLTM kham nam xanh
+		KUiTrembleItem::OpenWindow();
 		break;
 	}
 }
@@ -689,7 +717,7 @@ void BlacklistNotify::SendNotifyDeleteFriend(const char* Unit, const char* Name)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
+//TamLTM Chat gui len server debug
 void KClientCallback::ChannelMessageArrival(DWORD nChannelID, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem, BYTE btSomeFlag, bool bSucc)
 {
 	if (nMsgLength >= MAX_MESSAGE_LENGTH)
@@ -750,12 +778,15 @@ void KClientCallback::ChannelMessageArrival(DWORD nChannelID, char* szSendName, 
 	}
 
 	KUiMsgCentrePad::NewChannelMessageArrival(nChannelID, szSendName, pMsgBuff, nMsgLength, pItem, btSomeFlag);
+//	g_DebugLog("ababa KClientCallback:: GameSpaceChanged 0");
 
+	//TamLTM debug post item.
 	if (KUiMsgCentrePad::GetChannelSubscribe(nIndex) &&
 		KUiMsgCentrePad::IsChannelType(nIndex, KUiMsgCentrePad::ch_Screen))
 	{
 		KUiPlayerItem SelectPlayer;
 		int nKind = -1;
+
 		if (g_pCoreShell->FindSpecialNPC(szSendName, &SelectPlayer, nKind) && nKind == kind_player)
 		{
 			if(pItem)
@@ -763,9 +794,13 @@ void KClientCallback::ChannelMessageArrival(DWORD nChannelID, char* szSendName, 
 				char m_pItem[MAX_SENTENCE_LENGTH];
 				memset(m_pItem, 0, sizeof(m_pItem));
 				memcpy(m_pItem, pItem, sizeof(m_pItem));
-				int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem);
+			//	g_DebugLog("ababa KClientCallback:: GameSpaceChanged 1");
+
+				int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem); //TamLTM note Post item kenh chat
 				if(nIdx)
 				{
+				//	g_DebugLog("ababa KClientCallback:: GameSpaceChanged 2");
+
 					char szName[82], Buffer[MAX_SENTENCE_LENGTH];
 					g_pCoreShell->GetGameData(GDI_ITEM_NAME, (unsigned int)&szName, nIdx);
 					int nItemLen = strlen(szName);
@@ -776,8 +811,16 @@ void KClientCallback::ChannelMessageArrival(DWORD nChannelID, char* szSendName, 
 					nItemLen++;
 					szName[nItemLen] = '\0';
 					int nPos = 0, nOffset =0;
+
+					//TamLTM check limit post item
+//					m_LimitSendPostItem2++;
+//					if (m_LimitSendPostItem2 == 1)
+//						return;
+					//end code
+
 					while(nPos < nMsgLength)
 					{
+					//	g_DebugLog("ababa KClientCallback:: while(nPos < nMsgLength) GameSpaceChanged 3");
 						if(pMsgBuff[nPos] == '<')
 						{
 							int  i;
@@ -800,13 +843,21 @@ void KClientCallback::ChannelMessageArrival(DWORD nChannelID, char* szSendName, 
 					}
 					if(nOffset)
 						g_pCoreShell->ChatSpecialPlayer(&SelectPlayer, (const char*)Buffer, nOffset);
-					g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx);
+
+					g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx); //TamLTM note Post item kenh chat
+
+				//	g_DebugLog("ababa KClientCallback:: GameSpaceChanged 4");
+					memset(m_pItem, 0, sizeof(m_pItem));
+					memcpy(m_pItem, pItem, sizeof(m_pItem));
 					return;
-				}
+				} // */
 			}
-			g_pCoreShell->ChatSpecialPlayer(&SelectPlayer, pMsgBuff, nMsgLength);
+			g_pCoreShell->ChatSpecialPlayer(&SelectPlayer, pMsgBuff, nMsgLength); // send chat
 		}
+
+//		m_LimitSendPostItem2 = 0;
 	}
+	//end code
 }
 
 void KClientCallback::MSNMessageArrival(char* szSourceName, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem, bool bSucc)

@@ -1,4 +1,4 @@
- /******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42**********************
+ /*****************************************************************************************
 //	快捷键系统
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -535,7 +535,10 @@ int LuaSwitchStatus(Lua_State * L)
 			break;
         case 11:    //显示玩家生命
 			if (g_pCoreShell)
-				g_pCoreShell->PAIOperation(GPI_SWITCH_ACTIVE, NULL, NULL, NULL);
+			{
+				KUiAutoPlay::OpenWindow();
+				g_pCoreShell->PAIOperation(GPI_SWITCH_ACTIVE, NULL, 1, NULL);
+			}
 			break;
         case 12:    //显示玩家生命
 			if (KUiAutoPlay::GetIfVisible())
@@ -546,6 +549,11 @@ int LuaSwitchStatus(Lua_State * L)
         case 13:
             KUiPlayerBar::SwitchChannel();
             break;
+		case 14:
+			if (g_pCoreShell)	// add by TamLTM kham nam xanh load script
+				g_pCoreShell->OperationRequest(GOI_ADD_UI_CMD_SCRIPT, 12, (unsigned int)"main");	
+            break;
+			//End code
 		}
 	}
 
@@ -1921,6 +1929,7 @@ int LuaPickNearest(Lua_State * L)
 
 int LuaHoldCursor(Lua_State * L)
 {
+	//TamLTM Dieu khien theo auto chuot - ko click mouse
     SwitchHoldCursor();
 
 	return 0;

@@ -43,8 +43,12 @@ private:
 	void	OnCancel();
 	void	OnSelectPlayer(int nSel, bool bPlaySound = true);
 	void	OnEnterGame();
+	virtual void  Breathe(); // them
 	int		OnKeyDown(unsigned int uKey);
 	KWndButton*	GetActiveBtn();
+
+	bool	isCheckPlayGame; //TamLTM
+	int		countTimerLoadGame; //TamLTM
 private:
 	static KUiSelPlayer* m_pSelf;
 private:

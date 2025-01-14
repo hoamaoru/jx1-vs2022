@@ -443,6 +443,10 @@ void KWndMessageListBox::SetFontSize(int nFontSize)
 // -------------------------------------------------------------------------
 // 功能	: 根据内容增删或者窗口尺寸变化重新作些参数计算以及滚动条容量调整
 // -------------------------------------------------------------------------
+//TamLTM check limit post item
+int m_LimitSendUpdateScrollPostItem = 0;
+int countLimitScroll = 0;
+//end code
 void KWndMessageListBox::UpdateData()
 {
 	int nTotalLine = 0;
@@ -468,6 +472,14 @@ void KWndMessageListBox::UpdateData()
 
 		m_nNumVisibleTextLine = nTotalLine;
 	}
+
+/*	countLimitScroll++;
+	if (countLimitScroll >= 20)
+	{
+		g_DebugLog("m_LimitSendUpdateScrollPostItem 2 %d", countLimitScroll);
+		return;
+	} // */
+
 	if(m_bItemActived)
 	{
 		KUiPlayerControlBar::ClearItemBtn();
@@ -475,14 +487,39 @@ void KWndMessageListBox::UpdateData()
 		{
 			if (m_pMessages[j])
 			{
-				if(m_pMessages[j]->Item.m_pItem[0])
-					KUiPlayerControlBar::SetItemBtnInfo(j, m_pMessages[j]->Item.m_pItem);
+				if (m_pMessages[j]->Item.m_pItem[0])
+				{
+					/*//TamLTM check limit post item check kenh chat item
+					if (m_LimitSendUpdateScrollPostItem == 0 || 
+						m_LimitSendUpdateScrollPostItem == 1 ||
+						m_LimitSendUpdateScrollPostItem == 2 || 
+						m_LimitSendUpdateScrollPostItem == 4 || 
+						m_LimitSendUpdateScrollPostItem == 5 || 
+						m_LimitSendUpdateScrollPostItem == 6)
+					{*/
+						KUiPlayerControlBar::SetItemBtnInfo(j, m_pMessages[j]->Item.m_pItem);
+					//	g_DebugLog("m_LimitSendUpdateScrollPostItem 2 %d", m_LimitSendUpdateScrollPostItem);
+					//}
+					//end code
+				}
 			}
 		}
 	}
 	else
 		KUiPlayerControlBar::ClearItemBtn();
 }
+
+// -------------------------------------------------------------------------
+// TamLTM Fix load update delay not send on server
+// -------------------------------------------------------------------------
+int KWndMessageListBox::GetLimitPostItemDelay(int nNum)
+{
+	m_LimitSendUpdateScrollPostItem = nNum;
+//	countLimitScroll = 0;
+//	g_DebugLog("nNum %d", nNum);
+	return nNum;
+}
+//end code
 
 // -------------------------------------------------------------------------
 // 功能	: 获取第一条被显示的文字是全部文字的第几行
@@ -587,7 +624,7 @@ void KWndMessageListBox::PaintWindow()
 		bg.oPosition.nX = m_nAbsoluteLeft;
 		bg.oEndPos.nX = bg.oPosition.nX + m_Width;
 		bg.oPosition.nY = y;
-		bg.oEndPos.nY = bg.oPosition.nY + nNumVisibleTextLine * (m_nFontSize + 1 + m_nRowDis);
+		bg.oEndPos.nY = bg.oPosition.nY + nNumVisibleTextLine * (m_nFontSize + 1 /*+ m_nRowDis*/); //TamLTM fix post item;
 		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
 	}	
 	while (nViewLines > 0 && nCurMsg < m_nNumMessage)
@@ -608,7 +645,7 @@ void KWndMessageListBox::PaintWindow()
 		Param.nX = m_nAbsoluteLeft;
 		Param.nY = y;
 		Param.nZ = TEXT_IN_SINGLE_PLANE_COORD;
-
+		int nOffset = 0;//TamLTM fix post item;
 		bool bDraw = (nViewLines + m_nHideNumLine <= m_nNumMaxShowLine);
 
 		if (bDraw)
@@ -622,7 +659,7 @@ void KWndMessageListBox::PaintWindow()
 					bg.oPosition.nX = Param.nX;
 					bg.oPosition.nY = Param.nY;
 					bg.oEndPos.nX = bg.oPosition.nX + m_Width;
-					bg.oEndPos.nY = bg.oPosition.nY + Param.nNumLine * (m_nFontSize + 1 + m_nRowDis);
+					bg.oEndPos.nY = bg.oPosition.nY + Param.nNumLine * (m_nFontSize + 1  /* + m_nRowDis*/); //TamLTM fix post item;
 					g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
 				}
 				Param.Color = m_SelMsgColor;
@@ -645,12 +682,13 @@ void KWndMessageListBox::PaintWindow()
 				bg.oPosition.nX = Param.nX;
 				bg.oPosition.nY = Param.nY;
 				bg.oEndPos.nX = bg.oPosition.nX + m_Width;
-				bg.oEndPos.nY = bg.oPosition.nY + Param.nNumLine * (m_nFontSize + 1 + m_nRowDis);
+				bg.oEndPos.nY = bg.oPosition.nY + Param.nNumLine * (pCurMsg->nCharWidth * m_nFontSize / 2);/*(m_nFontSize + 1 + m_nRowDis);*/ //TamLTM fix post item;
 				g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
 			}
 					
 			Param.bPicPackInSingleLine = true;
-			g_pRepresentShell->OutputRichText(m_nFontSize, &Param, pCurMsg->Msg, pCurMsg->nLen, m_Width);
+			//g_pRepresentShell->OutputRichText(m_nFontSize, &Param, pCurMsg->Msg, pCurMsg->nLen, m_Width);
+				g_pRepresentShell->OutputRichText(m_nFontSize, &Param, pCurMsg->Msg + nOffset, pCurMsg->nLen - nOffset, m_Width); //TamLTM fix post item;
 
 			if(m_bItemActived)
 			{
@@ -660,7 +698,7 @@ void KWndMessageListBox::PaintWindow()
 				else
 					KUiPlayerControlBar::SetItemBtnPos(nCurMsg, HIDE_POS);
 			}
-			y += Param.nNumLine * (m_nFontSize + 1 + m_nRowDis);
+			y += Param.nNumLine * (m_nFontSize + 1 /*+ m_nRowDis*/);
 		}
 		else
 		{

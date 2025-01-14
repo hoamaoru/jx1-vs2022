@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	遊戲窗口的接口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -52,4 +52,5 @@ void ProcessEmote(char* szDest, char *szDestChannel = "", int nEmoteIndex = 0);
 void PopUpContextPeopleMenu(const KUiPlayerItem& SelectPlayer, int x, int y);
 void PopUpContextEmoteMenu(char* szDest, int x, int y);
 
+//TamLTM Dieu khien theo auto chuot - ko click mouse
 void SwitchHoldCursor();

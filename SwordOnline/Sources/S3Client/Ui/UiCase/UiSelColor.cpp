@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--选颜色
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -33,7 +33,7 @@ void KUiSelColor::LoadScheme(const char* pScheme)
 	int			i;
 	KIniFile	Ini;
 	char		Buffer[128], Value[4];
-	sprintf(Buffer, "%s\\" SCHEME_INI, pScheme);
+	sprintf(Buffer, "%s\\"SCHEME_INI, pScheme);
 	if (Ini.Load(Buffer) == FALSE)
 		return;
 

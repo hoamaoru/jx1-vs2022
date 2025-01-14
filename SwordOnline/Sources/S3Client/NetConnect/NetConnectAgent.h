@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
+/*****************************************************************************************
 //	网络连接，汇集欲发送消息包与派送抵达消息包的代理中心
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -22,7 +22,7 @@ typedef HRESULT ( __stdcall * pfnCreateClientInterface )(
 
 
 //====默认的超时时限====
-#define	DEF_TIMEOUT_LIMIT	10000	//15sec
+#define	DEF_TIMEOUT_LIMIT	60000	//60sec
 
 class KNetConnectAgent
 {
@@ -46,6 +46,7 @@ public:
 	int		SendMsg(const void *pBuffer, int nSize);
 	//持续性行为
 	void	Breathe();
+//	void	Breathe(DWORD nGameCounter);
 
 	void	UpdateClientRequestTime(bool bCancel, unsigned int uTimeLimit = DEF_TIMEOUT_LIMIT);
 
@@ -70,7 +71,8 @@ private:
 	HMODULE					    m_hModule;
 	pfnCreateClientInterface    m_pFactroyFun;
 	IClientFactory             *m_pClientFactory;
-
+	
+	char                    m_szNameConnect[64];//TAMLTM
 
 
 	bool					m_bIsClientConnecting;

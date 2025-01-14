@@ -17,7 +17,10 @@
 #include "Ui/ChatFilter.h"
 #include "Ui/uibase.h"
 #include "ErrorCode.h"
-
+#include <tchar.h>
+#include <tlhelp32.h>
+#include "S3Config.h"
+#include "Ui/UiCase/UiInit.h"
 #define ClientVersion
 KMyApp		MyApp;
 HINSTANCE	hInst;
@@ -47,7 +50,8 @@ KMusic*					g_pMusic = NULL;
 #endif
 	
 int					g_bScreen = true;
-char				g_szGameName[128] = "11/11/2019";
+char				g_szGameName[32] = "VoLamTruyenKy";
+
 
 KClientCallback g_ClientCallback;
 
@@ -122,6 +126,7 @@ KMyApp::KMyApp()
 {
 	m_pInlinePicSink = NULL;
 }
+#define DEFAULT_BITSPERSEL 16
 
 BOOL InitRepresentShell(BOOL bFullScreen, int nWidth, int nHeight)
 {
@@ -177,13 +182,13 @@ BOOL KMyApp::GameInit()
 	KIniFile*	pSetting = g_UiBase.GetCommConfigFile();
 	if (pSetting)
 	{
-		pSetting->GetString("Main", "GameName", "11/11/2019", g_szGameName, sizeof(g_szGameName));
+		pSetting->GetString("Main", "GameName", "Vo Lam Truyen Ky", g_szGameName, sizeof(g_szGameName));
         SetWindowText(g_GetMainHWnd(), g_szGameName);
 	}
+	
+#ifdef _DEBUG
 	g_FindDebugWindow("#32770","DebugWin");
-/*#ifdef _DEBUG
-	g_FindDebugWindow("#32770","DebugWin");
-#endif*/
+#endif
 
 	KIniFile	IniFile;
 	if (!IniFile.Load("\\config.ini"))
@@ -276,6 +281,15 @@ BOOL KMyApp::GameInit()
 	
 	SetMouseHoverTime(400);
 
+	//TamLTM Check limit
+//	GameLimitWindown();
+	//end code
+
+	//TamLTM get version game
+//	int nGetVersionGame = g_pCoreShell->GetGameData(GDI_GET_VERSION_GAME, 0, 0);
+//	g_DebugLog("nGetVersionGame %d ", nGetVersionGame);
+	//end code
+
 	if(UiStart())
 	{
 		return TRUE;
@@ -337,14 +351,18 @@ BOOL KMyApp::GameExit()
 	return TRUE;
 }
 
+int checkVNWCountTimer = 0;
 BOOL KMyApp::GameLoop()
 {
 	static int nGameFps = 0;
 	g_NetConnectAgent.Breathe();
+//	g_NetConnectAgent.Breathe(m_GameCounter);
 	if (m_GameCounter * 1000 <= m_Timer.GetElapse() * GAME_FPS)
 	{
 		if (g_pCoreShell->Breathe() && UiHeartBeat())
 		{
+			//UiPaint(nGameFps);
+
 			m_GameCounter++;
 			int	nElapse = m_Timer.GetElapse();
 			if (nElapse)
@@ -383,6 +401,7 @@ int KMyApp::HandleInput(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			char	szMsg[128], szTitle[64];
 			pSetting->GetString("InfoString", QUIT_QUESTION_ID, "", szMsg, sizeof(szMsg));
 			pSetting->GetString("InfoString", GAME_TITLE, "", szTitle, sizeof(szTitle));
+
 			if (szMsg[0] && szTitle[0])
 			{
 				nRet = (MessageBox(g_GetMainHWnd(), szMsg, szTitle,
@@ -392,3 +411,1001 @@ int KMyApp::HandleInput(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return nRet;
 }
+/*
+BOOL KMyApp::Game_AntiVMW()
+{
+
+	DWORD pid = 0, Index = 0, cPid = 0;
+    PROCESSENTRY32 pe32;
+    BOOL res = FALSE;
+    HANDLE snap = INVALID_HANDLE_VALUE, proc = INVALID_HANDLE_VALUE;
+    char c = 0;
+	std::string strName;
+	pid = GetCurrentProcessId();
+   
+    snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, pid);
+
+    if (snap == INVALID_HANDLE_VALUE) {
+        return -1;
+    }
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+    res = Process32First(snap, &pe32);
+    if (res == FALSE) {
+        CloseHandle(snap);
+        return -2;
+    }
+    do {
+        if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_1)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_1;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_2)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_2;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_3)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_3;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_4)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_4;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_5)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_5;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_6)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_6;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_7)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_7;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+		}
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_8)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_8;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_9)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_9;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_10)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_10;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_11)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_11;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_12)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_12;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_13)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_13;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_14)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_14;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_15)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_15;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_16)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_16;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_17)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_17;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_18)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_18;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_19)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_19;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_20)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_20;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_21)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_21;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_22)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_22;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_23)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_23;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_24)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_24;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_25)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_25;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_26)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_26;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_27)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_27;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_28)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_28;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_29)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_29;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VMW_EXE_ID_30)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VMW_EXE_ID_30;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_1)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_1;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_2)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_2;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_3)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_3;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_4)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_4;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_5)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_5;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_6)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_6;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_7)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_7;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_8)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_8;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_9)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_9;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		else if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_VTB_EXE_ID_10)) == 0) 
+		{
+			Index++;
+			strName = IS_CHECK_VTB_EXE_ID_10;
+            if (Index > 0)
+			{
+				HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+				TerminateProcess(pr_open_close,0);
+				CloseHandle(pr_open_close);
+				exit(0);
+			}
+        }
+		
+    } while ((res = Process32Next(snap, &pe32)));
+    CloseHandle(snap);
+
+    if ((proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, cPid)) == INVALID_HANDLE_VALUE) {
+        return -3;
+    }
+    CloseHandle(proc);
+	if (strName == IS_CHECK_VMW_EXE_ID_1)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_2)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_3)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_4)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_5)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_6)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_7)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_8)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_9)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_10)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_11)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_12)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_13)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_14)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_15)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_16)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_17)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_18)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_19)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_20)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_21)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_22)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_23)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_24)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_25)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_26)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_27)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_28)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_29)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_30)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+
+	else if (strName == IS_CHECK_VTB_EXE_ID_1)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_2)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_3)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_4)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_5)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_6)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_7)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_8)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VTB_EXE_ID_9)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else if (strName == IS_CHECK_VMW_EXE_ID_10)
+	{
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS,FALSE,pe32.th32ProcessID);
+		TerminateProcess(pr_open_close,0);
+		CloseHandle(pr_open_close);
+		exit(0);
+		
+	}
+	else
+	{
+		return TRUE;
+	}
+	return TRUE;
+}
+
+// TamLTM code GameLimitWindown
+BOOL KMyApp::GameLimitWindown()
+{
+	DWORD pid = 0, Index = 0, cPid = 0;
+	PROCESSENTRY32 pe32;
+	BOOL res = FALSE;
+	HANDLE snap = INVALID_HANDLE_VALUE, proc = INVALID_HANDLE_VALUE;
+	char c = 0;
+	std::string strName;
+	pid = GetCurrentProcessId();
+	snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, pid);
+
+	if (snap == INVALID_HANDLE_VALUE) {
+		return -1;
+	}
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+	res = Process32First(snap, &pe32);
+	if (res == FALSE) {
+		CloseHandle(snap);
+		return -2;
+	}
+	do {
+		if (_tcscmp(pe32.szExeFile, TEXT(IS_CHECK_GAME_EXE_ID)) == 0)
+		{
+			Index++;
+			strName = IS_CHECK_GAME_EXE_ID;
+			KUiInit::LimitGameWindown(Index); //Get count windown
+
+			if (Index > MAX_LIMIT_ONE_PC)
+			{
+				HexNumberCheatHack(Index);
+				HexNumberCheatHack(MAX_LIMIT_ONE_PC);
+		//		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID);
+			//	TerminateProcess(pr_open_close, 0);
+			//	CloseHandle(pr_open_close);
+				KUiInit::LimitGameWindown(5); //Get count windown
+			//	exit(0);
+			}
+			else if (Index > 4 || MAX_LIMIT_ONE_PC > 10)
+			{
+				HexNumberCheatHack(Index);
+				HexNumberCheatHack(MAX_LIMIT_ONE_PC);
+			//	HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID);
+			//	TerminateProcess(pr_open_close, 0);
+			//	CloseHandle(pr_open_close);
+				KUiInit::LimitGameWindown(5); //Get count windown
+			//	exit(0);
+			}
+		}
+	} while ((res = Process32Next(snap, &pe32)));
+	CloseHandle(snap);
+
+	if ((proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, cPid)) == INVALID_HANDLE_VALUE) {
+		return -3;
+	}
+	CloseHandle(proc);
+	HexNumberCheatHack(Index);
+	HexNumberCheatHack(MAX_LIMIT_ONE_PC);
+	HexStringCheatHack(IS_CHECK_GAME_EXE_ID);
+	if (strName == IS_CHECK_GAME_EXE_ID)
+	{
+		return TRUE;
+	}
+	else
+	{
+		HexNumberCheatHack(Index);
+		HexNumberCheatHack(MAX_LIMIT_ONE_PC);
+		HANDLE pr_open_close = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID);
+		TerminateProcess(pr_open_close, 0);
+		CloseHandle(pr_open_close);
+	//	exit(0);
+	}
+
+	return TRUE;
+}*/
+/*
+void UpdateGameVersion()
+{
+	int buildVersion;
+	int updateVersion;
+
+	//int m_nMoney = g_pCoreShell->GetGameData(GDI_PLAYER_HOLD_MONEY, 0, 0);
+	//g_DebugLog("Money: %d", m_nMoney);
+
+	// Read file
+	ifstream inFile("E:\\updateversion\\updateversionfile.txt");
+
+	while (inFile >> buildVersion >> updateVersion)
+	{
+		if (buildVersion == updateVersion)
+		{
+			g_DebugLog("buildVersion: %d", buildVersion);
+			g_DebugLog("updateVersion: %d", updateVersion);
+		}
+		else
+		{
+			//	system("game E:\\CodeJx\\ServerTeam\\Client2005\\Game.exe");
+			g_DebugLog("Exit");
+		}
+	}
+
+	// 2. Mo file
+	fstream saveFile;
+	saveFile.open("updateversion\\output.txt", ios::out);
+
+	// 3. Ghi du lieu vào file
+//	string data = "Game: Vo Lam Truyen Ky\nHo Ten: Hatake Kakashi\nCong Viec: Coder";
+	int dataSave = 1;
+
+	saveFile << dataSave;
+
+	// 4. Ðong file
+	saveFile.close();
+
+	// 5. Remove file
+	//	remove("updateversion\\output.txt");
+	//	remove("SavePos.txt");
+	//	const int result = remove("SavePos");
+	//	if (result == 0) {
+	//	g_DebugLog("success");
+	//	}
+	//	else {
+		//	g_DebugLog("No such file or directory");
+	//	}
+}
+// Tam Code
+void HexNumberCheatHack(int limit)
+{
+	int k;
+	std::string hexNo = "";
+	char hx[] = { '0', '2', '3', '4',
+					'5', '6', '7', '8',
+					'9', 'A', 'B', 'C',
+					'D', 'E', 'F', 'G',
+					'K', 'J', 'H', 'G',
+					'a', 'b', 'c', 'd',
+					'l', 'j', 't', 'w' };
+
+	while (limit > 0)
+	{
+		k = limit % 29;
+		hexNo = hx[k] + hexNo;
+		limit = limit / 29;
+	}
+	//	g_DebugLog("Hex 2: %d ", hexNo);
+}
+
+// Tam Code
+char* HexStringCheatHack(char* hexStr)
+{
+	char hex_string[] = "0xbeef";
+	unsigned long hex_value
+		= strtoul(hex_string, 0, 16);
+	return hexStr;
+}
+//End code*/
+
+

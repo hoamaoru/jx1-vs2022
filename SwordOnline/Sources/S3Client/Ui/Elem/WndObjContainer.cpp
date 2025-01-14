@@ -1,4 +1,4 @@
-﻿/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	½çÃæ´°¿ÚÌåÏµ½á¹¹--ÈÝÄÉÓÎÏ·¶ÔÏóµÄ´°¿Ú
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -24,6 +24,9 @@ extern iCoreShell* g_pCoreShell;
 extern iRepresentShell* g_pRepresentShell;
 
 #include "../Elem/WndBorder.h"
+
+//TamLTM check limit click item pos item
+//int		limitClickItem = 0;
 
 unsigned int l_BgColors[] =
 {
@@ -668,6 +671,7 @@ void KWndObjectMatrix::Clear()
 //--------------------------------------------------------------------------
 //	¹¦ÄÜ£º´°¿Úº¯Êý
 //--------------------------------------------------------------------------
+int m_limitClickItem = 0;
 int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
 	switch (uMsg)
@@ -675,17 +679,21 @@ int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 	case WM_LBUTTONDOWN:
 		if ((m_Style & OBJCONT_S_DISABLE_PICKPUT) == 0)
 		{
-			if (GetKeyState(VK_CONTROL) & 0x8000)
+			// TamLTM debug click post item
+			if(GetKeyState(VK_CONTROL) & 0x8000)
 			{
+		//		g_DebugLog("GetKeyState(VK_CONTROL) %d", m_limitClickItem);
 				int nObj = GetObjectAt(LOWORD(nParam), HIWORD(nParam));
-				if (nObj >= 0)
+				if (nObj >= 0 && m_limitClickItem == 0)
 				{
 					KUiDraggedObject	Obj;
 					Obj = m_pObjects[nObj];
 					KUiPlayerBar::InputItemMsg(Obj.uId);
+					m_limitClickItem = Obj.uId;
 				}
 				return 0;
 			}
+			//end code
 			if (Wnd_GetDragObj(NULL))
 				DropObject(LOWORD(nParam), HIWORD(nParam), false);
 			else
@@ -958,6 +966,15 @@ void KWndObjectMatrix::GetObjectById(KUiDraggedObject& Obj, int id)
 	Obj = *pHolded;
 	return;
 }
+
+//TamLTM limit post item
+int KWndObjectMatrix::GetLimitClickItem(int number)
+{
+//	g_DebugLog("m_nNumObjectsLimit %d", number);
+	m_limitClickItem = number;
+	return number;
+}
+//end code
 
 int KWndObjectMatrix::GetObjectNum()
 {

@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	½çÃæ--Ð¡µØÍ¼
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -22,7 +22,7 @@
 #include "../../../Represent/iRepresent/iRepresentShell.h"
 #include "../../../Represent/iRepresent/KRepresentUnit.h"
 #include <time.h>
-
+#include "UiChatItem.h"
 
 extern iRepresentShell*	g_pRepresentShell;
 extern iCoreShell*			g_pCoreShell;
@@ -88,6 +88,12 @@ void KUiMiniMap::Initialize()
 {
 	AddChild(&m_Shadow);
 	AddChild(&m_SceneName);
+
+	//TamLTM Bang hoi chiem linh
+	AddChild(&m_TongMapInfo1);
+    AddChild(&m_TongMapInfo2);
+	//end code
+
 	AddChild(&m_ScenePos);
 	AddChild(&m_SwitchBtn);
 	AddChild(&m_WorldMapBtn);
@@ -135,8 +141,19 @@ void KUiMiniMap::LoadScheme(const char* pScheme)
 		else if (s_eMapMode == MINIMAP_M_BRIEF_PIC_BROWSEEX)
 			sprintf(szBuf, "%s\\%s", pScheme, SCHEME_INI_BIGEX);
 		else
-			sprintf(szBuf, "%s\\%s", pScheme,
-				s_eMapMode == MINIMAP_M_BRIEF_PIC ? SCHEME_INI_SMALL : SCHEME_INI_BIG);
+		{
+			//Ban do to o giua man hinh
+		//	if (GetAsyncKeyState(VK_TAB))
+		//	{
+			//	sprintf(szBuf, "%s\\%s", pScheme, SCHEME_INI_BIGEX);
+		//	}
+		//	else
+		//	{
+				sprintf(szBuf, "%s\\%s", pScheme,
+					s_eMapMode == MINIMAP_M_BRIEF_PIC ? SCHEME_INI_SMALL : SCHEME_INI_BIG);
+		//	}
+		}
+
 		if (Ini.Load(szBuf))
 		{
 			ms_pSelf->LoadScheme(&Ini);
@@ -151,6 +168,12 @@ void KUiMiniMap::LoadScheme(KIniFile* pIni)
 	Init(pIni, "MiniMap");
 	m_Shadow.Init(pIni, "NameShadow");
 	m_SceneName.Init(pIni, "SceneName");
+
+	//TamLTM Bang hoi chiem linh
+	m_TongMapInfo1.Init(pIni, "TongMapInfo1");
+    m_TongMapInfo2.Init(pIni, "TongMapInfo2");
+	//end code
+
 	m_ScenePos.Init(pIni, "ScenePos");
 	m_SwitchBtn.Init(pIni, "SwitchBtn");
 	m_WorldMapBtn.Init(pIni, "WorldMapBtn");
@@ -185,21 +208,25 @@ int KUiMiniMap::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			MapSetMode(MINIMAP_M_WORLD_MAP);
 		else if (uParam == (unsigned int)(KWndWindow*)&m_CaveMapBtn)
 			MapSetMode(MINIMAP_M_CAVELIST_MAP);
-		else if (uParam == (unsigned int)(KWndWindow*)&m_BtnFlag)
+		else if (uParam == (unsigned int)(KWndWindow*)&m_BtnFlag) // Button la co
 		{
 			BOOL bFlag = g_pCoreShell->GetFlagMode();
 			g_pCoreShell->SetFlagMode(!bFlag);
 			g_pCoreShell->SetPaintMode(!bFlag);
+		//	g_DebugLog("SetPaintMode");
 		}
-		else if (uParam == (unsigned int)(KWndWindow*)&m_ScenePos)
+		else if (uParam == (unsigned int)(KWndWindow*)&m_ScenePos) //Box Nhap toa do game mini
 		{
-			KUiGetString::OpenWindow(GSA_NORMAL, "Xin nhËp täa ®é môc tiªu", "",
+			//TamLTM Nhap toa do cho mini map
+			KUiGetString::OpenWindow(GSA_NORMAL, "Xin nhËp täa ®é", "",
 				(KWndWindow*)this, 0, 0,5, 9);
+		//	g_DebugLog("%d + %d Xin nhËp täa ®é ");
 		}
 		break;
-	case WM_LBUTTONDOWN:	
+	case WM_LBUTTONDOWN: // Cam co tren mini map
 		int nCursorX, nCursorY;
-		Wnd_GetCursorPos(&nCursorX, &nCursorY);		
+		Wnd_GetCursorPos(&nCursorX, &nCursorY);
+
 		if (g_pCoreShell->SceneMapOperation(GSMOI_IS_SCENE_DIRECT_MAP, nCursorX, nCursorY))
 		{
 			g_pCoreShell->SceneMapOperation(GSMOI_IS_SCENE_DO_DIRECT_MAP, nCursorX, nCursorY);
@@ -210,18 +237,27 @@ int KUiMiniMap::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			g_pCoreShell->SetFlagMode(FALSE);
 			g_pCoreShell->DirectFindPos(nCursorX, nCursorY, TRUE, TRUE);
 		}
+
+		//Cam co` thi set lai
+		g_pCoreShell->SetAutoRun(FALSE);
+		g_pCoreShell->SetFlagAutoRun(TRUE, ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
+	//	g_DebugLog("%d + %d 5 ", ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
+
 		break;
 	case WM_LBUTTONUP:
 	case WM_LBUTTONDBLCLK:
-	case WM_MOUSEHOVER:
-		Wnd_GetCursorPos(&nCursorX, &nCursorY);	
+	case WM_MOUSEHOVER: //Di chuyen va cam co den dia diem map mini
+		Wnd_GetCursorPos(&nCursorX, &nCursorY);
 		if (g_pCoreShell->SceneMapOperation(GSMOI_IS_SCENE_DIRECT_MAP, nCursorX, nCursorY))
 			Wnd_SwitchCursor(MOUSE_CURSOR_PICK);
 		else
 		{
 			Wnd_SwitchCursor(MOUSE_CURSOR_NORMAL);
 			Wnd_TransmitInputToGameSpace(uMsg, uParam, nParam);
+
+		//	g_DebugLog("%d + %d WM_MOUSEHOVER ", nCursorX, nCursorY); //luc Chay luc ko chay
 		}
+	//	g_DebugLog("debug 14"); // De im chuot se chay ham nay
 		break;
 	case WND_N_CHILD_MOVE:
 		if (uParam == (unsigned int)(KWndWindow*)&m_SceneName ||
@@ -242,10 +278,12 @@ int KUiMiniMap::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			y += nMoveOffsetY;
 			SetPosition(x, y);
 		}
+	//	g_DebugLog("debug 1");
 		break;
 	case WM_RBUTTONDOWN:
 		Wnd_SetCapture(this);
 		Wnd_GetCursorPos((int *)&m_OldPos.x, (int *)&m_OldPos.y);
+	//	g_DebugLog("2");
 		break;
 	case WM_MOUSEMOVE:
 		Wnd_GetCursorPos(&nCursorX, &nCursorY);	
@@ -266,13 +304,16 @@ int KUiMiniMap::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			Wnd_SwitchCursor(MOUSE_CURSOR_NORMAL);
 			Wnd_TransmitInputToGameSpace(uMsg, uParam, nParam);
 		}
+		g_pCoreShell->CheckHoverMouseMiniMap(TRUE);
+	//	g_DebugLog("%d - %d WM_MOUSEMOVE 2", nCursorX, nCursorY);
 		break;
 	case WM_RBUTTONUP:
 		if (IS_DRAGING_MAP && ((uParam & MK_CONTROL) == 0) && g_pCoreShell)
 			g_pCoreShell->SceneMapOperation(GSMOI_SCENE_FOLLOW_WITH_MAP, 0, 0);
 		StopScrollMap();
+	//	g_DebugLog("debug 17");
 		break;
-	case WND_M_OTHER_WORK_RESULT:
+	case WND_M_OTHER_WORK_RESULT: // enter nhap toa do
 		if (nParam > 0)
 		{
 			int x=0,y=0,i=0;
@@ -292,12 +333,21 @@ int KUiMiniMap::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			y = KSG_StringGetInt(&pcszTemp, 255);
 			if (g_pCoreShell->GetFlagMode())
 				g_pCoreShell->SetFlagMode(FALSE);
+
 			g_pCoreShell->SetPaintMode(TRUE);
 			g_pCoreShell->DirectFindPos(x, y, FALSE, TRUE);
+
+			//TamLTM check auto run
+			g_pCoreShell->SetAutoRun(TRUE);
+			g_pCoreShell->SetFlagAutoRun(FALSE, 0, 0);
+
+		//	g_DebugLog("WND_M_OTHER_WORK_RESULT %d + %d ", x * 8 * 32, y * 16 * 32);
 		}
 		break;
 	default:
 		nRet = KWndWindow::WndProc(uMsg, uParam, nParam);
+//		g_DebugLog("debug else");
+		g_pCoreShell->CheckHoverMouseMiniMap(FALSE);
 		break;
 	}
 	return nRet;
@@ -366,6 +416,11 @@ void KUiMiniMap::Breathe()
 	}
 }
 
+//TamLTM change map
+int changeNameMap = 1;
+int saveIdMap = 0;
+bool isCheckClosePostItem = false;
+int countClosePostItem = 0;
 //»î¶¯º¯Êý
 void KUiMiniMap::UpdateSceneTimeInfo(KUiSceneTimeInfo* pInfo)
 {
@@ -374,10 +429,76 @@ void KUiMiniMap::UpdateSceneTimeInfo(KUiSceneTimeInfo* pInfo)
 		ms_pSelf->m_SceneName.SetText(pInfo->szSceneName);
 		strcpy(ms_pSelf->m_szMapName,pInfo->szSceneName);
 
+		//TamLTM Thue suat thanh thi
+		char szinfo[256];
+
+		if (pInfo->szTongName[0] && s_eMapMode != MINIMAP_M_BRIEF_PIC)
+		{
+			sprintf(szinfo,"ThuÕ suÊt:%d%%, ChØ sè vËt gi¸:%d%%",pInfo->szTongT, pInfo->szTongVG);
+			ms_pSelf->m_TongMapInfo1.SetText(szinfo);
+
+			sprintf(szinfo,"Th¸i thó:%s, Bang héi chiÕm lÜnh:%s",pInfo->szTongNameBC, pInfo->szTongName);
+			ms_pSelf->m_TongMapInfo2.SetText(szinfo);
+		}
+		else
+		{
+			ms_pSelf->m_TongMapInfo1.SetText("");
+			ms_pSelf->m_TongMapInfo2.SetText("");
+
+		/*	if (s_eMapMode == MINIMAP_M_BRIEF_PIC)
+			{
+				
+			}
+			else
+			{
+				sprintf(szinfo,"ThuÕ suÊt:0%%,ChØ sè vËt gi¸:0%%");
+				ms_pSelf->m_TongMapInfo1.SetText(szinfo);
+
+				sprintf(szinfo,"Th¸i thó: Ch­a cã, Bang héi chiÕm lÜnh: Ch­a cã");
+				ms_pSelf->m_TongMapInfo2.SetText(szinfo); 
+			} // */
+		}
+		//end code
+
 		ms_pSelf->m_MpsID = pInfo->nSceneId;
 		ms_pSelf->m_MpsX = pInfo->nScenePos0/32/8;
 		ms_pSelf->m_MpsY = pInfo->nScenePos1/32/16;
-				
+
+	/*	//TamLTM Check post item
+		changeNameMap++;
+		if (changeNameMap == 2)
+		{
+			saveIdMap = ms_pSelf->m_MpsID;
+		}
+
+		if (saveIdMap != pInfo->nSceneId)
+		{
+			KUiChatItem::CloseBoxPostItem();
+			changeNameMap = 1;
+		}
+
+		if (saveIdMap == pInfo->nSceneId)
+		{
+			if ((GetKeyState(VK_LBUTTON) & 0x8000) != 0 && isCheckClosePostItem)
+			{
+				countClosePostItem = 0;
+				KUiChatItem::CloseBoxPostItem();
+			}
+			//Truong hop bam vao train cap ma ko bam tat post item di tu dong se close
+			else if (isCheckClosePostItem)
+			{
+				countClosePostItem++;
+
+				if (countClosePostItem == 150)
+				{
+					countClosePostItem = 0;
+					KUiChatItem::CloseBoxPostItem();
+				}
+			}
+		} // */
+
+		//end code
+
 		char Buff[16];
 		if (g_pCoreShell->GetFlagMode() && g_pCoreShell->GetPaintMode())
 		{
@@ -387,11 +508,17 @@ void KUiMiniMap::UpdateSceneTimeInfo(KUiSceneTimeInfo* pInfo)
 				sprintf(Buff, defMSG_FORMAT_SCENEPOSF, Spot.nScenePos0, Spot.nScenePos1);
 			else
 				sprintf(Buff, defMSG_FORMAT_SCENEPOSF, ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
+
+		//	g_DebugLog("%d + %d ", ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
 		}
 		else
-			sprintf(Buff, s_eMapMode == MINIMAP_M_BRIEF_NOT_PIC?defMSG_FORMAT_SCENEPOS:defMSG_FORMAT_SCENEPOSF, ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
+		{
+			sprintf(Buff, s_eMapMode == MINIMAP_M_BRIEF_NOT_PIC ? defMSG_FORMAT_SCENEPOS : defMSG_FORMAT_SCENEPOSF, ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
+		}	
 			
 		ms_pSelf->m_ScenePos.SetText(Buff);		
+
+	//	g_DebugLog("%d + %d ", ms_pSelf->m_MpsX, ms_pSelf->m_MpsY);
 	}
 }
 
@@ -414,6 +541,14 @@ void KUiMiniMap::Hide()
 	if (g_pCoreShell)
 		g_pCoreShell->SceneMapOperation(GSMOI_IS_SCENE_MAP_SHOWING, SCENE_PLACE_MAP_ELEM_NONE, 0);
 }
+
+//TamLTM Check
+bool KUiMiniMap::CloseWindowOfPostItem(bool isCheck)
+{
+	isCheckClosePostItem = isCheck;
+	return isCheck;
+}
+//end code
 
 //µØÍ¼¾í¶¯
 void KUiMiniMap::MapScroll(int nbScrollScene)

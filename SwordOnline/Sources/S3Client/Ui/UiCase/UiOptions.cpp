@@ -17,6 +17,8 @@
 #include "../Elem/PopupMenu.h"
 #include "../UiSoundSetting.h"
 #include "../UiChatPhrase.h"
+//#include "UiToiUuImage.h" // TamLTM toi uu anh
+
 extern iCoreShell*	g_pCoreShell;
 
 #define SCHEME_INI_OPTION		"UiOptions.ini"
@@ -59,6 +61,7 @@ KUiOptions::KUiOptions()
 	m_ToggleItemList[OPTION_I_WEATHER].bInvalid = false;
 	m_ToggleItemList[OPTION_I_PERSPECTIVE].bInvalid = !g_bRepresent3;
 	m_ToggleItemList[OPTION_I_QUALITY].bInvalid = false;
+//	m_ToggleItemList[OPTION_I_OTHER].bInvalid = true;// TamLTM toi uu
 }
 
 void KUiOptions::CancelMenu()
@@ -132,6 +135,8 @@ void KUiOptions::Initialize()
 	AddChild(&m_SoundValue);
 	AddChild(&m_ShortcutSetView);
 	AddChild(&m_Scroll);
+//	AddChild(&m_ToiUuBtn);// TamLTM Toi Uu hinh anh
+
 	for (int i = 0; i < MAX_TOGGLE_BTN_COUNT; i++)
 	{
 		AddChild(&m_ToggleBtn[i]);
@@ -175,6 +180,11 @@ void KUiOptions::LoadScheme(KIniFile* pIni)
 	m_SoundValue.Init(pIni, "Sound");
 	m_ShortcutSetView.Init(pIni, "ShortcutSet");
 	m_Scroll.Init(pIni, "Scroll");
+	
+	//TamLTM them toi uu hinh anh
+//	m_ToiUuBtn.Init(pIni, "ToiUu");
+//	m_ToiUuBtn.SetText("T鑙 璾");
+	//end code
 
 	m_StatusImage[0].Init(pIni, "ToggleStatus");
 	pIni->GetInteger("ToggleStatus", "NotCheckFrame", 0, &m_nStatusDisableFrame);
@@ -247,6 +257,12 @@ int	 KUiOptions::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			nY += nHeight + m_nAbsoluteTop;
 			PopupSeleteSetMenu(nX, nY);
 		}
+		//TamLTM Them toi uu hinh anh
+	//	else if (uParam == (unsigned int)(KWndWindow*)&m_ToiUuBtn)
+	//	{
+		//	KUiToiUuImage::OpenWindow(); // Them mo toi uu hinh anh game
+	//	}
+		//End code
 		else
 		{
 			for (int i = 0; i < m_nToggleBtnValidCount; i++)
@@ -491,7 +507,7 @@ int KUiOptions::LoadSetting(bool bReload, bool bUpdateOption)
 
 	int bOptionsEnable[OPTION_INDEX_COUNT] =
 	{
-		true, true, true, true
+		true, true, true , true
 	};
 
 	if (bReload == false && m_pSelf)
@@ -537,7 +553,7 @@ int KUiOptions::LoadSetting(bool bReload, bool bUpdateOption)
 		bOptionsEnable[OPTION_I_DYNALIGHT] = false;
 		bOptionsEnable[OPTION_I_PERSPECTIVE] = false;
 	}
-	//Hoang.JX1Team
+	//TamLTM Fix option
 	bOptionsEnable[OPTION_I_WEATHER] = false;
 
 	if (bUpdateOption && g_pCoreShell)
@@ -552,6 +568,7 @@ int KUiOptions::LoadSetting(bool bReload, bool bUpdateOption)
 		g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_MUSIC_VALUE, nMusicValue);
 		g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_SOUND_VALUE, nSoundValue);
 		g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_WEATHER, bOptionsEnable[OPTION_I_WEATHER]);
+	//	g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_OTHER, bOptionsEnable[OPTION_I_OTHER]);//TamLTM them option toi uu hinh anh
 	}
 
 	if (m_pSelf)
@@ -604,21 +621,29 @@ void KUiOptions::ToggleOption(int nIndex)
 	if (m_ToggleItemList[nIndex].bInvalid)
 		return;
 	bool bEnable = m_ToggleItemList[nIndex].bEnable = !m_ToggleItemList[nIndex].bEnable;
-	switch(nIndex)
-	{
-	case OPTION_I_DYNALIGHT:	//动态光影
-		if (g_pCoreShell)
-			g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_DYNALIGHT, bEnable);
-		break;
-	case OPTION_I_WEATHER:		//天气开关
-		if (g_pCoreShell)
-			g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_WEATHER, bEnable);
-		break;
-	case OPTION_I_PERSPECTIVE:	//透视模式
-		if (g_pCoreShell)
-			g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_PERSPECTIVE, bEnable);
-		break;
-	}
+
+		switch(nIndex)
+		{
+		case OPTION_I_DYNALIGHT:	//动态光影
+			if (g_pCoreShell)
+				g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_DYNALIGHT, bEnable);
+			break;
+		case OPTION_I_WEATHER:		//天气开关
+			if (g_pCoreShell)
+				g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_WEATHER, bEnable);
+			break;
+		case OPTION_I_PERSPECTIVE:	//透视模式
+			if (g_pCoreShell)
+				g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_PERSPECTIVE, bEnable);
+			break;
+			// TamLTM thme case toi uu hinh anh
+	/*	case OPTION_I_OTHER:	//透视模式
+			if (g_pCoreShell)
+				g_pCoreShell->OperationRequest(GOI_OPTION_SETTING, OPTION_OTHER, bEnable);
+			break;*/
+		}
+		//end code
+
 	UpdateAllStatusImg();
 	UpdateAllToggleBtn();
 }

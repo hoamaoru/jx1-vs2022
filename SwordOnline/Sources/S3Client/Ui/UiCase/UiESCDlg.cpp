@@ -245,7 +245,10 @@ void KUiESCDlg::OnClickButton(KWndWindow* pWnd)
 	}
 	else if (pWnd == (KWndWindow*)&m_OfflineBtn)
 	{
-		g_pCoreShell->OperationRequest(GOI_OFFLINE, NULL, NULL);
+		g_pCoreShell->OperationRequest(GOI_OFFLINE, 0, 0); // uy thac
+	//	KUiStatus::CloseWindow(true);
+	//	UiEndGame();
+	//	KUiInit::OpenWindow(true, false);
 		Hide();
 	}
 	else if (pWnd == (KWndWindow*)&m_HelpBtn)

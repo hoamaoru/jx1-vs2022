@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	½çÃæ--login´°¿Ú
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -146,8 +146,10 @@ int KUiLogin::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	switch(uMsg)
 	{
 	case WND_N_BUTTON_CLICK:
-		if (uParam == (unsigned int)(KWndWindow*)&m_Login)
+		if (uParam == (unsigned int)(KWndWindow*)&m_Login) 
+		{
 			OnLogin();
+		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_Cancel)
 			OnCancel();
 		break;
@@ -320,6 +322,32 @@ void KUiLogin::OnLogin()
 	char szAccount[32];
     char	     szPassword[KSG_PASSWORD_MAX_SIZE];
 	KSG_PASSWORD Password;
+
+	int nLen = m_Account.GetText(szAccount, sizeof(szAccount), false);
+
+	int i = 0;
+	for (i = 0; i < nLen;)
+	{
+		unsigned char	cCode = (unsigned char)szAccount[i];
+		if (cCode > 0x80)
+			i++;
+		else if (cCode <= 0x20 || cCode > 0x7e)
+			break;
+		else
+			i++;
+	}
+
+	if (i < nLen)
+	{
+		CloseWindow(false);
+		//g_DebugLog("i < nLen %d < %d", i < nLen);
+
+		//Neu nLen ma nho hon input hoac ky tu khong hop le co khoang trong' thi return.
+		KUiConnectInfo::OpenWindow(CI_MI_INVALID_KYTU_DACBIET_INPUT, CI_NS_LOGIN_WND);
+
+		return;
+	}
+
 	if (GetInputInfo(szAccount, szPassword))
 	{
         #ifdef SWORDONLINE_USE_MD5_PASSWORD
@@ -333,6 +361,9 @@ void KUiLogin::OnLogin()
         Password.szPassword[sizeof(Password.szPassword) - 1] = '\0';
 
         #endif
+
+		//TamLTM check doi khi load nhan vat thanh cong, thì connect den tro choi.
+		Sleep(2);
 
 		g_LoginLogic.AccountLogin(szAccount, Password);
 		KUiConnectInfo::OpenWindow(CI_MI_CONNECTING, LL_S_ROLE_LIST_READY);

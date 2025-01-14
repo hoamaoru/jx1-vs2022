@@ -84,7 +84,7 @@ void KUiWorldmap::Initialize()
 
 	char Buff[128];
 	g_UiBase.GetCurSchemePath(Buff, sizeof(Buff));
-	strcat(Buff, "\\" SCHEME_INI);
+	strcat(Buff, "\\"SCHEME_INI);
 	KIniFile	Ini;
 	if (Ini.Load(Buff))
 	{
@@ -140,15 +140,15 @@ void KUiWorldmap::UpdateData()
 	{
 		//取得世界地图的图形文件明
 		char	szBuffer[128];
-		char	CityText[64];
-		char	CapitalText[64];
-		char	CaveText[64];
-		char	BattlefieldText[64];
-		char	FieldText[64];
-		char	OthersText[64];
-		char	CountryText[64];
-		char	TongText[64];
-		char	MapType[64];
+		char	CityText[10];
+		char	CapitalText[10];
+		char	CaveText[10];
+		char	BattlefieldText[10];
+		char	FieldText[10];
+		char	OthersText[10];
+		char	CountryText[10];
+		char	TongText[10];
+		char	MapType[10];
 		if (Ini.GetString("List", "WorldMapImage", "", szBuffer, sizeof(szBuffer)))
 		{
 			SetImage(ISI_T_SPR, szBuffer, true);

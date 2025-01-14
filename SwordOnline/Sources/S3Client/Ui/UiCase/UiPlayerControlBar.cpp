@@ -24,6 +24,7 @@ Author		: Hoang.JX1Team
 #include "UiAutoPlay.h"
 #include "UiTongManager.h"
 #include <crtdbg.h>
+#include "../Elem/WndObjContainer.h"
 
 #define SCHEME_INI				"UiPlayerControlBar.ini"
 
@@ -99,7 +100,7 @@ void KUiPlayerControlBar::Initialize()
 		AddChild(&m_txtBuffTime[i]);
 	}	
 
-	for (int i = 0; i < MAX_ITEMBUTTON; i++)
+	for (i = 0; i < MAX_ITEMBUTTON; i++)
 		AddChild(&m_ItemBtn[i]);
 	char Scheme[256];
 	g_UiBase.GetCurSchemePath(Scheme, 256);
@@ -130,7 +131,7 @@ void KUiPlayerControlBar::LoadScheme(const char* pScheme)
 				nStart += nDiff;
 			}
 		m_pSelf->Ini.GetInteger("BuffList", "BuffCount", 0, &m_pSelf->m_BuffListCount);
-		for (int i = 0; i < MAX_ITEMBUTTON; i++)
+		for (i = 0; i < MAX_ITEMBUTTON; i++)
 			m_pSelf->m_ItemBtn[i].SetPosition(HIDE_POS);
 		}
 	}
@@ -300,18 +301,29 @@ void KUiPlayerControlBar::Release()
 	m_nListCount = 0;
 }
 
-void KUiPlayerControlBar::SetItemBtnInfo(int nBtnNo, const char* pItem)
+//TamLTM check limit post item
+int m_LimitSendPostItem = 0;
+//end code
+
+void KUiPlayerControlBar::SetItemBtnInfo(int nBtnNo, const char* pItem) // Button item cua post item tren kenh
 {
+	//TamLTM check limit post item
+//	m_LimitSendPostItem++;
+//	if (m_LimitSendPostItem == 4)
+//		return;
+	//end code
+
 	if (!pItem || !pItem[0])
 		return;
-
-	if(m_pSelf && g_pCoreShell && nBtnNo >=0 && nBtnNo < MAX_ITEMBUTTON)
+	
+	if(m_pSelf && g_pCoreShell && nBtnNo >= 0 && nBtnNo < MAX_ITEMBUTTON)
 	{
 		m_pSelf->m_ItemBtn[nBtnNo].SetItem(pItem);
 		char m_pItem[MAX_SENTENCE_LENGTH];
 		memset(m_pItem, 0, sizeof(m_pItem));
 		memcpy(m_pItem, pItem, sizeof(m_pItem));
-		int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem);
+	//	g_DebugLog("gfgfgfggfg");
+		int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem); //TamLTM note Post item kenh chat
 		if (nIdx)
 		{
 			switch (g_pCoreShell->GetGameData(GDI_ITEM_QUALITY, nIdx, 0))
@@ -345,9 +357,16 @@ void KUiPlayerControlBar::SetItemBtnInfo(int nBtnNo, const char* pItem)
 			m_pSelf->m_ItemBtn[nBtnNo].SetSize(nLen*6,14);
 			m_pSelf->m_ItemBtn[nBtnNo].SetText(szName2,nLen);
 			m_pSelf->m_ItemBtn[nBtnNo].m_bHaveItem = true;
-			g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx);
 		}
+		g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx); //TamLTM note Post item kenh chat
+	//	m_LimitSendPostItem = 0; //TamLTM check limit post item
 	}
+}
+
+int KUiPlayerControlBar::GetNumberItem(int num)
+{
+	m_LimitSendPostItem = num;
+	return num;
 }
 
 void KUiPlayerControlBar::ClearItemBtn()

@@ -20,7 +20,7 @@ public:
 	static void			CloseWindow();							//¹Ø±Õ´°¿Ú
 	static void			PlayTitleMusic();
 	static void			StopTitleMusic();
-
+	static int			LimitGameWindown(int limit);
 private:
 	KUiInit() {}
 	~KUiInit() {}

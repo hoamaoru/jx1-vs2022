@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42**********************
+/************************************************ *****************************************
 //	界面--login窗口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -16,8 +16,9 @@
 #include "../Ui/UiShell.h"
 #include "../../Engine/Src/Cryptography/EDOneTimePad.h"
 #include "time.h"
-
-#define	SERVER_LIST_FILE				"\\Settings\\ServerList.ini"
+#pragma comment(lib, "Ws2_32.lib")	// anti 3 acc by veg
+#include "inoutmac.h"		//veg
+#define	SERVER_LIST_FILE				"\\Settings\\IpPort19922\\ServerList.ini"
 
 KLogin		g_LoginLogic;
 
@@ -461,6 +462,10 @@ void KLogin::ProcessAccountLoginResponse(KLoginStructHead* pResponse)
 						eResult = LL_R_ACCOUNT_FREEZE;
 						m_Status = LL_S_WAIT_INPUT_ACCOUNT;
 						break;
+				/*	case LOGIN_R_ENOUGH: // anti by veg
+						eResult = LL_R_ACCOUNT_ENOUGH;
+						m_Status = LL_S_WAIT_INPUT_ACCOUNT;
+						break;*/						
 					case LOGIN_R_INVALID_PROTOCOLVERSION:
 						eResult = LL_R_INVALID_PROTOCOLVERSION;
 						break;
@@ -1044,7 +1049,18 @@ int KLogin::Request(const char* pszAccount, const KSG_PASSWORD* pcPassword, int 
         // Add by Freeway Chen in 2003.7.1
         pInfo->ProtocolVersion = KPROTOCOL_VERSION;    //  传输协议版本，以便校验是否兼容
         #endif
-
+/*		//them MAC gioi han cua so // anti 3 acc by veg
+		DWORD Address;
+		BYTE MacAddress[6];
+		gGetMacAndIPAddress(NULL, NULL, MacAddress, &Address);
+		DWORD Id = 0;
+		for (int i = 0; i<6; i++)
+		{
+			Id = (Id + (i + 1) * MacAddress[i]) % 0x8000000b * 0xffffffef;
+		}
+		Address = Id ^ 0x12345678;
+		pInfo->nLeftTime = Address;*/
+		//-------------------------------------
 		if (g_NetConnectAgent.SendMsg(Buff, sizeof(KLoginAccountInfo) + PROTOCOL_MSG_SIZE))
 		{
 			g_NetConnectAgent.UpdateClientRequestTime(false);

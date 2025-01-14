@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--屏幕顶控制操作条
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -69,7 +69,7 @@ void KUiHeaderControlBar::LoadScheme(const char* pScheme)
 	KIniFile	Ini;
 	if (m_pSelf)
 	{
-		sprintf(Buff, "%s\\" SCHEME_INI, pScheme);	
+		sprintf(Buff, "%s\\"SCHEME_INI, pScheme);	
 		if (Ini.Load(Buff))
 		{
 			m_pSelf->Init(&Ini, "Main");
@@ -86,7 +86,7 @@ void KUiHeaderControlBar::DefaultScheme(const char* pScheme)
 	KIniFile	Ini;
 	if (m_pSelf)
 	{
-		sprintf(Buff, "%s\\" SCHEME_INI, pScheme);
+		sprintf(Buff, "%s\\"SCHEME_INI, pScheme);
 		if (Ini.Load(Buff))
 		{
 			int	nValue1, nValue2;

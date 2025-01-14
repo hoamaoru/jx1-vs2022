@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //	剑侠界面系统基础功能模块
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -62,7 +62,7 @@ extern iCoreShell*      g_pCoreShell;
 #define	UI_USER_DATA_TEMP_FOLDER	"\\UserData\\Temp"	//玩家数据的临时存盘目录位置
 #define	UI_COMMON_SETTING_FILE		"\\UserData\\UiCommon.ini"//界面公共设置的文件的名称
 #define UI_PRIVATE_SETTING_FILE		"UiConfig.ini"		//界面个人数据的存储文件
-
+#define UI_AUTO_SETTING_FILE		"UiAutoConfig.ini"
 #define	THEME_SECTION			"Theme"
 #define	FONT_SECTION			"FontList"
 #define	AVT_FILENAME			"Avt.spr"
@@ -245,10 +245,10 @@ void KUiBase::LoadPrivateConfig()
 		{
 		//----逐个窗口载入配置设定----
 			KUiPlayerBar::LoadPrivateSetting(pConfigFile);
-			KUiSkillTree::LoadConfig(pConfigFile);
-			KUiAutoPlay::LoadPrivateSetting(pConfigFile);
+			KUiSkillTree::LoadConfig(pConfigFile);			
 			KShortcutKeyCentre::LoadPrivateSetting(pConfigFile);
 			KUiChatCentre::LoadPrivateSetting(pConfigFile);	//在KShortcutKeyCentre之后,因为会有脚本生成Unit
+			KUiAutoPlay::LoadPrivateSetting();
 		//----逐个窗口载入配置设定结束----
 		}
 		ClosePrivateSettingFile(false);
@@ -274,9 +274,9 @@ int KUiBase::SavePrivateConfig()
 		//----逐个窗口保存配置设定----
 		KUiSkillTree::SaveConfig(pConfigFile);
 		KUiPlayerBar::SavePrivateSetting(pConfigFile);
-		KUiAutoPlay::SavePrivateSetting(pConfigFile);
 		KUiChatCentre::SavePrivateSetting(pConfigFile);
 		KShortcutKeyCentre::SavePrivateSetting(pConfigFile);
+		KUiAutoPlay::SavePrivateSetting();   
 		//----逐个窗口保存配置设定结束----
 		ClosePrivateSettingFile(true);
 		return true;
@@ -325,7 +325,7 @@ int KUiBase::LoadScheme(const char* pScheme)
 
 	char	Buffer[MAX_PATH];
 
-	sprintf(Buffer, "%s\\" UI_PUBLIC_SETTING, m_CurSchemePath);
+	sprintf(Buffer, "%s\\"UI_PUBLIC_SETTING, m_CurSchemePath);
 	if (GetSchemePath(pScheme))
 	{
 		int			nCount, nId, i;
@@ -344,7 +344,7 @@ int KUiBase::LoadScheme(const char* pScheme)
 			}
 		}
 
-		sprintf(Buffer, "%s\\" UI_PUBLIC_SETTING, m_CurSchemePath);
+		sprintf(Buffer, "%s\\"UI_PUBLIC_SETTING, m_CurSchemePath);
 		Ini.Load(Buffer);
 
 		//----载入字体----
@@ -609,6 +609,38 @@ void KUiBase::ClosePrivateSettingFile(bool bSave)
 //--------------------------------------------------------------------------
 //	功能：打开打开当前账号的设置文件
 //--------------------------------------------------------------------------
+KIniFile*	KUiBase::GetAutoSettingFile()
+{	
+	if (m_pUiAutoSettingFile == NULL && m_UserAccountId[0])
+	{
+		m_pUiAutoSettingFile = new KIniFile;
+		if (m_pUiAutoSettingFile)
+		{
+			char	FileName[128];
+			sprintf(FileName, "%s\\%s\\%s", UI_USER_DATA_FOLDER, m_UserAccountId, UI_AUTO_SETTING_FILE);
+			m_pUiAutoSettingFile->Load(FileName);
+		}
+	}
+	return m_pUiAutoSettingFile;
+}
+
+void KUiBase::CloseAutoSettingFile(bool bSave)
+{
+	if (m_pUiAutoSettingFile)
+	{
+		if (bSave && m_UserAccountId[0])
+		{			
+			char	FileName[128];
+			sprintf(FileName, "%s\\%s", UI_USER_DATA_FOLDER, m_UserAccountId);
+			g_CreatePath(FileName);
+			strcat(FileName, "\\");
+			strcat(FileName, UI_AUTO_SETTING_FILE);			
+			m_pUiAutoSettingFile->Save(FileName);
+		}
+		delete(m_pUiAutoSettingFile);
+		m_pUiAutoSettingFile = NULL;
+	}
+}
 
 void KUiBase::SetStatus(UISYS_STATUS eStatus)
 {

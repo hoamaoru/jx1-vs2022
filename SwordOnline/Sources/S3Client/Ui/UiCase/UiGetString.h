@@ -47,7 +47,7 @@ private:
 	GET_STRING_ACTION	m_eAction;
 	KWndText32			m_Title;
 	KWndImage			m_Normal, m_Adv;
-	short				m_nMinLen, m_nMaxLen, m_nMaxNum;
+	int					m_nMinLen, m_nMaxLen, m_nMaxNum; //gioi han do kieu ki tu nhap vao;
 	KWndEdit32			m_StringEdit;
 	KWndButton			m_OkBtn;
 	KWndButton			m_CancelBtn;

@@ -271,8 +271,7 @@ void KUiSkillTree::UpdateData()
 		if (ms_ShortcutSkills[i].uGenre == CGOG_NOTHING ||
 			(!m_bLeft) != (!ms_ShortcutSkills[i].IS_LEFT_SKILL))
 			continue;
-		int j;
-		for (j = 0; j < m_nNumSkills; j++)
+		for (int j = 0; j < m_nNumSkills; j++)
 		{
 			if (ms_ShortcutSkills[i].uId == m_Skills[j].uId &&
 				ms_ShortcutSkills[i].uGenre == m_Skills[j].uGenre)
@@ -449,7 +448,7 @@ void KUiSkillTree::DirectHandleShortcutKey(int nIndex)
 	if (GetIfVisible())
 	{
 		int nSkill = m_pSelf->GetSkillAtPos(x, y);
-		if (nSkill < 0 || g_pCoreShell->IsSkillAura(m_pSelf->m_Skills[nSkill].uId))
+		if (nSkill < 0 /*|| g_pCoreShell->IsSkillAura(m_pSelf->m_Skills[nSkill].uId)*/)
 			return;
 
 		ms_ShortcutSkills[nIndex].uGenre = m_pSelf->m_Skills[nSkill].uGenre;

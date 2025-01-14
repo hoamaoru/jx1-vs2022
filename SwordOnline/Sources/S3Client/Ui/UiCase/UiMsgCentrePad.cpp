@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--消息中心面板
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -89,6 +89,7 @@ int KSysMsgCentrePad::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 	}
 	else if (uMsg == WND_N_BUTTON_DOWN || WND_N_BUTTON_HOLD)
 	{
+		// g_DebugLog("g_DebugLog WndProc(uMsg, uParam, nParam);"); NUT LEN XUONG HE THONG
 		if (uParam == (unsigned int)(KWndWindow*)&m_UpButton)
 		{
 			if (nUpSpeed % 5 == 0)
@@ -341,11 +342,12 @@ void KUiMsgCentrePad::ChannelMessageArrival(int nChannelIndex, char* szSendName,
 	Item.Release();
 	if(pItem && pItem[0])
 	{
+	//	g_DebugLog("g_DebugLog GDI_ITEM_CHAT 1");
 		memcpy(Item.m_pItem, pItem, sizeof(Item.m_pItem));
 		char m_pItem[MAX_SENTENCE_LENGTH];
 		memset(m_pItem, 0, sizeof(m_pItem));
 		memcpy(m_pItem, pItem, sizeof(m_pItem));
-		int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem);
+		int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem); //TamLTM note Post item kenh chat
 		if(nIdx)
 		{
 			char szName[82];
@@ -406,7 +408,9 @@ void KUiMsgCentrePad::ChannelMessageArrival(int nChannelIndex, char* szSendName,
 				Item.nLeft = 0;
 				Item.nLine++;
 			}
-			g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx);
+
+		//	g_DebugLog("g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx)");
+			g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx); //TamLTM note Post item kenh chat
 		}
 	}
 
@@ -499,6 +503,7 @@ void KUiMsgCentrePad::MSNMessageArrival(char* szSourceName, char* szSendName, co
 
 void KUiMsgCentrePad::ShowMSNMessage(char* szName, const char* pMsgBuff, unsigned short nMsgLength, KWndMessageListBox* pM, KRColor uColor, KRColor uBKColor, KRColor uBorderColor, WORD nPic, const char* pItem)
 {
+//	g_DebugLog("g_DebugLog 2");
 	char Buffer[MAX_MESSAGE_LENGTH];
 	int nOffset = 0;
 	Buffer[nOffset++] = KTC_INLINE_PIC;
@@ -552,7 +557,8 @@ void KUiMsgCentrePad::ShowMSNMessage(char* szName, const char* pMsgBuff, unsigne
 		char m_pItem[MAX_SENTENCE_LENGTH];
 		memset(m_pItem, 0, sizeof(m_pItem));
 		memcpy(m_pItem, pItem, sizeof(m_pItem));
-		int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem);
+	//	g_DebugLog("dsdsdsd GetGameData(GDI_ITEM_CHAT, true, 2");
+		int nIdx = g_pCoreShell->GetGameData(GDI_ITEM_CHAT, true, (int)&m_pItem); //TamLTM note Post item kenh chat
 		if(nIdx)
 		{
 			char szName[82];
@@ -613,7 +619,8 @@ void KUiMsgCentrePad::ShowMSNMessage(char* szName, const char* pMsgBuff, unsigne
 				Item.nLeft = 0;
 				Item.nLine++;
 			}
-			g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx);
+			//g_DebugLog("dsdsdsd GetGameData(GDI_ITEM_CHAT, true, 3");
+			g_pCoreShell->GetGameData(GDI_ITEM_CHAT, false, nIdx); //TamLTM note Post item kenh chat
 		}
 	}
 
@@ -665,7 +672,7 @@ KUiMsgCentrePad* KUiMsgCentrePad::GetIfVisible()
 	return NULL;
 }
 
-void KUiMsgCentrePad::NewMSNMessageArrival(char* szSourceName, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem)
+void KUiMsgCentrePad::NewMSNMessageArrival(char* szSourceName, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem, BYTE btSomeFlag)
 {
 	if (m_pSelf && pMsgBuff)
 	{
@@ -893,6 +900,18 @@ bool KUiMsgCentrePad::ReplaceSpecialField(char* szDest, char* szSrc)
 		}
 
 		szDest[m] = 0;
+	}
+	//TamLTM fix post item;
+	if (szDest[1] == 'O' && szDest[2] == '-')
+	{
+		for (int k = 2; k < sizeof(szDest); k++)
+		{
+			szDest[k] = szDest[k + 1];
+			if (szDest[k + 1] == '\0')
+			{
+				break;
+			}
+		}
 	}
 
 	return true;
@@ -1444,12 +1463,35 @@ void KUiMsgCentrePad::Initialize()
 	m_Sys.AddChild(&m_Sys.m_DownButton);
 	m_Sys.m_OpenSysButton.CheckButton(1);
 
-	for (int i = 0; i < CHANNELTAB_NUM; i++)
+/*	for (int i = 0; i < CHANNELTAB_NUM; i++)
 	{
+		g_DebugLog("CHANNELTAB_NUM %d", i);
 		AddChild(&m_MessageChannel[i]);
 		m_MessageChannel[i].GetMessageListBox()->SetItemActived(FALSE);
 		m_MessageChannel[i].SetPosition(HIDE_POS);
-	}
+	}*/
+
+	//TamLTM fix 
+	AddChild(&m_MessageChannel[0]);
+	m_MessageChannel[0].GetMessageListBox()->SetItemActived(FALSE);
+	m_MessageChannel[0].SetPosition(HIDE_POS);
+	AddChild(&m_MessageChannel[1]);
+	m_MessageChannel[1].GetMessageListBox()->SetItemActived(FALSE);
+	m_MessageChannel[1].SetPosition(HIDE_POS);
+	AddChild(&m_MessageChannel[2]);
+	m_MessageChannel[2].GetMessageListBox()->SetItemActived(FALSE);
+	m_MessageChannel[2].SetPosition(HIDE_POS);
+	AddChild(&m_MessageChannel[3]);
+	m_MessageChannel[3].GetMessageListBox()->SetItemActived(FALSE);
+	m_MessageChannel[3].SetPosition(HIDE_POS);
+	AddChild(&m_MessageChannel[4]);
+	m_MessageChannel[4].GetMessageListBox()->SetItemActived(FALSE);
+	m_MessageChannel[4].SetPosition(HIDE_POS);
+	AddChild(&m_MessageChannel[5]);
+	m_MessageChannel[5].GetMessageListBox()->SetItemActived(FALSE);
+	m_MessageChannel[5].SetPosition(HIDE_POS);
+	//end code
+
 	m_MessageChannel[CHANNELTAB_PUBLIC].SetPosition(SHOW_POS);
 	m_MessageChannel[CHANNELTAB_PUBLIC].GetMessageListBox()->SetItemActived(TRUE);
 }
@@ -1466,17 +1508,83 @@ void KUiMsgCentrePad::ShowChatTab(KIniFile* pSetting)
 			sprintf(szKey, "ChatTabType_%d", i);
 			pSetting->GetInteger("ChatTab", szKey, -1,&m_ChatTab[i].nId);
 			m_TabButton[i].SetText(m_ChatTab[i].szChatTabName);
+
+		//	g_DebugLog("CHANNELTAB_NUM 2 %d", i);
 		}
+
+		//TamLTM Fix 
+	/*	sprintf(szKey, "ChatTabLabel_%d", 0);
+		pSetting->GetString("ChatTab", szKey, "", m_ChatTab[0].szChatTabName, sizeof(m_ChatTab[0].szChatTabName));
+		sprintf(szKey, "ChatTabType_%d", 0);
+		pSetting->GetInteger("ChatTab", szKey, -1, &m_ChatTab[0].nId);
+		m_TabButton[0].SetText(m_ChatTab[0].szChatTabName);
+		//1
+		sprintf(szKey, "ChatTabLabel_%d", 1);
+		pSetting->GetString("ChatTab", szKey, "", m_ChatTab[1].szChatTabName, sizeof(m_ChatTab[1].szChatTabName));
+		sprintf(szKey, "ChatTabType_%d", 1);
+		pSetting->GetInteger("ChatTab", szKey, -1, &m_ChatTab[1].nId);
+		m_TabButton[0].SetText(m_ChatTab[1].szChatTabName);
+		//2
+		sprintf(szKey, "ChatTabLabel_%d", 2);
+		pSetting->GetString("ChatTab", szKey, "", m_ChatTab[2].szChatTabName, sizeof(m_ChatTab[2].szChatTabName));
+		sprintf(szKey, "ChatTabType_%d", 2);
+		pSetting->GetInteger("ChatTab", szKey, -1, &m_ChatTab[2].nId);
+		m_TabButton[0].SetText(m_ChatTab[2].szChatTabName);
+		//3
+		sprintf(szKey, "ChatTabLabel_%d", 3);
+		pSetting->GetString("ChatTab", szKey, "", m_ChatTab[3].szChatTabName, sizeof(m_ChatTab[3].szChatTabName));
+		sprintf(szKey, "ChatTabType_%d", 3);
+		pSetting->GetInteger("ChatTab", szKey, -1, &m_ChatTab[3].nId);
+		m_TabButton[0].SetText(m_ChatTab[3].szChatTabName);
+		//4
+		sprintf(szKey, "ChatTabLabel_%d", 4);
+		pSetting->GetString("ChatTab", szKey, "", m_ChatTab[4].szChatTabName, sizeof(m_ChatTab[4].szChatTabName));
+		sprintf(szKey, "ChatTabType_%d", 4);
+		pSetting->GetInteger("ChatTab", szKey, -1, &m_ChatTab[4].nId);
+		m_TabButton[0].SetText(m_ChatTab[4].szChatTabName);
+		//5
+		sprintf(szKey, "ChatTabLabel_%d", 5);
+		pSetting->GetString("ChatTab", szKey, "", m_ChatTab[5].szChatTabName, sizeof(m_ChatTab[5].szChatTabName));
+		sprintf(szKey, "ChatTabType_%d", 5);
+		pSetting->GetInteger("ChatTab", szKey, -1, &m_ChatTab[5].nId);
+		m_TabButton[0].SetText(m_ChatTab[5].szChatTabName);
+		//end code */
 	}
 	int XOffset, X, Y;
 	pSetting->GetInteger("TabButtons", "XOffset", 0, &XOffset);
 	pSetting->GetInteger2("TabButtons", "Start", &X, &Y);
-	for (i = 0;i < CHANNELTAB_NUM; i++)
+
+/*	for (i = 0;i < CHANNELTAB_NUM; i++)
 	{
+		g_DebugLog("CHANNELTAB_NUM 3 %d", i);
 		AddChild(&m_TabButton[i]);
 		m_TabButton[i].SetPosition(X, Y);
 		X += XOffset;
-	}
+	}*/
+	//0
+	AddChild(&m_TabButton[0]);
+	m_TabButton[0].SetPosition(X, Y);
+	X += XOffset;
+	//1
+	AddChild(&m_TabButton[1]);
+	m_TabButton[1].SetPosition(X, Y);
+	X += XOffset;
+	//2
+	AddChild(&m_TabButton[2]);
+	m_TabButton[2].SetPosition(X, Y);
+	X += XOffset;
+	//3
+	AddChild(&m_TabButton[3]);
+	m_TabButton[3].SetPosition(X, Y);
+	X += XOffset;
+	//4
+	AddChild(&m_TabButton[4]);
+	m_TabButton[4].SetPosition(X, Y);
+	X += XOffset;
+	//5
+	AddChild(&m_TabButton[5]);
+	m_TabButton[5].SetPosition(X, Y);
+	X += XOffset;
 }
 // -------------------------------------------------------------------------
 // 功能	: 活动函数
@@ -1486,8 +1594,19 @@ void KUiMsgCentrePad::Breathe()
 	if (m_uAutoDelMsgInterval &&
 		IR_IsTimePassed(m_uAutoDelMsgInterval, m_uLastDelMsgTime))
 	{
-		for (int i = 0; i < CHANNELTAB_NUM; i++)
+	/*	for (int i = 0; i < CHANNELTAB_NUM; i++)
+		{
 			m_MessageChannel[i].GetMessageListBox()->HideNextLine();
+			g_DebugLog("CHANNELTAB_NUM 4 %d", i);
+		}*/
+
+		m_MessageChannel[0].GetMessageListBox()->HideNextLine();
+		m_MessageChannel[1].GetMessageListBox()->HideNextLine();
+		m_MessageChannel[2].GetMessageListBox()->HideNextLine();
+		m_MessageChannel[3].GetMessageListBox()->HideNextLine();
+		m_MessageChannel[4].GetMessageListBox()->HideNextLine();
+		m_MessageChannel[5].GetMessageListBox()->HideNextLine();
+
 		m_Sys.m_SysRoom.HideNextLine();
 		m_uLastDelMsgTime = IR_GetCurrentTime();
 	}
@@ -1531,8 +1650,19 @@ void KUiMsgCentrePad::HideAllMessage()
 {
 	if (m_pSelf)
 	{
-		for (int i = 0; i < CHANNELTAB_NUM; i++)
+		/*for (int i = 0; i < CHANNELTAB_NUM; i++)
+		{
+			g_DebugLog("CHANNELTAB_NUM 5 %d", i);
 			m_pSelf->m_MessageChannel[i].GetMessageListBox()->HideAllLine();
+		}*/
+
+		m_pSelf->m_MessageChannel[0].GetMessageListBox()->HideAllLine();
+		m_pSelf->m_MessageChannel[1].GetMessageListBox()->HideAllLine();
+		m_pSelf->m_MessageChannel[2].GetMessageListBox()->HideAllLine();
+		m_pSelf->m_MessageChannel[3].GetMessageListBox()->HideAllLine();
+		m_pSelf->m_MessageChannel[4].GetMessageListBox()->HideAllLine();
+		m_pSelf->m_MessageChannel[5].GetMessageListBox()->HideAllLine();
+
 		m_pSelf->m_Sys.m_SysRoom.HideAllLine();
 	}
 }
@@ -1542,8 +1672,19 @@ void KUiMsgCentrePad::ShowAllMessage()
 {
 	if (m_pSelf)
 	{
-		for (int i = 0; i < CHANNELTAB_NUM; i++)
+	/*	for (int i = 0; i < CHANNELTAB_NUM; i++)
+		{
+			g_DebugLog("CHANNELTAB_NUM 6 %d", i);
 			m_pSelf->m_MessageChannel[i].GetMessageListBox()->ClearHideLine();
+		}*/
+
+		m_pSelf->m_MessageChannel[0].GetMessageListBox()->ClearHideLine();
+		m_pSelf->m_MessageChannel[1].GetMessageListBox()->ClearHideLine();
+		m_pSelf->m_MessageChannel[2].GetMessageListBox()->ClearHideLine();
+		m_pSelf->m_MessageChannel[3].GetMessageListBox()->ClearHideLine();
+		m_pSelf->m_MessageChannel[4].GetMessageListBox()->ClearHideLine();
+		m_pSelf->m_MessageChannel[5].GetMessageListBox()->ClearHideLine();
+
 		m_pSelf->m_Sys.m_SysRoom.ClearHideLine();
 	}
 }
@@ -1554,6 +1695,7 @@ extern IInlinePicEngineSink *g_pIInlinePicSink;
 int KUiMsgCentrePad::ms_DefaultWidth = 0;
 int KUiMsgCentrePad::ms_DefaultHeight = 0;
 
+// TamLTM note load kenh chat the gioi, mat, lan can, thanh thi, to doi....
 void KUiMsgCentrePad::LoadScheme(KIniFile* pIni)
 {
 	//_ASSERT(pIni);
@@ -1567,8 +1709,18 @@ void KUiMsgCentrePad::LoadScheme(KIniFile* pIni)
 
 	m_SizeBtn		.Init(pIni, "SizeBtn");
 	
-	for (int i = 0;i < CHANNELTAB_NUM;i++)
+	/*for (int i = 0; i < CHANNELTAB_NUM; i++)
+	{
+		g_DebugLog("CHANNELTAB_NUM 7 %d", i);
 		m_TabButton[i].Init(pIni, "TabButton");
+	}*/
+
+	m_TabButton[0].Init(pIni, "TabButton");
+	m_TabButton[1].Init(pIni, "TabButton");
+	m_TabButton[2].Init(pIni, "TabButton");
+	m_TabButton[3].Init(pIni, "TabButton");
+	m_TabButton[4].Init(pIni, "TabButton");
+	m_TabButton[5].Init(pIni, "TabButton");
 		
 	ShowChatTab(pIni);
 
@@ -1599,8 +1751,18 @@ void KUiMsgCentrePad::LoadScheme(KIniFile* pIni)
 		}
 	}
 
-	for (int i = 0; i < CHANNELTAB_NUM; i++)
+	/*for (i = 0; i < CHANNELTAB_NUM; i++)
+	{
+		g_DebugLog("CHANNELTAB_NUM 8 %d", i);
 		m_MessageChannel[i].Init(pIni, "ChatRoom");
+	}*/
+
+	m_MessageChannel[0].Init(pIni, "ChatRoom");
+	m_MessageChannel[1].Init(pIni, "ChatRoom");
+	m_MessageChannel[2].Init(pIni, "ChatRoom");
+	m_MessageChannel[3].Init(pIni, "ChatRoom");
+	m_MessageChannel[4].Init(pIni, "ChatRoom");
+	m_MessageChannel[5].Init(pIni, "ChatRoom");
 
 	m_Sys.Init(pIni, "SysRoom");
 	m_Sys.m_OpenSysButton.Init(pIni, "SysRoom_Open");
@@ -1715,6 +1877,8 @@ void KUiMsgCentrePad::LoadScheme(KIniFile* pIni)
 	m_MSNInfo.uStrangerMenuBkColor.Color_b.a = 0;
 
 	SetAutoDelMsgInterval(SECOND_AUTODELMSG);
+	
+	// TamLTM note chon id(MAX_CHANNELRESOURCE) nguon kenh chat de chat trong game
 	int nCh;
 	for (nCh = 0; nCh < MAX_CHANNELRESOURCE; nCh++)
 	{
@@ -1937,9 +2101,15 @@ int KUiMsgCentrePad::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		break;
 	case WND_N_CHILD_MOVE:
 		if (uParam == (unsigned int)(KWndWindow*)&m_SizeBtn)
+		{
 			DragWndSize(nParam);
+		//	g_DebugLog("WND_N_CHILD_MOVE");
+		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_MoveImg)
+		{
 			DragWndPos(nParam);
+		//	g_DebugLog("WND_N_CHILD_MOVE 2");
+		}
 		break;
 	case WND_N_LIST_ITEM_SEL:
 		if (GetKeyState(VK_CONTROL) & 0x8000)
@@ -1969,8 +2139,9 @@ int KUiMsgCentrePad::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				bool bChannel = (GetChannelIndex(cName) >= 0);
 				if (!bChannel)		
 				{
-					if (GetKeyState(VK_CONTROL) & 0x8000)
+					if (GetKeyState(VK_CONTROL) & 0x8000) // Ctr remove post item box
 					{
+					//	g_DebugLog("VK_CONTROL post item remove");
 						KUiPlayerItem SelectPlayer;
 						int nKind = -1;
 						if (!(g_pCoreShell &&
@@ -2002,8 +2173,9 @@ int KUiMsgCentrePad::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		}
 		else 
 		{
-			for (int i = 0; i < CHANNELTAB_NUM; i++)
-			{	
+			/*for (int i = 0; i < CHANNELTAB_NUM; i++)
+			{
+				g_DebugLog("CHANNELTAB_NUM 9 %d", i);
 				if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[i])
 				{
 					m_nCurChannelSel = i;
@@ -2017,6 +2189,176 @@ int KUiMsgCentrePad::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 					m_MessageChannel[i].GetMessageListBox()->SetItemActived(FALSE);
 					m_MessageChannel[i].SetPosition(HIDE_POS);			
 				}
+			}*/
+
+			//0
+			if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[0])
+			{
+				m_nCurChannelSel = 0;
+				m_TabButton[0].CheckButton(true);
+				m_MessageChannel[0].GetMessageListBox()->SetItemActived(TRUE);
+				m_MessageChannel[0].SetPosition(SHOW_POS);
+
+				m_TabButton[1].CheckButton(false);
+				m_MessageChannel[1].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[1].SetPosition(HIDE_POS);
+
+				m_TabButton[2].CheckButton(false);
+				m_MessageChannel[2].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[2].SetPosition(HIDE_POS);
+
+				m_TabButton[3].CheckButton(false);
+				m_MessageChannel[3].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[3].SetPosition(HIDE_POS);
+
+				m_TabButton[4].CheckButton(false);
+				m_MessageChannel[4].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[4].SetPosition(HIDE_POS);
+
+				m_TabButton[5].CheckButton(false);
+				m_MessageChannel[5].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[5].SetPosition(HIDE_POS);
+			}
+			//1
+			else if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[1])
+			{
+				m_nCurChannelSel = 1;
+				m_TabButton[1].CheckButton(true);
+				m_MessageChannel[1].GetMessageListBox()->SetItemActived(TRUE);
+				m_MessageChannel[1].SetPosition(SHOW_POS);
+
+				m_TabButton[0].CheckButton(false);
+				m_MessageChannel[0].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[0].SetPosition(HIDE_POS);
+
+				m_TabButton[2].CheckButton(false);
+				m_MessageChannel[2].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[2].SetPosition(HIDE_POS);
+
+				m_TabButton[3].CheckButton(false);
+				m_MessageChannel[3].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[3].SetPosition(HIDE_POS);
+
+				m_TabButton[4].CheckButton(false);
+				m_MessageChannel[4].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[4].SetPosition(HIDE_POS);
+
+				m_TabButton[5].CheckButton(false);
+				m_MessageChannel[5].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[5].SetPosition(HIDE_POS);
+			}
+			//2
+			else if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[2])
+			{
+				m_nCurChannelSel = 2;
+				m_TabButton[2].CheckButton(true);
+				m_MessageChannel[2].GetMessageListBox()->SetItemActived(TRUE);
+				m_MessageChannel[2].SetPosition(SHOW_POS);
+
+				m_TabButton[0].CheckButton(false);
+				m_MessageChannel[0].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[0].SetPosition(HIDE_POS);
+
+				m_TabButton[1].CheckButton(false);
+				m_MessageChannel[1].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[1].SetPosition(HIDE_POS);
+
+				m_TabButton[3].CheckButton(false);
+				m_MessageChannel[3].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[3].SetPosition(HIDE_POS);
+
+				m_TabButton[4].CheckButton(false);
+				m_MessageChannel[4].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[4].SetPosition(HIDE_POS);
+
+				m_TabButton[5].CheckButton(false);
+				m_MessageChannel[5].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[5].SetPosition(HIDE_POS);
+			}
+
+			//3
+			else if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[3])
+			{
+				m_nCurChannelSel = 3;
+				m_TabButton[3].CheckButton(true);
+				m_MessageChannel[3].GetMessageListBox()->SetItemActived(TRUE);
+				m_MessageChannel[3].SetPosition(SHOW_POS);
+
+				m_TabButton[0].CheckButton(false);
+				m_MessageChannel[0].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[0].SetPosition(HIDE_POS);
+
+				m_TabButton[1].CheckButton(false);
+				m_MessageChannel[1].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[1].SetPosition(HIDE_POS);
+
+				m_TabButton[2].CheckButton(false);
+				m_MessageChannel[2].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[2].SetPosition(HIDE_POS);
+
+				m_TabButton[4].CheckButton(false);
+				m_MessageChannel[4].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[4].SetPosition(HIDE_POS);
+
+				m_TabButton[5].CheckButton(false);
+				m_MessageChannel[5].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[5].SetPosition(HIDE_POS);
+			}
+			//4
+			else if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[4])
+			{
+				m_nCurChannelSel = 4;
+				m_TabButton[4].CheckButton(true);
+				m_MessageChannel[4].GetMessageListBox()->SetItemActived(TRUE);
+				m_MessageChannel[4].SetPosition(SHOW_POS);
+
+				m_TabButton[0].CheckButton(false);
+				m_MessageChannel[0].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[0].SetPosition(HIDE_POS);
+
+				m_TabButton[1].CheckButton(false);
+				m_MessageChannel[1].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[1].SetPosition(HIDE_POS);
+
+				m_TabButton[2].CheckButton(false);
+				m_MessageChannel[2].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[2].SetPosition(HIDE_POS);
+
+				m_TabButton[3].CheckButton(false);
+				m_MessageChannel[3].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[3].SetPosition(HIDE_POS);
+
+				m_TabButton[5].CheckButton(false);
+				m_MessageChannel[5].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[5].SetPosition(HIDE_POS);
+			}
+			//5
+			else if (uParam == (unsigned int)(KWndWindow*)&m_TabButton[5])
+			{
+				m_nCurChannelSel = 5;
+				m_TabButton[5].CheckButton(true);
+				m_MessageChannel[5].GetMessageListBox()->SetItemActived(TRUE);
+				m_MessageChannel[5].SetPosition(SHOW_POS);
+
+				m_TabButton[0].CheckButton(false);
+				m_MessageChannel[0].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[0].SetPosition(HIDE_POS);
+
+				m_TabButton[1].CheckButton(false);
+				m_MessageChannel[1].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[1].SetPosition(HIDE_POS);
+
+				m_TabButton[2].CheckButton(false);
+				m_MessageChannel[2].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[2].SetPosition(HIDE_POS);
+
+				m_TabButton[3].CheckButton(false);
+				m_MessageChannel[3].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[3].SetPosition(HIDE_POS);
+
+				m_TabButton[4].CheckButton(false);
+				m_MessageChannel[4].GetMessageListBox()->SetItemActived(FALSE);
+				m_MessageChannel[4].SetPosition(HIDE_POS);
 			}
 		}
 		break;
@@ -2036,13 +2378,40 @@ int	KUiMsgCentrePad::GetMessageSendName(KWndWindow* pWnd, int nIndex, char* szCu
 
 	int nLen = 0;
 
-	for (int i = 0; i < CHANNELTAB_NUM; i++)
+	/*for (int i = 0; i < CHANNELTAB_NUM; i++)
 	{
 		if (pWnd == (KWndWindow*)&m_MessageChannel[i])
 		{
+			g_DebugLog("CHANNELTAB_NUM 10 %d", i);
 			nLen = m_MessageChannel[i].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
 		}
+	}*/
+
+	if (pWnd == (KWndWindow*)&m_MessageChannel[0])
+	{
+		nLen = m_MessageChannel[0].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
 	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[1])
+	{
+		nLen = m_MessageChannel[1].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[2])
+	{
+		nLen = m_MessageChannel[2].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[3])
+	{
+		nLen = m_MessageChannel[3].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[4])
+	{
+		nLen = m_MessageChannel[4].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[5])
+	{
+		nLen = m_MessageChannel[5].GetMessageListBox()->GetOneMessage(nIndex, szCurText, 256, TRUE);
+	}
+
 
 	int nName = 0;
 	if (nLen >= 0)
@@ -2069,13 +2438,40 @@ int	KUiMsgCentrePad::GetMessageSendName(KWndWindow* pWnd, int x, int y, char* sz
 {
 	int nIndex = -1;
 
-	for (int i = 0; i < CHANNELTAB_NUM; i++)
+/*	for (int i = 0; i < CHANNELTAB_NUM; i++)
 	{
 		if (pWnd == (KWndWindow*)&m_MessageChannel[i])
 		{
+			g_DebugLog("CHANNELTAB_NUM 11 %d", i);
 			nIndex = m_MessageChannel[i].GetMessageListBox()->HitTextAtPoint(x, y);
 		}
+	}*/
+
+	if (pWnd == (KWndWindow*)&m_MessageChannel[0])
+	{
+		nIndex = m_MessageChannel[0].GetMessageListBox()->HitTextAtPoint(x, y);
 	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[1])
+	{
+		nIndex = m_MessageChannel[1].GetMessageListBox()->HitTextAtPoint(x, y);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[2])
+	{
+		nIndex = m_MessageChannel[2].GetMessageListBox()->HitTextAtPoint(x, y);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[3])
+	{
+		nIndex = m_MessageChannel[3].GetMessageListBox()->HitTextAtPoint(x, y);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[4])
+	{
+		nIndex = m_MessageChannel[4].GetMessageListBox()->HitTextAtPoint(x, y);
+	}
+	else if (pWnd == (KWndWindow*)&m_MessageChannel[5])
+	{
+		nIndex = m_MessageChannel[5].GetMessageListBox()->HitTextAtPoint(x, y);
+	}
+
 	return GetMessageSendName(pWnd, nIndex, szCurText);
 }
 
@@ -2086,15 +2482,58 @@ void KUiMsgCentrePad::PaintWindow()
 	if ((m_bSizingWnd || m_bShowShadow || m_bExpandWnd) && g_pRepresentShell)
 	{
 		KRUShadow	bg;
-		for (int i = 0; i < CHANNELTAB_NUM; i++)
+	/*	for (int i = 0; i < CHANNELTAB_NUM; i++)
 		{
+			g_DebugLog("CHANNELTAB_NUM 12 %d", i);
 			m_MessageChannel[i].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
 			bg.Color.Color_dw = 0x16000000;
 			m_MessageChannel[i].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
 			bg.oEndPos.nX += bg.oPosition.nX;
 			bg.oEndPos.nY += bg.oPosition.nY;
 			g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
-		}
+		}*/
+
+		m_MessageChannel[0].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
+		bg.Color.Color_dw = 0x16000000;
+		m_MessageChannel[0].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
+		bg.oEndPos.nX += bg.oPosition.nX;
+		bg.oEndPos.nY += bg.oPosition.nY;
+		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
+
+		m_MessageChannel[1].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
+		bg.Color.Color_dw = 0x16000000;
+		m_MessageChannel[1].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
+		bg.oEndPos.nX += bg.oPosition.nX;
+		bg.oEndPos.nY += bg.oPosition.nY;
+		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
+
+		m_MessageChannel[2].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
+		bg.Color.Color_dw = 0x16000000;
+		m_MessageChannel[2].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
+		bg.oEndPos.nX += bg.oPosition.nX;
+		bg.oEndPos.nY += bg.oPosition.nY;
+		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
+
+		m_MessageChannel[3].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
+		bg.Color.Color_dw = 0x16000000;
+		m_MessageChannel[3].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
+		bg.oEndPos.nX += bg.oPosition.nX;
+		bg.oEndPos.nY += bg.oPosition.nY;
+		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
+
+		m_MessageChannel[4].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
+		bg.Color.Color_dw = 0x16000000;
+		m_MessageChannel[4].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
+		bg.oEndPos.nX += bg.oPosition.nX;
+		bg.oEndPos.nY += bg.oPosition.nY;
+		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
+
+		m_MessageChannel[5].GetMessageListBox()->GetAbsolutePos(&bg.oPosition.nX, &bg.oPosition.nY);
+		bg.Color.Color_dw = 0x16000000;
+		m_MessageChannel[5].GetMessageListBox()->GetSize(&bg.oEndPos.nX, &bg.oEndPos.nY);
+		bg.oEndPos.nX += bg.oPosition.nX;
+		bg.oEndPos.nY += bg.oPosition.nY;
+		g_pRepresentShell->DrawPrimitives(1, &bg, RU_T_SHADOW, true);
 
 		if (m_bShowShadow)
 		{
@@ -2204,8 +2643,19 @@ void KUiMsgCentrePad::Clear()
 {
 	if (m_pSelf)
 	{
-		for (int i = 0; i < CHANNELTAB_NUM; i++)
+		/*for (int i = 0; i < CHANNELTAB_NUM; i++)
+		{
+			g_DebugLog("CHANNELTAB_NUM 13 %d", i);
 			m_pSelf->m_MessageChannel[i].GetMessageListBox()->Clear();
+		}*/
+
+		m_pSelf->m_MessageChannel[0].GetMessageListBox()->Clear();
+		m_pSelf->m_MessageChannel[1].GetMessageListBox()->Clear();
+		m_pSelf->m_MessageChannel[2].GetMessageListBox()->Clear();
+		m_pSelf->m_MessageChannel[3].GetMessageListBox()->Clear();
+		m_pSelf->m_MessageChannel[4].GetMessageListBox()->Clear();
+		m_pSelf->m_MessageChannel[5].GetMessageListBox()->Clear();
+
 		m_pSelf->m_Sys.m_SysRoom.Clear();
 	}
 }
@@ -2361,8 +2811,18 @@ void KUiMsgCentrePad::SetFontSize(int nFontSize)
 {
 	if (m_pSelf)
 	{
-		for (int i = 0; i < CHANNELTAB_NUM; i++)
+		/*for (int i = 0; i < CHANNELTAB_NUM; i++)
+		{
+			g_DebugLog("CHANNELTAB_NUM 14 %d", i);
 			m_pSelf->m_MessageChannel[i].GetMessageListBox()->SetFontSize(nFontSize);
+		}*/
+
+		m_pSelf->m_MessageChannel[0].GetMessageListBox()->SetFontSize(nFontSize);
+		m_pSelf->m_MessageChannel[1].GetMessageListBox()->SetFontSize(nFontSize);
+		m_pSelf->m_MessageChannel[2].GetMessageListBox()->SetFontSize(nFontSize);
+		m_pSelf->m_MessageChannel[3].GetMessageListBox()->SetFontSize(nFontSize);
+		m_pSelf->m_MessageChannel[4].GetMessageListBox()->SetFontSize(nFontSize);
+		m_pSelf->m_MessageChannel[5].GetMessageListBox()->SetFontSize(nFontSize);
 	}
 }
 

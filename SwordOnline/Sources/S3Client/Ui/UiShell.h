@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:44*********************
+/*****************************************************************************************
 //	剑侠应用界面系统的公共接口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -210,6 +210,7 @@ public:
 	const char*	GetShortKey();
 };
 
+//TamLTM change Player_Recorder = ??? // quay phim
 class Player_Recorder : public KWndButton
 {
 public:
@@ -218,7 +219,7 @@ public:
 	const char*	GetShortKey();
 };
 
-
+//Auto in game button UiTools
 class Player_Auto : public KWndButton
 {
 public:

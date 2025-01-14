@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--状态界面
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -23,6 +23,14 @@ struct KUiObjAtRegion;
 struct KUiPlayerAttribute;
 struct KPopupMenuData;
 #define _ITEM_COUNT 17
+
+//TamLTM define text show khang
+#define		BASE_FIRE_RESIST_MAX			75 // Khang hoa
+#define		BASE_COLD_RESIST_MAX			75 // Khang bang
+#define		BASE_POISON_RESIST_MAX			75 // Khang doc
+#define		BASE_LIGHT_RESIST_MAX			75 // Khang loi
+#define		BASE_PHYSICS_RESIST_MAX			75 // Phong thu vat ly
+//end code
 
 class KUiStatus : public KWndShowAnimate
 {
@@ -51,7 +59,7 @@ private:
 	int		WndProc(unsigned int uMsg, unsigned int uParam, int nParam);	//窗口函数
 	void	LoadScheme(class KIniFile* pIni);			//载入界面方案
 	void	OnEquiptChanged(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_PLACE* pDropPos);//响应界面操作引起装备的改变
-
+	void	wait(int seconds);
 private:
 	static KUiStatus*	m_pSelf;
 

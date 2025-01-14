@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--选项界面
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -10,6 +10,7 @@
 #include "../Elem/WndLabeledButton.h"
 #include "../Elem/WndScrollBar.h"
 #include "../Elem/WndList.h"
+#include "../elem/WndPureTextBtn.h" // Them header
 //#include "../../Engine/Src/LinkStruct.h"
 
 struct KPopupMenuData;
@@ -22,6 +23,7 @@ enum	SWORD_ONLINE_OPTION_INDEX
 	OPTION_I_PERSPECTIVE,					//透视模式
 	OPTION_I_QUALITY,					//透视模式
 	OPTION_INDEX_COUNT,
+//	OPTION_I_OTHER,						//TamLTM Toi uu hinh anh
 };
 
 struct KToggleOptionItem
@@ -95,6 +97,7 @@ private:
 	int				m_nStatusEnableFrame;
 	int				m_nStatusDisableFrame;
 	int				m_nStatusInvalidFrame;
+//	KWndPureTextBtn	m_ToiUuBtn; // TamLTM toi uu anh
 
 	KToggleOptionItem	m_ToggleItemList[OPTION_INDEX_COUNT];
 	int					m_nFirstControlableIndex;

@@ -1,38 +1,52 @@
-#include "../Elem/WndImage.h"
-#include "../Elem/WndObjContainer.h"
+#pragma once
+
+#if !defined _SHOWITEM
+#define _SHOWITEM
+
+#include "../Elem/WndButton.h"
+#include "../Elem/WndEdit.h"
+#include "../elem/WndPureTextBtn.h"
 #include "../../../core/src/GameDataDef.h"
 
-
-
-class KUiChatItem : protected KWndImage
+class KUiChatItem : public KWndWindow
 {
 public:
-
-public:
-	static KUiChatItem* OpenWindow(int nIdx);
-	static void			CloseWindow();
-	static KUiChatItem*	GetIfVisible();
-	static void			LoadScheme(const char* pScheme);
-public:
-
-private:
-	static  KUiChatItem *m_pSelf;
+	static KUiChatItem* OpenWindow(int uId);
+	static void		CloseWindow(bool bDestory);
+	static KUiChatItem* GetIfVisible();
+	void			LoadScheme(const char* pScheme);
 private:
 	KUiChatItem();
-	~KUiChatItem();
-	int		WndProc(unsigned int uMsg, unsigned int uParam, int nParam);
-	void    Initialize();       
-	void	PaintWindow();
-	void	UpdateData(int nIdx);
+	~KUiChatItem() {}
+	void		PaintWindow();
+	int			WndProc(unsigned int uMsg, unsigned int uParam, int nParam);
+	void		Initialize();
+	void		Updatedata(int uId);
+	void		Show();
+	void		Hide();
 private:
-	unsigned int			m_uBoderColor;
+	static KUiChatItem* m_pSelf;
+private:
+	unsigned int			m_nBgColor;
+	unsigned short			m_nBgAlpha;
 	unsigned short			m_nRectColor;
-	short					m_nMaxLineLen;
-	short					m_nNumLine;
-	char					m_pItemDesc[GOD_MAX_OBJ_TITLE_LEN];
-	short					m_pItemLen;
-	KWndObjectMatrix		m_ItemBox;
+	char					m_sBgItemColor[32];
+	unsigned short			m_nBgItemAlpha;
+	char					pItemDesc[GOD_MAX_OBJ_TITLE_LEN];
+	short					pItemLen;
+	short					nMaxLineLen;
+	short					nNumLine;
 	KRUImagePart			m_Image;
-	BYTE					m_nWidth;	        
-	BYTE					m_nHeight;
+	short					m_nImgWidth;
+	short					m_nImgHeight;
+	KRUImagePart			m_IconImage;
+	KRUImagePart			m_LockImage;
+	char					m_szIconImage[MAX_PATH];
+	int						m_nIconWidth;
+	int						m_nIconHeight;
+	KRURect					Rect;
+	BYTE					nKind;
+	bool					m_bLock;
 };
+
+#endif

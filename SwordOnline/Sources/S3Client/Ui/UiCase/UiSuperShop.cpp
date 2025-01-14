@@ -214,7 +214,7 @@ void KUiShoppingCart::LoadScheme(const char* pScheme)
 {	
 	char		Buff[128];
 	KIniFile	Ini;
-	sprintf(Buff, "%s\\" SCHEME_SHOPPING_INI, pScheme);
+	sprintf(Buff, "%s\\"SCHEME_SHOPPING_INI, pScheme);
 	if (Ini.Load(Buff))
 	{
 		KWndShowAnimate::Init(&Ini, "Main");
@@ -272,13 +272,15 @@ int	KUiShoppingCart::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		}
 		else if ((KWndWindow*)uParam == (KWndWindow*)&m_PrePaidBtn)
 		{
-			KIniFile Ini;
+		/*KIniFile Ini;
 			if (Ini.Load(GAME_SETTING_FILE_INI))
 			{
 				char szFilePath[MAX_PATH];
 				Ini.GetString("URL", "PrePaid", "", szFilePath, sizeof(szFilePath));
 				ShellExecute(NULL,"open",szFilePath,NULL,NULL,SW_SHOWNORMAL); 
-			}
+			}*/
+			if (g_pCoreShell)
+				g_pCoreShell->OperationRequest(GOI_ADD_UI_CMD_SCRIPT, 2, (unsigned int)"main");	//TamLTM Suppershop card
 		}	
 	}
 	else if (uMsg == WND_N_SCORLLBAR_POS_CHANGED)
@@ -483,7 +485,7 @@ void KUiSuperShop::Initialize()
 		AddChild(&m_SellType[i]);
 		m_SellType[i].Hide();
 	}
-	for(int i =0; i< 15; i++ )
+	for(i =0; i< 15; i++ )
 	{
 		m_WndSellItem[i].Initialize();
 		AddChild(&m_WndSellItem[i]);
@@ -510,7 +512,7 @@ void KUiSuperShop::LoadScheme(const char* pScheme)
 	{		
 		char		Buff[128];
 		KIniFile	Ini;
-		sprintf(Buff, "%s\\" SCHEME_INI, pScheme);
+		sprintf(Buff, "%s\\"SCHEME_INI, pScheme);
 		if (Ini.Load(Buff))
 		{
 			m_pSelf->KWndShowAnimate::Init(&Ini, "Main");
@@ -613,7 +615,7 @@ void KUiSuperShop::SetSellTypeStart(int nStart)
 		m_pSelf->m_SellType[i - m_nSellTypeStart].SetLabel(szName);
 	}
 
-	for (int i = 0; i < m_nStoreActive; i ++)
+	for (i = 0; i < m_nStoreActive; i ++)
 	{
 		m_SellType[i].CheckButton((m_nCurrentShopId - m_nSellTypeStart) == i);
 		m_SellType[i].SetLabelColor((m_nCurrentShopId - m_nSellTypeStart) == i ?
@@ -800,13 +802,16 @@ int	KUiSuperShop::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		}
 		else if ((KWndWindow*)uParam == (KWndWindow*)&m_PrePaidBtn)
 		{
-			KIniFile Ini;
+		/*KIniFile Ini;
 			if (Ini.Load(GAME_SETTING_FILE_INI))
 			{
 				char szFilePath[MAX_PATH];
 				Ini.GetString("URL", "PrePaid", "", szFilePath, sizeof(szFilePath));
 				ShellExecute(NULL,"open",szFilePath,NULL,NULL,SW_SHOWNORMAL); 
 			}
+			*/
+			if (g_pCoreShell)
+				g_pCoreShell->OperationRequest(GOI_ADD_UI_CMD_SCRIPT, 2, (unsigned int)"main");	//TamLTM Suppershop card
 		}	
 		else if ((KWndWindow*)uParam == (KWndWindow*)&m_NextBtn)
 			SetSellTypeStart(m_nSellTypeStart + 1);
@@ -987,7 +992,7 @@ void KUiDynamicShop::LoadScheme(const char* pScheme)
 	{		
 		char		Buff[128];
 		KIniFile	Ini;
-		sprintf(Buff, "%s\\" SCHEME_INI_VN, pScheme);
+		sprintf(Buff, "%s\\"SCHEME_INI_VN, pScheme);
 		if (Ini.Load(Buff))
 		{
 			char szKey[16];

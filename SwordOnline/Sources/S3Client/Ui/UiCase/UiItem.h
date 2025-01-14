@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--道具界面
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -43,7 +43,9 @@ private:
 private:
 	int					m_nMoney;
 	KWndText256			m_Money;
-	KWndText256			m_Gold;
+	KWndText256			m_ExtPoint;
+	int					m_nExtPoint;
+
 	KWndButton			m_GetMoneyBtn;
 	KWndImage			m_TitleIcon, m_MoneyIcon, m_GoldIcon;
 	KWndButton			m_CloseBtn;

@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--login过程信息窗口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -36,6 +36,10 @@ enum LOGIN_BG_INFO_MSG_INDEX
 	CI_MI_NOT_ENOUGH_ACCOUNT_POINT,	//19=点卡不足
 	CI_MI_INVALID_PASSWORD,		//20=输入的密码不正确。
 	CI_MI_ACCOUNT_FREEZE = 30,	//30=账号冻结
+	CI_MI_ACCOUNT_ENOUGH = 45,	//45=账号冻结
+	CI_MI_INVALID_KYTU_DACBIET_INPUT = 46,	//46=ten tai khoan khong the chua ky tu dac biet
+	CI_MI_INVALID_NOT_DELETE_PLAYER = 47,	//46=ten tai khoan khong the chua ky tu dat biet
+	CI_MI_INVALID_LIMIT_WINDOWN = 48, // gioi hang account
 };
 
 enum LOGIN_BG_NEXT_STEP

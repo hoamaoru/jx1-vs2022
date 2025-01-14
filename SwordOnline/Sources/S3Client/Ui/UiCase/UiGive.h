@@ -28,6 +28,7 @@ private:
 	void	Initialize();								//≥ı ºªØ
 	int		WndProc(unsigned int uMsg, unsigned int uParam, int nParam);
 	void	UpdateData(const char* szName, char* szInitString);
+	void	OnOk(); //TamLTM Kham Xanh
 private:
 	static KUiGive*	m_pSelf;
 	KWndText32			m_Title;

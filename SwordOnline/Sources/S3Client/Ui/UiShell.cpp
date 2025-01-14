@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //	剑侠应用界面窗口的公共接口
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -77,6 +77,7 @@
 #include "UiCase/UiPlayerControlBar.h"
 #include "UiChatPhrase.h"
 #include "UiCase/UiPlayerLock.h"
+#include "UiCase/UiTimeOnline.h"
 
 extern iCoreShell*		g_pCoreShell;
 extern iRepresentShell*	g_pRepresentShell;
@@ -98,7 +99,14 @@ static KTimer	s_Timer;
 static int		s_nFrameRate = 30;
 
 #include <shlwapi.h>
-char			s_VersionInfo[60];
+//char			s_VersionInfo[60];
+
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
+	#include <shlwapi.h>
+	char			s_VersionInfo[60];
+	int				g_nShowDebugInfo = true;
+#endif
+
 
 
 //是否动态连接Represent连接库
@@ -111,6 +119,7 @@ char			s_VersionInfo[60];
 void		UiCloseWndsOutGame(bool bAll);
 bool		UiCloseWndsInGame(bool bAll);
 
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
 bool GetFileTimeVersionString(const char* pszFile, char* pszVersionString, int nSize)
 {
 	if (pszVersionString)
@@ -138,6 +147,7 @@ bool GetFileTimeVersionString(const char* pszFile, char* pszVersionString, int n
 	GetTimeFormat(LOCALE_USER_DEFAULT, 0, &SysTime, "H:mm", &pszVersionString[nLen], nSize - nLen);
 	return true;
 }
+#endif
 
 //--------------------------------------------------------------------------
 //	功能：发送推出消息
@@ -197,7 +207,21 @@ int	UiInit()
 
 	KUiFaceSelector::LoadFaceList();
 	KShortcutKeyCentre::InitScript();	//要放到KUiFaceSelector之后
-		
+
+/*	char	szFile[MAX_PATH];
+	GetModuleFileName(NULL, szFile, MAX_PATH);
+	strcpy(s_VersionInfo, PathFindFileName(szFile));
+	PathRemoveExtension(s_VersionInfo);
+	strcat(s_VersionInfo, ":");	
+	int nLen = strlen(s_VersionInfo);
+	GetFileTimeVersionString(szFile, &s_VersionInfo[nLen], sizeof(s_VersionInfo) - nLen);
+	PathRemoveFileSpec(szFile);
+	strcat(szFile, "\\CoreClient.dll");
+	strcat(s_VersionInfo, " CoreClient:");
+	nLen = strlen(s_VersionInfo);
+	GetFileTimeVersionString(szFile, &s_VersionInfo[nLen], sizeof(s_VersionInfo) - nLen);*/
+
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
 	char	szFile[MAX_PATH];
 	GetModuleFileName(NULL, szFile, MAX_PATH);
 	strcpy(s_VersionInfo, PathFindFileName(szFile));
@@ -210,6 +234,7 @@ int	UiInit()
 	strcat(s_VersionInfo, " CoreClient:");
 	nLen = strlen(s_VersionInfo);
 	GetFileTimeVersionString(szFile, &s_VersionInfo[nLen], sizeof(s_VersionInfo) - nLen);
+#endif
 
 	g_UiChatPhrase.LoadEntireEmote();
 
@@ -275,18 +300,36 @@ void UiPaint(int nGameLoop)
 			g_pCoreShell->SetRepresentShell(g_pRepresentShell);
 		return;
 	}
-	
+
 	Wnd_RenderWindows();
+
+#ifdef _DEBUG
+
 	DWORD	dwPing = 0;
 	char	Info[128];
 	s_Timer.GetFPS(&s_nFrameRate);
 	if (g_pCoreShell)
 		dwPing = g_pCoreShell->GetPing();
+#endif
 
-	sprintf(Info,"PING=%d", s_nFrameRate, dwPing);
-	g_pRepresentShell->OutputText(14, Info, -1, 10, 20, 0x00FF00, 0);
+#ifdef SWORDONLINE_SHOW_DBUG_INFO
+	if (g_nShowDebugInfo)
+	{
+		sprintf(Info,"FPS=%d LOOP=%d PING=%d", s_nFrameRate, nGameLoop, dwPing);
+		g_pRepresentShell->OutputText(12, Info, -1, 10, 20, 0xffffffff, 0);
 
-	//g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 510, 0xffffffff, 0);
+		g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 510, 0xffffffff, 0); //Debug
+
+		#ifdef DYNAMIC_LINK_REPRESENT_LIBRARY
+		{
+			int nWidth, nHeight;
+			Wnd_GetScreenSize(nWidth, nHeight);
+			g_pRepresentShell->OutputText(12, g_bRepresent3 ? "Represent3" : "Represent2", -1, nWidth - 100, 10, 0xffffffff, 0);
+		}
+		#endif
+	}
+#endif
+
 
 	g_pRepresentShell->RepresentEnd();
 }
@@ -383,6 +426,7 @@ void UiStartGame()
 	//KUiMsgCentrePad::OpenWindow();
 	KUiPlayerControlBar::OpenWindow();
 	KUiPlayerBar::OpenWindow();
+	KUiTimeOnline::OpenWindow(1); // Open time online
 	KUiSysMsgCentre::OpenWindow();
 	KUiHeaderControlBar::OpenWindow();
 	KUiToolsControlBar::OpenWindow();
@@ -474,6 +518,7 @@ bool UiCloseWndsInGame(bool bAll)
 		KUiMsgSel::CloseWindow(true);
 		KUiTrade::CloseWindow();
 		KUiPlayerBar::CloseWindow(true);
+		KUiTimeOnline::CloseWindow(true); //TamLTM KUiTimeOnline
 		KUiMsgCentrePad::CloseWindow(true);
 		KUiHeaderControlBar::CloseWindow();
 		KUiToolsControlBar::CloseWindow();
@@ -515,7 +560,7 @@ bool UiCloseWndsInGame(bool bAll)
 	KUiChatRoom::CloseWindow(bAll);
 	KUiAutoPlay::CloseWindow(bAll);
 	KUiRankData::CloseWindow();
-	KUiChatItem::CloseWindow();
+	KUiChatItem::CloseWindow(bAll); //TamLTM fix post item;
 	KUiSuperShop::CloseWindow(bAll);
 	KUiShoppingCart::CloseWindow(bAll);
 	KUiDynamicShop::CloseWindow();

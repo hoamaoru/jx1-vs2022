@@ -20,6 +20,7 @@ public:
 	static void			SetItemBtnInfo(int nBtnNo, const char* pItem);
 	static void			ClearItemBtn();
 	static void			SetItemBtnPos(int nBtnNo,int X, int Y);
+	static int			GetNumberItem(int num);
 private:
 	KUiPlayerControlBar();
 	~KUiPlayerControlBar();

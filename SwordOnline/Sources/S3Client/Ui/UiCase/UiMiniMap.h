@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:45*********************
+/*****************************************************************************************
 //	界面--小地图
 //	Copyright : Kingsoft 2003
 //	Author	:   Wooy(Wu yue)
@@ -49,6 +49,9 @@ public:
 	void	Show();										//显示窗口
 	void	Hide();										//隐藏窗口
 
+	//TamLTM Send true false
+	static bool			CloseWindowOfPostItem(bool isCheck = false);
+
 private:
 	KUiMiniMap();
 	~KUiMiniMap() {}
@@ -83,6 +86,14 @@ private:
 	int				m_MpsY;
 	DWORD			m_MpsID;
 	char 			m_szMapName[80];
+
+	//TamLTM
+	int				m_MpsMiniX;
+	int				m_MpsMiniY;
+
+	//TamLTM Thue suat bang hoi chiem linh bang hoi
+	KWndText256		m_TongMapInfo1;
+	KWndText256		m_TongMapInfo2;
 };
 
 void	MapToggleStatus();

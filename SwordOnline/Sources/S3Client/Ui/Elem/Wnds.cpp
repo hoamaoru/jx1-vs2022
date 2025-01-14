@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	剑侠引擎，界面窗口体系结构的最基本窗口对象
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -264,6 +264,7 @@ void Wnd_ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam)
 	KWndWindow* pActiveWnd = NULL;
 	static bool bLastCursorEventProcessedByGameSpace = false;
 
+	//TamLTM dieu khien
 	if(uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDOWN)
 	{
 		if (g_pCoreShell && g_pCoreShell->PAIOperation(GPI_ISACTIVE, NULL, NULL, NULL))
@@ -274,6 +275,8 @@ void Wnd_ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam)
 		if (g_pCoreShell)
 			g_pCoreShell->PAIOperation(GPI_PRIORITY_USE_MOUSE, FALSE, NULL, NULL);
 	}
+	//end code
+
 	//====鼠标指针消息====
 	if ((uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) || uMsg == WM_MOUSEHOVER)
 	{
@@ -382,13 +385,22 @@ void Wnd_ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam)
 		if (s_WndStation.pFocusWnd && s_WndStation.pFocusWnd->WndProc(uMsg, uParam, nParam))
 			return;
 
-		if (g_pCoreShell && g_pCoreShell->PAIOperation(GPI_ISACTIVE, NULL, NULL, NULL))
+		// Check tan cong bang phim VK_SPACE
+		if (g_pCoreShell && g_pCoreShell->PAIOperation(GPI_ISACTIVE, NULL, NULL, NULL)) // Save key
 		{
 			if ((GetKeyState(VK_SPACE) & 0x8000))
 				g_pCoreShell->PAIOperation(GPI_HOLDING_SPACEBAR, TRUE, NULL, NULL);
 			else
 				g_pCoreShell->PAIOperation(GPI_HOLDING_SPACEBAR, FALSE, NULL, NULL);
 		}
+		else	
+		{
+			if ((GetKeyState(VK_SPACE) & 0x8000))
+				g_pCoreShell->PAIOperation(GPI_HOLDING_SPACEBAR, TRUE, NULL, NULL);
+			else
+				g_pCoreShell->PAIOperation(GPI_HOLDING_SPACEBAR, FALSE, NULL, NULL);
+		}
+		//end code
 
 		if (s_WndStation.pExclusiveWnd[0])
 		{

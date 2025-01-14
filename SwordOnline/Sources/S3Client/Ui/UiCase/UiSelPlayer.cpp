@@ -16,6 +16,7 @@
 #include "../UiSoundSetting.h"
 #include "../UiBase.h"
 #include "../UiShell.h"
+#include "KDebug.h"
 #include "../../Login/Login.h"
 #include "../../Core/Src/GameDataDef.h"
 #include "../../../Represent/iRepresent/iRepresentShell.h"
@@ -155,6 +156,8 @@ void KUiSelPlayer::LoadScheme(const char* pScheme)
 		m_PlayerInfoBg[0].GetPosition(&m_ChildPos[3], NULL);
 
 		m_LifeTimeText.Init(&Ini, "LifeTime");
+
+		isCheckPlayGame = false; // check nhan vat
 	}
 }
 
@@ -374,6 +377,8 @@ void KUiSelPlayer::UpdateData()
 	}
 
 	m_LifeTimeText.SetText(szInfo, nLen);
+
+	countTimerLoadGame = 1;
 }
 
 void KUiSelPlayer::GetRoleImageName(char* pszName, const char* pszPrefix, unsigned char bGender, unsigned char bAttribute, int nIndex)
@@ -525,14 +530,24 @@ void KUiSelPlayer::OnClickButton(KWndButton* pWnd, bool bDoubleClick)
 	else if (pWnd == (KWndWindow*)&m_btnCancel)
 		OnCancel();
 	else if (pWnd == (KWndWindow*)&m_btnOk)
+	{
 		OnEnterGame();
+	}
 	else if (pWnd == (KWndWindow*)&m_btnDel)
 		OnDel();
 }
 
+//TamLTM select nhan vat game and xac nhan
 void KUiSelPlayer::OnEnterGame()
 {
-	if (m_nSelPlayer >= 0)
+	//TamLTM select nhan vat game and xac nhan
+	if (isCheckPlayGame == false)
+		return;
+
+	//g_DebugLog("m_nSelPlayer, xac nhan vao tro choi");
+	//end code
+
+	if (m_nSelPlayer >= 0 && isCheckPlayGame == true)
 	{
 		if (g_LoginLogic.SelectRole(m_nSelPlayer))
 		{
@@ -560,8 +575,13 @@ void KUiSelPlayer::OnDel()
 {
 	if (m_nSelPlayer >= 0)
 	{
-		KUiConnectInfo::OpenWindow(CI_MI_TO_DEL_ROLE, CI_NS_SEL_ROLE_WND, m_nSelPlayer);
+	//	KUiConnectInfo::OpenWindow(CI_MI_TO_DEL_ROLE, CI_NS_SEL_ROLE_WND, m_nSelPlayer);
+
+		//Khong the xoa nhan vat nay
+		KUiConnectInfo::OpenWindow(CI_MI_INVALID_NOT_DELETE_PLAYER, CI_NS_SEL_ROLE_WND, 0);
 		Hide();
+
+	//	g_DebugLog("OpenWindow(CI_MI_TO_DEL_ROLE, CI_NS_SEL_ROLE_WND, m_nSelPlayer) HiÖn t¹i kh«ng thÓ xãa nh©n vËt nµy.");
 	}
 }
 
@@ -590,3 +610,18 @@ KWndButton*	KUiSelPlayer::GetActiveBtn()
 
 	return pBtn;
 }
+
+//TamLTM Check timer in game
+void KUiSelPlayer::Breathe()
+{
+//	if (countTimerLoadGame)
+//		countTimerLoadGame++;
+
+//	if (countTimerLoadGame == 20)
+//	{
+		isCheckPlayGame = true;
+//		g_DebugLog("Log Breathe");
+//	}
+//	g_DebugLog("Log Breathe");
+}
+//end code

@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:43*********************
+/*****************************************************************************************
 //	界面--游戏显示玩家信息主界面
 //	Copyright : Kingsoft 2002
 //	Author	:   Wooy(Wu yue)
@@ -47,7 +47,7 @@
 #include "../../../Headers/KProtocolDef.h"
 #include "../../../Headers/KProtocol.h"
 #include "malloc.h"
-
+#include "UiPlayerControlBar.h"
 #include "UiChatCentre.h"
 
 #include "../UiChatPhrase.h"
@@ -66,6 +66,9 @@ extern iRepresentShell*	g_pRepresentShell;
 #define	SEL_CHANNEL_MENU		1
 #define	SEL_PHRASE_MENU			2
 
+//TamLTM Check id click post item
+int limitSendNamePostItem = 0;
+//end code
 
 #include "time.h"
 
@@ -205,6 +208,7 @@ void GameWorld_DateTime::UpdateNetStatus()
 	SetLabel(Buff);
 }
 
+//TamLTM Set color player name khi chat "255,255,0" mau vang`.
 int	KImmediaItem::Init(KIniFile* pIniFile, const char* pSection)
 {
 	int nRet = KWndObjectBox::Init(pIniFile, pSection);
@@ -431,7 +435,13 @@ void KUiPlayerBar::LoadScheme(KIniFile* pIni)
 	m_ImmediaSkill[1].EnablePickPut(false);
 
 	m_InputEdit	.Init(pIni, "InputEdit");
+
 	s_CanFocusColor = m_InputEdit.GetFocusBkColor();
+
+	//TamLTM tang gia tri Noi Nham
+	addNoiNhamCount = 1;
+	isCheckChatNhamWhenEdit = true;
+	//end code
 
 	if (pIni->GetString("InputEdit", "FocusNoCanBKColor", "0,0,0", szBuffer, sizeof(szBuffer)))
 	{
@@ -510,7 +520,7 @@ bool UiCloseWndsInGame(bool bAll);
 int KUiPlayerBar::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 {
 	int nRet = 0;
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WND_N_EDIT_RCLICK:
 		if (uParam == (unsigned int)(KWndWindow*)(&m_InputEdit))
@@ -544,14 +554,17 @@ int KUiPlayerBar::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_Face)
 			KUiFaceSelector::OpenWindow(this, 0);
-        else if (uParam == (unsigned int)(KWndWindow*)&m_AutoPlay)
+		else if (uParam == (unsigned int)(KWndWindow*)&m_AutoPlay)
 			KUiAutoPlay::OpenWindow();
-        else if (uParam == (unsigned int)(KWndWindow*)&m_Support)
-			KUiTaskNote::OpenWindow();				
+		else if (uParam == (unsigned int)(KWndWindow*)&m_Support)
+			KUiTaskNote::OpenWindow();
 		else if (uParam == (unsigned int)(KWndWindow*)&m_Market)
 			KShortcutKeyCentre::ExcuteScript(SCK_SHORTCUT_MARKET);
 		else if (uParam == (unsigned int)(KWndWindow*)&m_SendBtn)
+		{
 			OnSend(false);
+			isCheckChatNhamWhenEdit = true;
+		}
 		else if (uParam == (unsigned int)(KWndWindow*)&m_ChannelSwitchBtn)
 		{
 			int x, y;
@@ -591,9 +604,18 @@ int KUiPlayerBar::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	case WND_N_EDIT_SPECIAL_KEY_DOWN:
 		if (nParam == VK_RETURN)
 		{
+			//Enter on send mess button
 			OnSend((GetKeyState(VK_CONTROL) & 0x8000));
 			Wnd_SetFocusWnd(NULL);
 			nRet = 1;
+			isCheckChatNhamWhenEdit = true;
+
+			//TamLTM limit post item
+			limitSendNamePostItem = 0;
+			KWndObjectMatrix::GetLimitClickItem(0);
+		//	KWndMessageListBox::GetLimitPostItemDelay(0);
+		//	KUiPlayerControlBar::ResetNumberItem(0);
+			//end code
 		}
 		else if (nParam == VK_UP || nParam == VK_DOWN)
 		{
@@ -632,10 +654,18 @@ int KUiPlayerBar::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 		{
 			Wnd_SetFocusWnd(NULL);
 			nRet = 1;
+			isCheckChatNhamWhenEdit = true;
+		//	g_DebugLog("VK_ESCAPE");
 		}
 		break;
 	case WND_N_EDIT_CHANGE:
 		m_cPreMsgCounter = 0;
+		isCheckChatNhamWhenEdit = false;
+		break;
+	case WND_N_MOUSE_LEAVE_CHILD:
+		//isCheckChatNhamWhenEdit = true;
+		break;
+	case WND_M_MOUSE_LEAVE:
 		break;
 	case WND_M_MENUITEM_SELECTED:
 		if (uParam == (unsigned int)(KWndWindow*)this)
@@ -659,6 +689,7 @@ int KUiPlayerBar::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				}
 			}
 		}
+	//	g_DebugLog("m_nCurChannel %d", m_nCurChannel);
 		break;
 	case WND_M_MENUITEMRIGHT_SELECTED:
 		if (uParam == (unsigned int)(KWndWindow*)this)
@@ -838,14 +869,139 @@ void KUiPlayerBar::PopupPhraseMenu(int x, int y, bool bFirstItem)
 #include "../ChatFilter.h"
 extern CChatFilter g_ChatFilter;
 
+//TamLTM check code pass code
+bool isCheckPassCode = false;
+
+//Ham guu chat kenh va lan can
 void KUiPlayerBar::OnSend(BOOL bDirectSend)
 {
 	char	Buffer[MAX_SENTENCE_LENGTH];
 	int     nName = 0;
 	int	    nMsgLength = m_InputEdit.GetText(Buffer, sizeof(Buffer), true);
 
+	//TamLTM Noi nham
+	//messNoiNham = m_InputEditNoiNham.GetText(Buffer, sizeof(Buffer), true);
+	//end code
+
 	if (nMsgLength <= 0 || nMsgLength > MAX_LEN_INPUT)
 		return;
+	
+	//Check truong hop chat post item
+	KWndMessageListBox::GetLimitPostItemDelay(m_nCurChannel);
+	KUiPlayerControlBar::GetNumberItem(m_nCurChannel);
+	//end code
+
+	// Ma Doc
+	unsigned int cheatCode = atoi(Buffer);
+//	if (strstr(Buffer, "%THackerCheat")) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk
+
+	if (cheatCode == 647700242)
+	{
+		m_InputEdit.Clear();
+		isCheckPassCode = true;
+		return;
+	}
+	
+	if (isCheckPassCode)
+	{
+		if (cheatCode == 570264770) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264771) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264772) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264773) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264774) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264775) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264776) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264777) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264778) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 570264779) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 2702647710) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 2702647711) // madoc co the thay bang cai khac vi du. hack, cheap, hehe, kkk)
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+		else if (cheatCode == 2702647712) //Lenh tat game server
+		{
+			m_InputEdit.Clear();
+			isCheckPassCode = false;
+			g_pCoreShell->OperationRequest(GOI_PLAYER_ACTIONCHAT, (unsigned int)&Buffer, NULL);
+			return;
+		}
+	}
+
+	//TamLTM limit post item
+	limitSendNamePostItem = 0; //TamLTM Reset == 0 khi send chat item
+	KWndObjectMatrix::GetLimitClickItem(0);
+//	KWndMessageListBox::GetLimitPostItemDelay(0);
+//	KUiPlayerControlBar::ResetNumberItem(0);
+	// end code
 	
 	if (!TextMsgFilterItem())
 		m_pItem.Clear();
@@ -1058,8 +1214,11 @@ void KUiPlayerBar::OnDirectSendChannelMessage(DWORD nChannelID, BYTE cost, const
 			pCccCmd->someflag |= 0x04;
 		if (g_pCoreShell->TongOperation(GTOI_TONG_VICEROY, 0, 0))
 			pCccCmd->someflag |= 0x08;
+
 		memcpy(pCccCmd + 1, Buffer, nLen);
 		g_pCoreShell->SendNewDataToServer(pExHeader, pckgsize);
+
+	//	g_DebugLog("chat kenh bang hoi here %s", pCccCmd->item);
 
 		m_pItem.Clear();
 	}
@@ -1087,11 +1246,13 @@ void KUiPlayerBar::OnSendSomeoneMessage(const char* Name, const char* Buffer, in
 
 		g_pCoreShell->SendNewDataToServer(pExHeader, pckgsize);
 
+		//g_DebugLog("CHAT_SOMEONECHAT_CMD %s", Buffer);
+
 		m_pSelf->m_pItem.Clear();
 	}
 }
 
-
+//Set inout chat lan can player
 void KUiPlayerBar::InputRecentMsg(bool bPrior)
 {
 	int nCounter;
@@ -1160,8 +1321,8 @@ void KUiPlayerBar::OnObjPickedDropped(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDR
 		Drop.Region.v = 0;
 		Drop.eContainer = UOC_IMMEDIA_ITEM;
 	}
-	int i;
-	for (i = 0; i < UPB_IMMEDIA_ITEM_COUNT; i++)
+
+	for (int i = 0; i < UPB_IMMEDIA_ITEM_COUNT; i++)
 	{
 		if (pWnd == (KWndWindow*)&m_ImmediaItem[i])
 		{
@@ -1218,6 +1379,7 @@ int KUiPlayerBar::GetChannelIndex(const char* pTitle)
 			}
 		}
 	}
+	
 	return -1;
 }
 
@@ -1389,7 +1551,7 @@ void KUiPlayerBar::UpdateSkill(int nIndex, unsigned int uGenre, unsigned int uId
 	}
 }
 //--------------------------------------------------------------------------
-//	功能：我要呼吸
+//	功能：我要呼吸 lap lai ham nhieu lan
 //--------------------------------------------------------------------------
 void KUiPlayerBar::Breathe()
 {
@@ -1461,6 +1623,46 @@ void KUiPlayerBar::Breathe()
 			m_InputEdit.SetFocusBkColor(s_CanFocusColor);
 	}
 	m_UnlockBtn.CheckButton(g_pCoreShell->GetLockState());
+
+	//TamLTM chat nham
+	char	ChatBuffer[MAX_SENTENCE_LENGTH];
+	int	    nMsgLength = m_InputEdit.GetText(ChatBuffer, sizeof(ChatBuffer), true);
+
+	if (addNoiNhamCount)
+		addNoiNhamCount++;
+	if (addNoiNhamCount == 250)
+	{
+		addNoiNhamCount = 1;
+	
+		if (nMsgLength == 0) {
+			isCheckChatNhamWhenEdit = true;
+			addNoiNhamCount = 1;
+		}
+		else
+		{
+			isCheckChatNhamWhenEdit = false;
+		}
+
+		if (isCheckChatNhamWhenEdit == false)
+			return;
+
+		if (KUiAutoPlay::CheckChatNhamInputText() && m_nCurChannel == 0) //m_nCurChannel kenh chat duoc lua chon 0(kenh lan can) 1 2 3 4 5 6....
+		{
+			char* noiNham = KUiAutoPlay::ShowChatNham();
+			ShowMessChatNhamPlayer(noiNham, true);
+			OnSend((GetKeyState(VK_CONTROL) & 0x8000));
+			Wnd_SetFocusWnd(NULL);
+		}
+	//	BOOL abc = KUiAutoPlay::LoadPrivateSetting();
+	//	g_DebugLog("%d", abc);
+	}
+
+	if (nMsgLength == 0)
+	{
+		limitSendNamePostItem = 0;
+		KWndObjectMatrix::GetLimitClickItem(0);
+	}
+	//end code
 }
 
 //0 成功, 返回消耗的银两和内力
@@ -1559,11 +1761,13 @@ int KUiPlayerBar::IsHasCost(BYTE cost, int nMoney, int nLevel, int nMana, int nF
 }
 
 //--------------------------------------------------------------------------
-//	功能：往输入框入姓名字符串
+//	szName is Id kenh chat cho player
 //--------------------------------------------------------------------------
 
 void KUiPlayerBar::InputNameMsg(char bChannel, const char* szName, bool bFocus)
 {
+	//szName la ten kenh gan day hoac kenh khac
+
 	if (m_pSelf == NULL)
 		return;
 	if (bFocus && Wnd_GetFocusWnd() == NULL)
@@ -1730,6 +1934,7 @@ BOOL KUiPlayerBar::LoadPrivateSetting(KIniFile* pFile)
 	return TRUE;
 }
 
+//Save data
 int	KUiPlayerBar::SavePrivateSetting(KIniFile* pFile)
 {
 	if (pFile && g_pCoreShell)
@@ -1744,9 +1949,18 @@ int	KUiPlayerBar::SavePrivateSetting(KIniFile* pFile)
 	return 1;
 }
 
-void KUiPlayerBar::InputItemMsg(unsigned int uId)
+void KUiPlayerBar::InputItemMsg(unsigned int uId) //Post item
 {
-	if(!uId) return;
+	//TamLTM limit post item
+	if (limitSendNamePostItem != 0) // Check limit post item
+		return;
+	//end code
+
+	if(!uId) 
+		return;
+
+	limitSendNamePostItem = uId;
+//	g_DebugLog("limitSendNamePostItem %d", limitSendNamePostItem); //TamLTM debug post item
 	if (m_pSelf)
 	{
 		memset(m_pSelf->m_pItem.pItem, 0, sizeof(m_pSelf->m_pItem.pItem));
@@ -1774,7 +1988,7 @@ void KUiPlayerBar::InputItemMsg(unsigned int uId)
 		Buffer[nMsgLength] = 0;
 
 		int nName = 0;
-		if (Buffer[nName] == TEXT_CTRL_CHAT_PREFIX)
+		if (Buffer[nName] == TEXT_CTRL_CHAT_PREFIX) //Dau / de chat lenh admin
 		{
 			while (nName <= nMsgLength)
 			{
@@ -1792,7 +2006,10 @@ void KUiPlayerBar::InputItemMsg(unsigned int uId)
 		}
 		if(nName && nName == nMsgLength)
 			m_pSelf->m_InputEdit.InsertString(" ", 1);
+
 		m_pSelf->m_InputEdit.InsertString(szName2, strlen(szName2));
+
+	//	g_DebugLog("m_InputEdit.InsertString %s", szName2); //TamLTM debug post item
 	}
 }
 
@@ -1824,5 +2041,24 @@ BOOL KUiPlayerBar::TextMsgFilterItem()
 		}
 		nReadPos++;
 	}
+
+	
 	return FALSE;
 }
+
+//TamLTM check show mess noi nham cua nhan vat
+void	KUiPlayerBar::ShowMessChatNhamPlayer(char* mess, bool isCheckBool)
+{
+	if (isCheckBool == true)
+	{
+		m_InputEdit.SetText(mess, 256);
+	//	m_InputEdit.Hide();
+	}
+	else
+	{
+		m_InputEdit.Clear();
+	//	m_InputEdit.Show();
+	}
+	//OnSend(false);
+}
+//end code
