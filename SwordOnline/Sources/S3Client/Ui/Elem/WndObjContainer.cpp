@@ -309,7 +309,9 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				KUiDraggedObject	Obj;
 				Obj = m_Object;
-				m_pParentWnd->WndProc(WND_N_RIGHT_CLICK_ITEM,
+				/*m_pParentWnd->WndProc(WND_N_RIGHT_CLICK_ITEM,
+					(unsigned int)&m_Object, (int)(KWndWindow*)this);*/
+				m_pParentWnd->WndProc(WND_N_ITEM_UNEQUIP,
 					(unsigned int)&m_Object, (int)(KWndWindow*)this);
 			}
 			else if (m_Style & OBJCONT_S_ENABLE_CLICK_EMPTY)

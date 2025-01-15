@@ -403,6 +403,9 @@ int KUiStatus::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				UseRemainPoint(3, nParam);
 		}
 		break;
+
+	case WND_N_ITEM_UNEQUIP:
+			break;
 	default:
 		nRet = KWndShowAnimate::WndProc(uMsg, uParam, nParam);
 	}
