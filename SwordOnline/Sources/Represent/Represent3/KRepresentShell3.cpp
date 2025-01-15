@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //  表现模块的对外接口的三维版本实现。
 //	Copyright : Kingsoft 2002
 //	Author	:   cp(Chenpeng)
@@ -1857,6 +1857,46 @@ void KRepresentShell3::OutputText(int nFontId, const char* psText, int nCount, i
 	m_FontTable[i].pFontObj->OutputText(psText, nCount, nX, nY, Color, nLineWidth);
 }
 
+void KRepresentShell3::OutputVNText(int nFontId, char* psText, int nCount, int nX, 
+								  int nY, unsigned int Color, int nLineWidth, int nZ, unsigned int BorderColor)
+{
+	if(!psText || !psText[0])
+		return;
+
+	if(m_bDeviceLost)
+		return;
+	
+	Color |= 0xff000000;
+	int i;
+	for (i = 0; i < RS2_MAX_FONT_ITEM_NUM; i++)
+	{
+		if (m_FontTable[i].nId == nFontId)
+			break;
+	}
+	if (i == RS2_MAX_FONT_ITEM_NUM)
+		return;
+
+	if (!m_FontTable[i].pFontObj)
+		return;
+
+	if(nZ != TEXT_IN_SINGLE_PLANE_COORD)
+	{
+		// 将3D坐标转化为屏幕坐标
+		if(m_dwWindowStyle == RenderModel3DPerspective)
+		{
+			D3DXVECTOR3 vPos((float)(nX), (float)(nY), (float)(nZ));
+			D3DVIEWPORT9 viewportData = g_Device.GetViewport();
+			D3DXVec3Project(&vPos, &vPos, &viewportData, &m_matProj, &m_matView, NULL);
+			nX = (int)vPos.x, nY = (int)vPos.y;
+		}
+		else
+			CoordinateTransform(nX, nY, nZ);
+	}
+	
+	m_FontTable[i].pFontObj->SetBorderColor(BorderColor);
+	m_FontTable[i].pFontObj->SetOutputSize(nFontId, nFontId + 1);
+	m_FontTable[i].pFontObj->OutputText(psText, nCount, nX, nY, Color, nLineWidth);
+}
 //## 输出文字。
 int KRepresentShell3::OutputRichText(int nFontId, KOutputTextParam* pParam, 
 		const char* psText, int nCount, int nLineWidth)
@@ -1916,7 +1956,7 @@ int KRepresentShell3::LocateRichText(int nX, int nY,
 	if(m_bDeviceLost)
 		return -1;
 	int i;
-	for (int i = 0; i < RS2_MAX_FONT_ITEM_NUM; i++)
+	for (i = 0; i < RS2_MAX_FONT_ITEM_NUM; i++)
 	{
 		if (m_FontTable[i].nId == nFontId)
 			break;

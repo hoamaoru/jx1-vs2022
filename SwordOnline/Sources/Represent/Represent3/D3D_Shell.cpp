@@ -89,20 +89,22 @@ bool CD3D_Shell::BuildDeviceList()
 				if (DisplayMode.Width < 640 || DisplayMode.Height < 480) continue;
 
 				// 检查模式是否已经存在 (过滤掉因为刷新率不同而重复的模式)
-				bool bModeAlreadyExists = false;
-				for (uint32_t m = 0; m < modes.size(); ++m)
-				{
-					if (modes[m].Width == DisplayMode.Width && modes[m].Height == DisplayMode.Height && modes[m].Format == DisplayMode.Format)
-					{
-						bModeAlreadyExists = true;
-						break;
-					}
-				}
+				uint32 m, f;
+				for (uint32 m=0L; m<modes.size(); ++m) {
+					if ((modes[m].Width == DisplayMode.Width) && (modes[m].Height == DisplayMode.Height) && (modes[m].Format == DisplayMode.Format)) break; }
 
-				// Add mode to the list if it does not exist
-				if (!bModeAlreadyExists)
+				// 如果发现了一个新的模式，将它加入列表
+				if (m == modes.size()) 
 				{
-					modes.push_back(DisplayMode);
+					// 检查此模式的象素格式是否已经存在，如果不存在则加入列表
+					for (uint32 f=0; f<formats.size(); ++f)
+					{
+						if (DisplayMode.Format == formats[f]) break; 
+					}
+
+					if (f==formats.size()) formats.push_back(DisplayMode.Format);
+
+					modes.push_back(DisplayMode); 
 				}
 			}
 		}
