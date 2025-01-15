@@ -1842,7 +1842,8 @@ case GDI_GAME_OBJ_DESC:
 				nOffset++;
 			}*/ 
 			//TamLTM fix post item;
-			for (int i = 0; i < MAX_ITEM_MAGICATTRIB; i++)
+			int i;
+			for (i = 0; i < MAX_ITEM_MAGICATTRIB; i++)
 			{
 				sprintf(Buffer, "%d", Item[nParam].m_aryMagicAttrib[i].nAttribType);
 				strcat(&CIParam[nOffset], Buffer);

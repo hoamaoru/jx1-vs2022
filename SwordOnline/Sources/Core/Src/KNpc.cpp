@@ -5859,7 +5859,7 @@ void KNpc::PaintPaceBar(int nPercent, int nPacePercent)
 void KNpc::ShowPKNamePlayer(char* m_nNamePK)
 {
 	int len;
-	gets(m_nNamePK);
+	//gets(m_nNamePK);
 	len = strlen(m_nNamePK);
 
 	int	nMpsX, nMpsY;

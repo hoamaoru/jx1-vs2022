@@ -115,7 +115,7 @@ void KNpcSet::Init()
 	m_RequestFreeIdx.Init(MAX_NPC_REQUEST);
 	m_RequestUseIdx.Init(MAX_NPC_REQUEST);
 
-	for (i = MAX_NPC_REQUEST - 1; i > 0; i--)
+	for (int i = MAX_NPC_REQUEST - 1; i > 0; i--)
 	{
 		m_RequestFreeIdx.Insert(i);
 	}

@@ -1371,7 +1371,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				if(Npc[nRet].m_Kind == kind_player && m_nFightBack == 2)
 				{
-					for (int k=0; k < (MAX_AUTO_SIZE/2); k++)
+					int k;
+					for (k=0; k < (MAX_AUTO_SIZE/2); k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1384,7 +1385,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				else if(Npc[nRet].m_Kind == kind_normal)
 				{
-					for (int k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
+					int k;
+					for (k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1440,7 +1442,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				if(Npc[nRet].m_Kind == kind_player && m_nFightBack == 2)
 				{
-					for (int k=0; k < (MAX_AUTO_SIZE/2); k++)
+					int k;
+					for (k=0; k < (MAX_AUTO_SIZE/2); k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1453,7 +1456,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				else if(Npc[nRet].m_Kind == kind_normal)
 				{
-					for (int k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
+					int k;
+					for (k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1507,7 +1511,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				if(Npc[nRet].m_Kind == kind_player && m_nFightBack == 2)
 				{
-					for (int k=0; k < (MAX_AUTO_SIZE/2); k++)
+					int k;
+					for (k=0; k < (MAX_AUTO_SIZE/2); k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1520,7 +1525,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				else if(Npc[nRet].m_Kind == kind_normal)
 				{
-					for (int k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
+					int k;
+					for (k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1575,7 +1581,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				if(Npc[nRet].m_Kind == kind_player && m_nFightBack == 2)
 				{
-					for (int k=0; k < (MAX_AUTO_SIZE/2); k++)
+					int k;
+					for (k=0; k < (MAX_AUTO_SIZE/2); k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1588,7 +1595,8 @@ BOOL KPlayerAI::AddNpc2Array(int nRelation)
 				}
 				else if(Npc[nRet].m_Kind == kind_normal)
 				{
-					for (int k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
+					int k;
+					for (k=(MAX_AUTO_SIZE/2); k < MAX_AUTO_SIZE; k++)
 					{
 						if (m_nArrayNpcNeast[k] == 0)
 						{
@@ -1673,7 +1681,8 @@ BOOL KPlayerAI::AddObject2Array()
 			nRet = SubWorld[nSubWorldIdx].m_Region[nSearchRegion].FindObject(nRMx, nRMy, true);
 			if (nRet > 0)
 			{	
-				for (int k=0; k < MAX_AUTO_SIZE; k++)
+				int k;
+				for (k=0; k < MAX_AUTO_SIZE; k++)
 				{
 					if (m_nArrayObjectNeast[k] == 0)
 					{
@@ -1714,8 +1723,9 @@ BOOL KPlayerAI::AddObject2Array()
 
 			nRet = SubWorld[nSubWorldIdx].m_Region[nSearchRegion].FindObject(nRMx, nRMy, true);
 			if (nRet > 0)
-			{	
-				for (int k=0; k < MAX_AUTO_SIZE; k++)
+			{
+				int k;
+				for (k=0; k < MAX_AUTO_SIZE; k++)
 				{
 					if (m_nArrayObjectNeast[k] == 0)
 					{
@@ -1756,8 +1766,9 @@ BOOL KPlayerAI::AddObject2Array()
 		
 			nRet = SubWorld[nSubWorldIdx].m_Region[nSearchRegion].FindObject(nRMx, nRMy, true);
 			if (nRet > 0)
-			{	
-				for (int k=0; k < MAX_AUTO_SIZE; k++)
+			{
+				int k;
+				for (k=0; k < MAX_AUTO_SIZE; k++)
 				{
 					if (m_nArrayObjectNeast[k] == 0)
 					{
@@ -1798,8 +1809,9 @@ BOOL KPlayerAI::AddObject2Array()
 					
 			nRet = SubWorld[nSubWorldIdx].m_Region[nSearchRegion].FindObject(nRMx, nRMy, true);
 			if (nRet > 0)
-			{	
-				for (int k=0; k < MAX_AUTO_SIZE; k++)
+			{
+				int k;
+				for (k=0; k < MAX_AUTO_SIZE; k++)
 				{
 					if (m_nArrayObjectNeast[k] == 0)
 					{
@@ -3763,6 +3775,7 @@ void KPlayerAI::InviteParty()
 		{
 			KUiPlayerItem*	m_pNearbyPlayersList = (KUiPlayerItem*)malloc(sizeof(KUiPlayerItem) * nCount);
 			NpcSet.GetAroundPlayerForTeamInvite(m_pNearbyPlayersList, nCount);
+			int i;
 			for (i = 0; i < nCount; i++)
 			{
 				if (m_bAutoInviteList && !CheckPTList(m_pNearbyPlayersList[i].Name))
