@@ -94,7 +94,8 @@ void KUiPlayerControlBar::CloseWindow(bool bDestory)
 **********************************************************************/
 void KUiPlayerControlBar::Initialize()
 {
-	for (int i = 0; i < MAX_BUFF_ROLE; i++)
+	int i;
+	for (i = 0; i < MAX_BUFF_ROLE; i++)
 	{
 		AddChild(&m_BuffImage[i]);
 		AddChild(&m_txtBuffTime[i]);
@@ -122,7 +123,8 @@ void KUiPlayerControlBar::LoadScheme(const char* pScheme)
 			m_pSelf->Ini.GetInteger2("BuffImage", "StartDiff", &nStart, &nDiff);
 			m_pSelf->Ini.GetInteger("BuffImage", "BuffTop", 0, &nBuffTop);
 			m_pSelf->Ini.GetInteger("BuffImage", "txtBuffTop", 0, &ntxtBuffTop);
-			for (int i = 0; i < MAX_BUFF_ROLE; i++)
+			int i;
+			for (i = 0; i < MAX_BUFF_ROLE; i++)
 			{
 				m_pSelf->m_BuffImage[i].Init(&m_pSelf->Ini, "BuffImage");
 				m_pSelf->m_BuffImage[i].SetPosition(nStart, nBuffTop);

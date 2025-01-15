@@ -2428,7 +2428,8 @@ int KUiOther::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 
 BOOL KUiOther::InsertMoveMpsList(int nSubWorldId, int nMpsX, int nMpsY) //Chen move toa do theo map
 {
-	for (int i = 0; i < MAX_AUTO_LIST; i++)
+	int i;
+	for (i = 0; i < MAX_AUTO_LIST; i++)
 	{
 		if (m_nMpsList[i][0] == nSubWorldId &&
 			m_nMpsList[i][1] == nMpsX &&
@@ -2524,7 +2525,8 @@ void KUiOther::SaveSetting(KIniFile* pFile)
 	{
 		char szKeyName[10];
 		int nCount = 0;
-		for (int i = 0; i < MAX_AUTO_LIST; i++)
+		int i;
+		for (i = 0; i < MAX_AUTO_LIST; i++)
 		{
 			if (m_nMpsList[i][0])
 			{

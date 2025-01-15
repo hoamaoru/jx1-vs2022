@@ -73,7 +73,7 @@ void KUiCaveList::Initialize()
 	AddChild(&m_Sign);
 	char szBuffer[128];
 	g_UiBase.GetCurSchemePath(szBuffer, sizeof(szBuffer));
-	strcat(szBuffer, "\\"SCHEME_INI);
+	strcat(szBuffer, "\\" SCHEME_INI);
 	KIniFile	Ini;
 	if (Ini.Load(szBuffer))
 	{

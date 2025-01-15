@@ -820,7 +820,8 @@ void KUiEnchase_Compound::UpdateData()
 {
 	KUiObjAtRegion	Equips[MAX_COMPOUND_ITEM];
 	int nCount = g_pCoreShell->GetGameData(GDI_COMPOUND, (unsigned int)&Equips, 0);
-	for (int i = 0; i < MAX_COMPOUND_ITEM; i++)
+	int i;
+	for (i = 0; i < MAX_COMPOUND_ITEM; i++)
 		m_CompoundBox[i].Celar();
 	for (i = 0; i < nCount; i++)
 	{

@@ -151,7 +151,7 @@ void KUiChatRoom::LoadScheme(const char* pScheme)
 	{
 		char		Buff[MAX_PATH];
 		KIniFile	Ini;
-		sprintf(Buff, "%s\\"SCHEME_INI, pScheme);
+		sprintf(Buff, "%s\\" SCHEME_INI, pScheme);
 		if (Ini.Load(Buff))
 		{
 			m_pSelf->KWndShowAnimate::Init(&Ini, "Main");

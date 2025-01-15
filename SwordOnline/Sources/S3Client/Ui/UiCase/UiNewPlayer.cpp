@@ -260,7 +260,8 @@ void KUiNewPlayer::OnClickButton(KWndWindow* pWnd)
 		OnCancel();
 	else
 	{
-		for (int i = 0; i < series_num; i++)
+		int i;
+		for (i = 0; i < series_num; i++)
 		{
 			if (pWnd == m_propTypeInfoTable[i].pBtn)
 			{

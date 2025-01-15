@@ -84,7 +84,7 @@ void KUiWorldmap::Initialize()
 
 	char Buff[128];
 	g_UiBase.GetCurSchemePath(Buff, sizeof(Buff));
-	strcat(Buff, "\\"SCHEME_INI);
+	strcat(Buff, "\\" SCHEME_INI);
 	KIniFile	Ini;
 	if (Ini.Load(Buff))
 	{
