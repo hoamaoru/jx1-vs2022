@@ -262,7 +262,7 @@ LPCTSTR CRegErrorHandler::FindErr( int id )
 		if ( perr->m_id == id )
 			return perr->m_err;
 
-	//return perr->m_err;		// since we've fallen off the array, perr->m_id == 0
+	return perr->m_err;		// since we've fallen off the array, perr->m_id == 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////
