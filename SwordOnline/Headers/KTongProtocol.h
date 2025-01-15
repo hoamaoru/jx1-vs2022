@@ -48,6 +48,8 @@ enum
 	enumC2S_MESSAGE_TO_TONG,
 	enumC2S_MESSAGE_TO_FACTION,
 	enumC2S_MESSAGE_TO_CHATROOM,
+	enumC2S_GET_EXTPOINT,//TamLTM fix xu;
+	enumC2S_UPDATE_EXTPOINT,//TamLTM fix xu;
 	
 	enumC2S_TONG_NUM,					// 数量
 };
@@ -88,7 +90,7 @@ enum
 	enumS2C_TONG_BE_CHANGED_TONGPARAM,
 	enumS2C_TONG_BE_CHANGED_JIYU,
 	enumS2C_TONG_BE_CHANGED_MEMBEREFF,
-
+	enumS2C_SET_EXTPOINT,//TamLTM fix xu;
 	enumS2C_TONG_NUM,					// 数量
 };
 //-------------------------- tong protocol end --------------------------
@@ -545,7 +547,7 @@ struct STONG_UPDATE_EXTPOINT_COMMAND : EXTEND_HEADER
 {
 	char 	m_szAccountName[32];
 	DWORD	m_dwParam;
-	int 	m_nExtPoint;
+	int 	m_nExtPoint; //TamLTM fix xu;
 };
 
 struct STONG_GET_EXTPOINT_COMMAND : EXTEND_HEADER
@@ -564,6 +566,8 @@ struct STONG_CHANGE_TONG_INFO_COMMAND : EXTEND_HEADER
 	int 	m_nValue;
 	BYTE	m_btPos;
 	BYTE	m_btFigure;
+	int		m_MessStr; //TamLTM Them vao
+	int		m_AddMoneyThue;
 };
 
 struct STONG_MESSAGE_INFO_COMMAND : EXTEND_HEADER
@@ -587,7 +591,7 @@ struct STONG_CHANGE_TONG_INFO_SYNC : EXTEND_HEADER
 
 struct STONG_GET_EXTPOINT_SYNC : EXTEND_HEADER
 {
-	int 	m_nExtPoint;
+	int 	m_nExtPoint; //TamLTM fix xu;
 	DWORD	m_dwParam;
 };
 

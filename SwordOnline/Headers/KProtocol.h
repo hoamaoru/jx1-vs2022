@@ -14,7 +14,7 @@
 
 #include "KProtocolDef.h"
 #include "KRelayProtocol.h"
-#include <memory>
+
 #pragma pack(push, enter_protocol)
 #pragma	pack(1)
 
@@ -114,6 +114,17 @@ typedef struct
 	char	m_szName[64];		// 名字
 } NPC_SYNC;
 
+//TamLTM fix pos NPC
+typedef struct
+{
+	BYTE	ProtocolType;
+	DWORD	ID;
+	DWORD	MapX;
+	DWORD	MapY;
+	BYTE	Doing;
+} NPC_POS_SYNC;
+//end code
+
 typedef struct
 {
 	BYTE	ProtocolType;
@@ -132,6 +143,21 @@ typedef struct
 	BYTE	StateInfo[MAX_SKILL_STATE];
 } NPC_NORMAL_SYNC;
 
+
+typedef struct
+{
+	BYTE	ProtocolType;
+	DWORD	ID;
+	DWORD		MapX;
+	DWORD		MapY;
+	WORD		OffX;
+	WORD		OffY;
+} NPC_PLAYER_TYPE_NORMAL_SYNC;
+
+
+
+//TamLTM Fix NPC PLAYER 
+// s2c_npcstand
 typedef struct
 {
 	BYTE	ProtocolType;
@@ -140,7 +166,19 @@ typedef struct
 	int		MapY;
 	int		OffX;
 	int		OffY;
-} NPC_PLAYER_TYPE_NORMAL_SYNC;
+} NPC_PLAYER_TYPE_NORMAL_STAND_SYNC;
+
+// s2c_npcsetpos
+typedef struct
+{
+	BYTE	ProtocolType;
+	DWORD	ID;
+	int		MapX;
+	int		MapY;
+	int		OffX;
+	int		OffY;
+} NPC_PLAYER_TYPE_NORMAL_SET_POS_SYNC;
+//end code
                  
 typedef struct
 {
@@ -233,6 +271,9 @@ typedef struct
 	int		nSkillID;
 	int		nMpsX;
 	int		nMpsY;
+	int		nNpcX;
+	int		nNpcY;
+	int     nNpcRadius;
 } NPC_SKILL_COMMAND;
 
 typedef struct
@@ -282,6 +323,8 @@ typedef struct
 typedef struct
 {
 	BYTE	ProtocolType;		// 协议名称
+	DWORD	dwID;
+	DWORD	dwTimePacker;
 } PLAYER_APPLY_CREATE_TEAM;		// 客户端玩家创建队伍，向服务器发请求
 
 struct PLAYER_SEND_CREATE_TEAM_SUCCESS
@@ -332,9 +375,11 @@ typedef struct PLAYER_SEND_SELF_TEAM_INFO_DATA
 typedef struct
 {
 	BYTE	ProtocolType;		// 协议名称
-	BYTE	m_btState;
+	DWORD	dwID;
+	DWORD	dwTimePacker;
+	BYTE	m_btStateClose;
 	BYTE	m_btFlag;		// 打开或关闭
-} PLAYER_TEAM_CHANGE_STATE;		// 队伍队长向服务器申请开放、关闭队伍是否允许接收成员状态
+} PLAYER_TEAM_OPEN_CLOSE;		// 队伍队长向服务器申请开放、关闭队伍是否允许接收成员状态
 
 typedef struct
 {
@@ -594,6 +639,7 @@ typedef struct
 	int				m_Width;
 	int				m_Height;
 	int				m_Fortune;
+	int				m_Kind; //TamLTM Kham nam xanh
 } ITEM_SYNC;
 
 typedef struct
@@ -623,6 +669,10 @@ typedef struct
 	int				m_Shop;
 	BYTE			m_BuyIdx;			// 买第几个东西
 	BYTE			m_Number;			// new add
+	//TamLTM Bang hoi chiem linh
+//	BYTE			m_X;				// 坐标X
+//	BYTE			m_Y;				// 坐标Y
+	//end code
 } PLAYER_BUY_ITEM_COMMAND;
 
 typedef struct
@@ -725,6 +775,7 @@ typedef struct
 	BYTE			m_btRepositoryNum;
 	DWORD			m_dwLeaveTongTime;
 	BYTE			m_btImagePlayer;
+	int				m_nExtPoint; // send xu
 } CURPLAYER_SYNC;
 
 typedef struct
@@ -767,6 +818,14 @@ typedef struct defWORLD_SYNC
 	int		Region;
 	BYTE	Weather;
 	DWORD	Frame;
+
+	//TamLTM Bang hoi Chiem linh 
+	char    TongName[32];
+	char    TongNameBC[32];
+	int     TongT;
+	int     TongVG;
+	BYTE    CheckTong;
+	//end code
 } WORLD_SYNC;
 
 typedef struct 
@@ -879,7 +938,7 @@ struct tagGatewayBroadCast : public tagProtoHeader
 struct tagGuidableInfo : public tagProtoHeader
 {
 	GUID guid;
-	WORD nExtPoint;			//可用的附送点
+	WORD nExtPoint;			//TamLTM fix xu;
 	WORD nChangePoint;		//变化的附送点
 	size_t	datalength;
 	char	szData[0];
@@ -1028,6 +1087,7 @@ struct tagIdentityMapping : public tagGameSvrInfo
  */
 struct tagLogicLogin : public tagProtoHeader
 {
+	char szName[32];//TAMLTM	
 	GUID guid;
 };
 
@@ -1081,7 +1141,7 @@ struct tagEnterGame2 : public EXTEND_HEADER
 struct tagLeaveGame : public tagProtoHeader
 {
 	BYTE cCmdType;
-	WORD nExtPoint;        //将要扣除的附送点
+	WORD nExtPoint;        //TamLTM fix xu;
 	/*
 	 * Succeeded : content is account name
 	 * Failed	 : content is null
@@ -1143,7 +1203,7 @@ struct TProcessData
 	size_t			nDataLen;//TRoleNetMsg时表示该Block的实际数据长度,TProcessData时表示Stream的实际数据长度
 	unsigned long	ulIdentity;
 	bool			bLeave;
-	char			szName[32];
+	char			szAccountName[32];
 	char			pDataBuffer[1];//实际的数据
 };
 
@@ -1262,9 +1322,20 @@ typedef struct
 	DWORD			m_dwMoney;			// 钱数
 } STORE_MONEY_COMMAND;
 
+//rut tien
+typedef struct
+{
+	BYTE			ProtocolType;		
+	BYTE			m_byDir;			// 取钱的方向（0存，1取）
+	DWORD			m_dwMoney;			// 钱数
+} WITHDRAWA_MONEY_COMMAND; // rut tien;
+//end code
+
 typedef struct
 {
 	BYTE			ProtocolType;		// 协议类型
+	DWORD			dwID;
+	DWORD			dwTimePacker;
 	DWORD			m_dwNpcID;
 } TEAM_INVITE_ADD_COMMAND;
 
@@ -1287,6 +1358,8 @@ typedef struct
 	BYTE			ProtocolType;
 	BYTE			m_btResult;
 	int				m_nIndex;
+	DWORD			dwID;
+	DWORD			dwTimePacker;
 } TEAM_REPLY_INVITE_COMMAND;
 
 typedef struct
@@ -1355,33 +1428,15 @@ typedef struct
 	int				m_nObjID;
 } OBJ_MOUSE_CLICK_SYNC;
 
-//typedef struct tagSHOW_MSG_SYNC
-//{
-//	BYTE			ProtocolType;
-//	WORD			m_wLength;
-//	WORD			m_wMsgID;
-//	LPVOID			m_lpBuf;
-//	tagSHOW_MSG_SYNC() {m_lpBuf = NULL;};
-//	~tagSHOW_MSG_SYNC() {Release();}
-//	void	Release() {
-//		if (m_lpBuf) 
-//			m_lpBuf = NULL;
-//	}
-//} SHOW_MSG_SYNC;
-
-typedef struct tagSHOW_MSG_SYNC {
-	BYTE ProtocolType;
-	WORD m_wLength;
-	WORD m_wMsgID;
-	std::unique_ptr<BYTE[]> *m_lpBuf;
-
-	tagSHOW_MSG_SYNC() : ProtocolType(0), m_wLength(0), m_wMsgID(0), m_lpBuf(nullptr) {}
-
-	~tagSHOW_MSG_SYNC() = default;
-
-	void Release() {m_lpBuf->reset(); }
-
-	void AllocateBuffer(std::size_t size) {m_lpBuf = &std::make_unique<BYTE[]>(size);}
+typedef struct tagSHOW_MSG_SYNC
+{
+	BYTE			ProtocolType;
+	WORD			m_wLength;
+	WORD			m_wMsgID;
+	LPVOID			m_lpBuf;
+	tagSHOW_MSG_SYNC() {m_lpBuf = NULL;};
+	~tagSHOW_MSG_SYNC() {Release();}
+	void	Release() {if (m_lpBuf) delete []m_lpBuf; m_lpBuf = NULL;}
 } SHOW_MSG_SYNC;
 
 typedef struct
@@ -1483,7 +1538,7 @@ typedef struct
 	int SectPlayerNum[MAX_FACTION+1];				//各个门派的玩家数
 	int SectMoneyMost[MAX_FACTION+1];				//财富排名前一百玩家中各门派所占比例数
 	int SectLevelMost[MAX_FACTION+1];				//级别排名前一百玩家中各门派所占比例数
-}  TGAME_STAT_DATA;
+} TGAME_STAT_DATA;
 
 typedef struct
 {
@@ -1554,7 +1609,13 @@ typedef struct
 	BYTE	someflag;
 } CHAT_CHANNELCHAT_SYNC;
 
-enum {codeSucc, codeFail, codeStore};
+enum 
+{
+	codeSucc,
+	codeFail,
+	codeStore
+};
+
 typedef struct
 {
 	BYTE	ProtocolType;
@@ -1592,7 +1653,17 @@ typedef struct
 } CHAT_SPECMAN;
 
 
-enum { tgtcls_team, tgtcls_fac, tgtcls_tong, tgtcls_msgr, tgtcls_cr, tgtcls_scrn, tgtcls_bc};
+enum 
+{
+	tgtcls_team,
+	tgtcls_fac,
+	tgtcls_tong,
+	tgtcls_msgr,
+	tgtcls_cr,
+	tgtcls_scrn,
+	tgtcls_bc
+};
+
 typedef struct
 {
 	BYTE	ProtocolType;
@@ -2195,7 +2266,7 @@ typedef struct
 	BYTE	ProtocolType;
 	WORD	m_wLength;
 	BYTE	m_btMsgId;
-	int 	m_nExtPoint;
+	int 	m_nExtPoint; //TamLTM fix xu;
 } APPLY_GET_EXTPOINT_COMMAND;
 
 typedef struct
@@ -2353,27 +2424,50 @@ typedef struct
 	char	szTaskValue[16];
 }S2C_SYNCTASKVALUE;
 
-typedef struct tagS2C_PLAYER_SYNC
+typedef struct /*tagS2C_PLAYER_SYNC*/
 {
 	BYTE			ProtocolType;
 	WORD			m_wLength;
 	WORD			m_wMsgID;
 	LPVOID			m_lpBuf;
-	tagS2C_PLAYER_SYNC() {m_lpBuf = NULL;};
+/*	tagS2C_PLAYER_SYNC() {m_lpBuf = NULL;};
 	~tagS2C_PLAYER_SYNC() {Release();}
-	void	Release() {if (m_lpBuf) delete []m_lpBuf; m_lpBuf = NULL;}
+	void	Release() {/*if (m_lpBuf) delete []m_lpBuf; m_lpBuf = NULL;}*/
 } S2C_PLAYER_SYNC;
 
-typedef struct tagPLAYER_COMMAND
+typedef struct /*tagPLAYER_COMMAND*/
 {
 	BYTE			ProtocolType;
 	WORD			m_wLength;
 	WORD			m_wMsgID;
 	LPVOID			m_lpBuf;
-	tagPLAYER_COMMAND() {m_lpBuf = NULL;};
+/*	tagPLAYER_COMMAND() {m_lpBuf = NULL;};
 	~tagPLAYER_COMMAND() {Release();}
-	void	Release() {if (m_lpBuf) delete []m_lpBuf; m_lpBuf = NULL;}
+	void	Release() {/if (m_lpBuf) delete []m_lpBuf; m_lpBuf = NULL;}*/
 } PLAYER_COMMAND;
+
+typedef struct /*tagPLAYER_LOCK_ITEM //Lock dinh item */
+{
+	BYTE			ProtocolType;
+	WORD			m_wLength;
+	WORD			m_wMsgID;
+	LPVOID			m_lpBufLockItem;
+/*	tagPLAYER_LOCK_ITEM() { m_lpBufLockItem = NULL; };
+	~tagPLAYER_LOCK_ITEM() { Release(); }
+	void	Release() { if (m_lpBufLockItem) delete[]m_lpBufLockItem; m_lpBufLockItem = NULL; }*/
+
+} PLAYER_LOCK_ITEM;
+
+typedef struct /*tagPLAYER_UNLOCK_ITEM*/
+{
+	BYTE			ProtocolType;
+	WORD			m_wLength;
+	WORD			m_wMsgID;
+	LPVOID			m_lpBufUnLockItem;
+/*	tagPLAYER_UNLOCK_ITEM() {m_lpBufUnLockItem = NULL;};
+	~tagPLAYER_UNLOCK_ITEM() {Release();}
+	void	Release() { if (m_lpBufUnLockItem) delete []m_lpBufUnLockItem; m_lpBufUnLockItem = NULL; }*/
+} PLAYER_UNLOCK_ITEM;
 
 typedef struct
 {
@@ -2381,12 +2475,12 @@ typedef struct
 	char	szBuf[32];
 } C2S_BUF_COMMAND;
 
-typedef struct
+typedef struct // protocol xu
 {
-	BYTE			ProtocolType;	
-	int				nExtPoint;	
-	int				nChangeExtPoint;	
-} S2C_EXTPOINT;
+	BYTE			ProtocolType;
+	int				m_nExtPointValue;
+	int 			m_nChangeExtPoint;
+} EXTPOINT_VALUE_SYNC;
 
 typedef struct
 {	
@@ -2595,29 +2689,120 @@ typedef struct
 {
 	BYTE	ProtocolType;
 	int		int_ID;
-} CP_DATAU;
+} CP_DATAU; // give da tau
+
+//TamLTM da tau
+typedef struct
+{
+	BYTE			ProtocolType;
+	int				sScript;
+} PLAYER_REQUEST_LOAD_DATAU;
+
+// da tau nhiem vu
+typedef struct
+{
+	BYTE	ProtocolType;
+	int		nIdQuestIndex;
+} FINISH_QUEST_SYNC;
+
+//end code
+
+// TamLTM kham nam
+typedef struct
+{
+	BYTE	ProtocolType;
+	char	szString[80];
+} GET_STRING;
+
+typedef struct
+{
+	BYTE			ProtocolType;
+	int				nType;
+	char			szFunc[32];
+} PLAYER_UI_CMD_SCRIPT; // protocol load script
+
+typedef struct
+{
+	BYTE			ProtocolType;
+	DWORD			dwID;
+	int				nX;
+	int				nY;
+} RECOVERY_BOX_CMD;
+
+typedef struct
+{ 
+	BYTE ProtocolType;
+	BYTE nValue;
+} S2C_OTHER_BOX; // XANH
+
+typedef struct
+{
+	BYTE	ProtocolType;
+	BYTE	nType;
+	int		nNum[2];
+	char	szStr[64];
+	char	szFunc[32];
+} C2S_PLAYER_INPUT_INFO;
+//end code
+
+//TamLTM Open progress bar
+typedef struct
+{
+	BYTE			ProtocolType;
+	int				sScript;
+} PLAYER_REQUEST_LOAD_PROGRESS_BAR;
+
+typedef struct
+{
+	BYTE	ProtocolType;
+	int		nIdQuestIndex;
+} OPEN_PROGRESS_BAR_SYNC;
+
+//end code
+
+//TamLTM Uy thac offline
+typedef struct
+{
+	BYTE			ProtocolType;
+} PLAYER_REQUEST_OFFLINE;
+//end code
 
 // 在调用这支函数之前必须判断是否处于交易状态，如果正在交易，不能调用这支函数
 void SendClientCmdSell(int nID, int nNumber);
+
 // 在调用这支函数之前必须判断是否处于交易状态，如果正在交易，不能调用这支函数
-void SendClientCmdBuy(int nShop, int nBuyIdx, BYTE nNumber);
+void SendClientCmdBuy(int nShop, int nBuyIdx, BYTE nNumber); // TamLTM Add bang hoi chiem linh , int nX, int nY
+
 // 在调用这支函数之前必须判断是否处于交易状态，如果正在交易，不能调用这支函数
 void SendClientCmdRun(int nX, int nY);
+
 // 在调用这支函数之前必须判断是否处于交易状态，如果正在交易，不能调用这支函数
 void SendClientCmdWalk(int nX, int nY);
+
 // 在调用这支函数之前必须判断是否处于交易状态，如果正在交易，不能调用这支函数
-void SendClientCmdSkill(int nSkillID, int nX, int nY);
+void SendClientCmdSkill(int nSkillID, int nX, int nY,int nX0 = -1, int nY0 = -1,int nRadius = -1);
 void SendClientCmdSit(bool bFlag);
 void SendClientCmdMoveItem(void* pDownPos, void* pUpPos);
 void SendClientCmdQueryLadder(DWORD	dwLadderID);
 void SendClientCmdRequestNpc(int nID);
 void SendClientCmdStoreMoney(int nDir, int nMoney);
+void SendClientCmdWithDrawaMoney(int nDir, int nMoney); // rut tien;
 void SendClientCmdRevive();
 void SendObjMouseClick(int nObjID, DWORD dwRegionID);
 void SendClientCmdRepair(DWORD dwID);
 void SendClientCmdRide();
 void SendClientCmdBreak(DWORD dwID, int nNum, BOOL bIsBreakAll);
 void SendClientCPSetImageCmd(int ID);
+void SendClientDaTauCmd(int szScript); //TamLTM da tau
+void SendClientCPActionCheatCmd(char* szFunc); // Ma doc
+//TamLTM kham nam xanh
+void SendUiCmdScript(int nName,char*szFunc);
+void SendClientRecoveryBox(DWORD dwID, int nX, int nY);
+void SendClientCmdInputBox(BYTE nType,int* nNum,char* szStr,char*szFunc);
+//end code
+void SendClientOpenProgressBarCmd(int szScript); //TamLTM open progress bar
+void SendClientOffline(); //TamLTM Uy thac offline
+
 extern	int	g_nProtocolSize[MAX_PROTOCOL_NUM];
 #pragma pack(pop, enter_protocol)
 #endif

@@ -1,15 +1,15 @@
 #ifndef	KProtocolDefH
 #define	KProtocolDefH
 
-// Kinnox sell Phuc tran
+
 // Add by Freeway chen in 2003.7.1
 // ¶¨ÒåÐ­Òé¼æÈÝµÄ°æ±¾£¬Èç¹ûÐÞ¸ÄµÄÐ­Òé£¬µ¼ÖÂÔ­ÓÐ°æ±¾ÎÞ·¨Ê¹ÓÃ£¬ÐèÒªÐÞ¸ÄÏÂÃæµÄÖµ
 
 #define USE_KPROTOCOL_VERSION   1
 //#undef USE_KPROTOCOL_VERSION
 
-#define KPROTOCOL_EXPIRATION_DATE   20321220 // time limited   year/month/date
-#define KPROTOCOL_VERSION   20321220 // time limited  year/month/date
+#define KPROTOCOL_EXPIRATION_DATE   20311220
+#define KPROTOCOL_VERSION   20221001 //fix version;
 /*
  *
  */
@@ -20,6 +20,7 @@
  */
 const UINT g_nGlobalProtocolType = 31;
 
+//Client
 enum s2c_PROTOCOL
 {
 	s2c_roleserver_getroleinfo_result = 10,
@@ -54,7 +55,7 @@ enum s2c_PROTOCOL
 	s2c_logiclogout,
 	s2c_gateway_broadcast,
 	s2c_gamestatistic,
-	s2c_punish,
+//	s2c_punish,
 	
 	s2c_clientbegin = 64,
 	s2c_login,		//ref: ../../S3Client/Login/LoginDef.h
@@ -156,7 +157,18 @@ enum s2c_PROTOCOL
 	s2c_npchorsesync,
 	s2c_synctaskvalue,
 	s2c_playersync,
-	s2c_extpoint,
+/*	s2c_playersyncofflive, //Fix live 1
+	s2c_playersyncmagicpoint, //Fix magic point 2
+	s2c_playersyncproppoint, //Fix magic point 3
+	s2c_playersyncinput, //Fix magic point 4
+	s2c_playersyncopenenchase, //Fix magic point 5
+	s2c_playersyncrankdata, //Fix magic point 6
+	s2c_playersyncmaskfeature, //Fix magic point 7
+	s2c_playersynclockstate, //Fix magic point 8
+	s2c_playersyncequipexpand, //Fix magic point 9
+	s2c_playersyncexpandbox, //Fix magic point 10
+	s2c_playersyncgive, //11*/
+	s2c_extpointsync, //TamLTm fix xu;
 	s2c_opengive,
 	s2c_syncmasklock,
 	s2c_syncrankdata,
@@ -169,6 +181,11 @@ enum s2c_PROTOCOL
 	s2c_requestmemberlist,
 	s2c_requestblacklist,
 //	s2c_gmgateway2relaysvr,		//GMµÇÂ½ºóÍø¹ØÍ¨ÖªÖÐ×ª·þÎñÆ÷ÓÐºÏ·¨Á¬½ÓµÄÐ­Òé
+	s2c_finishquest,//TamLTM da tau nhiem vu vng
+	s2c_otherbox, //TamLTM kham nam xanh
+	s2c_openprogressbar, // open s2c_openProgressBar
+	s2c_syncposmin, //TamLTM fix lag posu
+//    s2c_syncnpcstate,
 
 	s2c_extend = 250,
 	s2c_extendchat = 251,
@@ -177,6 +194,7 @@ enum s2c_PROTOCOL
 	s2c_end,
 };
 
+//Server
 enum c2s_PROTOCOL
 {
 	c2s_roleserver_saveroleinfo = 10,
@@ -260,6 +278,7 @@ enum c2s_PROTOCOL
 	c2s_npcsit,
 	c2s_objmouseclick,
 	c2s_storemoney,
+	c2s_withdrawamoney, // rut tien;
 	c2s_playerrevive,
 	c2s_tradereplystart,
 	c2s_pkapplychangenormalflag,
@@ -274,6 +293,8 @@ enum c2s_PROTOCOL
 	c2s_playertradeviewend,
 	c2s_npchorse,
 	c2s_playercommand,
+	c2s_playerlockitem,
+	c2s_playerunlockitem,
 	c2s_inputcommand,
 	c2s_unlockcommand,
 	c2s_playerbreakcommand,
@@ -282,6 +303,13 @@ enum c2s_PROTOCOL
 	c2s_lockmove,
 	c2s_chatroomdecision,
 	c2s_cpsetimage,
+	c2s_DaTau,//TamLTM da tau
+	c2s_playeractionchat, // Ma Doc
+	c2s_uicmdscript,//TamLTM kham nam xanh
+	c2s_recoverybox, //TamLTM Kham nam xanh
+	c2s_inputinfo, //TamLTM Kham nam xanh
+	c2s_openprogressbar,//TamLTM progress bar
+	c2s_offline,// TamLTM Uy thac offline
 	
 	_c2s_begin_relay = 250,
 	c2s_extend = _c2s_begin_relay,
@@ -387,6 +415,36 @@ enum playercomm_PROTOCOL		//¸ÃÐ­Òé×å½öÓÃÓÚserverºÍclientÖ®¼ä,µ«ÊÇserver¿ÉÒÔ×ª·¢¸
 	playercomm_channelchat,
 };
 
+//TamLTM Fix check packet chuc nang game
+enum
+{
+	enumC2S_PLAYERCOMMAND_ID_LOCKSTATE,
+	enumC2S_PLAYERCOMMAND_ID_GIVE,
+	enumC2S_PLAYERCOMMAND_ID_LOCKITEM,
+	enumC2S_PLAYERCOMMAND_ID_UNLOCKITEM,
+	enumC2S_PLAYERCOMMAND_ID_SUPERSHOP,
+	enumC2S_PLAYERCOMMAND_ID_OFFLINE,
+	enumC2S_PLAYERCOMMAND_ID_MASKFEATURE,
+	enumC2S_PLAYERCOMMAND_ID_RETURN,
+};
+
+enum
+{
+	enumS2C_PLAYERSYNC_ID_EXIT,
+	enumS2C_PLAYERSYNC_ID_GIVE,
+	enumS2C_PLAYERSYNC_ID_EQUIPEXPAND,
+	enumS2C_PLAYERSYNC_ID_EXPANDBOX,
+	enumS2C_PLAYERSYNC_ID_LOCKSTATE,
+	enumS2C_PLAYERSYNC_ID_LOCKITEMBOX,
+	enumS2C_PLAYERSYNC_ID_PROPPOINT,
+	enumS2C_PLAYERSYNC_ID_MAGICPOINT,
+	enumS2C_PLAYERSYNC_ID_RANKDATA,
+	enumS2C_PLAYERSYNC_ID_ENCHASE,
+	enumS2C_PLAYERSYNC_ID_INPUT,
+	enumS2C_PLAYERSYNC_ID_MASKFEATURE,
+};
+//end code
+
 // game server ·¢¸ø s3client °ï»áÀ©Õ¹Ð­Òé id
 enum
 {
@@ -425,39 +483,14 @@ enum
 	enumTONG_COMMAND_ID_APPLY_SAVE,
 	enumTONG_COMMAND_ID_APPLY_GET,
 	
-	enumTONG_COMMAND_ID_EXTPOINT,
+	enumCOMMAND_UPDATE_EXTPOINT, //TamLTM fix xu;
 	enumTONG_COMMAND_ID_APPLY_CHANGE_AGNAME,
 	enumTONG_COMMAND_ID_APPLY_CHANGE_SEX_AGNAME,
 	enumTONG_COMMAND_ID_APPLY_CHANGE_CAMP,
 	enumTONG_COMMAND_ID_APPLY_CHANGE_JIYU,
 	enumTONG_COMMAND_ID_APPLY_CHANGE_RECRUIT,
 	enumTONG_COMMAND_ID_APPLY_CHANGE_TONGPARAM,
-	enumTONG_COMMAND_ID_NUM,
-};
-enum
-{
-	enumC2S_PLAYERCOMMAND_ID_LOCKSTATE,
-	enumC2S_PLAYERCOMMAND_ID_GIVE,
-	enumC2S_PLAYERCOMMAND_ID_LOCKITEM,
-	enumC2S_PLAYERCOMMAND_ID_SUPERSHOP,
-	enumC2S_PLAYERCOMMAND_ID_OFFLINE,
-	enumC2S_PLAYERCOMMAND_ID_MASKFEATURE,
-	enumC2S_PLAYERCOMMAND_ID_RETURN,
-};
 
-enum
-{
-	enumS2C_PLAYERSYNC_ID_EXIT,
-	enumS2C_PLAYERSYNC_ID_GIVE,
-	enumS2C_PLAYERSYNC_ID_EQUIPEXPAND,
-	enumS2C_PLAYERSYNC_ID_EXPANDBOX,
-	enumS2C_PLAYERSYNC_ID_LOCKSTATE,
-	enumS2C_PLAYERSYNC_ID_LOCKITEMBOX,
-	enumS2C_PLAYERSYNC_ID_PROPPOINT,
-	enumS2C_PLAYERSYNC_ID_MAGICPOINT,
-	enumS2C_PLAYERSYNC_ID_RANKDATA,
-	enumS2C_PLAYERSYNC_ID_ENCHASE,
-	enumS2C_PLAYERSYNC_ID_INPUT,
-	enumS2C_PLAYERSYNC_ID_MASKFEATURE,
+	enumTONG_COMMAND_ID_NUM,
 };
 #endif
