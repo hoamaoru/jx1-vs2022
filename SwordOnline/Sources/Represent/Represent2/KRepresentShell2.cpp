@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //  表现模块的对外接口的二维版本实现。
 //	Copyright : Kingsoft 2002
 //	Author	:   Spe(huyi)
@@ -768,6 +768,24 @@ void KRepresentShell2::LookAt(int nX, int nY, int nZ)
 
 //##ModelId=3DCA0BAE00E4
 void KRepresentShell2::OutputText(int nFontId, const char* psText, int nCount, int nX, int nY, unsigned int Color, int nLineWidth, int nZ, unsigned int BorderColor)
+{
+	int i;
+	for (i = 0; i < RS2_MAX_FONT_ITEM_NUM; i++)
+	{
+		if (m_FontTable[i].nId == nFontId)
+			break;
+	}
+	if (i < RS2_MAX_FONT_ITEM_NUM && m_FontTable[i].pFontObj)
+	{
+		if (nZ != TEXT_IN_SINGLE_PLANE_COORD)
+			CoordinateTransform(nX, nY, nZ);
+		m_FontTable[i].pFontObj->SetBorderColor(BorderColor);
+		m_FontTable[i].pFontObj->SetOutputSize(nFontId, nFontId + 1);
+		m_FontTable[i].pFontObj->OutputText(psText, nCount, nX, nY, Color, nLineWidth);
+	}
+}
+
+void KRepresentShell2::OutputVNText(int nFontId, char* psText, int nCount, int nX, int nY, unsigned int Color, int nLineWidth, int nZ, unsigned int BorderColor)
 {
 	int i;
 	for (i = 0; i < RS2_MAX_FONT_ITEM_NUM; i++)

@@ -1,4 +1,4 @@
-/*******************Editer	: duccom0123 EditTime:	2024/06/12 11:48:42*********************
+/*****************************************************************************************
 //  无贴图的图形资源管理
 //	Copyright : Kingsoft 2002-2003
 //	Author	: Wooy(Wu yue)
@@ -383,8 +383,8 @@ bool KImageStore2::GetImageParam(const char* pszImage, int nType, KImageParam* p
 					pImageData->nWidth  = ((KSGImageContent*)(ImgObj.pObject))->nWidth;
 					pImageData->nHeight = ((KSGImageContent*)(ImgObj.pObject))->nHeight;
 					pImageData->nInterval = 0;
-					pImageData->nNumFrames = 0;
-					pImageData->nNumFramesGroup = 0;
+					pImageData->nNumFrames = 1;
+					pImageData->nNumFramesGroup = 1;
 					pImageData->nReferenceSpotX = 0;
 					pImageData->nReferenceSpotY = 0;
 				}
