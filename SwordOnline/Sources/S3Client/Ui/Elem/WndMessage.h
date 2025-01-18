@@ -66,6 +66,8 @@
 //参数含义同WND_N_LEFT_CLICK_ITEM
 
 #define WND_N_CHILD_MOVE		WND_M_BASE + 20				//子窗口被拖动了
+
+#define WND_N_ITEM_UNEQUIP		WND_M_BASE + 21				//捡起/放下物品
 //(KWndWindow*)uParam = 被拖动了的子窗口的指针
 //当nParam != 0 时
 //	(short)(nParam & 0xffff) = 横向移动的距离

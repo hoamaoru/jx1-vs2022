@@ -309,8 +309,16 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				KUiDraggedObject	Obj;
 				Obj = m_Object;
-				m_pParentWnd->WndProc(WND_N_RIGHT_CLICK_ITEM,
-					(unsigned int)&m_Object, (int)(KWndWindow*)this);
+				/*m_pParentWnd->WndProc(WND_N_RIGHT_CLICK_ITEM,
+					(unsigned int)&m_Object, (int)(KWndWindow*)this);*/
+
+				ITEM_PICKDROP_PLACE	Pick;
+				Pick.pWnd = this;
+				Pick.TypeItemBox = 1;
+				Pick.h = 0;
+				Pick.v = 0;
+				m_pParentWnd->WndProc(WND_N_ITEM_UNEQUIP,
+					(unsigned int)&Pick, NULL);
 			}
 			else if (m_Style & OBJCONT_S_ENABLE_CLICK_EMPTY)
 			{

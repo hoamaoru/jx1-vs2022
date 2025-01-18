@@ -602,6 +602,8 @@ enum GAMEOPERATION_INDEX
 	GOI_CHATROOM,
 
 	GOI_CP_SET_IMAGE_PLAYER,
+
+	GOI_UNEQUIP_ITEM,
 };
 
 //=========================================================

@@ -403,6 +403,12 @@ int KUiStatus::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				UseRemainPoint(3, nParam);
 		}
 		break;
+
+	case WND_N_ITEM_UNEQUIP:
+		if (g_UiBase.IsOperationEnable(UIS_O_MOVE_ITEM) || g_UiBase.GetStatus() == UIS_S_TRADE_REPAIR ||
+			g_UiBase.GetStatus() == UIS_S_LOCK_ITEM || g_UiBase.GetStatus() == UIS_S_UNLOCK_ITEM)
+			OnUnequip((ITEM_PICKDROP_PLACE*)uParam, (ITEM_PICKDROP_PLACE*)nParam);
+		break;
 	default:
 		nRet = KWndShowAnimate::WndProc(uMsg, uParam, nParam);
 	}
@@ -774,6 +780,67 @@ void KUiStatus::OnEquiptChanged(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_PLA
 		g_pCoreShell->OperationRequest(GOI_SWITCH_OBJECT,
 		pPickPos ? (unsigned int)&Pick : 0,
 		pDropPos ? (int)&Drop : 0);
+	}
+
+}
+
+void KUiStatus::OnUnequip(ITEM_PICKDROP_PLACE* pPickPos, ITEM_PICKDROP_PLACE* pDropPos)
+{
+	KUiObjAtContRegion	Drop, Pick;
+	KUiDraggedObject	Obj;
+	KWndWindow* pWnd = NULL;
+
+	UISYS_STATUS	eStatus = g_UiBase.GetStatus();
+	if (pPickPos)
+	{
+		//_ASSERT(pPickPos->pWnd);
+		((KWndObjectBox*)(pPickPos->pWnd))->GetObject(Obj);
+		Pick.Obj.uGenre = Obj.uGenre;
+		Pick.Obj.uId = Obj.uId;
+		Pick.Region.Width = Obj.DataW;
+		Pick.Region.Height = Obj.DataH;
+		Pick.Region.h = 0;
+		Pick.eContainer = UOC_EQUIPTMENT;
+		pWnd = pPickPos->pWnd;
+
+	}
+	else if (pDropPos)
+	{
+		pWnd = pDropPos->pWnd;
+	}
+	else
+		return;
+
+	for (int i = 0; i < _ITEM_COUNT; i++)
+	{
+		if (pWnd == (KWndWindow*)&m_EquipBox[i])
+		{
+			Drop.Region.v = Pick.Region.v = CtrlItemMap[i].nPosition;
+			break;
+		}
+	}
+	if (eStatus == UIS_S_TRADE_REPAIR)
+	{
+		KUiItemBuySelInfo	Price = { 0 };
+		if (g_pCoreShell->IsDamage(Obj.uId))
+		{
+			if (g_pCoreShell->GetGameData(GDI_REPAIR_ITEM_PRICE,
+				(unsigned int)(&Pick), (int)(&Price)))
+			{
+				KUiTradeConfirm::OpenWindow(&Pick, &Price, TCA_REPAIR);
+			}
+		}
+	}
+	else if (eStatus == UIS_S_LOCK_ITEM)
+		g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 1);
+	else if (eStatus == UIS_S_UNLOCK_ITEM)
+		g_pCoreShell->OperationRequest(GOI_LOCKITEM, (unsigned int)(&Pick), 0);
+	else
+	{
+		//_ASSERT(i < _ITEM_COUNT);
+		g_pCoreShell->OperationRequest(GOI_UNEQUIP_ITEM,
+			pPickPos ? (unsigned int)&Pick : 0,
+			pDropPos ? (int)&Drop : 0);
 	}
 
 }
