@@ -333,6 +333,9 @@ BOOL KSwordOnLineSever::Init()
 	iniFile.GetInteger("Chat", "Port", 5004, &m_nChatPort);
 	iniFile.GetString("Tong", "Ip", "192.168.22.105", m_szTongIP, sizeof(m_szTongIP));
 	iniFile.GetInteger("Tong", "Port", 5005, &m_nTongPort);
+	iniFile.GetString("Network", "IntranetIP", "127.0.0.1", m_szIntranetIP, sizeof(m_szIntranetIP));
+	iniFile.GetString("Network", "InternetIP", "127.0.0.1", m_szInternetIP, sizeof(m_szInternetIP));
+	iniFile.GetString("Network", "MAC", "00-00-00-00-00-00", m_szMAC, sizeof(m_szMAC));
 #ifdef WIN32
 	iniFile.GetInteger("Overload", "MaxPlayer", 450, &m_nMaxPlayerCount);
 	iniFile.GetInteger("Overload", "Precision", 20, &m_nPrecision);

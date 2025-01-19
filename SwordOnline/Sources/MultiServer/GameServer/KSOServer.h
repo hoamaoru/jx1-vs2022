@@ -74,6 +74,9 @@ private:
 	char				m_szTransferIP[16];
 	char				m_szChatIP[16];
 	char				m_szTongIP[16];
+	char				m_szInternetIP[16];
+	char				m_szIntranetIP[16];
+	char				m_szMAC[18];
 	BOOL				m_bIsRunning;
 //	BOOL				m_bSaveFlag;
 //	int					m_nSaveCount;

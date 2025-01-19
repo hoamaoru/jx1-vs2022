@@ -63,6 +63,16 @@ bool CNetwork::Create()
 	m_nClientOpenPort = theConfigFile.ReadInteger( "Network", "ClientOpenPort", 0 );
 	m_nGameSvrOpenPort = theConfigFile.ReadInteger( "Network", "GameSvrOpenPort", 0 );
 
+	m_sIntranetIP.resize(MAX_STRING_LEN);
+	dwLen = theConfigFile.ReadString((LPCTSTR)"Network", (LPCTSTR)"IntranetIP", const_cast<char*>(m_sIntranetIP.c_str()), MAX_STRING_LEN, (LPCTSTR)"");
+	m_sIntranetIP.resize(dwLen + 1 /* '\0' */);
+	m_sInternetIP.resize(MAX_STRING_LEN);
+	dwLen = theConfigFile.ReadString((LPCTSTR)"Network", (LPCTSTR)"InternetIP", const_cast<char*>(m_sInternetIP.c_str()), MAX_STRING_LEN, (LPCTSTR)"");
+	m_sInternetIP.resize(dwLen + 1 /* '\0' */);
+	m_sMAC.resize(MAX_STRING_LEN);
+	dwLen = theConfigFile.ReadString((LPCTSTR)"Network", (LPCTSTR)"MAC", const_cast<char*>(m_sMAC.c_str()), MAX_STRING_LEN, (LPCTSTR)"");
+	m_sMAC.resize(dwLen + 1 /* '\0' */);
+
 	return true;
 }
 

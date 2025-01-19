@@ -73,6 +73,7 @@ const char sec_host[] = "host";
 const char sec_tong[] = "tong";
 const char sec_chat[] = "chat";
 const char sec_dbrole[] = "dbrole";
+const char sec_network[] = "Network";
 
 
 const char key_ip[] = "ip";
@@ -84,6 +85,9 @@ const char key_buffersize[] = "buffersize";
 const char key_account[] = "account";
 const char key_password[] = "password";
 const char key_retryinterval[] = "retryinterval";
+const char key_intranet_ip[] = "IntranetIP";
+const char key_internet_ip[] = "InternetIP";
+const char key_mac[] = "MAC";
 
 
 
@@ -426,10 +430,24 @@ const UCHAR* gGetHostMac(int adapt, size_t* pSize)
 
 		_MACSTORE()
 		{
+			std::_tstring intranet_ip = gGetPrivateProfileStringEx(sec_network, key_intranet_ip, file_relaycfg);
+			std::_tstring internet_ip = gGetPrivateProfileStringEx(sec_network, key_internet_ip, file_relaycfg);
+			std::_tstring mac = gGetPrivateProfileStringEx(sec_network, key_mac, file_relaycfg);
+
 			memset(macLocal, 0, sizeof(macLocal));
 			memset(macGlobal, 0, sizeof(macGlobal));
 
-			gGetMacAndIPAddress(macLocal, NULL, macGlobal, NULL, _localtag, MAC_SIZE);
+			gGetMacAndIPAddress(
+				macLocal,
+				NULL,
+				macGlobal,
+				NULL,
+				_localtag,
+				MAC_SIZE,
+				(char*)intranet_ip.c_str(),
+				(char*)internet_ip.c_str(),
+				(char*)mac.c_str()
+			);
 		}
 	} _macstore;
 
@@ -459,7 +477,21 @@ DWORD gGetHostIP(int adapt)
 
 		_IPSTORE() : ipLocal(0), ipGlobal(0)
 		{
-			gGetMacAndIPAddress(NULL, &ipLocal, NULL, &ipGlobal, _localtag, 0);
+			std::_tstring intranet_ip = gGetPrivateProfileStringEx(sec_network, key_intranet_ip, file_relaycfg);
+			std::_tstring internet_ip = gGetPrivateProfileStringEx(sec_network, key_internet_ip, file_relaycfg);
+			std::_tstring mac = gGetPrivateProfileStringEx(sec_network, key_mac, file_relaycfg);
+			gGetMacAndIPAddress(
+				NULL,
+				&ipLocal,
+				NULL,
+				&ipGlobal,
+				_localtag,
+				0,
+				(char*)intranet_ip.c_str(),
+				(char*)internet_ip.c_str(),
+				(char*)mac.c_str()
+			);
+
 		}
 	} _ipstore;
 

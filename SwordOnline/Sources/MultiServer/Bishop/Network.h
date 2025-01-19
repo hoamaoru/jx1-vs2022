@@ -49,6 +49,11 @@ public:
 	unsigned short GetGameSvrOpenPort() { return m_nGameSvrOpenPort; }
 	void SetGameSvrOpenPort( unsigned short nGameSvrOpenPort ) { m_nGameSvrOpenPort = nGameSvrOpenPort; }
 
+	const char* GetIntranetIP() { return m_sIntranetIP.c_str(); }
+	const char* GetInternetIP() { return m_sInternetIP.c_str(); }
+
+	const char* GetMAC() { return m_sMAC.c_str(); }
+
 protected:
 
 	typedef HRESULT ( __stdcall * pfnCreateServerInterface )( REFIID riid, void **ppv );
@@ -85,6 +90,19 @@ private:
 	 * Game server config
 	 */
 	unsigned short	m_nGameSvrOpenPort;
+
+	/*
+	 * IntranetIP
+	 */
+	OnlineGameLib::Win32::_tstring	m_sIntranetIP;
+	/*
+	 *InternetIP
+	 */
+	OnlineGameLib::Win32::_tstring	m_sInternetIP;
+	/*
+	 * Internet MAC address
+	 */
+	OnlineGameLib::Win32::_tstring	m_sMAC;
 };
 
 #endif // __INCLUDE_NETWORK_H__

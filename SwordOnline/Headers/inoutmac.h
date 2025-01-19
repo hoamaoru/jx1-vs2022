@@ -48,11 +48,60 @@ typedef struct _K_IP_ADAPTER_INFO {
     time_t LeaseExpires;
 } K_IP_ADAPTER_INFO, *K_PIP_ADAPTER_INFO;
 
-
+inline void ConvertMacAddressStringIntoByte(const char* pszMACAddress, unsigned char* pbyAddress, const char cSep = '-')
+{
+	for (int iConunter = 0; iConunter < 6; ++iConunter)
+	{
+		unsigned int iNumber = 0;
+		char ch;
+		//Convert letter into lower case.
+		ch = tolower(*pszMACAddress++);
+		if ((ch < '0' || ch > '9') && (ch < 'a' || ch > 'f'))
+		{
+			return;
+		}
+		//Convert into number. 
+		//       a. If character is digit then ch - '0'
+		//	b. else (ch - 'a' + 10) it is done 
+		//	because addition of 10 takes correct value.
+		iNumber = isdigit(ch) ? (ch - '0') : (ch - 'a' + 10);
+		ch = tolower(*pszMACAddress);
+		if ((iConunter < 5 && ch != cSep) ||
+			(iConunter == 5 && ch != '\0' && !isspace(ch)))
+		{
+			++pszMACAddress;
+			if ((ch < '0' || ch > '9') && (ch < 'a' || ch > 'f'))
+			{
+				return;
+			}
+			iNumber <<= 4;
+			iNumber += isdigit(ch) ? (ch - '0') : (ch - 'a' + 10);
+			ch = *pszMACAddress;
+			if (iConunter < 5 && ch != cSep)
+			{
+				return;
+			}
+		}
+		/* Store result.  */
+		pbyAddress[iConunter] = (unsigned char)iNumber;
+		/* Skip cSep.  */
+		++pszMACAddress;
+	}
+}
 
 //此函数会确保两个地址均有
 //返回值为网卡数量
-inline int gGetMacAndIPAddress(BYTE* pMacAddressIn, DWORD* pIPAddressIn, BYTE* pMacAddressOut, DWORD* pIPAddressOut, DWORD nMask = 0x0000a8c0, DWORD nMacLength = 6)
+inline int gGetMacAndIPAddress(
+	BYTE* pMacAddressIn, 
+	DWORD* pIPAddressIn, 
+	BYTE* pMacAddressOut, 
+	DWORD* pIPAddressOut, 
+	DWORD nMask = 0x0000a8c0, 
+	DWORD nMacLength = 6,
+	char* cIntranetIP = "127.0.0.1",
+	char* cInternetIP = "127.0.0.1",
+	char* cMac = "00-00-00-00-00-00"
+)
 {
 	typedef DWORD(CALLBACK * PGAINFO)(K_PIP_ADAPTER_INFO, PULONG);//GetAdaptersInfo
 
@@ -73,86 +122,29 @@ inline int gGetMacAndIPAddress(BYTE* pMacAddressIn, DWORD* pIPAddressIn, BYTE* p
 
 	pGAInfo(pInfo, &ulSize);
 
-	bool bIn = false;
-	char* pMacAddressInX = (char*)alloca(nMacLength + 1);
-	DWORD nIPAddressInX = 0;
-	bool bOut = false;
-	char* pMacAddressOutX = (char*)alloca(nMacLength + 1);
-	DWORD nIPAddressOutX = 0;
+	unsigned char MAC[6] = { '\0' };
+	ConvertMacAddressStringIntoByte(cMac, MAC);
+	if (pMacAddressIn) {
+		memcpy(pMacAddressIn, MAC, nMacLength);
+	}
+
+	if (pMacAddressOut) {
+		memcpy(pMacAddressOut, MAC, nMacLength);
+	}
+
+	if (pIPAddressIn) {
+		*pIPAddressIn = inet_addr(cIntranetIP);
+	}
+
+	if (pIPAddressOut) {
+		*pIPAddressOut = inet_addr(cInternetIP);
+	}
 
 	DWORD nMAcNum = 0;
-    //遍历每一张网卡
 
-    while (pInfo && (!bIn || !bOut))
-    {
-		K_PIP_ADDR_STRING pAddTemp = &(pInfo->IpAddressList);       
-		
-		while (pAddTemp)/*遍历IP列表中的每一个元素*/
-		{
-			DWORD nAddress = inet_addr(pAddTemp->IpAddress.String);
-			if (!bIn &&
-				((nAddress & 0x0000FFFF) == nMask)
-				)
-			{
-				bIn = true;
-				nIPAddressInX = nAddress;
-				//物理地址的长度
-				if (pInfo->AddressLength == nMacLength)
-					memcpy(pMacAddressInX, pInfo->Address, nMacLength);
-				else
-					memset(pMacAddressInX, 0, nMacLength);
-			}
-			
-			if (!bOut &&
-				((nAddress & 0x0000FFFF) != nMask)
-				)
-			{
-				bOut = true;
-				nIPAddressOutX = nAddress;
-				//物理地址的长度
-				if (pInfo->AddressLength == nMacLength)
-					memcpy(pMacAddressOutX, pInfo->Address, nMacLength);
-				else
-					memset(pMacAddressOutX, 0, nMacLength);
-			}
-			pAddTemp = pAddTemp->Next;
-		}
-		//将当前指针移向下一个
+	while (pInfo) {
 		pInfo = pInfo->Next;
-
 		nMAcNum++;
-	}
-	
-	if (bIn)
-	{
-		if (pMacAddressIn)
-			memcpy(pMacAddressIn, pMacAddressInX, nMacLength);
-		if (pIPAddressIn)
-			*pIPAddressIn = nIPAddressInX;
-
-		if (!bOut)
-		{
-			if (pMacAddressOut)
-				memcpy(pMacAddressOut, pMacAddressInX, nMacLength);
-			if (pIPAddressOut)
-				*pIPAddressOut = nIPAddressInX;
-		}
-	}
-
-	if (bOut)
-	{
-		if (pMacAddressOut)
-			memcpy(pMacAddressOut, pMacAddressOutX, nMacLength);
-		if (pIPAddressOut)
-			*pIPAddressOut = nIPAddressOutX;
-
-		if (!bIn)
-		{
-			if (pMacAddressIn)
-				memcpy(pMacAddressIn, pMacAddressOutX, nMacLength);
-			if (pIPAddressIn)
-				*pIPAddressIn = nIPAddressOutX;
-		}
 	}
 
 	FreeLibrary(hInst);
