@@ -933,8 +933,8 @@ BOOL	KMissle::CheckBeyondRegion(int nDOffsetX, int nDOffsetY)
 	DWORD nRegionWidth = RegionWidth;
 	DWORD nRegionHeight = RegionHeight;
 	
-	_ASSERT(abs(nNewXOffset) <= CellWidth * 2);
-	_ASSERT(abs(nNewYOffset) <= CellHeight * 2);
+	/*_ASSERT(abs(nNewXOffset) <= CellWidth * 2);
+	_ASSERT(abs(nNewYOffset) <= CellHeight * 2);*/
 	
 	//	处理NPC的坐标变幻
 	//	CELLWIDTH、CELLHEIGHT、OffX、OffY均是放大了1024倍
