@@ -1466,7 +1466,8 @@ void	KPlayer::LeaveTeam(BYTE* pProtocol)
 		sMsg.ProtocolType = s2c_msgshow;
 		sMsg.m_wMsgID = enumMSG_ID_TEAM_LEAVE;
 		sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-		sMsg.m_lpBuf = (void*)Npc[this->m_nIndex].m_dwID;
+		//sMsg.m_lpBuf = (void*)Npc[this->m_nIndex].m_dwID;
+		sMsg.m_lpBuf = (std::unique_ptr<BYTE[]>*)Npc[this->m_nIndex].m_dwID;
 
 		g_pServer->PackDataToClient(Player[g_Team[m_cTeam.m_nID].m_nCaptain].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
 		for (int i = 0; i < MAX_TEAM_MEMBER; i++)
@@ -1558,7 +1559,7 @@ void	KPlayer::TeamKickOne(BYTE* pProtocol)
 	sMsg.ProtocolType = s2c_msgshow;
 	sMsg.m_wMsgID = enumMSG_ID_TEAM_KICK_ONE;
 	sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID) + nLength;
-	sMsg.m_lpBuf = new BYTE[sMsg.m_wLength + 1];
+	sMsg.AllocateBuffer(sMsg.m_wLength + 1);
 
 	memcpy(sMsg.m_lpBuf, &sMsg, sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID));
 	memcpy((char*)sMsg.m_lpBuf + sizeof(SHOW_MSG_SYNC) - sizeof(LPVOID), Npc[Player[nPlayerNo].m_nIndex].Name, nLength);
