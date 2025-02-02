@@ -498,6 +498,7 @@ private:
 	void				OnSkill();
 	void				DoJump();
 	BOOL				OnJump();
+	void				OnRunByFPS(int nStep);
 	void				DoSit();
 	void				OnSit();
 	void				DoHurt(int nHurtFrames = 0, int nX = 0, int nY = 0);
