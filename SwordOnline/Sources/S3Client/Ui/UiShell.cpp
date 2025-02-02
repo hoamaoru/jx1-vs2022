@@ -283,10 +283,10 @@ void UiPaint(int nGameLoop)
 	if (g_pCoreShell)
 		dwPing = g_pCoreShell->GetPing();
 
-	sprintf(Info,"PING=%d", s_nFrameRate, dwPing);
+	sprintf(Info,"FPS=%d PING=%d", s_nFrameRate, dwPing);
 	g_pRepresentShell->OutputText(14, Info, -1, 10, 20, 0x00FF00, 0);
 
-	//g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 510, 0xffffffff, 0);
+	g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 530, 0xffffffff, 0);
 
 	g_pRepresentShell->RepresentEnd();
 }
