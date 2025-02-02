@@ -4478,13 +4478,13 @@ int KNpc::PaintInfo(int nHeightOffset, int nFontSize, DWORD dwBorderColor)
 		{
 			strcat(pszTemp, "(");
 			if (m_FreezeState.nTime)
-				strcat(pszTemp, "B¨ng");
+				strcat(pszTemp, "ChËm");
 			if (m_PoisonState.nTime)
 				strcat(pszTemp, "§éc");
 			if (m_StunState.nTime)
 				strcat(pszTemp, "Mª");
 			if (m_FrozenAction.nTime)
-				strcat(pszTemp, "Cho¸ng");
+				strcat(pszTemp, "B¨ng");
 			strcat(pszTemp, ")");
 		}
 		nXX = nMpsX - nFontSize * g_StrLen(pszTemp) / 4 + ((m_byMantleLevel > 0 && m_byMantleLevel <= MAX_ITEM_LEVEL) ? 40 : 0);
