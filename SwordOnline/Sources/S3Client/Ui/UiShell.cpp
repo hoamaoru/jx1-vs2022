@@ -266,29 +266,62 @@ int UiStart()
 //--------------------------------------------------------------------------
 //	功能：绘制界面
 //--------------------------------------------------------------------------
+// void UiPaint(int nGameLoop)
+// {
+// 	if (g_pRepresentShell == NULL || 
+// 		g_pRepresentShell->RepresentBegin(false, 0) == false)
+// 	{
+// 		if (g_pCoreShell)
+// 			g_pCoreShell->SetRepresentShell(g_pRepresentShell);
+// 		return;
+// 	}
+	
+// 	Wnd_RenderWindows();
+// 	DWORD	dwPing = 0;
+// 	char	Info[128];
+// 	s_Timer.GetFPS(&s_nFrameRate);
+// 	if (g_pCoreShell)
+// 		dwPing = g_pCoreShell->GetPing();
+
+// 	sprintf(Info,"FPS=%d PING=%d", s_nFrameRate, dwPing);
+// 	g_pRepresentShell->OutputText(14, Info, -1, 10, 20, 0x00FF00, 0);
+
+// 	g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 530, 0xffffffff, 0);
+
+// 	g_pRepresentShell->RepresentEnd();
+// }
+
 void UiPaint(int nGameLoop)
 {
-	if (g_pRepresentShell == NULL || 
-		g_pRepresentShell->RepresentBegin(false, 0) == false)
-	{
-		if (g_pCoreShell)
-			g_pCoreShell->SetRepresentShell(g_pRepresentShell);
-		return;
-	}
-	
-	Wnd_RenderWindows();
-	DWORD	dwPing = 0;
+    if (g_pRepresentShell == NULL ||
+        g_pRepresentShell->RepresentBegin(false, 0) == false)
+    {
+        if (g_pCoreShell)
+            g_pCoreShell->SetRepresentShell(g_pRepresentShell);
+        return;
+    }
+//	Wnd_Cleanup();
+    Wnd_RenderWindows();
+
+    DWORD	dwPing = 0;
 	char	Info[128];
 	s_Timer.GetFPS(&s_nFrameRate);
 	if (g_pCoreShell)
 		dwPing = g_pCoreShell->GetPing();
+	sprintf(Info,"FPS=%d LOOP=%d PING=%d", s_nFrameRate, nGameLoop, dwPing);
+	g_pRepresentShell->OutputText(12, Info, -1, 10, 20, 0xffffffff, 0);
 
-	sprintf(Info,"FPS=%d PING=%d", s_nFrameRate, dwPing);
-	g_pRepresentShell->OutputText(14, Info, -1, 10, 20, 0x00FF00, 0);
+	g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 510, 0xffffffff, 0);
 
-	g_pRepresentShell->OutputText(12, s_VersionInfo, -1, 2, 530, 0xffffffff, 0);
-
-	g_pRepresentShell->RepresentEnd();
+	#ifdef DYNAMIC_LINK_REPRESENT_LIBRARY
+	{
+		int nWidth, nHeight;
+		Wnd_GetScreenSize(nWidth, nHeight);
+		g_pRepresentShell->OutputText(12, g_bRepresent3 ? "Represent3" : "Represent2",
+			-1, nWidth - 100, 10, 0xffffffff, 0);
+	}
+	#endif
+    g_pRepresentShell->RepresentEnd();
 }
 
 //--------------------------------------------------------------------------

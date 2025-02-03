@@ -135,7 +135,7 @@
 #define		MAGICATTRIB_LEVEL_FILE		"\\settings\\item\\magicattriblevel.txt"
 #define		MAGICATTRIB_LVINDEX_FILE	"\\settings\\item\\magicattriblevel_index.txt"
 
-#define		MAPLIST_SETTING_FILE			"\\settings\\MapList.ini"
+#define		MAPLIST_SETTING_FILE			"\\settings\\WorldSet.ini"
 
 #define		PLATINA_EQUIP_FILE			"\\settings\\item\\platinaequip.txt"
 #define		GOLD_EQUIP_FILE				"\\settings\\item\\goldequip.txt"
