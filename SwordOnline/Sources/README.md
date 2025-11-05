@@ -1,173 +1,173 @@
-# Jian Xia Qing Yuan (Sword Online) - Game Source Code
+﻿# Jian Xia Qing Yuan (Sword Online) - Game Source Code
 
-## T?ng quan d? �n
+## Tổng quan dự án
 
-?�y l� source code c?a game MMORPG **Jian Xia Qing Yuan (Sword Online)** - m?t game online ki?m hi?p c? ?i?n. D? �n ???c ph�t tri?n b?ng C++ v?i Visual Studio v� s? d?ng ki?n tr�c client-server ph�n t�n.
+Đây là source code của game MMORPG **Jian Xia Qing Yuan (Sword Online)** - một game online kiếm hiệp cổ điển. Dự án được phát triển bằng C++ với Visual Studio và sử dụng kiến trúc client-server phân tán.
 
-**??c ?i?m k? thu?t:**
-- Ng�n ng?: C++14
+**Đặc điểm kỹ thuật:**
+- Ngôn ngữ: C++14
 - IDE: Visual Studio 2022
-- Ki?n tr�c: Client-Server (Multi-Server)
-- T?ng s? projects: **20 modules**
+- Kiến trúc: Client-Server (Multi-Server)
+- Tổng số projects: **20 modules**
 
 ---
 
-## C?u tr�c d? �n
+## Cấu trúc dự án
 
-### ?? **Core Modules (C�c module c?t l�i)**
+### 🎮 **Core Modules (Các module cốt lõi)**
 
 #### **Core** (`Core\Core.vcxproj`)
-- **Ch?c n?ng**: Engine c?t l�i c?a game, ch?a logic game ch�nh
-- **Bao g?m**: 
-  - H? th?ng nh�n v?t (KPlayer)
+- **Chức năng**: Engine cốt lõi của game, chứa logic game chính
+- **Bao gồm**: 
+  - Hệ thống nhân vật (KPlayer)
   - NPC (KNpc)
-  - K? n?ng (KSkills, KSkillManager)
-  - V?t ph?m (KItemList, KInventory)
-  - Nhi?m v? (KPlayerTask)
-  - Thu?c t�nh ma ph�p (KMagicAttrib)
-- **Vai tr�**: X? l� t?t c? logic gameplay, chi?n ??u, t??ng t�c
+  - Kỹ năng (KSkills, KSkillManager)
+  - Vật phẩm (KItemList, KInventory)
+  - Nhiệm vụ (KPlayerTask)
+  - Thuộc tính ma pháp (KMagicAttrib)
+- **Vai trò**: Xử lý tất cả logic gameplay, chiến đấu, tương tác
 
 #### **Engine** (`Engine\Engine.vcxproj`)
-- **Ch?c n?ng**: Engine ?? h?a v� h? th?ng c? b?n
-- **Bao g?m**: 
-  - X? l� file (KFile)
-  - H? th?ng c?a s? (KWin32Wnd)
-  - Rendering, �m thanh, input
-- **Vai tr�**: Cung c?p n?n t?ng k? thu?t cho game
+- **Chức năng**: Engine đồ họa và hệ thống cơ bản
+- **Bao gồm**: 
+  - Xử lý file (KFile)
+  - Hệ thống cửa sổ (KWin32Wnd)
+  - Rendering, âm thanh, input
+- **Vai trò**: Cung cấp nền tảng kỹ thuật cho game
 
 ---
 
-### ?? **Client Side (Ph�a Client)**
+### 💻 **Client Side (Phía Client)**
 
 #### **S3Client** (`S3Client\S3Client.vcxproj`)
-- **Ch?c n?ng**: Game client ch�nh - giao di?n ng??i ch?i
-- **Bao g?m**: 
+- **Chức năng**: Game client chính - giao diện người chơi
+- **Bao gồm**: 
   - UI System (UiCase, UiElem)
   - Login system (Login.cpp)
   - Chat room (UiChatRoom)
   - Server selection (UiSelServer)
   - Player control bar (UiPlayerControlBar)
-- **Vai tr�**: Hi?n th? game v� nh?n input t? ng??i ch?i
+- **Vai trò**: Hiển thị game và nhận input từ người chơi
 
 #### **Represent2 & Represent3** 
-- **Ch?c n?ng**: H? th?ng hi?n th? ?? h?a 2D/3D
-- **Vai tr�**: Render nh�n v?t, m�i tr??ng, hi?u ?ng
+- **Chức năng**: Hệ thống hiển thị đồ họa 2D/3D
+- **Vai trò**: Render nhân vật, môi trường, hiệu ứng
 
 ---
 
-### ??? **Server Side (Ph�a Server)**
+### 🖥️ **Server Side (Phía Server)**
 
 #### **GameServer** (`MultiServer\GameServer\GameServer.vcxproj`)
-- **Ch?c n?ng**: Server game ch�nh x? l� logic gameplay
-- **Vai tr�**: Qu?n l� ng??i ch?i trong game, chi?n ??u, t??ng t�c
+- **Chức năng**: Server game chính xử lý logic gameplay
+- **Vai trò**: Quản lý người chơi trong game, chiến đấu, tương tác
 
 #### **Goddess** (`MultiServer\Goddess\Goddess.vcxproj`)
-- **Ch?c n?ng**: Database server - qu?n l� d? li?u nh�n v?t
-- **Bao g?m**: IDBRoleServer - interface database
-- **Vai tr�**: L?u tr? th�ng tin player, v?t ph?m, ti?n ??
+- **Chức năng**: Database server - quản lý dữ liệu nhân vật
+- **Bao gồm**: IDBRoleServer - interface database
+- **Vai trò**: Lưu trữ thông tin player, vật phẩm, tiến độ
 
 #### **Heaven** (`MultiServer\Heaven\Heaven.vcxproj`)
-- **Ch?c n?ng**: Login server - x�c th?c ??ng nh?p
-- **Vai tr�**: Ki?m tra t�i kho?n, ph�n ph?i server
+- **Chức năng**: Login server - xác thực đăng nhập
+- **Vai trò**: Kiểm tra tài khoản, phân phối server
 
 #### **Rainbow** (`MultiServer\Rainbow\Rainbow.vcxproj`)
-- **Ch?c n?ng**: Chat server ho?c social system
-- **Vai tr�**: X? l� chat, bang h?i, t??ng t�c x� h?i
+- **Chức năng**: Chat server hoặc social system
+- **Vai trò**: Xử lý chat, bang hội, tương tác xã hội
 
 #### **Bishop** (`MultiServer\Bishop\Bishop.vcxproj`)
-- **Ch?c n?ng**: Manager server - gi�m s�t c�c server kh�c
-- **Bao g?m**: GamePlayer - qu?n l� ng??i ch?i
-- **Vai tr�**: Load balancing, monitoring, qu?n l� cluster
+- **Chức năng**: Manager server - giám sát các server khác
+- **Bao gồm**: GamePlayer - quản lý người chơi
+- **Vai trò**: Load balancing, monitoring, quản lý cluster
 
 #### **S3Relay** (`MultiServer\S3Relay\S3Relay.vcxproj`)
-- **Ch?c n?ng**: Relay server - chuy?n ti?p d? li?u
-- **Vai tr�**: Proxy gi?a client v� game server
+- **Chức năng**: Relay server - chuyển tiếp dữ liệu
+- **Vai trò**: Proxy giữa client và game server
 
 #### **Common** (`MultiServer\Common\Common.vcxproj`)
-- **Ch?c n?ng**: Th? vi?n chung cho c�c server
-- **Vai tr�**: Code d�ng chung, protocol, utility functions
+- **Chức năng**: Thư viện chung cho các server
+- **Vai trò**: Code dùng chung, protocol, utility functions
 
 ---
 
-### ?? **Payment System (H? th?ng thanh to�n)**
+### 💳 **Payment System (Hệ thống thanh toán)**
 
 #### **Sword3PaySys**
 - **S3AccServer** (`Sword3PaySys\S3AccServer\Sword3PaySys.vcxproj`): Account server
 - **S3RelayServer** (`Sword3PaySys\S3RELAYSERVER\S3RelayServer.vcxproj`): Payment relay
-- **Ch?c n?ng**: X? l� n?p th?, mua v?t ph?m, qu?n l� t�i kho?n VIP
+- **Chức năng**: Xử lý nạp thẻ, mua vật phẩm, quản lý tài khoản VIP
 
 ---
 
-### ?? **Support Libraries (Th? vi?n h? tr?)**
+### 📚 **Support Libraries (Thư viện hỗ trợ)**
 
 #### **LuaLib** (`Library\LuaLib\LuaLibDll.vcxproj`)
-- **Ch?c n?ng**: Th? vi?n Lua scripting
-- **Vai tr�**: Cho ph�p vi?t script, quest, AI b?ng Lua
+- **Chức năng**: Thư viện Lua scripting
+- **Vai trò**: Cho phép viết script, quest, AI bằng Lua
 
 #### **JpgLib** (`JpgLib\JpgLib.vcxproj`)
-- **Ch?c n?ng**: Th? vi?n x? l� ?nh JPEG
-- **Vai tr�**: Load v� hi?n th? texture, UI graphics
+- **Chức năng**: Thư viện xử lý ảnh JPEG
+- **Vai trò**: Load và hiển thị texture, UI graphics
 
 #### **KMp3LibClass** (`KMp3LibClass\KMp3LibClass.vcxproj`)
-- **Ch?c n?ng**: Th? vi?n ph�t nh?c MP3
-- **Vai tr�**: Background music, sound effects
+- **Chức năng**: Thư viện phát nhạc MP3
+- **Vai trò**: Background music, sound effects
 
 #### **FilterText** (`FilterText\FilterText.vcxproj`)
-- **Ch?c n?ng**: B? l?c t? ng?
-- **Vai tr�**: Ki?m duy?t chat, t�n nh�n v?t, ch?ng spam
+- **Chức năng**: Bộ lọc từ ngữ
+- **Vai trò**: Kiểm duyệt chat, tên nhân vật, chống spam
 
 #### **ExpandPackage** (`ExpandPackage2.0\ExpandPackage.vcxproj`)
-- **Ch?c n?ng**: H? th?ng m? r?ng g�i d? li?u
-- **Vai tr�**: N�n/gi?i n�n, m� h�a game assets
+- **Chức năng**: Hệ thống mở rộng gói dữ liệu
+- **Vai trò**: Nén/giải nén, mã hóa game assets
 
 ---
 
-## ??? Ki?n tr�c h? th?ng
+## 🏗️ Kiến trúc hệ thống
 
 ```
-???????????????    ???????????????    ???????????????
-?   S3Client  ??????   S3Relay   ?????? GameServer  ?
-?   (Client)  ?    ?  (Proxy)    ?    ?  (Logic)    ?
-???????????????    ???????????????    ???????????????
-                            ?                 ?
-                            ?                 ?
-                   ???????????????    ???????????????
-                   ?   Heaven    ?    ?   Bishop    ?
-                   ?  (Login)    ?    ? (Manager)   ?
-                   ???????????????    ???????????????
-                            ?                 ?
-                            ?                 ?
-                   ???????????????    ???????????????
-                   ?  Goddess    ?    ?  Rainbow    ?
-                   ? (Database)  ?    ?   (Chat)    ?
-                   ???????????????    ???????????????
-                            ?
-                            ?
-                   ???????????????
-                   ?Sword3PaySys ?
-                   ? (Payment)   ?
-                   ???????????????
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   S3Client  │◄──►│   S3Relay   │◄──►│ GameServer  │
+│   (Client)  │    │  (Proxy)    │    │  (Logic)    │
+└─────────────┘    └─────────────┘    └─────────────┘
+                            │                 ▲
+                            ▼                 │
+                   ┌─────────────┐    ┌─────────────┐
+                   │   Heaven    │    │   Bishop    │
+                   │  (Login)    │    │ (Manager)   │
+                   └─────────────┘    └─────────────┘
+                            │                 │
+                            ▼                 ▼
+                   ┌─────────────┐    ┌─────────────┐
+                   │  Goddess    │    │  Rainbow    │
+                   │ (Database)  │    │   (Chat)    │
+                   └─────────────┘    └─────────────┘
+                            │
+                            ▼
+                   ┌─────────────┐
+                   │Sword3PaySys │
+                   │ (Payment)   │
+                   └─────────────┘
 ```
 
 ---
 
-## ?? H??ng d?n build
+## 🔧 Hướng dẫn build
 
-### Y�u c?u h? th?ng:
-- **Visual Studio 2022** ho?c cao h?n
+### Yêu cầu hệ thống:
+- **Visual Studio 2022** hoặc cao hơn
 - **Windows SDK**
 - **C++14 Compiler**
 
-### C�c b??c build:
-1. M? solution trong Visual Studio 2022
-2. Restore NuGet packages (n?u c�)
-3. Build theo th? t?:
+### Các bước build:
+1. Mở solution trong Visual Studio 2022
+2. Restore NuGet packages (nếu có)
+3. Build theo thứ tự:
    - Core libraries (Engine, Core)
    - Support libraries (LuaLib, JpgLib, KMp3LibClass)
    - Client (S3Client)
    - Servers (GameServer, Goddess, Heaven, etc.)
 
-### Build order khuy?n ngh?:
+### Build order khuyến nghị:
 ```
 1. Engine
 2. Core
@@ -180,65 +180,65 @@
 
 ---
 
-## ?? C?u tr�c th? m?c
+## 📁 Cấu trúc thư mục
 
 ```
 SwordOnline/Sources/
-??? Core/                    # Core game logic
-??? Engine/                  # Base engine
-??? S3Client/               # Game client
-?   ??? Ui/
-?   ?   ??? UiCase/         # UI screens
-?   ?   ??? Elem/           # UI elements
-?   ??? Login/              # Login system
-??? MultiServer/            # Server modules
-?   ??? GameServer/         # Main game server
-?   ??? Goddess/            # Database server
-?   ??? Heaven/             # Login server
-?   ??? Rainbow/            # Chat server
-?   ??? Bishop/             # Manager server
-?   ??? S3Relay/            # Relay server
-?   ??? Common/             # Shared server code
-??? Sword3PaySys/          # Payment system
-??? Library/               # External libraries
-??? Represent/             # Graphics rendering
-??? JpgLib/               # Image processing
-??? KMp3LibClass/         # Audio processing
-??? FilterText/           # Text filtering
-??? ExpandPackage2.0/     # Package system
+├── Core/                    # Core game logic
+├── Engine/                  # Base engine
+├── S3Client/               # Game client
+│   ├── Ui/
+│   │   ├── UiCase/         # UI screens
+│   │   └── Elem/           # UI elements
+│   └── Login/              # Login system
+├── MultiServer/            # Server modules
+│   ├── GameServer/         # Main game server
+│   ├── Goddess/            # Database server
+│   ├── Heaven/             # Login server
+│   ├── Rainbow/            # Chat server
+│   ├── Bishop/             # Manager server
+│   ├── S3Relay/            # Relay server
+│   └── Common/             # Shared server code
+├── Sword3PaySys/          # Payment system
+├── Library/               # External libraries
+├── Represent/             # Graphics rendering
+├── JpgLib/               # Image processing
+├── KMp3LibClass/         # Audio processing
+├── FilterText/           # Text filtering
+└── ExpandPackage2.0/     # Package system
 ```
 
 ---
 
-## ?? C�c t�nh n?ng ch�nh
+## 🎯 Các tính năng chính
 
-- **??? Combat System**: H? th?ng chi?n ??u real-time v?i k? n?ng ?a d?ng
-- **?? Multiplayer**: H? tr? nhi?u ng??i ch?i online c�ng l�c
-- **?? Chat System**: H? th?ng chat ?a k�nh
-- **?? Trading**: H? th?ng giao d?ch v?t ph?m
-- **?? Guild System**: H? th?ng bang h?i
-- **?? Payment**: T�ch h?p h? th?ng thanh to�n
-- **?? Audio/Video**: H? tr? �m thanh v� h�nh ?nh ?a ph??ng ti?n
-- **?? Scripting**: H? tr? Lua scripting cho quest v� AI
-
----
-
-## ?? ?�ng g�p
-
-D? �n n�y l� source code m? c?a game ki?m hi?p c? ?i?n. M?i ?�ng g�p ?? c?i thi?n, fix bug ho?c th�m t�nh n?ng ??u ???c hoan ngh�nh.
+- **🗡️ Combat System**: Hệ thống chiến đấu real-time với kỹ năng đa dạng
+- **👥 Multiplayer**: Hỗ trợ nhiều người chơi online cùng lúc
+- **💬 Chat System**: Hệ thống chat đa kênh
+- **🏪 Trading**: Hệ thống giao dịch vật phẩm
+- **🎪 Guild System**: Hệ thống bang hội
+- **💰 Payment**: Tích hợp hệ thống thanh toán
+- **🎵 Audio/Video**: Hỗ trợ âm thanh và hình ảnh đa phương tiện
+- **📜 Scripting**: Hỗ trợ Lua scripting cho quest và AI
 
 ---
 
-## ?? License
+## 🤝 Đóng góp
 
-[Th�m th�ng tin license t?i ?�y]
-
----
-
-## ?? Li�n h?
-
-[Th�m th�ng tin li�n h? t?i ?�y]
+Dự án này là source code mở của game kiếm hiệp cổ điển. Mọi đóng góp để cải thiện, fix bug hoặc thêm tính năng đều được hoan nghênh.
 
 ---
 
-**?? Ch�c c�c hi?p s? c� nh?ng tr?i nghi?m tuy?t v?i trong th? gi?i giang h?! ??**
+## 📄 License
+
+[Thêm thông tin license tại đây]
+
+---
+
+## 📞 Liên hệ
+
+[Thêm thông tin liên hệ tại đây]
+
+---
+
+**⚔️ Chúc các hiệp sĩ có những trải nghiệm tuyệt vời trong thế giới giang hồ! ⚔️**
