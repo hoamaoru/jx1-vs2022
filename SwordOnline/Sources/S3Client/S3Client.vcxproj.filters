@@ -2,15 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="½çĂæ\½çĂæÓ¦ÓĂ\̀áÊ¾´°¿Ú">
-      <UniqueIdentifier>{00ae3e53-2957-4b69-8dec-b7251a18d8c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="½çĂæ\½çĂæÓ¦ÓĂ\̀áÊ¾´°¿Ú">
-      <UniqueIdentifier>{175e7a37-0969-4787-ac41-b0639ab7ef34}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="½çĂæ\½çĂæÓ¦ÓĂ\̀áÊ¾´°¿Ú">
-      <UniqueIdentifier>{6e535939-95ba-4c06-bb26-637f9da44c81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="½çĂæ\½çĂæÓ¦ÓĂ\̀áÊ¾´°¿Ú">
       <UniqueIdentifier>{e396818b-e605-4f2b-a17c-cd49e7c8cc11}</UniqueIdentifier>
     </Filter>
     <Filter Include="ÆäËü">
@@ -458,6 +449,9 @@
     </ClCompile>
     <ClCompile Include="ErrorCode.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Ui\UiCase\UiRankLienTram.cpp">
+      <Filter>ui\uicase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ui\Elem\AutoLocateWnd.h">
@@ -804,6 +798,10 @@
     </ClInclude>
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Ui\UiCase\UiRankLienTram.h">
+      <Filter>ui\uicase</Filter>
+    </ClInclude>
+    <ClInclude Include="S3ClientConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\Lib\debug\engine.lib">

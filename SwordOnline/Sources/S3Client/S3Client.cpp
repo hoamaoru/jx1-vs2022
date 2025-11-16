@@ -1,4 +1,4 @@
- // S3Client.cpp : Defines the entry point for the application.
+// S3Client.cpp : Defines the entry point for the application.
 //
 
 #include "KWin32.h"
@@ -17,6 +17,7 @@
 #include "Ui/ChatFilter.h"
 #include "Ui/uibase.h"
 #include "ErrorCode.h"
+#include "Ui/UiCase/UiRankLienTram.h"
 
 #define ClientVersion
 KMyApp		MyApp;
@@ -60,6 +61,38 @@ KClientCallback g_ClientCallback;
  */
 #define _private_IS_SPACE(c)   ((c) == ' ' || (c) == '\r' || (c) == '\n' || (c) == '\t' || (c) == 'x')
 #define IS_SPACE(c)	_private_IS_SPACE(c)
+
+// Helper function to show UiRankLienTram sprite
+void ShowLienTramSprite(int nLienTramValue)
+{
+	if (nLienTramValue > 0)
+	{
+		KUiRankLienTram::OpenWindow(nLienTramValue);
+	}
+	else
+	{
+		KUiRankLienTram::CloseWindow(false);
+	}
+}
+
+// Test function to cycle through different LienTram values including 3-digit numbers
+void TestLienTramDisplay()
+{
+	static int testCounter = 0;
+	static int testValue = 1;
+	
+	testCounter++;
+	
+	// Change LienTram value every 3 seconds (assuming 18 FPS)
+	if (testCounter >= (18 * 3)) 
+	{
+		testCounter = 0;
+		ShowLienTramSprite(testValue);
+		
+		testValue++;
+		if (testValue > 15) testValue = 1; // Cycle from 1 to 15 (including multi-digit)
+	}
+}
 
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -345,6 +378,12 @@ BOOL KMyApp::GameLoop()
 	{
 		if (g_pCoreShell->Breathe() && UiHeartBeat())
 		{
+			// Note: UiRankLienTram manages its own timing internally
+			// No need to call Breathe() manually as it's handled by the UI system
+			
+			// Uncomment the line below to test LienTram sprite display
+			// TestLienTramDisplay();
+			
 			m_GameCounter++;
 			int	nElapse = m_Timer.GetElapse();
 			if (nElapse)
@@ -373,6 +412,54 @@ int KMyApp::HandleInput(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	int nRet = 0;
 	if (uMsg != WM_CLOSE)
 	{
+		// Add keyboard handling for testing UiRankLienTram
+		if (uMsg == WM_KEYDOWN)
+		{
+			switch (wParam)
+			{
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+				// Show LienTram sprite for numbers 1-9
+				ShowLienTramSprite(wParam - '0');
+				break;
+			case '0':
+				// Hide LienTram sprite
+				ShowLienTramSprite(0);
+				break;
+			case VK_F1:
+				// Test 2-digit display (12)
+				ShowLienTramSprite(12);
+				break;
+			case VK_F2:
+				// Test 2-digit max (99)
+				ShowLienTramSprite(99);
+				break;
+			case VK_F3:
+				// Test 3-digit display (123)
+				ShowLienTramSprite(123);
+				break;
+			case VK_F4:
+				// Test 3-digit mid (456)
+				ShowLienTramSprite(456);
+				break;
+			case VK_F5:
+				// Test 3-digit max (999)
+				ShowLienTramSprite(999);
+				break;
+			case VK_F6:
+				// Test overflow (1000 -> should cap at 999)
+				ShowLienTramSprite(1000);
+				break;
+			}
+		}
+		
 		UiProcessInput(uMsg, wParam, lParam);
 	}
 	else if (g_bScreen == false && UiIsAlreadyQuit() == false)

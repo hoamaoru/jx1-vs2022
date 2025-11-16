@@ -4257,6 +4257,10 @@ void KProtocolProcess::s2cPlayerSync(BYTE* pMsg)
 	S2C_PLAYER_SYNC *pSync = (S2C_PLAYER_SYNC*)pMsg;
 	switch (pSync->m_wMsgID)
 	{
+		case enumS2C_PLAYERSYNC_ID_SHOW_LIEN_TRAM:
+			CoreDataChanged(GDCNI_SHOW_LIEN_TRAM, *(int*)(&pSync->m_lpBuf), NULL);
+			break;
+
 		case enumS2C_PLAYERSYNC_ID_EXIT:
 			CoreDataChanged(GDCNI_EXIT_GAME, NULL, NULL);
 			break;

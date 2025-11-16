@@ -54,8 +54,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
-    <IntDir>.\Debug\</IntDir>
+    <OutDir>..\..\..\bin\client\debug</OutDir>
+    <IntDir>..\..\..\bin\client\debug</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -196,6 +196,7 @@ copy Release\Game.map ..\..\..\bin\Client\release\Game.map</Command>
     <ClCompile Include="Ui\UiCase\UiLogin.cpp" />
     <ClCompile Include="Ui\UiCase\UiLoginBg.cpp" />
     <ClCompile Include="Ui\UiCase\UiNotice.cpp" />
+    <ClCompile Include="Ui\UiCase\UiRankLienTram.cpp" />
     <ClCompile Include="Ui\UiCase\UiSelServer.cpp" />
     <ClCompile Include="Ui\UiCase\UiChooseFace.cpp" />
     <ClCompile Include="Ui\UiCase\UiContainer.cpp" />
@@ -293,6 +294,7 @@ copy Release\Game.map ..\..\..\bin\Client\release\Game.map</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="S3ClientConfig.h" />
     <ClInclude Include="Ui\Elem\AutoLocateWnd.h" />
     <ClInclude Include="Ui\Elem\ComWindow.h" />
     <ClInclude Include="Ui\Elem\MouseHover.h" />
@@ -329,6 +331,7 @@ copy Release\Game.map ..\..\..\bin\Client\release\Game.map</Command>
     <ClInclude Include="Ui\UiCase\UiLogin.h" />
     <ClInclude Include="Ui\UiCase\UiLoginBg.h" />
     <ClInclude Include="Ui\UiCase\UiNotice.h" />
+    <ClInclude Include="Ui\UiCase\UiRankLienTram.h" />
     <ClInclude Include="Ui\UiCase\UiSelServer.h" />
     <ClInclude Include="Ui\UiCase\UiChooseFace.h" />
     <ClInclude Include="Ui\UiCase\UiContainer.h" />

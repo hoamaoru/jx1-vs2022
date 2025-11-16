@@ -56,7 +56,7 @@
 
 #include "../S3Client.h"
 #include "UiShell.h"
-
+#include "UiCase/UiRankLienTram.h"
 #include "../../Engine/Src/Text.h"
 
 bool UiCloseWndsInGame(bool bAll);
@@ -514,6 +514,9 @@ void CoreDataChangedCallback(unsigned int uDataId, unsigned int uParam, int nPar
 		break;
 	case GDCNI_CHATROOM_LEAVE:
 		KUiChatRoom::Leave();
+		break;
+	case GDCNI_SHOW_LIEN_TRAM:
+		KUiRankLienTram::OpenWindow(uParam);
 		break;
 	}
 }

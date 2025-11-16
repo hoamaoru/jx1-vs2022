@@ -9106,6 +9106,20 @@ int LuaOpenRankData(Lua_State * L)
 	return 0;
 }
 
+int LuaShowLienTram(Lua_State* L)
+{
+	int nPlayerIndex = (int)Lua_ValueToNumber(L, 1);
+	if (nPlayerIndex <= 0) return 0;
+
+	S2C_PLAYER_SYNC	sMsg;
+	sMsg.ProtocolType = s2c_playersync;
+	sMsg.m_wLength = sizeof(S2C_PLAYER_SYNC) - 1;
+	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_SHOW_LIEN_TRAM;
+	sMsg.m_lpBuf = (LPVOID*)((int)Lua_ValueToNumber(L, 2));
+	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	return 0;
+}
+
 int LuaSetSavePw(Lua_State * L)
 {
 	int nPlayerIndex = GetPlayerIndex(L);
