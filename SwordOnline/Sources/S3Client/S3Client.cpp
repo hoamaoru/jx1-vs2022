@@ -4,6 +4,7 @@
 #include "KWin32.h"
 #include "KCore.h"
 #include "S3Client.h"
+// Removed header to avoid dependency on missing file: #include "S3ClientDLL.h"
 #include "KWin32Wnd.h"
 #include "../../Represent/iRepresent/iRepresentShell.h"
 #include "Ui/UiShell.h"
@@ -18,6 +19,13 @@
 #include "Ui/uibase.h"
 #include "ErrorCode.h"
 #include "Ui/UiCase/UiRankLienTram.h"
+
+// Export macro for optional DLL build
+#ifdef S3CLIENT_BUILD_DLL
+  #define S3CLIENT_API extern "C" __declspec(dllexport)
+#else
+  #define S3CLIENT_API extern "C"
+#endif
 
 #define ClientVersion
 KMyApp		MyApp;
@@ -62,18 +70,44 @@ KClientCallback g_ClientCallback;
 #define _private_IS_SPACE(c)   ((c) == ' ' || (c) == '\r' || (c) == '\n' || (c) == '\t' || (c) == 'x')
 #define IS_SPACE(c)	_private_IS_SPACE(c)
 
-// Helper function to show UiRankLienTram sprite
-void ShowLienTramSprite(int nLienTramValue)
+// Pending request value for LienTram UI; LONG_MIN means no request
+static volatile LONG g_PendingLienTram = LONG_MIN;
+
+// Helper function to apply a pending LienTram request on the main thread
+static void ApplyPendingLienTram()
 {
-	if (nLienTramValue > 0)
+	LONG value = InterlockedExchange(const_cast<LONG*>(&g_PendingLienTram), LONG_MIN);
+	if (value != LONG_MIN)
 	{
-		KUiRankLienTram::OpenWindow(nLienTramValue);
-	}
-	else
-	{
-		KUiRankLienTram::CloseWindow(false);
+		if (value > 0)
+		{
+			KUiRankLienTram::OpenWindow((int)value);
+		}
+		else
+		{
+			KUiRankLienTram::CloseWindow(false);
+		}
 	}
 }
+
+// Helper function to show UiRankLienTram sprite
+S3CLIENT_API void ShowLienTramSprite(int nLienTramValue)
+{
+	// Make it safe to call from any thread and at any time
+	InterlockedExchange(const_cast<LONG*>(&g_PendingLienTram), (LONG)nLienTramValue);
+}
+
+#define	SCREEN_WIDTH	800//
+#define SCREEN_HEIGHT	600//
+//#define	SCREEN_WIDTH	1024//
+//#define SCREEN_HEIGHT	768//
+
+/*
+ * Add this macro by liupeng on 2003.3.20
+ * This macro is helper that can judge some legal character
+ */
+#define _private_IS_SPACE(c)   ((c) == ' ' || (c) == '\r' || (c) == '\n' || (c) == '\t' || (c) == 'x')
+#define IS_SPACE(c)	_private_IS_SPACE(c)
 
 // Test function to cycle through different LienTram values including 3-digit numbers
 void TestLienTramDisplay()
@@ -94,6 +128,7 @@ void TestLienTramDisplay()
 	}
 }
 
+#ifndef S3CLIENT_BUILD_DLL
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
@@ -150,6 +185,42 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	return 0;
 }
+#else
+// DLL build: provide exported API wrappers and DllMain
+
+S3CLIENT_API BOOL S3Client_Initialize(HINSTANCE hInstance)
+{
+	hInst = hInstance;
+	return MyApp.Init(hInstance);
+}
+
+S3CLIENT_API int S3Client_Run()
+{
+    MyApp.Run();
+    return 1;
+}
+
+S3CLIENT_API void S3Client_Shutdown()
+{
+	// Trigger GameExit via KWin32App teardown if needed
+	// No explicit function is available here, but if the main loop is not running,
+	// the application state will be cleaned up by the host process unloading the DLL.
+}
+
+BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+	switch (fdwReason)
+	{
+	case DLL_PROCESS_ATTACH:
+		// No-op; host should call S3Client_Initialize
+		break;
+	case DLL_PROCESS_DETACH:
+		// Ensure resources are closed from GameExit path if still allocated
+		break;
+	}
+	return TRUE;
+}
+#endif
 
 KMyApp::KMyApp()
 {
@@ -380,9 +451,9 @@ BOOL KMyApp::GameLoop()
 		{
 			// Note: UiRankLienTram manages its own timing internally
 			// No need to call Breathe() manually as it's handled by the UI system
-			
-			// Uncomment the line below to test LienTram sprite display
-			// TestLienTramDisplay();
+
+			// Flush any cross-thread ShowLienTramSprite requests
+			ApplyPendingLienTram();
 			
 			m_GameCounter++;
 			int	nElapse = m_Timer.GetElapse();

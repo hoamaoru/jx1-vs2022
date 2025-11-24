@@ -5,4 +5,14 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\..\..\bin\client\debug</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">
+    <LocalDebuggerCommand>D:\workspaces\jx1-vs2022\bin\client\debug\Game.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\..\..\bin\client\debug</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNew|Win32'">
+    <LocalDebuggerCommand>D:\workspaces\jx1-vs2022\bin\client\debug\Game.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\..\..\bin\client\debug</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
 </Project>
