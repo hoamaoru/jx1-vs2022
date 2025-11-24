@@ -11,3 +11,4 @@ SwordOnline/Sources/S3Client/config.ini
 SwordOnline/Sources/S3Client/package.ini
 
 /bin/
+/SwordOnline/Sources/.vs
