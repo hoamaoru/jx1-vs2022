@@ -12,3 +12,5 @@ SwordOnline/Sources/S3Client/package.ini
 
 /bin/
 /SwordOnline/Sources/.vs
+/SwordOnline/bin/server
+/SwordOnline/bin/client
