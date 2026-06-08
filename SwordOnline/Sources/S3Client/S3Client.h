@@ -15,6 +15,7 @@ private:
 	KDirectSound		m_Sound;
 	KTimer				m_Timer;
 	DWORD				m_GameCounter;
+	DWORD				m_RenderCounter;
 	KInlinePicSink*		m_pInlinePicSink;
 	
 public:
@@ -34,10 +35,10 @@ struct KClientCallback : public IClientCallback
 	void MSNMessageArrival(char* szSourceName, char* szSendName, const char* pMsgBuff, unsigned short nMsgLength, const char* pItem = 0, bool bSucc = false);
 	void NotifyChannelID(char* ChannelName, DWORD channelid, BYTE cost);
 	void FriendInvite(char* roleName);
-	void AddFriend(char* roleName, BYTE answer);	//Ìí¼ÓºÃÓÑµ½ºÃÓÑ×é
-	void DeleteFriend(char* roleName);	//Ìí¼ÓºÃÓÑµ½ºÃÓÑ×é
-	void FriendStatus(char* roleName, BYTE state);	//ÓÐ¹ØÏµÈËµÄ×´Ì¬,ÕÒµ½µÚÒ»¸öÎªÖ¹
-	void FriendInfo(char* roleName, char* unitName, char* groupName, BYTE state);	//Í¬²½¹ØÏµÈËÊý¾Ý
-	void AddPeople(char* unitName, char* roleName);	//Ìí¼Ó¹ØÏµÈËµ½Ö¸¶¨×é
+	void AddFriend(char* roleName, BYTE answer);	//ï¿½ï¿½ï¿½Óºï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	void DeleteFriend(char* roleName);	//ï¿½ï¿½ï¿½Óºï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	void FriendStatus(char* roleName, BYTE state);	//ï¿½Ð¹ï¿½Ïµï¿½Ëµï¿½×´Ì¬,ï¿½Òµï¿½ï¿½ï¿½Ò»ï¿½ï¿½ÎªÖ¹
+	void FriendInfo(char* roleName, char* unitName, char* groupName, BYTE state);	//Í¬ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	void AddPeople(char* unitName, char* roleName);	//ï¿½ï¿½ï¿½Ó¹ï¿½Ïµï¿½Ëµï¿½Ö¸ï¿½ï¿½ï¿½ï¿½
 };
 #endif

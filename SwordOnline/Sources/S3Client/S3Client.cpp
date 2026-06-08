@@ -33,6 +33,7 @@ CChatFilter g_ChatFilter;
 #define REPRESENT_MODULE_3			"Represent3.dll"
 #define CREATE_REPRESENT_SHELL_FUN	"CreateRepresentShell"
 #define	GAME_FPS			18
+#define	RENDER_FPS			60
 
 struct iRepresentShell*	g_pRepresentShell = NULL;
 struct IInlinePicEngineSink* g_pIInlinePicSink = NULL;
@@ -272,6 +273,7 @@ BOOL KMyApp::GameInit()
 	}
 	
 	m_GameCounter = 0;
+	m_RenderCounter = 0;
 	m_Timer.Start();
 	
 	SetMouseHoverTime(400);
@@ -341,6 +343,8 @@ BOOL KMyApp::GameLoop()
 {
 	static int nGameFps = 0;
 	g_NetConnectAgent.Breathe();
+
+	// Game logic tick: stay at GAME_FPS (18) so gameplay speed is unchanged
 	if (m_GameCounter * 1000 <= m_Timer.GetElapse() * GAME_FPS)
 	{
 		if (g_pCoreShell->Breathe() && UiHeartBeat())
@@ -355,12 +359,14 @@ BOOL KMyApp::GameLoop()
 			return false;
 		}
 	}
-	if (m_GameCounter * 1000 >= m_Timer.GetElapse() * GAME_FPS)
+
+	// Render at RENDER_FPS (60) — decoupled from game logic rate
+	if (m_RenderCounter * 1000 <= m_Timer.GetElapse() * RENDER_FPS)
 	{
 		UiPaint(nGameFps);
-		Sleep(1);
+		m_RenderCounter++;
 	}
-	else if ((m_GameCounter % 8) == 0)
+	else
 	{
 		Sleep(1);
 	}
