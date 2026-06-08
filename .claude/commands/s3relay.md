@@ -1,3 +1,6 @@
+---
+description: Làm việc với module S3Relay — relay+social server, proxy giữa client và GameServer
+---
 Bạn đang làm việc với module **S3Relay** — combined relay+social server. Build ra `bin/server/S3Relay.exe`.
 
 > **Quan trọng:** S3Relay KHÔNG chỉ là TCP proxy. Nó là server lớn tích hợp: relay proxy + chat channels + Tong (bang hội) management + friend list + Berkeley DB storage.

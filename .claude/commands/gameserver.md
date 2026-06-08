@@ -1,3 +1,6 @@
+---
+description: Làm việc với module GameServer — main game server, xử lý toàn bộ game logic
+---
 Bạn đang làm việc với module **GameServer** — main game server, build ra `bin/server/GameServer.exe`.
 
 ## Source folders — Tầng 1: Code của GameServer (sửa trực tiếp ở đây)

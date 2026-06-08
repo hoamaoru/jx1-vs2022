@@ -1,3 +1,6 @@
+---
+description: Làm việc với module Goddess — database server, lưu trữ nhân vật/item/tiến độ
+---
 Bạn đang làm việc với module **Goddess** — database server, lưu trữ toàn bộ dữ liệu nhân vật/item/tiến độ. Build ra `bin/server/Goddess.exe`.
 
 ## Source folders — Tầng 1: Code của Goddess (sửa trực tiếp ở đây)
