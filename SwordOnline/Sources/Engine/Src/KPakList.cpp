@@ -13,21 +13,63 @@
 #include "KIniFile.h"
 #include "KPakList.h"
 #include "crtdbg.h"
+#include <stdio.h>
+
+// Define PAK_LOG_FILENAMES to enable runtime filename logging.
+// Táº¯t logging: comment out dÃ²ng dÆ°á»›i, rebuild.
+#define PAK_LOG_FILENAMES
+
+#ifdef PAK_LOG_FILENAMES
+#include <unordered_set>
+#include <string>
+
+static HANDLE                        s_hPakLogMutex = NULL;
+static FILE*                         s_pPakLogFile  = NULL;
+static std::unordered_set<std::string> s_loggedFiles;
+
+static void PakLog_Init()
+{
+    s_hPakLogMutex = CreateMutexA(NULL, FALSE, NULL);
+    char szPath[MAX_PATH];
+    GetModuleFileNameA(NULL, szPath, MAX_PATH);
+    char* slash = strrchr(szPath, '\\');
+    if (slash) strcpy(slash + 1, "pak_filenames.log");
+    else       strcpy(szPath, "pak_filenames.log");
+    s_pPakLogFile = fopen(szPath, "w");
+}
+
+static void PakLog_Write(const char* pszFileName)
+{
+    if (!s_pPakLogFile) return;
+    WaitForSingleObject(s_hPakLogMutex, INFINITE);
+    if (s_loggedFiles.insert(pszFileName).second)   // second=true chá»‰ khi insert thÃ nh cÃ´ng (chÆ°a cÃ³)
+        fprintf(s_pPakLogFile, "%s\n", pszFileName);
+    ReleaseMutex(s_hPakLogMutex);
+}
+
+static void PakLog_Flush()
+{
+    if (s_pPakLogFile) fflush(s_pPakLogFile);
+}
+#endif // PAK_LOG_FILENAMES
 
 //---------------------------------------------------------------------------
 ENGINE_API KPakList* g_pPakList = NULL;
 
 //---------------------------------------------------------------------------
-// ¹¦ÄÜ:	¹ºÔìº¯Êý
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 //---------------------------------------------------------------------------
 KPakList::KPakList()
 {
 	g_pPakList = this;
 	m_nPakNumber = 0;
+#ifdef PAK_LOG_FILENAMES
+	PakLog_Init();
+#endif
 }
 
 //---------------------------------------------------------------------------
-// ¹¦ÄÜ:	·ÖÔìº¯Êý
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 //---------------------------------------------------------------------------
 KPakList::~KPakList()
 {
@@ -35,20 +77,23 @@ KPakList::~KPakList()
 }
 
 //---------------------------------------------------------------------------
-// ¹¦ÄÜ:	¹Ø±ÕËùÓÐÎÄ¼þ
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 //---------------------------------------------------------------------------
 void KPakList::Close()
 {
 	for (int i = 0; i < m_nPakNumber; i++)
 		delete m_PakFilePtrList[i];
 	m_nPakNumber = 0;
+#ifdef PAK_LOG_FILENAMES
+	PakLog_Flush();
+#endif
 }
 
 //---------------------------------------------------------------------------
-// ¹¦ÄÜ:	ÔÚËùÓÐ°üÖÐÉ¨ÃèÖ¸¶¨ÎÄ¼þ
-// ²ÎÊý:	uId			ÎÄ¼þÃûID
-//			ElemRef		ÓÃÓÚ´æ·Å£¨´«³ö£©ÎÄ¼þÐÅÏ¢
-// ·µ»Ø:	ÊÇ·ñ³É¹¦ÕÒµ½
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½Ð°ï¿½ï¿½ï¿½É¨ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½
+// ï¿½ï¿½ï¿½ï¿½:	uId			ï¿½Ä¼ï¿½ï¿½ï¿½ID
+//			ElemRef		ï¿½ï¿½ï¿½Ú´ï¿½Å£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ï¢
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½Ç·ï¿½É¹ï¿½ï¿½Òµï¿½
 //---------------------------------------------------------------------------
 bool KPakList::FindElemFile(unsigned long uId, XPackElemFileRef& ElemRef)
 {
@@ -65,9 +110,9 @@ bool KPakList::FindElemFile(unsigned long uId, XPackElemFileRef& ElemRef)
 }
 
 //---------------------------------------------------------------------------
-// ¹¦ÄÜ:	°ÑÎÄ¼þÃû×ª»»Îª°üÖÐµÄid
-// ²ÎÊý:	pszFileName	ÎÄ¼þÃû
-// ·µ»Ø:	ÎÄ¼þÃû¶ÔÓ¦µÄ°üÖÐµÄid
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½ï¿½Ðµï¿½id
+// ï¿½ï¿½ï¿½ï¿½:	pszFileName	ï¿½Ä¼ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ä°ï¿½ï¿½Ðµï¿½id
 //---------------------------------------------------------------------------
 unsigned long KPakList::FileNameToId(const char* pszFileName)
 {
@@ -85,16 +130,19 @@ unsigned long KPakList::FileNameToId(const char* pszFileName)
 }
 
 //---------------------------------------------------------------------------
-// ¹¦ÄÜ:	ÔÚËùÓÐ°üÖÐÉ¨ÃèÖ¸¶¨ÎÄ¼þ
-// ²ÎÊý:	pszFileName	ÎÄ¼þÃû
-//			ElemRef	ÓÃÓÚ´æ·Å£¨´«³ö£©ÎÄ¼þÐÅÏ¢
-// ·µ»Ø:	ÊÇ·ñ³É¹¦ÕÒµ½
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½Ð°ï¿½ï¿½ï¿½É¨ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½
+// ï¿½ï¿½ï¿½ï¿½:	pszFileName	ï¿½Ä¼ï¿½ï¿½ï¿½
+//			ElemRef	ï¿½ï¿½ï¿½Ú´ï¿½Å£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ï¢
+// ï¿½ï¿½ï¿½ï¿½:	ï¿½Ç·ï¿½É¹ï¿½ï¿½Òµï¿½
 //---------------------------------------------------------------------------
 bool KPakList::FindElemFile(const char* pszFileName, XPackElemFileRef& ElemRef)
 {
 	bool bFounded = false;
 	if (pszFileName && pszFileName[0])
 	{
+#ifdef PAK_LOG_FILENAMES
+		PakLog_Write(pszFileName);
+#endif
 		char szPackName[128];
 		#ifdef WIN32
 			szPackName[0] = '\\';
@@ -109,9 +157,9 @@ bool KPakList::FindElemFile(const char* pszFileName, XPackElemFileRef& ElemRef)
 }
 
 //--------------------------------------------------------------------
-// ¹¦ÄÜ:	Open package ini file
-// ²ÎÊý:	char* filename
-// ·µ»Ø:	BOOL
+// ï¿½ï¿½ï¿½ï¿½:	Open package ini file
+// ï¿½ï¿½ï¿½ï¿½:	char* filename
+// ï¿½ï¿½ï¿½ï¿½:	BOOL
 //---------------------------------------------------------------------------
 bool KPakList::Open(const char* pPakListFile)
 {
@@ -168,7 +216,7 @@ bool KPakList::Open(const char* pPakListFile)
 	return bResult;
 }
 
-//¶ÁÈ¡°üÄÚµÄ×ÓÎÄ¼þ
+//ï¿½ï¿½È¡ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 int KPakList::ElemFileRead(XPackElemFileRef& ElemRef,
 					void* pBuffer, unsigned uSize)
 {
@@ -177,7 +225,7 @@ int KPakList::ElemFileRead(XPackElemFileRef& ElemRef,
 	return 0;
 }
 
-//¶ÁÈ¡sprÎÄ¼þÍ·²¿»òÕû¸öspr
+//ï¿½ï¿½È¡sprï¿½Ä¼ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½spr
 SPRHEAD* KPakList::GetSprHeader(XPackElemFileRef& ElemRef, SPROFFS*& pOffsetTable)
 {
 	if (ElemRef.nPackIndex >= 0 && ElemRef.nPackIndex < m_nPakNumber)
@@ -185,7 +233,7 @@ SPRHEAD* KPakList::GetSprHeader(XPackElemFileRef& ElemRef, SPROFFS*& pOffsetTabl
 	return NULL;
 }
 
-//¶ÁÈ¡°´Ö¡Ñ¹ËõµÄsprµÄÒ»Ö¡µÄÊý¾Ý
+//ï¿½ï¿½È¡ï¿½ï¿½Ö¡Ñ¹ï¿½ï¿½ï¿½ï¿½sprï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 SPRFRAME* KPakList::GetSprFrame(int nPackIndex, SPRHEAD* pSprHeader, int nFrame)
 {
 	if (nPackIndex >= 0 && nPackIndex < m_nPakNumber)
