@@ -1,3 +1,6 @@
+---
+description: Làm việc với module S3Client — game client chính, build ra Game.exe
+---
 Bạn đang làm việc với module **S3Client** — game client chính, build ra `bin/client/Game.exe`.
 
 ## Source folders — Tầng 1: Code của S3Client (sửa trực tiếp ở đây)

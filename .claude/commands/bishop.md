@@ -1,3 +1,6 @@
+---
+description: Làm việc với module Bishop — cluster manager, giám sát và điều phối tất cả servers
+---
 Bạn đang làm việc với module **Bishop** — cluster manager, giám sát và điều phối tất cả servers. Build ra `bin/server/Bishop.exe`.
 
 ## Source folders — Tầng 1: Code của Bishop (sửa trực tiếp ở đây)

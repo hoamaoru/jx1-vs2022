@@ -1,3 +1,6 @@
+---
+description: Làm việc với module Sword3PaySys — account server và payment system
+---
 Bạn đang làm việc với module **Sword3PaySys (S3AccServer)** — account server và payment system. Build ra `bin/server/Sword3PaySys.exe`.
 
 ## Source folders — Tầng 1: Code của Sword3PaySys (sửa trực tiếp ở đây)
