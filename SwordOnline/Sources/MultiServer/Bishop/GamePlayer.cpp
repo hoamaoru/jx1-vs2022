@@ -1591,7 +1591,7 @@ bool CGamePlayer::_CreateNewPlayer_ToDBRole( const char *pRoleName,
 		return false;
 	}
 
-	size_t datalength = 0;
+	unsigned int datalength = 0;
 
 	CPlayerCreator::ROLEPARAM	RP;
 

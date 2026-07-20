@@ -50,6 +50,7 @@ static WORD preSC[64] = {
 //---------------------------------------------------------------------------
 void jpeg_idct_mmx(short* buf)
 {
+#if defined(_M_IX86)
 	__asm
 	{
 		lea	ecx, [preSC];
@@ -937,5 +938,8 @@ void jpeg_idct_mmx(short* buf)
 		
 		emms;
 	}
+#else
+	jpeg_idct_2d(buf);
+#endif
 }
 //---------------------------------------------------------------------------

@@ -125,7 +125,7 @@ ENGINE_API void g_MemFree(LPVOID lpMem)
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemCopy(PVOID lpDest, PVOID lpSrc, DWORD dwLen)
 {	
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -152,7 +152,7 @@ ENGINE_API void g_MemCopy(PVOID lpDest, PVOID lpSrc, DWORD dwLen)
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemCopyMmx(PVOID lpDest, PVOID lpSrc, DWORD dwLen)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -193,7 +193,7 @@ loc_copy_mmx2:
 //---------------------------------------------------------------------------
 ENGINE_API BOOL g_MemComp(PVOID lpDest, PVOID lpSrc, DWORD dwLen)
 {	
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -227,7 +227,7 @@ loc_not_equal:
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, BYTE byFill)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -257,8 +257,8 @@ ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, BYTE byFill)
 // ·µ»Ø:	void
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, WORD wFill)
-{	
-#ifdef WIN32
+{
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -275,7 +275,12 @@ ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, WORD wFill)
 		rep     stosw
 	}
 #else
-     memset(lpDest, wFill & 0xff, dwLen);
+     // dwLen here is a WORD count (not byte count) -- matches the asm
+     // above exactly (fills dwLen 16-bit units with the wFill pattern).
+     WORD *ptr = (WORD *)lpDest;
+     DWORD i;
+     for (i = 0; i < dwLen; i++)
+         ptr[i] = wFill;
 #endif
 }
 //---------------------------------------------------------------------------
@@ -287,8 +292,8 @@ ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, WORD wFill)
 // ·µ»Ø:	void
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, DWORD dwFill)
-{	
-#ifdef WIN32
+{
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -297,7 +302,12 @@ ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, DWORD dwFill)
 		rep     stosd
 	}
 #else
-     memset(lpDest, dwFill & 0xff, dwLen);
+     // dwLen here is a DWORD count (not byte count) -- matches the asm
+     // above exactly (fills dwLen 32-bit units with the dwFill pattern).
+     DWORD *ptr = (DWORD *)lpDest;
+     DWORD i;
+     for (i = 0; i < dwLen; i++)
+         ptr[i] = dwFill;
 #endif
 }
 //---------------------------------------------------------------------------
@@ -309,7 +319,7 @@ ENGINE_API void g_MemFill(PVOID lpDest, DWORD dwLen, DWORD dwFill)
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemZero(PVOID lpDest, DWORD dwLen)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		ecx, dwLen
@@ -336,7 +346,7 @@ ENGINE_API void g_MemZero(PVOID lpDest, DWORD dwLen)
 //---------------------------------------------------------------------------
 ENGINE_API void g_MemXore(PVOID lpDest, DWORD dwLen, DWORD dwXor)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpDest
@@ -353,10 +363,13 @@ loc_xor_loop:
 loc_xor_exit:
 	}
 #else
-     unsigned long *ptr = (unsigned long *)lpDest;
-     while((long)dwLen > 0) {
-       *ptr++ ^= dwXor;
-       dwLen -= sizeof(unsigned long);
-     }
+     // dwLen is a byte count, but (matching the asm above exactly) only
+     // whole dwords are XORed -- dwLen bytes not divisible by 4 leave a
+     // 0-3 byte remainder untouched.
+     DWORD *ptr = (DWORD *)lpDest;
+     DWORD count = dwLen >> 2;
+     DWORD i;
+     for (i = 0; i < count; i++)
+         ptr[i] ^= dwXor;
 #endif
 }

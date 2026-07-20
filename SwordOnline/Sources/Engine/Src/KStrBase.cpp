@@ -13,7 +13,7 @@
 #include <string.h>
 ENGINE_API int g_StrLen(LPCSTR lpStr)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	register int nLen;
 
 	__asm
@@ -39,7 +39,7 @@ ENGINE_API int g_StrLen(LPCSTR lpStr)
 //---------------------------------------------------------------------------
 ENGINE_API LPSTR g_StrEnd(LPCSTR lpStr)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	register LPSTR lpEnd;
 
 	__asm
@@ -65,7 +65,7 @@ ENGINE_API LPSTR g_StrEnd(LPCSTR lpStr)
 //---------------------------------------------------------------------------
 ENGINE_API void g_StrCpy(LPSTR lpDest, LPCSTR lpSrc)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		edi, lpSrc
@@ -96,7 +96,7 @@ ENGINE_API void g_StrCpy(LPSTR lpDest, LPCSTR lpSrc)
 //---------------------------------------------------------------------------
 ENGINE_API void g_StrCpyLen(LPSTR lpDest, LPCSTR lpSrc, int nMaxLen)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		xor		al, al
@@ -130,11 +130,21 @@ loc_little_equal:
 		and		ecx, 3
 		rep		movsb
 		stosb
-		
+
 finished:
 	};
 #else
-    strncpy(lpDest, lpSrc, nMaxLen);
+    // Not equivalent to strncpy (which pads with extra NULs and may not
+    // NUL-terminate) -- matches the asm above exactly: copies at most
+    // nMaxLen-1 bytes of lpSrc and always NUL-terminates lpDest.
+    if (nMaxLen > 0)
+    {
+        size_t nLen = strlen(lpSrc);
+        if ((int)nLen > nMaxLen - 1)
+            nLen = nMaxLen - 1;
+        memcpy(lpDest, lpSrc, nLen);
+        lpDest[nLen] = '\0';
+    }
 #endif
 }
 //---------------------------------------------------------------------------
@@ -213,7 +223,7 @@ ENGINE_API BOOL g_StrCmpLen(LPCSTR lpDest, LPCSTR lpSrc, int nMaxLen)
 //---------------------------------------------------------------------------
 ENGINE_API void g_StrUpper(LPSTR lpDest)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		esi, lpDest
@@ -247,7 +257,7 @@ loc_exit:
 //---------------------------------------------------------------------------
 ENGINE_API void g_StrLower(LPSTR lpDest)
 {
-#ifdef WIN32
+#if defined(WIN32) && defined(_M_IX86)
 	__asm
 	{
 		mov		esi, lpDest

@@ -196,12 +196,12 @@ struct iCoreServerShell
 	virtual void RecoverPlayerExchange(int nIndex) = 0;
 	virtual int  AddCharacter(int nExtPoint, int nChangeExtPoint, void* pBuffer, GUID* pGuid) = 0;
 	//向游戏发送操作
-	virtual int	 OperationRequest(unsigned int uOper, unsigned int uParam, int nParam) = 0;
+	virtual int	 OperationRequest(unsigned int uOper, UINT_PTR uParam, INT_PTR nParam) = 0;
 	//获取连接状况
 	virtual int	 GetConnectInfo(KCoreConnectInfo* pInfo) = 0;
 //	virtual	BOOL ValidPingTime(int nIndex) = 0;
 	//从游戏世界获取数据
-	virtual int	 GetGameData(unsigned int uDataId, unsigned int uParam, int nParam) = 0;
+	virtual int	 GetGameData(unsigned int uDataId, UINT_PTR uParam, INT_PTR nParam) = 0;
 	//日常活动，core如果要寿终正寝则返回0，否则返回非0值
 	virtual int  Breathe() = 0;
 	//释放接口对象

@@ -94,6 +94,7 @@ BOOL jpeg_decode_init(BOOL bRGB555, BOOL bMMXCPU)
 //---------------------------------------------------------------------------
 void Y2RGB(WORD *bmppixel, int pitch)
 {
+#if defined(_M_IX86)
 	__asm
 	{
 		xor eax,eax;
@@ -118,6 +119,25 @@ _loop:
 		dec edx;
 		jnz _loop;
 	}
+#else
+	// Portable equivalent of the x86 asm above (same lodsb/stosw walk:
+	// read a byte from jpeg_ybuf, bias by 0x80, index into jpeg_Y, write
+	// the resulting WORD, advance dest by `pitch` bytes per 8-pixel row).
+	unsigned char *src = (unsigned char *)jpeg_ybuf;
+	unsigned char *rowDst = (unsigned char *)bmppixel;
+	int row, col;
+
+	for (row = 0; row < 8; row++)
+	{
+		WORD *dst = (WORD *)rowDst;
+		for (col = 0; col < 8; col++)
+		{
+			unsigned char al = (unsigned char)(*src++ + 0x80);
+			*dst++ = jpeg_Y[al >> 2];
+		}
+		rowDst += pitch;
+	}
+#endif
 }
 //---------------------------------------------------------------------------
 // º¯Êý:	YCbCr411_565
@@ -135,6 +155,7 @@ void YCbCr411_565(WORD *bmppixel,int pitch)
 {
 	signed char *CrBuf,*CbBuf,*YBuf;
 	int n = 4;
+#if defined(_M_IX86)
 
 	__asm
 	{
@@ -381,6 +402,9 @@ _loop_cb_1:
 _end:
 		emms;
 	}
+#else
+	YCbCr411_nommx(bmppixel, pitch);
+#endif
 }
 //---------------------------------------------------------------------------
 // º¯Êý:	YCbCr411_555
@@ -393,6 +417,7 @@ void YCbCr411_555(WORD *bmppixel,int pitch)
 {
 	signed char *CrBuf,*CbBuf,*YBuf;
 	int n=4;
+#if defined(_M_IX86)
 
 	__asm
 	{
@@ -634,6 +659,9 @@ _loop_cb_1:
 _end:
 		emms;
 	}
+#else
+	YCbCr411_nommx(bmppixel, pitch);
+#endif
 }
 //---------------------------------------------------------------------------
 // º¯Êý:	RGB16_555
@@ -644,6 +672,7 @@ _end:
 WORD RGB16_555(signed char Y,signed char r,signed char g,signed char b)
 {
 	unsigned short result;
+#if defined(_M_IX86)
 	__asm
 	{
 		movsx dx,byte ptr Y;
@@ -685,6 +714,25 @@ _cx_7f:
 		or ax,cx;
 		mov result,ax;
 	}
+#else
+	// Portable equivalent of the x86 asm above.
+	{
+		int dx = ((int)Y + 128) >> 1;
+		int ax = (int)r + dx;
+		int bx = (int)g + dx;
+		int cx = (int)b + dx;
+
+		if (ax < 0) ax = 0; else if (ax & 0xff80) ax = 0x7f;
+		if (bx < 0) bx = 0; else if (bx & 0xff80) bx = 0x7f;
+		if (cx < 0) cx = 0; else if (cx & 0xff80) cx = 0x7f;
+
+		ax = (ax << 8) & 0x7c00;
+		bx = (bx << 3) & 0x3e0;
+		cx = cx >> 2;
+
+		result = (unsigned short)(ax | bx | cx);
+	}
+#endif
 	return result;
 }
 //---------------------------------------------------------------------------
@@ -696,6 +744,7 @@ _cx_7f:
 WORD RGB16_565(signed char Y,signed char r,signed char g,signed char b)
 {
 	unsigned short result;
+#if defined(_M_IX86)
 	__asm {
 		movsx dx,byte ptr Y;
 		movsx ax,byte ptr r;
@@ -736,6 +785,25 @@ _cx_7f:
 		or ax,cx;
 		mov result,ax;
 		}
+#else
+	// Portable equivalent of the x86 asm above.
+	{
+		int dx = ((int)Y + 128) >> 1;
+		int ax = (int)r + dx;
+		int bx = (int)g + dx;
+		int cx = (int)b + dx;
+
+		if (ax < 0) ax = 0; else if (ax & 0xff80) ax = 0x7f;
+		if (bx < 0) bx = 0; else if (bx & 0xff80) bx = 0x7f;
+		if (cx < 0) cx = 0; else if (cx & 0xff80) cx = 0x7f;
+
+		ax = (ax << 9) & 0xf800;
+		bx = (bx << 4) & 0x7e0;
+		cx = cx >> 2;
+
+		result = (unsigned short)(ax | bx | cx);
+	}
+#endif
 	return result;
 }
 //---------------------------------------------------------------------------

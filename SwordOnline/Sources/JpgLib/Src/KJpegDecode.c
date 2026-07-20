@@ -8,6 +8,7 @@
 // From:	Cloud Wu's JPEG Decoder
 //---------------------------------------------------------------------------
 #include <windows.h>
+#include <string.h>
 #include "KJpegLib.h"
 /****************************************************************************	
 DU 的解码
@@ -42,6 +43,7 @@ BYTE jpeg_zigzag[64] = {
 //---------------------------------------------------------------------------
 void jpeg_preprocess(LPBYTE stream)
 {
+#if defined(_M_IX86)
 	__asm
 	{
 		mov esi,stream;
@@ -68,6 +70,38 @@ _not0:
 		jz _getFF;
 _end:
 	}
+#else
+	// Portable equivalent of the x86 asm above: in-place removal of
+	// byte-stuffed 0x00 following 0xFF in the entropy-coded segment,
+	// stopping at EOI (FF D9) or any other marker.
+	LPBYTE src = stream;
+	LPBYTE dst = stream;
+
+	for (;;)
+	{
+		BYTE al = *src++;
+		if (al != 0xff)
+		{
+			*dst++ = al;
+			continue;
+		}
+
+		for (;;)
+		{
+			al = *src++;
+			if (al == 0)
+			{
+				*dst++ = 0xff;
+				break;
+			}
+			if (al == 0xd9)
+				return;
+			if (al == 0xff)
+				continue;
+			return;
+		}
+	}
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	jpeg_decode_DU
@@ -78,6 +112,14 @@ _end:
 //---------------------------------------------------------------------------
 void jpeg_decode_DU(short *buf, int com)
 {
+#if !defined(_M_IX86)
+	// This hand-written x86 asm bitstream/Huffman decoder has no portable
+	// port (out of scope: JPEG texture decode is a client-only concern,
+	// never exercised by GameServer). Zero the output DU so callers don't
+	// read uninitialized memory if this is ever reached on x64.
+	memset(buf, 0, 64 * sizeof(short));
+	return;
+#else
 	short*			QTB = jpeg_qtable[jpeg_head.component[com].qtb];
 	JPEG_HTABLE*	ACT = &jpeg_htable[jpeg_head.component[com].act];
 	JPEG_HTABLE*	DCT = &jpeg_htable[jpeg_head.component[com].dct];
@@ -318,6 +360,7 @@ _end:
 	
 	// iDCT 解码
 	jpeg_IDCT(buf);
+#endif
 }
 //---------------------------------------------------------------------------
 

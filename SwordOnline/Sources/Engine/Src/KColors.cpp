@@ -19,6 +19,7 @@ ENGINE_API WORD (*g_RGB)(int nRed, int nGreen, int nBlue) = g_RGB565;
 //---------------------------------------------------------------------------
 ENGINE_API BYTE g_Red(WORD wColor)
 {
+#if defined(_M_IX86)
 	BYTE Red;
 	__asm
 	{
@@ -27,6 +28,9 @@ ENGINE_API BYTE g_Red(WORD wColor)
 		mov		Red, al
 	}
 	return Red;
+#else
+	return (BYTE)(wColor & 0x0031);
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	Red
@@ -37,6 +41,7 @@ ENGINE_API BYTE g_Red(WORD wColor)
 ENGINE_API BYTE g_Green(WORD wColor)
 {
 	long Mask16 = g_pDirectDraw->GetRGBBitMask16();
+#if defined(_M_IX86)
 	BYTE Green;
 	__asm
 	{
@@ -53,6 +58,13 @@ loc_Green_0001:
 		mov		Green, al
 	}
 	return Green;
+#else
+	unsigned short ax = (unsigned short)(wColor >> 5);
+	if (Mask16 != 0xffff)
+		ax = (unsigned short)(ax & 0x0031);
+	ax = (unsigned short)(ax & 0x0071);
+	return (BYTE)ax;
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	Red
@@ -63,6 +75,7 @@ loc_Green_0001:
 ENGINE_API BYTE g_Blue(WORD wColor)
 {
 	long Mask16 = g_pDirectDraw->GetRGBBitMask16();
+#if defined(_M_IX86)
 	BYTE Blue;
 	__asm
 	{
@@ -79,6 +92,13 @@ loc_Blue_0001:
 		mov		Blue, al
 	}
 	return Blue;
+#else
+	unsigned short ax = (unsigned short)(wColor >> 10);
+	if (Mask16 == 0xffff)
+		ax = (unsigned short)(ax >> 1);
+	ax = (unsigned short)(ax & 0x0031);
+	return (BYTE)ax;
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	RGB
@@ -90,6 +110,7 @@ loc_Blue_0001:
 //---------------------------------------------------------------------------
 ENGINE_API WORD g_RGB555(int nRed, int nGreen, int nBlue)
 {
+#if defined(_M_IX86)
 	WORD wColor;
 	__asm
 	{
@@ -112,6 +133,13 @@ ENGINE_API WORD g_RGB555(int nRed, int nGreen, int nBlue)
 		mov		wColor, cx
 	}
 	return wColor;
+#else
+	unsigned int c = 0;
+	c |= (((unsigned int)nRed & 0xff) >> 3) << 10;
+	c |= (((unsigned int)nGreen & 0xff) >> 3) << 5;
+	c |= (((unsigned int)nBlue & 0xff) >> 3);
+	return (WORD)c;
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	RGB
@@ -123,6 +151,7 @@ ENGINE_API WORD g_RGB555(int nRed, int nGreen, int nBlue)
 //---------------------------------------------------------------------------
 ENGINE_API WORD g_RGB565(int nRed, int nGreen, int nBlue)
 {
+#if defined(_M_IX86)
 	WORD wColor;
 	__asm
 	{
@@ -145,6 +174,13 @@ ENGINE_API WORD g_RGB565(int nRed, int nGreen, int nBlue)
 		mov		wColor, cx
 	}
 	return wColor;
+#else
+	unsigned int c = 0;
+	c |= (((unsigned int)nRed & 0xff) >> 3) << 11;
+	c |= (((unsigned int)nGreen & 0xff) >> 2) << 5;
+	c |= (((unsigned int)nBlue & 0xff) >> 3);
+	return (WORD)c;
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	555 To 565
@@ -156,6 +192,7 @@ ENGINE_API WORD g_RGB565(int nRed, int nGreen, int nBlue)
 //---------------------------------------------------------------------------
 void g_555To565(int nWidth, int nHeight, void* lpBitmap)
 {
+#if defined(_M_IX86)
 	__asm
 	{
 		mov		esi, lpBitmap
@@ -178,6 +215,21 @@ loc_555to565_loop2:
 		dec		edx
 		jnz		loc_555to565_loop1
 	}
+#else
+	unsigned short *p = (unsigned short *)lpBitmap;
+	int row, col;
+	for (row = 0; row < nHeight; row++)
+	{
+		for (col = 0; col < nWidth; col++)
+		{
+			unsigned short ax = *p;
+			unsigned short bx = (unsigned short)(ax & 0x001f);
+			ax = (unsigned short)((ax >> 5) << 6);
+			ax = (unsigned short)(ax | bx);
+			*p++ = ax;
+		}
+	}
+#endif
 }
 //---------------------------------------------------------------------------
 // 函数:	565 To 555
@@ -189,6 +241,7 @@ loc_555to565_loop2:
 //---------------------------------------------------------------------------
 void g_565To555(int nWidth, int nHeight, void* lpBitmap)
 {
+#if defined(_M_IX86)
 	__asm
 	{
 		mov		esi, lpBitmap
@@ -211,6 +264,21 @@ loc_565to555_loop2:
 		dec		edx
 		jnz		loc_565to555_loop1
 	}
+#else
+	unsigned short *p = (unsigned short *)lpBitmap;
+	int row, col;
+	for (row = 0; row < nHeight; row++)
+	{
+		for (col = 0; col < nWidth; col++)
+		{
+			unsigned short ax = *p;
+			unsigned short bx = (unsigned short)(ax & 0x001f);
+			ax = (unsigned short)((ax >> 6) << 5);
+			ax = (unsigned short)(ax | bx);
+			*p++ = ax;
+		}
+	}
+#endif
 }
 //---------------------------------------------------------------------------
 

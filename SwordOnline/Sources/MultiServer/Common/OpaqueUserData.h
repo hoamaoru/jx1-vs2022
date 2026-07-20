@@ -14,18 +14,6 @@
 #endif
 
 /*
- * Define Win64 interfaces if not already defined
- */
-
-/*
- * InterlockedExchangePointer
- */
-#ifndef InterlockedExchangePointer
-	#define InterlockedExchangePointer(Target, Value) \
-		(PVOID)InterlockedExchange((PLONG)(Target), (LONG)(Value))
-#endif 
-
-/*
  * namespace OnlineGameLib
  */
 
@@ -52,12 +40,12 @@ public:
 		InterlockedExchangePointer( &m_pUserData, pData );
 	}
 	
-	unsigned long GetUserData() const
+	ULONG_PTR GetUserData() const
 	{
-		return reinterpret_cast<unsigned long>( GetUserPtr() );
+		return reinterpret_cast<ULONG_PTR>( GetUserPtr() );
 	}
-	
-	void SetUserData( unsigned long data )
+
+	void SetUserData( ULONG_PTR data )
 	{
 		SetUserPtr( reinterpret_cast<void *>( data ) );
 	}

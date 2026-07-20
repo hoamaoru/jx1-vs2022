@@ -73,12 +73,12 @@ public:
 	void RecoverPlayerExchange(int nIndex);
 	int  AddCharacter(int nExtPoint, int nChangeExtPoint, void* pBuffer, GUID* pGuid);
 	//����Ϸ���Ͳ���
-	int	 OperationRequest(unsigned int uOper, unsigned int uParam, int nParam);
+	int	 OperationRequest(unsigned int uOper, UINT_PTR uParam, INT_PTR nParam);
 	//��ȡ����״��
 	int	 GetConnectInfo(KCoreConnectInfo* pInfo);
 	//BOOL ValidPingTime(int nIndex);
 	//����Ϸ�����ȡ����
-	int	 GetGameData(unsigned int uDataId, unsigned int uParam, int nParam);
+	int	 GetGameData(unsigned int uDataId, UINT_PTR uParam, INT_PTR nParam);
 	//�ճ����core���Ҫ���������򷵻�0�����򷵻ط�0ֵ
 	int  Breathe();
 	//�ͷŽӿڶ���
@@ -237,7 +237,7 @@ void CoreServerShell::RemoveQuitingPlayer(int nIndex)
 //		  int nParam --> ����uDataId��ȡֵ�������
 //	���أ�����uDataId��ȡֵ���������
 //--------------------------------------------------------------------------
-int	CoreServerShell::GetGameData(unsigned int uDataId, unsigned int uParam, int nParam)
+int	CoreServerShell::GetGameData(unsigned int uDataId, UINT_PTR uParam, INT_PTR nParam)
 {
 	int nRet = 0;
 	switch(uDataId)
@@ -958,7 +958,7 @@ int	CoreServerShell::GetGameData(unsigned int uDataId, unsigned int uParam, int 
 //		  int nParam --> ����uOperId��ȡֵ�������
 //	���أ�����ɹ����Ͳ������󣬺������ط�0ֵ�����򷵻�0ֵ��
 //--------------------------------------------------------------------------
-int	CoreServerShell::OperationRequest(unsigned int uOper, unsigned int uParam, int nParam)
+int	CoreServerShell::OperationRequest(unsigned int uOper, UINT_PTR uParam, INT_PTR nParam)
 {
 	int nRet = 1;
 	switch(uOper)

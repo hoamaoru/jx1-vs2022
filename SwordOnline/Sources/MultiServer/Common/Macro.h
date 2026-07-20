@@ -31,11 +31,11 @@
 	void _trace(char *fmt, ...);
 
 	#ifndef ASSERT
-		#define ASSERT(x) { if ( !( x ) ) _asm{ int 0x03 } }
+		#define ASSERT(x) { if ( !( x ) ) __debugbreak(); }
 	#endif
 
 	#ifndef VERIFY
-	#define VERIFY(x) { if ( !( x ) ) _asm{ int 0x03 } }
+	#define VERIFY(x) { if ( !( x ) ) __debugbreak(); }
 	#endif
 //}
 #else

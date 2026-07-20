@@ -18,7 +18,7 @@ bool CDBDump::Open(char* aFilePath)
 	if(m_IsOpened)return false;
 
 	_finddata_t FindData;
-	long aFileFound =_findfirst(aFilePath, &FindData);
+	intptr_t aFileFound =_findfirst(aFilePath, &FindData);
 	if(aFileFound != -1)return false;	//如果该文件存在就返回不成功
 
 	m_output = fopen(aFilePath, "wb");
@@ -83,7 +83,7 @@ bool CDBLoad::Open(char* aFilePath)
 {//打开包文件
 	if(m_IsOpened)return false;
 	_finddata_t FindData;
-	long aFileFound =_findfirst(aFilePath, &FindData);
+	intptr_t aFileFound =_findfirst(aFilePath, &FindData);
 	if(aFileFound == -1)return false;	//如果该文件不存在就返回不成功
 
 	m_output = fopen(aFilePath, "rb");

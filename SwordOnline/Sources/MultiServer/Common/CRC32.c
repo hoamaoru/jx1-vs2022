@@ -218,7 +218,9 @@ unsigned CRC32_C(unsigned CRC, const void *pvBuf, int nLen)
 //unsigned CRC32_ASM(unsigned CRC, const void *pvBuf, int nLen)
 unsigned CRC32(unsigned CRC, const void *pvBuf, int nLen)
 {
-#ifndef WIN32
+#if !defined(WIN32) || !defined(_M_IX86)
+    // Non-x86 targets (e.g. x64) can't use the __asm block below --
+    // CRC32_C computes the identical result via the same CRC_Table.
 	return CRC32_C(CRC, pvBuf, nLen);
 #else
     unsigned RetCode = 0;

@@ -53,13 +53,13 @@ typedef struct {
 #pragma pack (pop)	// packgiá trị xuất hiện
 //---------------------------------------------------------------------------
 #define READ_BYTE(stream) (*stream++)
+// Reads a big-endian 16-bit value from the byte stream and advances it by 2
+// (portable equivalent of the original x86 `lodsw` + `xchg al,ah` asm).
 #define READ_WORD(a,stream) \
-	__asm mov esi,stream	\
-	__asm xor eax,eax		\
-	__asm lodsw				\
-    __asm xchg al,ah		\
-	__asm mov a,ax			\
-	__asm mov stream,esi
+	do { \
+		(a) = (WORD)(((stream)[0] << 8) | (stream)[1]); \
+		(stream) += 2; \
+	} while (0)
 //---------------------------------------------------------------------------
 // decode vars
 extern PBYTE		jpeg_stream;

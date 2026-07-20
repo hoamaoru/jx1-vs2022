@@ -21,6 +21,14 @@
       <Configuration>Template</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Server Debug|x64">
+      <Configuration>Server Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Server Release|x64">
+      <Configuration>Server Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName>"$/SwordOnline/Sources/Core", FPAAAAAA</SccProjectName>
@@ -57,6 +65,18 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -79,6 +99,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">
     <OutDir>.\ClientDebug\</OutDir>
@@ -98,6 +126,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">
     <OutDir>.\ServerRelease\</OutDir>
     <IntDir>.\ServerRelease\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">
+    <OutDir>.\x64\ServerDebug\</OutDir>
+    <IntDir>.\x64\ServerDebug\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">
+    <OutDir>.\x64\ServerRelease\</OutDir>
+    <IntDir>.\x64\ServerRelease\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">
@@ -331,6 +369,115 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;lualibdll.lib;Ws2_32.lib;Winmm.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level2</WarningLevel>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalIncludeDirectories>..\engine\src;..\engine\include;..\Network;..\..\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_SERVER;WIN32;_WINDOWS;_USRDLL;CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\x64\ServerDebug\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\x64\ServerDebug\Core.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>KCore.h</PrecompiledHeaderFile>
+      <ObjectFileName>.\x64\ServerDebug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\x64\ServerDebug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>md ..\..\..\bin\server\x64\debug
+copy x64\ServerDebug\CoreServer.dll ..\..\..\bin\server\x64\Coreserver.dll
+copy x64\ServerDebug\CoreServer.dll ..\..\..\bin\server\x64\debug\Coreserver.dll
+
+md ..\..\lib\x64\debug
+copy x64\ServerDebug\CoreServer.lib ..\..\lib\x64\debug\CoreServer.lib</Command>
+    </PostBuildEvent>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\x64\ServerDebug\Core.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\x64\ServerDebug\Core.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib;msvcrt.lib;libcd.lib;msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <OutputFile>x64\ServerDebug\CoreServer.dll</OutputFile>
+      <ImportLibrary>.\x64\ServerDebug\CoreServer.lib</ImportLibrary>
+      <AdditionalLibraryDirectories>../../lib/x64/debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\..\Lib\x64\debug\lualibdll.lib;Ws2_32.lib;Winmm.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level2</WarningLevel>
+      <AdditionalIncludeDirectories>..\engine\src;..\engine\include;..\Network;..\..\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_SERVER;WIN32;_WINDOWS;_USRDLL;CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\x64\ServerRelease\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\x64\ServerRelease\Core.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>KCore.h</PrecompiledHeaderFile>
+      <ObjectFileName>.\x64\ServerRelease\</ObjectFileName>
+      <ProgramDataBaseFileName>.\x64\ServerRelease\</ProgramDataBaseFileName>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>md ..\..\..\bin\server\x64\release
+md ..\..\lib\x64\release
+copy x64\ServerRelease\CoreServer.dll ..\..\..\bin\server\x64\Coreserver.dll
+copy x64\ServerRelease\CoreServer.dll ..\..\..\bin\server\x64\release\Coreserver.dll
+copy x64\ServerRelease\CoreServer.pdb ..\..\..\bin\server\x64\release\Coreserver.pdb
+copy x64\ServerRelease\CoreServer.lib ..\..\lib\x64\release\CoreServer.lib</Command>
+    </PostBuildEvent>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\x64\ServerRelease\Core.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0804</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\x64\ServerRelease\Core.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OutputFile>x64\ServerRelease\CoreServer.dll</OutputFile>
+      <ImportLibrary>.\x64\ServerRelease\CoreServer.lib</ImportLibrary>
+      <AdditionalLibraryDirectories>../../lib/x64/release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\..\Lib\x64\release\lualibdll.lib;Ws2_32.lib;Winmm.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\KPartnerSkill.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
@@ -366,6 +513,7 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
     <ClCompile Include="Src\Skill.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Src\KFaction.cpp">
@@ -529,8 +677,10 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\KScriptValueSet.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
@@ -545,19 +695,25 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
     </ClCompile>
     <ClCompile Include="Src\CoreShell.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\KIpotBranch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">Use</PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\KIpotLeaf.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\KIpoTree.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">
@@ -566,18 +722,24 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\KScenePlaceC.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\KScenePlaceRegionC.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\KWeather.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
@@ -585,23 +747,31 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
     <ClCompile Include="Src\Scene\SceneMath.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">Use</PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\Scene\ScenePlaceMapC.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\CoreDrawGameObj.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\ImgRef.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Src\KMagicDesc.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
@@ -637,6 +807,10 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'"> /LD   /LD </AdditionalOptions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">KCore.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">KCore.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">KCore.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -711,7 +885,9 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
     <ClInclude Include="Src\LuaFuns.h" />
     <ClInclude Include="Src\CoreObjGenreDef.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\CoreServerDataDef.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">true</ExcludedFromBuild>
@@ -723,56 +899,79 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
     </ClInclude>
     <ClInclude Include="Src\CoreShell.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\CoreUseNameDef.h" />
     <ClInclude Include="Src\GameDataDef.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\KIndexNode.h" />
     <ClInclude Include="Src\MsgGenreDef.h" />
     <ClInclude Include="..\..\Lib\S3DBInterface.h" />
     <ClInclude Include="Src\Scene\KIpotBranch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\KIpotLeaf.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\KIpoTree.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\KScenePlaceC.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\KScenePlaceRegionC.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\KWeather.h" />
     <ClInclude Include="Src\Scene\ObstacleDef.h" />
     <ClInclude Include="Src\Scene\SceneDataDef.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\SceneMath.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\Scene\ScenePlaceMapC.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\CoreDrawGameObj.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\ImgRef.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+<ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Src\KMagicAttrib.h" />
     <ClInclude Include="Src\KMagicDesc.h" />
@@ -811,21 +1010,45 @@ copy ServerRelease\CoreServer.lib ..\..\lib\release\CoreServer.lib</Command>
     <Library Include="..\..\Lib\release\engine.lib">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
     </Library>
     <Library Include="..\..\Lib\release\common.lib">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
     </Library>
     <Library Include="..\..\Lib\debug\engine.lib">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
     </Library>
     <Library Include="..\..\Lib\debug\common.lib">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Client Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
     </Library>
-    <Library Include="Src\USBKey\EP1KDL20.LIB" />
-    <Library Include="Src\USBKey\EpsForJoLib.lib" />
+    <Library Include="..\..\Lib\x64\release\engine.lib">
+      <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="..\..\Lib\x64\release\common.lib">
+      <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Debug|x64'">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="..\..\Lib\x64\debug\engine.lib">
+      <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="..\..\Lib\x64\debug\common.lib">
+      <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Server Release|x64'">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="Src\USBKey\EP1KDL20.LIB">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="Src\USBKey\EpsForJoLib.lib">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </Library>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

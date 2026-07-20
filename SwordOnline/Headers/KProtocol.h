@@ -846,7 +846,7 @@ struct tagNewDelRoleResponse : public tagDBSelPlayer
 // 2003.05.11
 struct tagDBSyncPlayerInfo : public tagProtoHeader
 {
-	size_t	dataLength;
+	DWORD	dataLength;
 	char	szData[0];
 };
 
@@ -881,7 +881,7 @@ struct tagGuidableInfo : public tagProtoHeader
 	GUID guid;
 	WORD nExtPoint;			//可用的附送点
 	WORD nChangePoint;		//变化的附送点
-	size_t	datalength;
+	DWORD	datalength;
 	char	szData[0];
 
 };
@@ -1110,7 +1110,7 @@ struct tagRegisterFamily : public tagProtoHeader
  */
 struct tagGS2GWSaveRole : public tagProtoHeader
 {
-	size_t	datalength;
+	DWORD	datalength;
 	BYTE	szData[0];
 };
 
@@ -1140,7 +1140,7 @@ typedef struct
 struct TProcessData
 {
 	unsigned char	nProtoId;
-	size_t			nDataLen;//TRoleNetMsg时表示该Block的实际数据长度,TProcessData时表示Stream的实际数据长度
+	DWORD			nDataLen;//TRoleNetMsg时表示该Block的实际数据长度,TProcessData时表示Stream的实际数据长度
 	unsigned long	ulIdentity;
 	bool			bLeave;
 	char			szName[32];

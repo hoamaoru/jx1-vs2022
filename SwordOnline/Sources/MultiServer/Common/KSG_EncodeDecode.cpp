@@ -37,6 +37,13 @@ int KSG_DecodeEncode(size_t uSize, unsigned char *pbyBuf, unsigned *puKey)
 
 int KSG_DecodeEncode_ASM(size_t uSize, unsigned char *pbyBuf, unsigned *puKey)
 {
+#if !defined(_M_IX86)
+    // __asm not supported on this architecture (x64) -- fall back to the
+    // portable implementation above, which computes the identical result
+    // (same XOR cipher, same key-update formula), so wire compatibility
+    // with 32-bit peers is preserved.
+    return KSG_DecodeEncode(uSize, pbyBuf, puKey);
+#else
     __asm mov eax, [uSize]
     __asm mov esi, [puKey]
     __asm mov edi, [pbyBuf]
@@ -77,4 +84,5 @@ int KSG_DecodeEncode_ASM(size_t uSize, unsigned char *pbyBuf, unsigned *puKey)
     __asm mov [esi], edx
 
     return true;
+#endif
 }

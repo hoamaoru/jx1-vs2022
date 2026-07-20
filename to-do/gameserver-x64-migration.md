@@ -1,5 +1,61 @@
 # Build GameServer thành bản 64-bit (x64)
 
+## ✅ KẾT QUẢ TRIỂN KHAI (2026-07-20)
+
+**Đã triển khai xong và verify bằng build thật** (không phải mô phỏng) — `GameServer.exe` (x64) build thành công cho cả Debug và Release, xác nhận qua `dumpbin /headers` là PE thật `machine (x64)`. Build sạch qua cả msbuild trực tiếp từng project lẫn qua toàn bộ `JXAll.sln` (`Server Debug|x64` và `Server Release|x64`). Regression-check Win32 sau khi sửa: `Server Debug|Win32` và `Client Debug|Win32` build sạch toàn solution — không có gì bị hỏng.
+
+### Phạm vi thực tế: 9 project (không phải 7 như dự kiến ban đầu)
+
+Khi build thử phát sinh 2 dependency ẩn không thấy trong khảo sát ban đầu:
+- **JpgLib** và **KMp3LibClass** — `Engine.vcxproj` link tĩnh 2 lib này (`..\Lib\{debug|release}\JpgLib.lib`, `KMp3Lib.lib`) không điều kiện Client/Server, nên build x64 của Engine bắt buộc cần bản x64 của cả hai.
+
+### Rủi ro asm x86 — nghiêm trọng hơn dự kiến, nhưng đã xử lý xong
+
+Khảo sát ban đầu chỉ tìm thấy asm thật ở `Common` (2 hàm). Khi thực sự bật x64 và build, phát hiện thêm rất nhiều:
+
+| File | Asm gì | Cách xử lý |
+|---|---|---|
+| `Common/Macro.h` | `ASSERT`/`VERIFY` macro dùng `_asm{int 0x03}` | Đổi sang `__debugbreak()` (intrinsic, tương đương, chạy được cả x86/x64) |
+| `Common/KSG_EncodeDecode.cpp` | Cipher XOR packet (asm thật) | Đã có sẵn bản C tương đương (`KSG_DecodeEncode`) — route sang bản đó cho x64 qua `#if !defined(_M_IX86)` |
+| `Common/CRC32.C` | CRC32 tối ưu tay | Có sẵn bản C tương đương (`CRC32_C`) — route sang cho non-x86 |
+| `JpgLib/KJpegIdct.c` | MMX IDCT (`jpeg_idct_mmx`) | Route sang bản C có sẵn `jpeg_idct_2d` cho x64 |
+| `JpgLib/KJpegColor.c` | MMX color convert (`Y2RGB`, `RGB16_555/565`, `YCbCr411_*`) | Port thủ công sang C cho `Y2RGB`/`RGB16_555`/`RGB16_565` (đã trace từng lệnh asm); `YCbCr411_565/555` route sang `YCbCr411_nommx` có sẵn (không port vì quá phức tạp và chỉ dùng khi bật MMX) |
+| `JpgLib/KJpegDecode.c` | `jpeg_preprocess` (byte un-stuffing) | Port sang C, đã trace từng lệnh |
+| `JpgLib/KJpegDecode.c` | `jpeg_decode_DU` (bộ giải Huffman/bitstream JPEG đầy đủ, ~240 dòng asm) | **Không port** — quá phức tạp, đây là code giải mã JPEG hoàn toàn client-only, GameServer không bao giờ gọi tới. Thay bằng stub an toàn (`memset` buffer về 0) cho x64, kèm comment giải thích rõ |
+| `JpgLib/KJpegLib.h` | Macro `READ_WORD` dùng asm đọc big-endian word | Viết lại bằng C thuần (đơn giản, áp dụng cho mọi platform luôn, không cần `#if`) |
+| `Engine/KMemBase.cpp` | 8 hàm memcpy/memset/memcmp/memxor tối ưu tay qua `#ifdef WIN32` | **Không dùng `#else` có sẵn** — đã kiểm chứng bằng cách đọc kỹ asm rằng `g_MemFill(WORD)` và `g_MemFill(DWORD)` coi `dwLen` là đơn vị WORD/DWORD (không phải byte) trong khi `#else` gốc coi là byte — **là bug tiềm ẩn có sẵn, chưa từng chạy vì `WIN32` luôn được định nghĩa**. Đã viết lại C thủ công bám sát đúng semantics của asm gốc cho `g_MemFill(WORD)`, `g_MemFill(DWORD)`, `g_MemXore` (thay vì tin `#else`); 5 hàm còn lại (`g_MemCopy`, `g_MemCopyMmx`, `g_MemComp`, `g_MemFill(BYTE)`, `g_MemZero`) đã verify khớp `#else` nên chỉ đổi guard `#ifdef WIN32` → `#if defined(WIN32) && defined(_M_IX86)` |
+| `Engine/KStrBase.cpp` | Tương tự — 6 hàm string qua `#ifdef WIN32` | `g_StrCpyLen`: asm có semantics khác `strncpy` (không pad, luôn null-terminate) — viết C thủ công bám asm; 5 hàm còn lại verify khớp `#else`, chỉ đổi guard |
+| `Engine/KColors.cpp` | 7 hàm RGB565/555 convert | Port toàn bộ sang C (trace từng lệnh, kể cả 1 chỗ có vẻ là bug gốc ở `g_Red` — giữ nguyên hành vi, không "sửa") |
+
+**Cụm rendering/audio/video/input trong Engine bị loại khỏi build x64** (giữ nguyên Win32, không đổi gì) vì client-only và có quá nhiều asm/DirectX phụ thuộc lẫn nhau để port hết trong phạm vi này — loại theo từng vòng build-thử-xem-lỗi-thiếu-symbol-loại-tiếp: `KBitmap(16).cpp, KBmpFile(24).cpp, KBmp2Spr.cpp, KCanvas.cpp` (giữ), `KDrawBase/Bitmap/Bitmap16/Fade/Font/Sprite/SpriteAlpha.cpp, KFont.cpp, KGifFile.cpp, KJpgFile.cpp, KMp4Movie.cpp, KMp4Video.cpp, KPalette.cpp, KSprite.cpp, KSpriteCache.cpp, KSpriteCodec.cpp, KSpriteMaker.cpp`. `KDDraw.cpp` và `KColors.cpp` **không loại** — không có asm thật, chỉ cần port (KColors) hoặc build thẳng (KDDraw, DirectDraw x64 import lib có sẵn trong Windows SDK hiện tại).
+
+### Sửa khác ngoài asm
+
+- **`KProtocol.h`**: đổi `size_t` → `DWORD` ở 4 struct (`TProcessData`, `tagGuidableInfo`, `tagDBSyncPlayerInfo`, `tagGS2GWSaveRole`) như kế hoạch — verify build sạch trên Common/Core/GameServer/Goddess/Bishop/S3Relay (Win32).
+- **`Common/OpaqueUserData.h`**: đổi `GetUserData/SetUserData` từ `unsigned long` → `ULONG_PTR`, xoá macro `InterlockedExchangePointer` fallback nguy hiểm — như kế hoạch.
+- **`Core.vcxproj`**: loại `EP1KDL20.LIB`/`EpsForJoLib.lib` (USBKey dongle, chỉ 32-bit) khỏi build x64 — code gọi chúng nằm sau `#ifdef _USBKEY` chưa từng định nghĩa, xác nhận dead code.
+- **`GameServer/KSOServer.cpp`**: 2 biến cục bộ `uSize` khai báo `unsigned int` nhưng truyền vào tham chiếu `size_t&` của `IClient::GetPackFromServer`/`IServer::GetPackFromClient` (API của Rainbow.dll) — lỗi biên dịch trên x64 vì `size_t` (8 byte) không thể bind vào biến 4-byte qua reference. Đổi cả 2 khai báo sang `size_t` (khớp đúng kiểu API, an toàn, không đổi logic).
+- **Build system**: mỗi trong 9 project (`Common`, `JpgLib`, `KMp3LibClass`, `LuaLibDll`, `Engine`, `Core`, `Heaven`, `Rainbow`, `GameServer`) được thêm config x64 riêng (Core dùng tên `Server Debug|x64`/`Server Release|x64` khớp quy ước sẵn có, còn lại dùng `Debug|x64`/`Release|x64`), output tách thư mục hoàn toàn riêng (`x64\Debug\`, `SwordOnline\Lib\x64\...`, `bin\server\x64\...`) — không đụng tới bất kỳ artefact Win32 nào. `JXAll.sln` được thêm 2 solution-config mới (`Server Debug|x64`, `Server Release|x64`) map đúng cho 9 project này, các project khác (Goddess/Bishop/S3Relay/S3Client/Sword3PaySys/Represent2/3) không có mapping cho 2 config này (MSBuild tự bỏ qua, đúng ý đồ).
+- **Lưu ý khi build qua msbuild trực tiếp** (không qua IDE): với Core, phải chỉ đường dẫn tường minh tới `lualibdll.lib` trong `AdditionalDependencies` (`..\..\Lib\x64\debug\lualibdll.lib`) thay vì chỉ tên file + `/LIBPATH` — vì lý do chưa rõ, `/LIBPATH` tương đối không resolve đúng trong môi trường build này dù cú pháp đúng chuẩn.
+
+## ✅ Test tích hợp thật + 2 bug runtime phát hiện và đã fix (2026-07-20)
+
+Sau khi Goddess/Bishop/S3Relay cũng xong x64 (xem `to-do/goddess-bishop-s3relay-x64-migration.md`) và có Berkeley DB x64 thật, đã **khởi động thật cả 4 server theo đúng thứ tự Goddess → Bishop → S3Relay → GameServer** từ `bin\server\x64\Debug` (qua `Start-Process` để có console thật, tránh nhầm với lỗi môi trường không-console khi launch qua pipe). Quá trình test lộ ra 2 bug runtime thật — cả 2 đều đã xác nhận bằng crash dump (cài WinDbg/`cdb.exe` qua winget để phân tích `.dmp` do Windows Error Reporting tự sinh) và đã fix + verify lại bằng build + chạy thật:
+
+**Bug 1 — `long dir = _findfirst(...)` cắt cụt handle** (`Core/Src/KSortScript.cpp:168`, hàm `LoadScriptInDirectory`): `_findfirst` trả về `intptr_t` (8 byte trên x64), gán vào biến `long` (Windows LLP64: `long` luôn 4 byte kể cả x64) làm mất nửa trên handle. Gọi lại `_findnext`/`_findclose` với handle hỏng → heap corruption bên trong UCRT, crash access-violation ngay lúc GameServer quét thư mục `script/` lúc khởi tạo Lua script (stack trace: `GameServer!main → KSwordOnLineSever::Init → CoreServer!g_InitCore → g_IniScriptEngine → LoadAllScript → LoadScriptInDirectory → _findnext64i32 → common_find_next_narrow/wide`). Sửa: `long dir` → `intptr_t dir`. Cùng lỗi (nhưng chưa từng gây crash vì không dùng lại handle) tìm thấy thêm ở `MultiServer/Goddess/DBDumpLoad.cpp:21,86` (`long aFileFound`) — sửa luôn `intptr_t` cho nhất quán/phòng ngừa.
+
+**Bug 2 — `GetGameData`/`OperationRequest` dùng `unsigned int` để truyền con trỏ** (`Core/Src/CoreServerShell.h`, `CoreServerShell.cpp`): 2 hàm generic dispatcher trong `iCoreServerShell` khai báo `unsigned int uParam` nhưng **body và caller đều dùng làm con trỏ** — bên trong hàm cast `(char*)uParam` để ghi buffer, còn ~70 call site trong `GameServer/KSOServer.cpp` truyền vào kiểu `(unsigned int)&sStruct`/`(unsigned int)szBuffer`. Trên x64, mỗi cast như vậy cắt cụt con trỏ 8-byte xuống 4-byte → con trỏ rác khi hàm dùng lại bên trong, crash access-violation khi GameServer xử lý gói tin từ Gateway lúc đang chạy bình thường (stack trace: `GatewayMessageProcess → GatewaySmallPackProcess → CoreServer!CoreServerShell::GetGameData`, ghi đè qua một con trỏ rõ ràng bị cắt cụt, ví dụ `rdx=0x0f16f830`). Sửa: widen `uParam`→`UINT_PTR`, `nParam`→`INT_PTR` ở **cả 3 chỗ khai báo phải khớp nhau** (interface `struct iCoreServerShell` trong `.h`, khai báo member trong `class CoreServerShell` — nằm ngay trong `.cpp`, và định nghĩa out-of-line) + đổi toàn bộ ~70 cast `(unsigned int)` → `(UINT_PTR)` tại call site trong `KSOServer.cpp`. Interface phía client (`iCoreShell::GetGameData` trong `CoreShell.h`) **không đụng tới** — client vẫn 32-bit, không cần.
+
+**Bug phụ (không phải x64, phát hiện tình cờ)**: `Goddess.exe` (x64) lúc khởi động gọi `LoadLibrary("FilterText.dll")` để lọc tên nhân vật (`Goddess/FilterTextLib.cpp`) nhưng `FilterText.dll` trước đó chỉ có bản 32-bit trong repo → `LoadLibrary` fail → hiện `MessageBox` "text filter's initing has failed" rồi thoát. Đã port `FilterText.vcxproj` sang x64 (không asm, đơn giản) — chi tiết đầy đủ nằm ở `to-do/goddess-bishop-s3relay-x64-migration.md` vì đây là fix riêng cho Goddess.
+
+**Kết quả sau khi fix cả 2 bug + FilterText**: build sạch toàn bộ `JXAll.sln` (`Server Debug|x64`), khởi động lại đủ 4 server — **sống ổn định >25 giây** (trước đó GameServer luôn crash trong 10-15 giây), có kết nối ESTABLISHED đầy đủ hai chiều giữa cả 4 server (Goddess↔Bishop↔S3Relay↔GameServer), không sinh crash dump mới. Đây là lần đầu tiên toàn bộ cụm server x64 chạy được thật, không chỉ build được.
+
+## Việc CHƯA làm
+
+- **Test tích hợp với client thật** (S3Client 32-bit kết nối vào cụm x64, test đủ luồng login → chọn nhân vật → vào game → chat/tong → giao dịch/lưu tiến độ) — mới test được 4 server nói chuyện với nhau, **chưa có client thật kết nối vào**. Cần người dùng tự làm (ngoài khả năng môi trường CLI).
+- **`Server Release|Win32` xác nhận hỏng sẵn từ trước** (không phải do phiên làm việc này gây ra) — thư mục `SwordOnline/Lib/release/` trống hoàn toàn, `Engine` Release|Win32 tự nó lỗi biên dịch vì xung đột `winsock2.h`/`windows.h` không liên quan gì tới x64. Nằm ngoài phạm vi.
+- **File build output (`.lib`/`.dll`/`.exp`) bị ghi đè** do các lần build verify trong phiên này (ví dụ `SwordOnline/Lib/debug/*.lib`, `SwordOnline/Lib/JpgLib.lib`...) — đây là artefact build, không phải thay đổi source, nhưng đang bị git track nên sẽ hiện trong `git status`. Nên cân nhắc gitignore thư mục `Lib`/`bin` build output nếu chưa có.
+
 ## Thông tin khảo sát
 
 | | |
