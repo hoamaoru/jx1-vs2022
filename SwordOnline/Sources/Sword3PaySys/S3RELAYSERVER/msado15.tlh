@@ -54,7 +54,11 @@ struct __declspec(uuid("00000569-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Field;
 struct __declspec(uuid("0000054c-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Field20;
+#if defined(_WIN64)
+typedef __int64 ADO_LONGPTR;
+#else
 typedef long ADO_LONGPTR;
+#endif
 struct __declspec(uuid("0000050c-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ _Parameter;
 struct __declspec(uuid("0000050d-0000-0010-8000-00aa006d2ea4"))
