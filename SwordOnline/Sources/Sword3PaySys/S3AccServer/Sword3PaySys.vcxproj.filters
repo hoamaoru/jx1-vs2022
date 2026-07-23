@@ -122,5 +122,7 @@
     <Library Include="..\..\..\Lib\debug\LuaLibDll.lib">
       <Filter>lib\debug</Filter>
     </Library>
+    <Library Include="..\..\..\Lib\x64\debug\engine.lib" />
+    <Library Include="..\..\..\Lib\x64\debug\lualibdll.lib" />
   </ItemGroup>
 </Project>

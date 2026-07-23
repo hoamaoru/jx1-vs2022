@@ -70,6 +70,12 @@
     <Library Include="..\..\..\Lib\release\common.lib">
       <Filter>Lib\release</Filter>
     </Library>
+    <Library Include="..\..\..\Lib\x64\debug\engine.lib" />
+    <Library Include="..\..\..\Lib\x64\debug\CoreServer.lib" />
+    <Library Include="..\..\..\Lib\x64\debug\common.lib" />
+    <Library Include="..\..\..\Lib\x64\release\engine.lib" />
+    <Library Include="..\..\..\Lib\x64\release\CoreServer.lib" />
+    <Library Include="..\..\..\Lib\x64\release\common.lib" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ReadMe.txt" />

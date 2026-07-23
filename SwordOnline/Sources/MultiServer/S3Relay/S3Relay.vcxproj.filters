@@ -285,6 +285,9 @@
     <Library Include="..\..\..\Lib\libdb62d.lib">
       <Filter>Library\debug</Filter>
     </Library>
+    <Library Include="..\..\..\Lib\x64\debug\engine.lib" />
+    <Library Include="..\..\..\Lib\x64\libdb62d.lib" />
+    <Library Include="..\..\..\Lib\x64\release\engine.lib" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="S3Relay.ico">

@@ -96,8 +96,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\x64\Debug\</OutDir>
-    <IntDir>.\x64\Debug\</IntDir>
+    <OutDir>..\..\..\..\bin\server\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\bin\server\x64\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

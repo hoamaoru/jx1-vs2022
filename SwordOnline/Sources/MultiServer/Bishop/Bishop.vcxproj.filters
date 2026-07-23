@@ -115,6 +115,10 @@
     <Library Include="..\..\..\Lib\debug\engine.lib">
       <Filter>lib\debug</Filter>
     </Library>
+    <Library Include="..\..\..\Lib\x64\release\common.lib" />
+    <Library Include="..\..\..\Lib\x64\release\engine.lib" />
+    <Library Include="..\..\..\Lib\x64\debug\common.lib" />
+    <Library Include="..\..\..\Lib\x64\debug\engine.lib" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\lock.ico">

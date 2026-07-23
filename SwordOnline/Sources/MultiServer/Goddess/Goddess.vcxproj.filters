@@ -97,6 +97,10 @@
     <Library Include="..\..\..\Lib\debug\engine.lib">
       <Filter>lib\debug</Filter>
     </Library>
+    <Library Include="..\..\..\Lib\x64\debug\common.lib" />
+    <Library Include="..\..\..\Lib\x64\debug\engine.lib" />
+    <Library Include="..\..\..\Lib\x64\libdb62d.lib" />
+    <Library Include="..\..\..\Lib\x64\release\common.lib" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\goddess.ico">

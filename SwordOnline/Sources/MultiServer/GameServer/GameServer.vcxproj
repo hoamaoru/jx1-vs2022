@@ -91,9 +91,11 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\x64\Debug\</OutDir>
-    <IntDir>.\x64\Debug\</IntDir>
+    <OutDir>..\..\..\..\bin\server\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\bin\server\x64\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <LocalDebuggerWorkingDirectory>..\..\..\..\bin\server\x64\Debug\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>.\x64\Release\</OutDir>
@@ -248,6 +250,7 @@ copy x64\Release\GameServer.pdb ..\..\..\..\bin\Server\x64\release\GameServer.pd
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0400;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\x64\Debug\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>.\x64\Debug\</BrowseInformationFile>
       <PrecompiledHeaderOutputFile>.\x64\Debug\GameServer.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>

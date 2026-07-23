@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "Server x64",
+    "Projects": [
+      {
+        "Path": "Sword3PaySys\\S3AccServer\\Sword3PaySys.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      },
+      {
+        "Path": "Sword3PaySys\\S3RELAYSERVER\\S3RelayServer.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      },
+      {
+        "Path": "MultiServer\\Goddess\\Goddess.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      },
+      {
+        "Path": "MultiServer\\Bishop\\Bishop.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      },
+      {
+        "Path": "MultiServer\\S3Relay\\S3Relay.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      },
+      {
+        "Path": "MultiServer\\GameServer\\GameServer.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      }
+    ]
+  }
+]

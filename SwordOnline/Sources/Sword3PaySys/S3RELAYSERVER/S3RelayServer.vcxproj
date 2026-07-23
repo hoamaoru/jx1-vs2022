@@ -91,9 +91,11 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\x64\Debug\</OutDir>
-    <IntDir>.\x64\Debug\</IntDir>
+    <OutDir>..\..\..\..\bin\server\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\bin\server\x64\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <LocalDebuggerWorkingDirectory>..\..\..\..\bin\server\x64\Debug\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>.\x64\Release\</OutDir>
@@ -203,6 +205,7 @@ copy release\S3RelayServer.exe ..\..\..\..\bin\Server\release\S3RelayServer.exe<
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\x64\Debug\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>.\x64\Debug\</BrowseInformationFile>
       <PrecompiledHeaderOutputFile>.\x64\Debug\S3RelayServer.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\x64\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\x64\Debug\</ProgramDataBaseFileName>

@@ -96,9 +96,11 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\x64\Debug\</OutDir>
-    <IntDir>.\x64\Debug\</IntDir>
+    <OutDir>..\..\..\..\bin\server\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\bin\server\x64\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <LocalDebuggerWorkingDirectory>..\..\..\..\bin\server\x64\Debug\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -252,6 +254,7 @@ copy x64\Release\S3Relay.exe ..\..\..\..\bin\Server\x64\release\S3Relay.exe</Com
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_TESTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\x64\Debug\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>.\x64\Debug\</BrowseInformationFile>
       <PrecompiledHeaderOutputFile>.\x64\Debug\S3Relay.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
