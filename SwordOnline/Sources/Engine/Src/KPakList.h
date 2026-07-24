@@ -30,7 +30,8 @@ public:
 	//读取spr文件头部或整个spr
 	SPRHEAD*	GetSprHeader(XPackElemFileRef& ElemRef, SPROFFS*& pOffsetTable);
 	//读取按帧压缩的spr的一帧的数据
-	SPRFRAME*	GetSprFrame(int nPackIndex, SPRHEAD* pSprHeader, int nFrame);
+	// puFrameSize (tuy chon, mac dinh NULL): tra ve dung kich thuoc buffer da giai nen.
+	SPRFRAME*	GetSprFrame(int nPackIndex, SPRHEAD* pSprHeader, int nFrame, unsigned int* puFrameSize = NULL);
 private:
 	unsigned long FileNameToId(const char* pszFileName);
 private:

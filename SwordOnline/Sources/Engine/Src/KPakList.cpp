@@ -186,9 +186,9 @@ SPRHEAD* KPakList::GetSprHeader(XPackElemFileRef& ElemRef, SPROFFS*& pOffsetTabl
 }
 
 //读取按帧压缩的spr的一帧的数据
-SPRFRAME* KPakList::GetSprFrame(int nPackIndex, SPRHEAD* pSprHeader, int nFrame)
+SPRFRAME* KPakList::GetSprFrame(int nPackIndex, SPRHEAD* pSprHeader, int nFrame, unsigned int* puFrameSize)
 {
 	if (nPackIndex >= 0 && nPackIndex < m_nPakNumber)
-		return m_PakFilePtrList[nPackIndex]->GetSprFrame(pSprHeader, nFrame);
+		return m_PakFilePtrList[nPackIndex]->GetSprFrame(pSprHeader, nFrame, puFrameSize);
 	return NULL;
 }

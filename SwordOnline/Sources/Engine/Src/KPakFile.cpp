@@ -12,6 +12,7 @@
 #ifndef _SERVER
 #include "KPakList.h"
 #endif
+#include <string.h>
 
 //---------------------------------------------------------------------------
 // 文件读取模式 0 = 优先从磁盘读取 1 = 优先从文件包读取
@@ -31,6 +32,75 @@ void g_SetPakFileMode(int nFileMode)
 #define	PAK_INDEX_STORE_IN_RESERVED	0
 
 #ifndef _SERVER
+
+//---------------------------------------------------------------------------
+// SPR read logging: ghi lai (1 lan / duong dan) moi file .spr thuc su duoc
+// doc qua SprGetHeader(), de tool export offline dung lam danh sach nguon.
+//---------------------------------------------------------------------------
+static DWORD*				s_pSprLogIds = NULL;
+static int					s_nSprLogCount = 0;
+static int					s_nSprLogCapacity = 0;
+static CRITICAL_SECTION	s_SprLogCritical;
+static bool					s_bSprLogCriticalInit = false;
+
+static bool SprLog_AlreadyLogged(DWORD id)
+{
+	for (int i = 0; i < s_nSprLogCount; i++)
+	{
+		if (s_pSprLogIds[i] == id)
+			return true;
+	}
+	return false;
+}
+
+static void SprLog_LogRead(const char* pszFileName, int nPakIndex, unsigned int uSize, int nFrames, int nColors)
+{
+	if (!s_bSprLogCriticalInit)
+	{
+		InitializeCriticalSection(&s_SprLogCritical);
+		s_bSprLogCriticalInit = true;
+	}
+
+	DWORD id = g_FileName2Id((LPSTR)pszFileName);
+
+	EnterCriticalSection(&s_SprLogCritical);
+	bool bAlreadyLogged = SprLog_AlreadyLogged(id);
+	if (!bAlreadyLogged)
+	{
+		if (s_nSprLogCount == s_nSprLogCapacity)
+		{
+			s_nSprLogCapacity = s_nSprLogCapacity ? s_nSprLogCapacity * 2 : 1024;
+			s_pSprLogIds = (DWORD*)realloc(s_pSprLogIds, s_nSprLogCapacity * sizeof(DWORD));
+		}
+		s_pSprLogIds[s_nSprLogCount++] = id;
+	}
+	LeaveCriticalSection(&s_SprLogCritical);
+
+	if (bAlreadyLogged)
+		return;
+
+	char szLogDir[MAXPATH];
+	szLogDir[0] = '\\';
+	strcpy(szLogDir + 1, "logs");
+	char szLogDirFull[MAXPATH];
+	g_GetFullPath(szLogDirFull, szLogDir);
+	g_CreatePath(szLogDirFull);
+
+	char szLogFile[MAXPATH];
+	strcpy(szLogFile, "\\logs\\spr_read.log");
+	char szLogFileFull[MAXPATH];
+	g_GetFullPath(szLogFileFull, szLogFile);
+
+	FILE* f = fopen(szLogFileFull, "a");
+	if (f)
+	{
+		if (nPakIndex >= 0)
+			fprintf(f, "%s\tPAK%d\t%u\t%d\t%d\n", pszFileName, nPakIndex, uSize, nFrames, nColors);
+		else
+			fprintf(f, "%s\tDISK\t%u\t%d\t%d\n", pszFileName, uSize, nFrames, nColors);
+		fclose(f);
+	}
+}
 
 //----modify by Wooy to add Adjust color palette and to get rid of #@$%^& ----2003.8.19
 SPRHEAD* SprGetHeader(const char* pszFileName, SPROFFS*& pOffsetTable)
@@ -54,7 +124,10 @@ SPRHEAD* SprGetHeader(const char* pszFileName, SPROFFS*& pOffsetTable)
 		{
 			pSpr = g_pPakList->GetSprHeader(PakRef, pOffsetTable);
 			if (pSpr)
+			{
 				pSpr->Reserved[PAK_INDEX_STORE_IN_RESERVED] = (WORD)(short)PakRef.nPackIndex;
+				SprLog_LogRead(pszFileName, PakRef.nPackIndex, PakRef.nSize, pSpr->Frames, pSpr->Colors);
+			}
 		}
 	}
 	else
@@ -90,6 +163,10 @@ SPRHEAD* SprGetHeader(const char* pszFileName, SPROFFS*& pOffsetTable)
 			free(pSpr);
 			pSpr = NULL;
 		}
+		else if (bOk)
+		{
+			SprLog_LogRead(pszFileName, -1, File.Size(), pSpr->Frames, pSpr->Colors);
+		}
 	}
 	File.Close();
 	return pSpr;
@@ -101,14 +178,14 @@ void SprReleaseHeader(SPRHEAD* pSprHeader)
 		free(pSprHeader);
 }
 
-SPRFRAME* SprGetFrame(SPRHEAD* pSprHeader, int nFrame)
+SPRFRAME* SprGetFrame(SPRHEAD* pSprHeader, int nFrame, unsigned int* puFrameSize)
 {
 	SPRFRAME* pFrame = NULL;
 	if (pSprHeader && g_pPakList)
 	{
 		int nPakIndex = (short)pSprHeader->Reserved[PAK_INDEX_STORE_IN_RESERVED];
 		if (nPakIndex >= 0)
-			pFrame = g_pPakList->GetSprFrame(nPakIndex, pSprHeader, nFrame);
+			pFrame = g_pPakList->GetSprFrame(nPakIndex, pSprHeader, nFrame, puFrameSize);
 	}
 	return pFrame;
 }

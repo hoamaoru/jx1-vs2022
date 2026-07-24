@@ -51,7 +51,9 @@ private:
 
 	ENGINE_API SPRHEAD*		SprGetHeader(const char* pszFileName, SPROFFS*& pOffsetTable);
 	ENGINE_API void			SprReleaseHeader(SPRHEAD* pSprHeader);
-	ENGINE_API SPRFRAME*	SprGetFrame(SPRHEAD* pSprHeader, int nFrame);
+	// puFrameSize (tuy chon, mac dinh NULL): neu khac NULL, nhan ve dung kich thuoc
+	// (byte) cua buffer SPRFRAME da giai nen tra ve - dung cho tool export lai file .spr.
+	ENGINE_API SPRFRAME*	SprGetFrame(SPRHEAD* pSprHeader, int nFrame, unsigned int* puFrameSize = NULL);
 	ENGINE_API void			SprReleaseFrame(SPRFRAME* pFrame);
 
 	ENGINE_API KSGImageContent *get_jpg_image(const char cszName[], unsigned uRGBMask16 = ((unsigned)-1));

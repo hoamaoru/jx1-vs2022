@@ -513,9 +513,11 @@ SPRHEAD* XPackFile::GetSprHeader(XPackElemFileRef& ElemRef, SPROFFS*& pOffsetTab
     return pSpr;
 }
 
-SPRFRAME* XPackFile::GetSprFrame(SPRHEAD* pSprHeader, int nFrame)
+SPRFRAME* XPackFile::GetSprFrame(SPRHEAD* pSprHeader, int nFrame, unsigned int* puFrameSize)
 {
 	SPRFRAME*	pFrame = NULL;
+	if (puFrameSize)
+		*puFrameSize = 0;
 	if (pSprHeader && nFrame >= 0 && nFrame < pSprHeader->Frames)
 	{
 		EnterCriticalSection(&m_ReadCritical);
@@ -555,9 +557,13 @@ SPRFRAME* XPackFile::GetSprFrame(SPRHEAD* pSprHeader, int nFrame)
 					free(pFrame);
 					pFrame = NULL;
 				}
+				else if (bOk && puFrameSize)
+				{
+					*puFrameSize = (unsigned int)lTempValue;
+				}
 			}
 		}
 		LeaveCriticalSection(&m_ReadCritical);
 	}
-	return pFrame;	
+	return pFrame;
 }
