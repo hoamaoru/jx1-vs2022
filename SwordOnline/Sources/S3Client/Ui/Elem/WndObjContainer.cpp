@@ -742,9 +742,11 @@ int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 						m_pObjects[nObj].uId, m_nContainerId, x, y);
 
 					// So sánh với item đang trang bị trên người khi hover trong Hành Trang
-					g_MouseOverCompare.CancelMouseHoverInfo();
+					// (chỉ Hành Trang mới cần, tránh gọi Cancel thừa cho mọi KWndObjectMatrix khác như kho/chợ)
 					if (m_nContainerId == UOC_ITEM_TAKE_WITH && g_pCoreShell)
 					{
+						g_MouseOverCompare.CancelMouseHoverInfo();
+
 						KUiGameObject HoverObj, EquipObj;
 						HoverObj.uGenre = m_pObjects[nObj].uGenre;
 						HoverObj.uId = m_pObjects[nObj].uId;
@@ -761,26 +763,12 @@ int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 							// tính theo đúng vị trí thực tế (có tính lật cạnh) mà PaintMouseHoverInfo sẽ vẽ
 							if (g_MouseOver.IsShown())
 							{
-								int nPrimaryLeft = g_MouseOver.GetLeft();
-								int nPrimaryWidth = g_MouseOver.GetWndWidth();
-								int nPrimaryDrawLeft, nPrimaryDrawRight;
-								if (nPrimaryLeft + nPrimaryWidth <= RESOLUTION_WIDTH)
-								{
-									nPrimaryDrawLeft = nPrimaryLeft;
-									nPrimaryDrawRight = nPrimaryLeft + nPrimaryWidth;
-								}
-								else
-								{
-									nPrimaryDrawRight = nPrimaryLeft;
-									nPrimaryDrawLeft = (nPrimaryLeft - nPrimaryWidth - 10 < 0) ? 0 : (nPrimaryLeft - nPrimaryWidth - 10);
-								}
-
+								int nPrimaryDrawLeft = g_MouseOver.GetDrawLeft();
+								int nPrimaryDrawRight = g_MouseOver.GetDrawRight();
 								int nCompareWidth = g_MouseOverCompare.GetWndWidth();
-								int nCompareLeft;
-								if (nPrimaryDrawRight + nCompareWidth <= RESOLUTION_WIDTH)
-									nCompareLeft = nPrimaryDrawRight;
-								else
-									nCompareLeft = (nPrimaryDrawLeft - nCompareWidth > 0) ? (nPrimaryDrawLeft - nCompareWidth) : 0;
+								int nCompareLeft = (nPrimaryDrawRight + nCompareWidth <= RESOLUTION_WIDTH)
+									? nPrimaryDrawRight
+									: ((nPrimaryDrawLeft - nCompareWidth > 0) ? (nPrimaryDrawLeft - nCompareWidth) : 0);
 
 								g_MouseOverCompare.SetPosition(nCompareLeft, g_MouseOver.GetTop());
 							}

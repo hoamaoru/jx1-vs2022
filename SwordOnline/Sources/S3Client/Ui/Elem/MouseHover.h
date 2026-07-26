@@ -33,6 +33,8 @@ public:
 	int	GetWndWidth() const { return m_nWndWidth; }
 	bool	IsShown() const { return m_bShow != 0; }
 	void	SetPosition(int nLeft, int nTop) { m_nLeft = nLeft; m_nTop = nTop; }
+	int	GetDrawLeft() const { return (m_nLeft + m_nWndWidth <= RESOLUTION_WIDTH) ? m_nLeft : ((m_nLeft - m_nWndWidth - 10 < 0) ? 0 : (m_nLeft - m_nWndWidth - 10)); }
+	int	GetDrawRight() const { return (m_nLeft + m_nWndWidth <= RESOLUTION_WIDTH) ? (m_nLeft + m_nWndWidth) : m_nLeft; }
 private:
 	void	Update(int nX, int nY);
 private:
