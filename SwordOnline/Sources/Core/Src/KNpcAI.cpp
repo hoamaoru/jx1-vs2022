@@ -49,6 +49,8 @@ void KNpcAI::Activate(int nIndex)
 	if (/*Npc[m_nIndex].m_nPeopleIdx ||*/Npc[m_nIndex].m_NextAITime <= nCurTime)
 	{
 		Npc[m_nIndex].m_NextAITime = nCurTime + Npc[m_nIndex].m_AIMAXTime;
+		for (int t = 0; t < MAX_THREAT_ENTRY; t++)
+			Npc[m_nIndex].m_nThreatValue[t] = Npc[m_nIndex].m_nThreatValue[t] * 90 / 100;
 		switch(Npc[m_nIndex].m_AiMode)
 		{
 		case 1:
@@ -1711,6 +1713,11 @@ void	KNpcAI::ProcessAIType04()
 	// 是否受到攻击，否，一定概率选择待机/巡逻
 	if (nEnemyIdx <= 0)
 	{
+		nEnemyIdx = GetTopThreat();
+		Npc[m_nIndex].m_nPeopleIdx = nEnemyIdx;
+	}
+	if (nEnemyIdx <= 0)
+	{
 		// pAIParam[0]:巡逻概率
 		if (pAIParam[0] > 0 && g_RandPercent(pAIParam[0]))
 		{	// 巡逻
@@ -1797,6 +1804,11 @@ void	KNpcAI::ProcessAIType05()
 
 	int nEnemyIdx = Npc[m_nIndex].m_nPeopleIdx;
 	// 是否受到攻击，否，一定概率选择待机/巡逻
+	if (nEnemyIdx <= 0)
+	{
+		nEnemyIdx = GetTopThreat();
+		Npc[m_nIndex].m_nPeopleIdx = nEnemyIdx;
+	}
 	if (nEnemyIdx <= 0)
 	{
 		// pAIParam[0]:巡逻概率
@@ -1897,6 +1909,11 @@ void	KNpcAI::ProcessAIType06()
 
 	int nEnemyIdx = Npc[m_nIndex].m_nPeopleIdx;
 	// 是否受到攻击，否，一定概率选择待机/巡逻
+	if (nEnemyIdx <= 0)
+	{
+		nEnemyIdx = GetTopThreat();
+		Npc[m_nIndex].m_nPeopleIdx = nEnemyIdx;
+	}
 	if (nEnemyIdx <= 0)
 	{
 		// pAIParam[0]:巡逻概率
