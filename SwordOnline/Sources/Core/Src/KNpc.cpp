@@ -290,6 +290,7 @@ void KNpc::Init()
 
 	m_nLastPoisonDamageIdx = 0;
 	m_nLastDamageIdx = 0;
+	for (int t = 0; t < MAX_THREAT_ENTRY; t++) { m_nThreatIdx[t] = 0; m_dwThreatID[t] = 0; m_nThreatValue[t] = 0; }
 	m_bHaveLoadedFromTemplate = FALSE;
 	m_bClientOnly = FALSE;
 }
@@ -2722,6 +2723,32 @@ BOOL KNpc::CalcDamage(int nAttacker, int nMissleSeries, int nMin, int nMax, DAMA
 			m_CurrentMana = m_CurrentManaMax;
 	}
 	m_CurrentLife -= nDamage;
+	if (nDamage > 0 && nAttacker > 0 && nAttacker != m_Index)
+	{
+		// Cap nhat threat table: uu tien nho ke gay sat thuong nhieu nhat, khong chi nguoi danh cuoi cung
+		int nSlot = -1, nMinSlot = 0, nMinValue = 0x7fffffff;
+		for (int t = 0; t < MAX_THREAT_ENTRY; t++)
+		{
+			if (m_nThreatIdx[t] == nAttacker && m_dwThreatID[t] == Npc[nAttacker].m_dwID)
+			{
+				nSlot = t;
+				break;
+			}
+			if (m_nThreatValue[t] < nMinValue)
+			{
+				nMinValue = m_nThreatValue[t];
+				nMinSlot = t;
+			}
+		}
+		if (nSlot < 0)
+		{
+			nSlot = nMinSlot;
+			m_nThreatIdx[nSlot] = nAttacker;
+			m_dwThreatID[nSlot] = Npc[nAttacker].m_dwID;
+			m_nThreatValue[nSlot] = 0;
+		}
+		m_nThreatValue[nSlot] += nDamage;
+	}
 	nCurDamage += nDamage;
 	if (m_CurrentLife <= 0)
 	{
@@ -3008,6 +3035,12 @@ BOOL KNpc::ReceiveDamage(int nLauncher, int nMissleSeries, BOOL bIsMelee, void* 
 		DoHurt();
 
 	m_nPeopleIdx = nLauncher;
+	if (nLauncher > 0)
+	{
+		// Bi tan cong -> goi dong minh cung phe gan do vao tran, ke ca cac loai AI bi dong (04-06)
+		NpcAI.m_nIndex = m_Index;
+		NpcAI.AlertAllies(nLauncher);
+	}
 	return TRUE;
 }
 #endif
@@ -6614,6 +6647,7 @@ void	KNpc::RestoreNpcBaseInfo()
 
 	m_nPeopleIdx = 0;
 	m_nLastDamageIdx = 0;
+	for (int t = 0; t < MAX_THREAT_ENTRY; t++) { m_nThreatIdx[t] = 0; m_dwThreatID[t] = 0; m_nThreatValue[t] = 0; }
 	m_nLastPoisonDamageIdx = 0;
 	m_nObjectIdx = 0;
 

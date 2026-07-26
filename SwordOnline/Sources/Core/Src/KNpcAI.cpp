@@ -14,6 +14,8 @@ extern int GetRandomNumber(int nMin, int nMax);
 
 #define		MAX_FOLLOW_DISTANCE		48
 #define		FOLLOW_WALK_DISTANCE	100
+#define		MAX_ALERT_ALLY		5
+#define		FINISH_HP_PERCENT	25
 
 KNpcAI NpcAI;
 
@@ -1028,6 +1030,50 @@ int KNpcAI::IsPlayerCome()
 }
 #endif
 
+// Tra ve idx ke da gay nhieu sat thuong nhat (con song, con trong tam nhin), 0 neu khong co
+int KNpcAI::GetTopThreat()
+{
+	int nBestIdx = 0;
+	int nBestValue = 0;
+	for (int t = 0; t < MAX_THREAT_ENTRY; t++)
+	{
+		int nIdx = Npc[m_nIndex].m_nThreatIdx[t];
+		if (nIdx <= 0 || nIdx == m_nIndex)
+			continue;
+		if (Npc[nIdx].m_dwID != Npc[m_nIndex].m_dwThreatID[t])
+			continue;
+		if (CheckNpc(nIdx))
+			continue;
+		if (!InEyeshot(nIdx))
+			continue;
+		if (Npc[m_nIndex].m_nThreatValue[t] > nBestValue)
+		{
+			nBestValue = Npc[m_nIndex].m_nThreatValue[t];
+			nBestIdx = nIdx;
+		}
+	}
+	return nBestIdx;
+}
+
+// Neu muc tieu sap chet (<= FINISH_HP_PERCENT), don het xac suat "khong hanh dong" thanh
+// chac chan dung 1 trong cac ki nang tan cong duoc cau hinh - tranh bo lo co hoi ket lieu.
+int KNpcAI::BiasRandForFinish(int nEnemyIdx, int nRand, int nParamStart, int nParamCount)
+{
+	if (Npc[nEnemyIdx].m_CurrentLifeMax <= 0)
+		return nRand;
+	if (Npc[nEnemyIdx].m_CurrentLife * 100 / Npc[nEnemyIdx].m_CurrentLifeMax > FINISH_HP_PERCENT)
+		return nRand;
+
+	int *pAIParam = Npc[m_nIndex].m_AiParam;
+	int nTotal = 0;
+	for (int k = 0; k < nParamCount; k++)
+		nTotal += pAIParam[nParamStart + k];
+	if (nTotal <= 0)
+		return nRand;
+
+	return nRand % nTotal;
+}
+
 int KNpcAI::GetNpcNumber(int nRelation)
 {
 	int nRangeX = Npc[m_nIndex].m_VisionRadius;
@@ -1088,6 +1134,77 @@ int KNpcAI::GetNpcNumber(int nRelation)
 	return nRet;
 }
 
+// Goi dong minh cung phe trong tam nhin vao tran danh khi phat hien ke dich moi.
+void KNpcAI::AlertAllies(int nEnemyIdx)
+{
+	int nRangeX = Npc[m_nIndex].m_VisionRadius;
+	int	nRangeY = nRangeX;
+	int	nSubWorld = Npc[m_nIndex].m_SubWorldIndex;
+	int	nRegion = Npc[m_nIndex].m_RegionIndex;
+	int	nMapX = Npc[m_nIndex].m_MapX;
+	int	nMapY = Npc[m_nIndex].m_MapY;
+	int	nAlerted = 0;
+	int	nRMx, nRMy, nSearchRegion;
+	int	nEnemyMpsX, nEnemyMpsY;
+
+	Npc[nEnemyIdx].GetMpsPos(&nEnemyMpsX, &nEnemyMpsY);
+	nRangeX = nRangeX / SubWorld[nSubWorld].m_nCellWidth;
+	nRangeY = nRangeY / SubWorld[nSubWorld].m_nCellHeight;
+
+	for (int i = -nRangeX; i < nRangeX && nAlerted < MAX_ALERT_ALLY; i++)
+	{
+		for (int j = -nRangeY; j < nRangeY && nAlerted < MAX_ALERT_ALLY; j++)
+		{
+			if ((i * i + j * j) > nRangeX * nRangeX)
+				continue;
+
+			nRMx = nMapX + i;
+			nRMy = nMapY + j;
+			nSearchRegion = nRegion;
+			if (nRMx < 0)
+			{
+				nSearchRegion = SubWorld[nSubWorld].m_Region[nSearchRegion].m_nConnectRegion[2];
+				nRMx += SubWorld[nSubWorld].m_nRegionWidth;
+			}
+			else if (nRMx >= SubWorld[nSubWorld].m_nRegionWidth)
+			{
+				nSearchRegion = SubWorld[nSubWorld].m_Region[nSearchRegion].m_nConnectRegion[6];
+				nRMx -= SubWorld[nSubWorld].m_nRegionWidth;
+			}
+			if (nSearchRegion == -1)
+				continue;
+			if (nRMy < 0)
+			{
+				nSearchRegion = SubWorld[nSubWorld].m_Region[nSearchRegion].m_nConnectRegion[4];
+				nRMy += SubWorld[nSubWorld].m_nRegionHeight;
+			}
+			else if (nRMy >= SubWorld[nSubWorld].m_nRegionHeight)
+			{
+				nSearchRegion = SubWorld[nSubWorld].m_Region[nSearchRegion].m_nConnectRegion[0];
+				nRMy -= SubWorld[nSubWorld].m_nRegionHeight;
+			}
+			if (nSearchRegion == -1)
+				continue;
+
+			int nAllyIdx = SubWorld[nSubWorld].m_Region[nSearchRegion].FindNpc(nRMx, nRMy, m_nIndex, relation_ally);
+			if (nAllyIdx <= 0 || nAllyIdx == m_nIndex)
+				continue;
+			if (CheckNpc(nAllyIdx))
+				continue;
+			if (Npc[nAllyIdx].m_nPeopleIdx > 0)
+				continue;
+			if (g_GetDistance(Npc[nAllyIdx].m_OriginX, Npc[nAllyIdx].m_OriginY, nEnemyMpsX, nEnemyMpsY) > Npc[nAllyIdx].m_ActiveRadius)
+				continue;
+			Npc[nAllyIdx].m_nPeopleIdx = nEnemyIdx;
+#ifdef _SERVER
+			printf("[AI-Alert] Npc[%d] '%s' goi dong minh Npc[%d] '%s' cung tan cong muc tieu Npc[%d] '%s'\n",
+				m_nIndex, Npc[m_nIndex].Name, nAllyIdx, Npc[nAllyIdx].Name, nEnemyIdx, Npc[nEnemyIdx].Name);
+#endif
+			nAlerted++;
+		}
+	}
+}
+
 void KNpcAI::KeepAttackRange(int nEnemy, int nRange)
 {
 	int nX1, nY1, nX2, nY2, nDir, nWantX, nWantY;
@@ -1138,11 +1255,11 @@ void KNpcAI::FollowAttack(int i)
 		return;
 	}
 
-	// Move to Enemy
+	// Move to Enemy - dung do_run de khong bi nguoi choi ke ke (kiting)
 	int x, y;
 	Npc[i].GetMpsPos(&x, &y);
 
-	Npc[m_nIndex].SendCommand(do_walk, x, y);
+	Npc[m_nIndex].SendCommand(do_run, x, y);
 }
 
 BOOL KNpcAI::InEyeshot(int nIdx)
@@ -1266,9 +1383,18 @@ void	KNpcAI::ProcessAIType01()
 	// 如果原本没有锁定敌人或者这个敌人跑太远，重新锁定敌人
 	if (nEnemyIdx <= 0 || Npc[nEnemyIdx].m_dwID <= 0 || !InEyeshot(nEnemyIdx) )
 	{
-		nEnemyIdx = GetNearestNpc(relation_enemy);
+		int nFoundIdx = GetTopThreat();
+		if (nFoundIdx <= 0)
+			nFoundIdx = GetNearestNpc(relation_enemy);
+		if (nFoundIdx > 0)
+			nEnemyIdx = nFoundIdx;
+		else if (nEnemyIdx <= 0 || Npc[nEnemyIdx].m_dwID <= 0)
+			nEnemyIdx = 0;
+		// else: giu nguyen muc tieu cu (tam thoi ngoai tam nhin nhung con song) de tiep tuc duoi theo, tranh mat dau vet vua duoc dong minh bao
 		Npc[m_nIndex].m_nPeopleIdx = nEnemyIdx;
 	}
+	if (nEnemyIdx > 0)
+		AlertAllies(nEnemyIdx);
 
 	// 周围没有敌人，一定概率待机/巡逻
 	if (nEnemyIdx <= 0)
@@ -1300,6 +1426,7 @@ void	KNpcAI::ProcessAIType01()
 	// 敌人在最大技能攻击范围之内，选择一种技能攻击
 	int		nRand;
 	nRand = g_Random(100);
+	nRand = BiasRandForFinish(nEnemyIdx, nRand, 1, 4);
 	if (nRand < pAIParam[1])
 	{
 		if (!Npc[m_nIndex].SetActiveSkill(1))
@@ -1361,9 +1488,18 @@ void	KNpcAI::ProcessAIType02()
 	// 如果原本没有锁定敌人或者这个敌人跑太远，重新锁定敌人
 	if (nEnemyIdx <= 0 || Npc[nEnemyIdx].m_dwID <= 0 || !InEyeshot(nEnemyIdx) )
 	{
-		nEnemyIdx = GetNearestNpc(relation_enemy);
+		int nFoundIdx = GetTopThreat();
+		if (nFoundIdx <= 0)
+			nFoundIdx = GetNearestNpc(relation_enemy);
+		if (nFoundIdx > 0)
+			nEnemyIdx = nFoundIdx;
+		else if (nEnemyIdx <= 0 || Npc[nEnemyIdx].m_dwID <= 0)
+			nEnemyIdx = 0;
+		// else: giu nguyen muc tieu cu (tam thoi ngoai tam nhin nhung con song) de tiep tuc duoi theo, tranh mat dau vet vua duoc dong minh bao
 		Npc[m_nIndex].m_nPeopleIdx = nEnemyIdx;
 	}
+	if (nEnemyIdx > 0)
+		AlertAllies(nEnemyIdx);
 
 	// 周围没有敌人，一定概率待机/巡逻
 	if (nEnemyIdx <= 0)
@@ -1415,6 +1551,7 @@ void	KNpcAI::ProcessAIType02()
 	// 敌人在最大技能攻击范围之内，选择一种技能攻击
 	int		nRand;
 	nRand = g_Random(100);
+	nRand = BiasRandForFinish(nEnemyIdx, nRand, 4, 3);
 	if (nRand < pAIParam[4])
 	{
 		if (!Npc[m_nIndex].SetActiveSkill(2))
@@ -1466,9 +1603,18 @@ void	KNpcAI::ProcessAIType03()
 	// 如果原本没有锁定敌人或者这个敌人跑太远，重新锁定敌人
 	if (nEnemyIdx <= 0 || Npc[nEnemyIdx].m_dwID <= 0 || !InEyeshot(nEnemyIdx) )
 	{
-		nEnemyIdx = GetNearestNpc(relation_enemy);
+		int nFoundIdx = GetTopThreat();
+		if (nFoundIdx <= 0)
+			nFoundIdx = GetNearestNpc(relation_enemy);
+		if (nFoundIdx > 0)
+			nEnemyIdx = nFoundIdx;
+		else if (nEnemyIdx <= 0 || Npc[nEnemyIdx].m_dwID <= 0)
+			nEnemyIdx = 0;
+		// else: giu nguyen muc tieu cu (tam thoi ngoai tam nhin nhung con song) de tiep tuc duoi theo, tranh mat dau vet vua duoc dong minh bao
 		Npc[m_nIndex].m_nPeopleIdx = nEnemyIdx;
 	}
+	if (nEnemyIdx > 0)
+		AlertAllies(nEnemyIdx);
 
 	// 周围没有敌人，一定概率待机/巡逻
 	if (nEnemyIdx <= 0)
@@ -1519,6 +1665,7 @@ void	KNpcAI::ProcessAIType03()
 	// 敌人在最大技能攻击范围之内，选择一种技能攻击
 	int		nRand;
 	nRand = g_Random(100);
+	nRand = BiasRandForFinish(nEnemyIdx, nRand, 4, 3);
 	if (nRand < pAIParam[4])
 	{
 		if (!Npc[m_nIndex].SetActiveSkill(2))
@@ -1595,6 +1742,7 @@ void	KNpcAI::ProcessAIType04()
 	// 敌人在最大技能攻击范围之内，选择一种技能攻击
 	int		nRand;
 	nRand = g_Random(100);
+	nRand = BiasRandForFinish(nEnemyIdx, nRand, 1, 4);
 	if (nRand < pAIParam[1])
 	{
 		if (!Npc[m_nIndex].SetActiveSkill(1))
@@ -1702,6 +1850,7 @@ void	KNpcAI::ProcessAIType05()
 	// 敌人在最大技能攻击范围之内，选择一种技能攻击
 	int		nRand;
 	nRand = g_Random(100);
+	nRand = BiasRandForFinish(nEnemyIdx, nRand, 4, 3);
 	if (nRand < pAIParam[4])
 	{
 		if (!Npc[m_nIndex].SetActiveSkill(2))
@@ -1800,6 +1949,7 @@ void	KNpcAI::ProcessAIType06()
 	// 敌人在最大技能攻击范围之内，选择一种技能攻击
 	int		nRand;
 	nRand = g_Random(100);
+	nRand = BiasRandForFinish(nEnemyIdx, nRand, 4, 3);
 	if (nRand < pAIParam[4])
 	{
 		if (!Npc[m_nIndex].SetActiveSkill(2))

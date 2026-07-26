@@ -17,6 +17,9 @@ public:
 private:	
 	int				GetNearestNpc(int nRelation);
 	int				GetNpcNumber(int nRelation);
+	int				GetTopThreat();
+	int				BiasRandForFinish(int nEnemyIdx, int nRand, int nParamStart, int nParamCount);
+	void			AlertAllies(int nEnemyIdx);
 	void			ProcessPlayer();
 
 /*	void			ProcessAIType1();

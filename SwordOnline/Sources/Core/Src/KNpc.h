@@ -366,6 +366,10 @@ public:
 	DWORD				m_TrapScriptID;			// Npc的当前Trap脚本ID;
 
 	int					m_nPeopleIdx;			// 对象人物
+#define MAX_THREAT_ENTRY 3
+	int				m_nThreatIdx[MAX_THREAT_ENTRY];		// Cac Npc da tan cong minh (theo threat)
+	DWORD				m_dwThreatID[MAX_THREAT_ENTRY];	// dwID cua ke tan cong tai thoi diem ghi nhan (chong stale index)
+	int				m_nThreatValue[MAX_THREAT_ENTRY];	// Tong sat thuong da nhan tu ke tan cong tuong ung
 	int					m_nLastDamageIdx;		// 最后一次伤害的人物索引
 	int					m_nLastPoisonDamageIdx;	// 最后一次毒伤害的人物索引
 	int					m_nObjectIdx;			// 对象物品
