@@ -501,6 +501,51 @@ case GDI_GAME_OBJ_DESC:
 				nRet = 1;
 		}
 		break;
+	case GDI_GAME_OBJ_EQUIP_COMPARE:
+		nRet = 0;
+		if (uParam && nParam)
+		{
+			KUiGameObject* pSrcObj = (KUiGameObject*)uParam;
+			KUiGameObject* pDstObj = (KUiGameObject*)nParam;
+			pDstObj->uGenre = CGOG_NOTHING;
+			pDstObj->uId = 0;
+			if (pSrcObj->uGenre == CGOG_ITEM && pSrcObj->uId > 0 &&
+				Item[pSrcObj->uId].GetGenre() == item_equip)
+			{
+				int nPlace = -1;
+				switch (Item[pSrcObj->uId].GetDetailType())
+				{
+				case equip_meleeweapon:
+				case equip_rangeweapon:	nPlace = itempart_weapon;	break;
+				case equip_armor:		nPlace = itempart_body;	break;
+				case equip_helm:		nPlace = itempart_head;	break;
+				case equip_boots:		nPlace = itempart_foot;	break;
+				case equip_ring:		nPlace = itempart_ring1;	break;
+				case equip_amulet:		nPlace = itempart_amulet;	break;
+				case equip_belt:		nPlace = itempart_belt;	break;
+				case equip_cuff:		nPlace = itempart_cuff;	break;
+				case equip_pendant:		nPlace = itempart_pendant;	break;
+				case equip_horse:		nPlace = itempart_horse;	break;
+				case equip_mask:		nPlace = itempart_mask;	break;
+				case equip_mantle:		nPlace = itempart_mantle;	break;
+				case equip_signet:		nPlace = itempart_signet;	break;
+				case equip_shipin:		nPlace = itempart_shipin;	break;
+				case equip_hoods:		nPlace = itempart_hoods;	break;
+				case equip_cloak:		nPlace = itempart_cloak;	break;
+				}
+				if (nPlace >= 0)
+				{
+					int nEquipIdx = Player[CLIENT_PLAYER_INDEX].m_ItemList.GetEquipment(nPlace);
+					if (nEquipIdx > 0 && nEquipIdx != (int)pSrcObj->uId)
+					{
+						pDstObj->uGenre = CGOG_ITEM;
+						pDstObj->uId = nEquipIdx;
+						nRet = 1;
+					}
+				}
+			}
+		}
+		break;
 	case GDI_PLAYER_UID:
 			nRet = Npc[Player[CLIENT_PLAYER_INDEX].m_nIndex].m_dwID;
 		break;

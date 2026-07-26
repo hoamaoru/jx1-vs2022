@@ -124,6 +124,7 @@ void Wnd_RenderWindows()
 	KPopupMenu::PaintMenu();
 	g_SpaceOver.PaintSpaceOverInfo();
 	g_MouseOver.PaintMouseHoverInfo();
+	g_MouseOverCompare.PaintMouseHoverInfo();
 
 	if (WND_SHOW_MOUSE_OVER_WND && s_WndStation.pMouseOverWnd)
 		s_WndStation.pMouseOverWnd->PaintDebugInfo();
@@ -302,6 +303,7 @@ void Wnd_ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam)
 			return;
 		}
 		g_MouseOver.UpdateCursorPos(x, y);
+		g_MouseOverCompare.UpdateCursorPos(x, y);
 		
 		if (s_WndStation.pCaptureMouseWnd)
 			pActiveWnd = s_WndStation.pCaptureMouseWnd;
@@ -325,6 +327,7 @@ void Wnd_ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam)
 			if (pTopWnd != s_WndStation.pMouseOverWnd)
 			{
 				g_MouseOver.CancelMouseHoverInfo();
+				g_MouseOverCompare.CancelMouseHoverInfo();
 				KWndWindow* pOverParent = NULL;
 				if (s_WndStation.pMouseOverWnd)
 				{

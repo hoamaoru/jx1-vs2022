@@ -23,6 +23,7 @@ extern iRepresentShell*	g_pRepresentShell;
 extern iCoreShell*	g_pCoreShell;
 
 KMouseOver	g_MouseOver;
+KMouseOver	g_MouseOverCompare;
 #define	SCHEME_INI				"弹出说明文字.ini"
 #define	INFO_MIN_LEN			26
 #define FOLLOW_CURSOR_OFFSET_X	16
@@ -36,13 +37,13 @@ void SetHoverObjDescColor(unsigned int uColor)
 }
 
 void SetMouseHoverObjectDesc(void* pWnd, int nObj, unsigned int uGenre,
-			unsigned int uId, int nContainer, int x, int y, bool LAlign)
+			unsigned int uId, int nContainer, int x, int y, bool LAlign, KMouseOver& mouseOver, bool bFollowCursor)
 {
 	KGameObjDesc	Desc;
 
 	int		nLenTitle = 0, nLenProp = 0, nLenDesc = 0;
 	
-	g_MouseOver.CancelMouseHoverInfo();
+	mouseOver.CancelMouseHoverInfo();
 	if (g_pCoreShell)
 	{
 		KUiObjAtContRegion	Obj;
@@ -61,23 +62,23 @@ void SetMouseHoverObjectDesc(void* pWnd, int nObj, unsigned int uGenre,
 			uIndex = GDI_GAME_OBJ_DESC_INCLUDE_TRADEINFO;
 	
 		g_pCoreShell->GetGameData(uIndex, (unsigned int)&Obj, (int)&Desc);
-		g_MouseOver.SetMouseHoverInfo(pWnd, nObj, x, y, false, false, LAlign);
-		g_MouseOver.SetMouseHoverImage(g_pCoreShell->GetGameData(GDI_GAME_OBJ_DESC_INCLUDE_MOUSEHOVER, (unsigned int)&Obj, (int)&g_MouseOver.m_HoverImage.szImage) == 1);
+		mouseOver.SetMouseHoverInfo(pWnd, nObj, x, y, false, bFollowCursor, LAlign);
+		mouseOver.SetMouseHoverImage(g_pCoreShell->GetGameData(GDI_GAME_OBJ_DESC_INCLUDE_MOUSEHOVER, (unsigned int)&Obj, (int)&mouseOver.m_HoverImage.szImage) == 1);
 		
 		if (Desc.szTitle[0])
 		{
 			nLenTitle = TEncodeText(Desc.szTitle, strlen(Desc.szTitle));
-			g_MouseOver.SetMouseHoverTitle(Desc.szTitle, nLenTitle,s_uHoverObjDestTextColor);
+			mouseOver.SetMouseHoverTitle(Desc.szTitle, nLenTitle,s_uHoverObjDestTextColor);
 		}
 		if (Desc.szProp[0])
 		{
 			nLenProp = TEncodeText(Desc.szProp, strlen(Desc.szProp));
-			g_MouseOver.SetMouseHoverProp(Desc.szProp, nLenProp, s_uHoverObjDestTextColor);
+			mouseOver.SetMouseHoverProp(Desc.szProp, nLenProp, s_uHoverObjDestTextColor);
 		}
 		if (Desc.szDesc[0])
 		{
 			nLenDesc = TEncodeText(Desc.szDesc, strlen(Desc.szDesc));
-			g_MouseOver.SetMouseHoverDesc(Desc.szDesc, nLenDesc, s_uHoverObjDestTextColor);
+			mouseOver.SetMouseHoverDesc(Desc.szDesc, nLenDesc, s_uHoverObjDestTextColor);
 		}
 	}	
 }

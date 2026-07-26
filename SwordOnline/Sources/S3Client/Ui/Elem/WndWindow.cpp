@@ -56,6 +56,7 @@ KWndWindow::~KWndWindow()
 	LeaveAlone();
 	Wnd_OnWindowDelete(this);
 	g_MouseOver.OnWndClosed((void*)this);
+	g_MouseOverCompare.OnWndClosed((void*)this);
 }
 
 //--------------------------------------------------------------------------
@@ -198,6 +199,7 @@ void KWndWindow::Hide()
 {
 	m_Style &= ~WND_S_VISIBLE;
 	g_MouseOver.OnWndClosed((void*)this);
+	g_MouseOverCompare.OnWndClosed((void*)this);
 	KWndWindow* pFocus = Wnd_GetFocusWnd();
 	while(pFocus)
 	{

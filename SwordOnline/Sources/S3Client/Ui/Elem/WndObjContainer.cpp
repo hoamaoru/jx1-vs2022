@@ -740,11 +740,58 @@ int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 				{
 					SetMouseHoverObjectDesc(this, nObj, m_pObjects[nObj].uGenre,
 						m_pObjects[nObj].uId, m_nContainerId, x, y);
+
+					// So sánh với item đang trang bị trên người khi hover trong Hành Trang
+					g_MouseOverCompare.CancelMouseHoverInfo();
+					if (m_nContainerId == UOC_ITEM_TAKE_WITH && g_pCoreShell)
+					{
+						KUiGameObject HoverObj, EquipObj;
+						HoverObj.uGenre = m_pObjects[nObj].uGenre;
+						HoverObj.uId = m_pObjects[nObj].uId;
+						EquipObj.uGenre = CGOG_NOTHING;
+						EquipObj.uId = 0;
+						if (g_pCoreShell->GetGameData(GDI_GAME_OBJ_EQUIP_COMPARE,
+							(unsigned int)&HoverObj, (int)&EquipObj) == 1)
+						{
+							SetMouseHoverObjectDesc(this, nObj, EquipObj.uGenre,
+								EquipObj.uId, UOC_EQUIPTMENT, x, y, false,
+								g_MouseOverCompare, false);
+
+							// Đặt tooltip so sánh kề ngay bên phải tooltip của item đang hover,
+							// tính theo đúng vị trí thực tế (có tính lật cạnh) mà PaintMouseHoverInfo sẽ vẽ
+							if (g_MouseOver.IsShown())
+							{
+								int nPrimaryLeft = g_MouseOver.GetLeft();
+								int nPrimaryWidth = g_MouseOver.GetWndWidth();
+								int nPrimaryDrawLeft, nPrimaryDrawRight;
+								if (nPrimaryLeft + nPrimaryWidth <= RESOLUTION_WIDTH)
+								{
+									nPrimaryDrawLeft = nPrimaryLeft;
+									nPrimaryDrawRight = nPrimaryLeft + nPrimaryWidth;
+								}
+								else
+								{
+									nPrimaryDrawRight = nPrimaryLeft;
+									nPrimaryDrawLeft = (nPrimaryLeft - nPrimaryWidth - 10 < 0) ? 0 : (nPrimaryLeft - nPrimaryWidth - 10);
+								}
+
+								int nCompareWidth = g_MouseOverCompare.GetWndWidth();
+								int nCompareLeft;
+								if (nPrimaryDrawRight + nCompareWidth <= RESOLUTION_WIDTH)
+									nCompareLeft = nPrimaryDrawRight;
+								else
+									nCompareLeft = (nPrimaryDrawLeft - nCompareWidth > 0) ? (nPrimaryDrawLeft - nCompareWidth) : 0;
+
+								g_MouseOverCompare.SetPosition(nCompareLeft, g_MouseOver.GetTop());
+							}
+						}
+					}
 				}
 			}
 			else
 			{
 				g_MouseOver.CancelMouseHoverInfo();
+				g_MouseOverCompare.CancelMouseHoverInfo();
 			}
 			if ((m_Style & OBJCONT_S_TRACE_PUT_POS) && Wnd_GetDragObj(NULL))
 			{

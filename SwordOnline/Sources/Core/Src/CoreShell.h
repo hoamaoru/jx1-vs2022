@@ -50,6 +50,10 @@ enum GAMEDATA_INDEX
 	//参数含义同GDI_GAME_OBJ_DESC
 
 	GDI_GAME_OBJ_DESC_INCLUDE_MOUSEHOVER,
+
+	GDI_GAME_OBJ_EQUIP_COMPARE,	//So sanh item dang hover voi item dang trang bi tren nguoi
+	//uParam = (KUiGameObject*) item dang hover (uGenre/uId)
+	//nParam = (KUiGameObject*) tra ve item dang trang bi o vi tri tuong ung, uGenre=CGOG_NOTHING neu khong co
 	
 	GDI_GAME_OBJ_LIGHT_PROP,	//对象的光源属性数据
 	//uParam = (KUiGameObject*) 描述游戏对象的结构数据的指针

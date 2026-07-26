@@ -404,6 +404,7 @@ void KUiBase::LoadSchemeForEachWnd()
 	KUiSysMsgCentre::LoadScheme(m_CurSchemePath);
 	KUiMiniMap::LoadScheme(m_CurSchemePath);
 	g_MouseOver.LoadScheme(m_CurSchemePath);
+	g_MouseOverCompare.LoadScheme(m_CurSchemePath);
 	g_SpaceOver.LoadScheme(m_CurSchemePath);
 	g_UiInformation.LoadScheme(m_CurSchemePath);
 	g_UiInformation1.LoadScheme(m_CurSchemePath);

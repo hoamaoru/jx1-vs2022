@@ -28,6 +28,11 @@ public:
 	void	LoadScheme(const char* pScheme);		//载入界面方案
 	void	UpdateCursorPos(int nX, int nY);		//鼠标的位置更新了
 	void	OnWndClosed(void* pWnd);
+	int	GetLeft() const { return m_nLeft; }
+	int	GetTop() const { return m_nTop; }
+	int	GetWndWidth() const { return m_nWndWidth; }
+	bool	IsShown() const { return m_bShow != 0; }
+	void	SetPosition(int nLeft, int nTop) { m_nLeft = nLeft; m_nTop = nTop; }
 private:
 	void	Update(int nX, int nY);
 private:
@@ -84,9 +89,11 @@ public:
 };
 
 extern KMouseOver	g_MouseOver;
+extern KMouseOver	g_MouseOverCompare;
 
 void SetHoverObjDescColor(unsigned int uColor);
 void SetMouseHoverObjectDesc(void* pWnd, int nObj, unsigned int uGenre,
-			unsigned int uId, int nContainer, int x, int y, bool LAlign = false);
+			unsigned int uId, int nContainer, int x, int y, bool LAlign = false,
+			KMouseOver& mouseOver = g_MouseOver, bool bFollowCursor = false);
 //绘制被拖动游戏对象的函数
 int DrawDraggingGameObjFunc(int x, int y, const KUiDraggedObject& Obj, int nDropQueryResult);
