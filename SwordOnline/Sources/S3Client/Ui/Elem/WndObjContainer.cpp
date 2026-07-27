@@ -763,12 +763,13 @@ int KWndObjectMatrix::WndProc(unsigned int uMsg, unsigned int uParam, int nParam
 							// tính theo đúng vị trí thực tế (có tính lật cạnh) mà PaintMouseHoverInfo sẽ vẽ
 							if (g_MouseOver.IsShown())
 							{
+								const int nTooltipGap = 1;
 								int nPrimaryDrawLeft = g_MouseOver.GetDrawLeft();
 								int nPrimaryDrawRight = g_MouseOver.GetDrawRight();
 								int nCompareWidth = g_MouseOverCompare.GetWndWidth();
-								int nCompareLeft = (nPrimaryDrawRight + nCompareWidth <= RESOLUTION_WIDTH)
-									? nPrimaryDrawRight
-									: ((nPrimaryDrawLeft - nCompareWidth > 0) ? (nPrimaryDrawLeft - nCompareWidth) : 0);
+								int nCompareLeft = (nPrimaryDrawRight + nTooltipGap + nCompareWidth <= RESOLUTION_WIDTH)
+									? (nPrimaryDrawRight + nTooltipGap)
+									: ((nPrimaryDrawLeft - nTooltipGap - nCompareWidth > 0) ? (nPrimaryDrawLeft - nTooltipGap - nCompareWidth) : 0);
 
 								g_MouseOverCompare.SetPosition(nCompareLeft, g_MouseOver.GetTop());
 							}
