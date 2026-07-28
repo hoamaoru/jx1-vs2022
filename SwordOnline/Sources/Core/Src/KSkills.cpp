@@ -2783,6 +2783,13 @@ BOOL	KSkill::ParseString2MagicAttrib(unsigned long ulLevel, char* szMagicAttribN
 					m_DamageAttribs[16].nValue[2] = nValue3;
 					m_nDamageAttribsNum++;
 					break;
+				case magic_do_knockback:
+					m_DamageAttribs[17].nAttribType = i;
+					m_DamageAttribs[17].nValue[0] = nValue1;
+					m_DamageAttribs[17].nValue[1] = nValue2;
+					m_DamageAttribs[17].nValue[2] = nValue3;
+					m_nDamageAttribsNum++;
+					break;
 				}
 				//return TRUE;
 			}

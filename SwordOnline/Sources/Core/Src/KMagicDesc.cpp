@@ -84,7 +84,7 @@ const char MAGIC_ATTRIB_STRING[][100] =
 	"deadlystrike_p",					//71 
 	"fatallystrike_p",					//72 
 	"stun_p",							//73 
-	"trong",							//74 
+	"do_knockback",						//74
 	"randmove",							//75 
 	"damage_reserve2",					//76 
 	"damage_reserve3",					//77 

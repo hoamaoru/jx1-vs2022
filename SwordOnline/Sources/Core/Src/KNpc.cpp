@@ -3031,8 +3031,28 @@ BOOL KNpc::ReceiveDamage(int nLauncher, int nMissleSeries, BOOL bIsMelee, void* 
 	if (pTemp->nValue[0] && pTemp->nValue[1] && g_RandPercent(nMissRate))
 		return FALSE;
 
+	pTemp++;
+	BOOL bDoKnockback = g_RandPercent(pTemp->nValue[0]);
+
 	if (g_RandPercent(nDoHurtP))
 		DoHurt();
+
+	if (bDoKnockback && m_Doing != do_death && m_Doing != do_revive)
+	{
+		int nX, nY;
+		GetMpsPos(&nX, &nY);
+		int nDir = Npc[nLauncher].m_Dir;
+		int nDistance = SubWorld[m_SubWorldIndex].m_nCellWidth * 2;
+		int nDestX = nX + ((nDistance * g_DirCos(nDir, 64)) >> 10);
+		int nDestY = nY + ((nDistance * g_DirSin(nDir, 64)) >> 10);
+		int nBarrier = SubWorld[m_SubWorldIndex].GetBarrier(nDestX, nDestY);
+		DWORD dwTrap = SubWorld[m_SubWorldIndex].GetTrap(nDestX, nDestY);
+		if (nBarrier == Obstacle_NULL && dwTrap == 0)
+		{
+			if (NewPath(nDestX, nDestY))
+				DoRun();
+		}
+	}
 
 	m_nPeopleIdx = nLauncher;
 	if (nLauncher > 0)
@@ -3302,6 +3322,15 @@ void KNpc::AppendSkillEffect(int nSkillID, BOOL bIsPhysical, BOOL bIsMelee, void
 	if (pTemp->nAttribType == magic_randmove)
 	{
 		pDes->nAttribType = magic_randmove;
+		pDes->nValue[0] = pTemp->nValue[0];
+		pDes->nValue[1] = pTemp->nValue[1];
+		pDes->nValue[2] = pTemp->nValue[2];
+	}
+	pTemp++;
+	pDes++;
+	if (pTemp->nAttribType == magic_do_knockback)
+	{
+		pDes->nAttribType = magic_do_knockback;
 		pDes->nValue[0] = pTemp->nValue[0];
 		pDes->nValue[1] = pTemp->nValue[1];
 		pDes->nValue[2] = pTemp->nValue[2];

@@ -10,7 +10,7 @@
 #include "KNode.h"
 #include "KMissleMagicAttribsData.h"
 #include "Skill.h"
-#define MAX_MISSLE_DAMAGEATTRIB 17
+#define MAX_MISSLE_DAMAGEATTRIB 18
 typedef  KSkill KFightSkill;
 class KMissle;
 class KSkill;

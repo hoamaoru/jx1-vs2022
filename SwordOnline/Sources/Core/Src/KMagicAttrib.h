@@ -79,8 +79,9 @@ enum MAGIC_ATTRIB
 	magic_deadlystrike_p,					//71
 	magic_fatallystrike_p,					//72
 	magic_stun_p,							//73
-	magic_randmove=75,						//75 
-	magic_damage_reserve2,					//76 
+	magic_do_knockback,						//74
+	magic_randmove=75,						//75
+	magic_damage_reserve2,					//76
 	magic_damage_reserve3,					//77 
 	magic_damage_reserve4,					//78 
 	magic_damage_reserve5,					//79 
