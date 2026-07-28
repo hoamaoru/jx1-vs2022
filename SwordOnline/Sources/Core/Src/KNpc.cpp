@@ -5691,19 +5691,6 @@ BOOL	KNpc::DoRunAttack()
 			m_ClientDoing = cdo_attack;
 		else
 			m_ClientDoing = cdo_attack1;
-
-		int x, y, tx, ty;
-		SubWorld[m_SubWorldIndex].Map2Mps(m_RegionIndex, m_MapX, m_MapY, m_OffX, m_OffY, &x, &y);
-		if (m_SkillParam1 == -1)
-		{
-			Npc[m_SkillParam2].GetMpsPos(&tx, &ty);
-		}
-		else
-		{
-			tx = m_SkillParam1;
-			ty = m_SkillParam2;
-		}
-		m_Dir = g_GetDirIndex(x, y, tx, ty);
 #endif
 		m_Frames.nTotalFrame = 0;
 		m_Frames.nCurrentFrame = 0;

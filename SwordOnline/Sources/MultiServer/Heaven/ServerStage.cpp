@@ -786,7 +786,8 @@ STDMETHODIMP_( const char * ) CIOCPServer::GetClientInfo(
 			
 			if ( pData )
 			{
-				return pData->GetConnectionDetails().c_str();
+				m_sConnectionDetailsBuf = pData->GetConnectionDetails();
+				return m_sConnectionDetailsBuf.c_str();
 			}
 		}
 	}
