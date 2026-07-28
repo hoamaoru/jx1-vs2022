@@ -6,6 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is **Jian Xia Qing Yuan (Sword Online / Võ Lâm 1)**, a classic MMORPG migrated to Visual Studio 2022. Written in C++14, 32-bit (Win32) targeting Windows. No automated test suite exists.
 
+## Encoding — MANDATORY
+
+Nearly all source files under `SwordOnline/Sources/` (`.cpp`/`.h`) are encoded in **ISO-8859-1 (Latin-1)**, not UTF-8, and carry Chinese/Vietnamese comments as raw high-byte sequences in that single-byte encoding. Standard text-editing tools (including this assistant's file-editing tools) decode/re-encode files as UTF-8 by default, which **silently corrupts every non-ASCII comment byte** in a file the moment any edit touches it — even a one-line change ends up rewriting the whole file as UTF-8.
+
+**Before editing any file under `SwordOnline/Sources/`:**
+1. Check its actual encoding first (e.g. `file <path>` — expect "ISO-8859 text"; if it instead reports "UTF-8", that file is already an already-migrated/pre-existing exception — treat as-is, don't "fix" it unprompted).
+2. Never retype or paste back comment text that was displayed mojibake/garbled by a tool — that garbled text is a misdecoded read, not the real bytes, and writing it back corrupts the file permanently.
+3. Prefer inserting new code near non-ASCII comment lines using an **ASCII-only anchor** (a neighboring line/token with no high-byte characters) rather than matching on the comment text itself.
+4. Write any new comments you add in plain ASCII (English is fine) — never copy adjacent-language comments verbatim into a new edit.
+5. After editing, verify with `file <path>` that it still reports ISO-8859 (not UTF-8/Unicode), and check `git diff --stat` — a correct surgical edit shows only the lines you intended to change; a diff spanning hundreds of unrelated lines is a sign the whole file got re-encoded and must be redone.
+6. If a tool's normal edit path can't preserve the encoding, do the edit at the byte level instead (e.g. read the original blob via `git show HEAD:<path>`, splice in pure-ASCII new lines with `head`/`tail`/`printf`, matching the file's existing line-ending convention — check for CRLF vs LF first, since files are inconsistent) rather than risk a full re-encode.
+
 ## Building
 
 Open `SwordOnline\Sources\JXAll.sln` in Visual Studio 2022 and build via the IDE. There is no command-line build script.
