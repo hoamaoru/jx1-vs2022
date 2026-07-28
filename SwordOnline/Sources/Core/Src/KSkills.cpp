@@ -1802,8 +1802,11 @@ int		KSkill::CastSpread(TOrdinSkillParam* pSkillParam, int nDir, int nRefPX, int
 			SubWorld[Npc[nTargetId].m_SubWorldIndex].Map2Mps(Npc[nTargetId].m_RegionIndex, Npc[nTargetId].m_MapX, Npc[nTargetId].m_MapY, Npc[nTargetId].m_OffX, Npc[nTargetId].m_OffY, &nDesX, &nDesY);
 
 		nDistance = (int)sqrt((nDesX - nRefPX) * (nDesX - nRefPX) + (nDesY - nRefPY) * (nDesY - nRefPY));
-		nXFactor = ((nDesX - nRefPX) << 10) / nDistance;
-		nYFactor = ((nDesY - nRefPY) << 10) / nDistance;
+		if (nDistance > 0)
+		{
+			nXFactor = ((nDesX - nRefPX) << 10) / nDistance;
+			nYFactor = ((nDesY - nRefPY) << 10) / nDistance;
+		}
 
 		nDesSubX = nRefPX + ((nXFactor * nFirstStep) >> 10);
 		nDesSubY = nRefPY + ((nYFactor * nFirstStep) >> 10);

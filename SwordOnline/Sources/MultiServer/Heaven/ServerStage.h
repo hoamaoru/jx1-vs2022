@@ -223,7 +223,14 @@ private:
 
 	bool _HelperAddClient();
 	bool _HelperDelClient();
-	
+
+	/*
+	 * Backing storage for GetClientInfo()'s returned const char* --
+	 * GetConnectionDetails() returns _tstring by value, so the caller
+	 * needs somewhere durable to hold it before taking .c_str().
+	 */
+	OnlineGameLib::Win32::_tstring m_sConnectionDetailsBuf;
+
 };
 
 /*

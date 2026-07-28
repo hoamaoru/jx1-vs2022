@@ -112,6 +112,7 @@ int				g_nHandSkill;
 KTabFile 		g_MaskChangeRes;
 KIniFile 		g_GameSetting;
 KIniFile 		g_MapTraffic;
+BOOL			g_bRunAttackExactPos = FALSE;
 
 #ifdef _SERVER
 int				g_ExpRate = 1;
@@ -135,7 +136,7 @@ CORE_API void g_InitCore()
 {
 	time_t ltime;
 	time(&ltime);
-	printf("Stasting Core.... %s", ctime( &ltime ));
+	printf("Starting Core.... %s", ctime( &ltime ));
 
 #ifdef _SERVER
 	printf("MaxPlayer : %d\n", MAX_PLAYER);
@@ -581,6 +582,7 @@ BOOL InitGameSetting()
 		g_GameSetting.GetInteger("ServerConfig", "SkillRate", 0, &g_SkillExpRate);
 		g_GameSetting.GetInteger("ServerConfig", "Skill120Rate", 0, &g_Skill120ExpRate);
 #endif
+		g_GameSetting.GetInteger("ServerConfig", "RunAttackExactPos", 0, (int*)&g_bRunAttackExactPos);
 	}
 	else
 	{

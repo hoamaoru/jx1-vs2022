@@ -102,6 +102,7 @@ extern KTabFile					g_RankTabSetting;
 extern KTabFile					g_MaskChangeRes;
 extern KIniFile 				g_GameSetting;
 extern KIniFile 				g_MapTraffic;
+extern BOOL				g_bRunAttackExactPos;
 
 #ifdef _SERVER
 extern int		 		g_ExpRate;
