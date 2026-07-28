@@ -30,6 +30,7 @@ class KSkill;
 #define		STATE_HIDE		0x0008
 #define		STATE_FROZEN	0x0010
 #define		STATE_WALKRUN	0x0020
+#define		STATE_BURN	0x0040
 
 enum NPCATTRIB
 {
@@ -291,6 +292,7 @@ public:
 	int					m_CurrentFreezeTimeReducePercent;	// 冰冻时间减少百分比
 	int					m_CurrentPoisonTimeReducePercent;	// 中毒时间减少百分比
 	int					m_CurrentStunTimeReducePercent;		// 眩晕时间减少百分比
+	int					m_CurrentBurnTimeReducePercent;		// Burn time reduce percent
 	int			 		m_CurrentReturnSkillPercent;
 	int					m_CurrentIgnoreSkillPercent;
 	int 				m_CurrentPoisonDamageReturn;

@@ -351,7 +351,8 @@ void KNpcAttribModify::BadStatusTimeReduceV(KNpc* pNpc, void* pData)
 
 void KNpcAttribModify::BurnTimeReduceP(KNpc* pNpc, void* pData)
 {
-	return;
+	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
+	pNpc->m_CurrentBurnTimeReducePercent += pMagic->nValue[0];
 }
 
 void KNpcAttribModify::CastSpeedV(KNpc* pNpc, void* pData)

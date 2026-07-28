@@ -2787,6 +2787,7 @@ void	KPlayer::UpdataCurData()
 	Npc[m_nIndex].m_CurrentFreezeTimeReducePercent = 0;
 	Npc[m_nIndex].m_CurrentPoisonTimeReducePercent = 0;
 	Npc[m_nIndex].m_CurrentStunTimeReducePercent = 0;
+	Npc[m_nIndex].m_CurrentBurnTimeReducePercent = 0;
 	Npc[m_nIndex].m_CurrentDamageReduce = 0;
 	Npc[m_nIndex].m_CurrentReturnSkillPercent = 0;
 	Npc[m_nIndex].m_CurrentIgnoreSkillPercent = 0;

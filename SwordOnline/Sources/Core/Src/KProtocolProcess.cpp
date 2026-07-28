@@ -1618,6 +1618,7 @@ void KProtocolProcess::SyncNpcMin(BYTE* pMsg)
 		Npc[nIdx].m_HideState.nTime		= NpcSync->State & STATE_HIDE;
 		Npc[nIdx].m_FrozenAction.nTime	= NpcSync->State & STATE_FROZEN;
 		Npc[nIdx].m_WalkRun.nTime		= NpcSync->State & STATE_WALKRUN;
+		Npc[nIdx].m_BurnState.nTime		= NpcSync->State & STATE_BURN;
 		Npc[nIdx].m_SyncSignal = SubWorld[0].m_dwCurrentTime;
 	}
 }

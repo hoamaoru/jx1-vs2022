@@ -2602,6 +2602,10 @@ BOOL KNpc::CalcDamage(int nAttacker, int nMissleSeries, int nMin, int nMax, DAMA
 			nRes = 0;
 			break;
 		}
+		if (m_BurnState.nTime > 0 && nType != damage_magic)
+		{
+			nRes -= nRes * BURN_RESIST_REDUCE_PERCENT / MAX_PERCENT;
+		}
 		if (this->m_Kind == kind_player)
 		{
 			if (Npc[nAttacker].m_Kind == kind_player)
@@ -2975,7 +2979,18 @@ BOOL KNpc::ReceiveDamage(int nLauncher, int nMissleSeries, BOOL bIsMelee, void* 
 			m_FreezeState.nTime = pTemp->nValue[1] - (pTemp->nValue[1] * nRdc / MAX_PERCENT);
 	}
 	pTemp++;
-	CalcDamage(nLauncher, nMissleSeries, pTemp->nValue[0], pTemp->nValue[2], damage_fire, bIsMelee, FALSE, nFiveElementsDamageP, 0, 0, 0, FALSE, bIsFS);
+	if (CalcDamage(nLauncher, nMissleSeries, pTemp->nValue[0], pTemp->nValue[2], damage_fire, bIsMelee, FALSE, nFiveElementsDamageP, 0, 0, 0, FALSE, bIsFS))
+	{
+		nRdc = m_CurrentBurnTimeReducePercent;
+		if (nRdc >= MAX_PERCENT)
+			nRdc = MAX_RESIST;
+		if (m_BurnState.nTime <= 0)
+		{
+			m_BurnState.nTime = BURN_DAMAGE_TIME - (BURN_DAMAGE_TIME * nRdc / MAX_PERCENT);
+			m_BurnState.nValue[0] = BURN_DAMAGE_VALUE;
+			m_BurnState.nValue[1] = BURN_DAMAGE_INTERVAL;
+		}
+	}
 
 	pTemp++;
 	CalcDamage(nLauncher, nMissleSeries, pTemp->nValue[0], pTemp->nValue[2], damage_light, bIsMelee, FALSE, nFiveElementsDamageP, 0, 0, 0, FALSE, bIsFS);
@@ -4338,6 +4353,8 @@ void KNpc::NormalSync()
 		NpcSync.State |= STATE_FROZEN;
 	if (m_WalkRun.nTime > 0)
 		NpcSync.State |= STATE_WALKRUN;
+	if (m_BurnState.nTime > 0)
+		NpcSync.State |= STATE_BURN;
 	NpcSync.Doing = (BYTE)m_Doing;
 
 	POINT	POff[8] =
@@ -6732,6 +6749,7 @@ void	KNpc::RestoreNpcBaseInfo()
 	m_CurrentFreezeTimeReducePercent = 0;
 	m_CurrentPoisonTimeReducePercent = 0;
 	m_CurrentStunTimeReducePercent = 0;
+	m_CurrentBurnTimeReducePercent = 0;
 	m_CurrentFireEnhance = 0;
 	m_CurrentColdEnhance = 0;
 	m_CurrentPoisonEnhance = 0;
