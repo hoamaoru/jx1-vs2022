@@ -3371,6 +3371,17 @@ void KNpc::ServerMove(int MoveSpeed)
 
 	int nRet = m_PathFinder.GetDir(x, y, m_Dir, m_DesX, m_DesY, MoveSpeed, &m_Dir);
 
+	if (nRet == 0 && m_Doing == do_runattack && g_bRunAttackExactPos)
+	{
+		int nDist = g_GetDistance(x >> 10, y >> 10, m_DesX, m_DesY);
+		if (nDist > 0)
+		{
+			m_Dir = g_GetDirIndex(x >> 10, y >> 10, m_DesX, m_DesY);
+			MoveSpeed = nDist;
+			nRet = 1;
+		}
+	}
+
 #ifndef _SERVER
 	if (nRet == 1)
 	{
