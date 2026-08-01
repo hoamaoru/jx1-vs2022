@@ -104,6 +104,7 @@ public:
 	void SetPaintMode(BOOL nIndex);
 	BOOL GetFlagMode();
 	void SetFlagMode(BOOL nIndex);
+	void AutoRunTo(int nX, int nY);
 	void GetSizeItem(unsigned int uId, int *nW, int *nH);
 	int	GetExtPoint();
 	int GetNatureItem(unsigned int uItemId, unsigned int uGenre);
@@ -4285,6 +4286,11 @@ BOOL KCoreShell::GetFlagMode()
 void KCoreShell::SetFlagMode(BOOL bFlag)
 {
 	g_ScenePlace.bFlagMode = bFlag;
+}
+
+void KCoreShell::AutoRunTo(int nX, int nY)
+{
+	g_ScenePlace.AutoRunTo(nX, nY);
 }
 
 void KCoreShell::GetSizeItem(unsigned int uItemId, int *nW, int *nH)

@@ -296,6 +296,7 @@ class KScenePlaceC
 	bool bFlagMode;
 	bool bPaintMode;
 	void DirectFindPos(int nX, int nY, BOOL bSync, BOOL bPaintLine);
+	void AutoRunTo(int nX, int nY);
 	void LoadIni(KIniFile *pIni);
 	
 	BOOL PaintBackGround();

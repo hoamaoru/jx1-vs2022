@@ -16,6 +16,15 @@
 #include "SceneDataDef.h"
 #include    "../../Engine/Src/KSG_StringProcess.h"
 #include "KScenePlaceC.h"
+#include "../KSubWorld.h"
+#include "ObstacleDef.h"
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <algorithm>
+#include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
 extern KScenePlaceC	g_ScenePlace;
 
 #define	PLACE_MAP_FILE_NAME_APPEND		"24.jpg"
@@ -43,6 +52,18 @@ KScenePlaceMapC::KScenePlaceMapC()
 	memset(&m_ElemsList, 0, sizeof(m_ElemsList));
 	m_pEntireMap = NULL;
 	m_DirectPos.x = m_DirectPos.y = 0;
+	m_nAutoPathCount = 0;
+	m_nAutoPathIdx = 0;
+	m_bAutoWalking = false;
+	m_nAutoDestX = 0;
+	m_nAutoDestY = 0;
+	m_nAutoReplanCooldown = 0;	// last-replan-attempt timestamp (ms), not a frame count
+	m_nAutoReplanAttempts = 0;
+	m_nAutoStuckCheckX = 0;
+	m_nAutoStuckCheckY = 0;
+	m_nAutoStuckFrames = 0;	// last-stuck-check timestamp (ms), not a frame count
+	m_nAutoTrueDestX = 0;
+	m_nAutoTrueDestY = 0;
 }
 
 KScenePlaceMapC::~KScenePlaceMapC()
@@ -1043,6 +1064,521 @@ void KScenePlaceMapC::DirectFindPos(int nX, int nY, BOOL bSync, BOOL bPaintLine)
 	m_bPaintLine = bPaintLine;
 }
 
+//---------------------------------------------------------------------------
+// A* auto-walk pathfinding: grid = 32px world cells, walkability comes from
+// whatever obstacle data the client already has loaded (same source used for
+// real movement collision, see KSubWorld::TestBarrier / KNpcFindPath::CheckBarrier).
+// This only ever "sees" regions the client has streamed in; destinations outside
+// that range simply fail to plan (caller falls back to direct walking).
+//---------------------------------------------------------------------------
+extern unsigned int IR_GetCurrentTime();
+
+namespace
+{
+	const int AUTO_PATH_CELL_SIZE = 32;
+	const int AUTO_PATH_MAX_NODES = 8000;
+	const int AUTO_PATH_ARRIVE_DIST = 24;
+	const int AUTO_PATH_WAYPOINT_DIST = 40;
+	// Real-time based, not frame-count based: this engine doesn't cap FPS, so a
+	// frame-count window can be a tiny fraction of a second on modern hardware,
+	// making any "no progress in N frames" check fire constantly during normal walking.
+	const unsigned int AUTO_PATH_REPLAN_INTERVAL_MS = 1000;
+	// A long walk now progresses in successive partial hops (see AutoPathFind's
+	// best-effort fallback), so it can legitimately need many replans - this only
+	// guards against a truly pathological loop, not normal multi-hop travel.
+	const int AUTO_PATH_MAX_REPLAN_ATTEMPTS = 200;
+	const unsigned int AUTO_PATH_STUCK_CHECK_MS = 1500;
+	const int AUTO_PATH_STUCK_MIN_PROGRESS = 32;
+
+	struct AutoPathNodeInfo
+	{
+		int g;
+		int parentX, parentY;
+		bool closed;
+	};
+
+	inline long long AutoPathCellKey(int x, int y)
+	{
+		return ((long long)(unsigned int)x << 32) | (unsigned int)(y);
+	}
+
+	// TEMP debug: mirrors to both the console (AllocConsole/-c) and a plain log
+	// file, since the console is a separate real window our own tooling can't
+	// read - the file lets it be tailed live instead.
+	inline void AutoRunLog(const char* pszFmt, ...)
+	{
+		va_list args;
+		va_start(args, pszFmt);
+		vprintf(pszFmt, args);
+		va_end(args);
+
+		FILE* pFile = fopen("D:/workspaces/jx1-vs2022/autorun_debug.log", "a");
+		if (pFile)
+		{
+			va_start(args, pszFmt);
+			vfprintf(pFile, pszFmt, args);
+			va_end(args);
+			fclose(pFile);
+		}
+	}
+
+	// Center-point sample only: obstacle cells can be diagonally cut (only half the
+	// cell blocked), and requiring the whole cell clear rejected many legitimately
+	// walkable cells right at building/wall edges - exactly where players click.
+	// The fine per-step engine (KNpcFindPath::CheckBarrier) already navigates the
+	// diagonal boundary correctly during normal walking; A* only needs a rough route.
+	inline bool AutoPathCellWalkable(int nCellX, int nCellY)
+	{
+		int nMpsX = nCellX * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+		int nMpsY = nCellY * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+		return SubWorld[0].TestBarrier(nMpsX, nMpsY) == Obstacle_NULL;
+	}
+
+	// Returns the number of waypoints written to pOutPath (Mps coords), 0 if no route found.
+	// *pnAdjDestX/*pnAdjDestY come back set to the destination actually used (may
+	// differ from nDestX/nDestY if the original point was blocked and got snapped).
+	int AutoPathFind(int nStartX, int nStartY, int nDestX, int nDestY, POINT* pOutPath, int nMaxOut,
+		int* pnAdjDestX, int* pnAdjDestY)
+	{
+		*pnAdjDestX = nDestX;
+		*pnAdjDestY = nDestY;
+
+		int nStartCellX = nStartX / AUTO_PATH_CELL_SIZE;
+		int nStartCellY = nStartY / AUTO_PATH_CELL_SIZE;
+		int nDestCellX = nDestX / AUTO_PATH_CELL_SIZE;
+		int nDestCellY = nDestY / AUTO_PATH_CELL_SIZE;
+
+		// NOTE: no upfront "snap destination to nearest walkable cell" step here -
+		// that used to search a small radius AROUND THE DESTINATION and give up
+		// immediately if none of those cells were walkable either, which is exactly
+		// what happens for any sufficiently distant click (the whole area near a
+		// far-off destination reads as blocked - see GetObstacleInfo's range limit).
+		// That short-circuited before the best-effort fallback below ever got to run.
+		// The search below targets nDestCellX/Y as-is (even if currently blocked)
+		// and its own best-reachable-node fallback (bestKey) handles both "clicked
+		// right on a wall" and "clicked far outside the valid data range" uniformly.
+
+		// TEMP debug: are we genuinely boxed in, or is something else wrong?
+		{
+			static const int dbgDx[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+			static const int dbgDy[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
+			char szNbr[64];
+			int nOfs = 0;
+			for (int i = 0; i < 8 && nOfs < 56; i++)
+			{
+				bool bOk = AutoPathCellWalkable(nStartCellX + dbgDx[i], nStartCellY + dbgDy[i]);
+				nOfs += sprintf(szNbr + nOfs, "%d:%d ", i, bOk ? 1 : 0);
+			}
+			int nMpsSelfX = nStartCellX * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+			int nMpsSelfY = nStartCellY * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+			AutoRunLog("[AutoRun]   dbg startCell(%d,%d) destCell(%d,%d) selfWalkable=%d selfBarrier=%d neighbors[%s]\n",
+				nStartCellX, nStartCellY, nDestCellX, nDestCellY,
+				(int)AutoPathCellWalkable(nStartCellX, nStartCellY),
+				(int)SubWorld[0].TestBarrier(nMpsSelfX, nMpsSelfY), szNbr);
+		}
+
+		if (nStartCellX == nDestCellX && nStartCellY == nDestCellY)
+			return 0;
+
+		std::unordered_map<long long, AutoPathNodeInfo> nodes;
+		typedef std::pair<int, long long> OpenEntry;
+		std::priority_queue<OpenEntry, std::vector<OpenEntry>, std::greater<OpenEntry> > open;
+
+		AutoPathNodeInfo startInfo;
+		startInfo.g = 0;
+		startInfo.parentX = nStartCellX;
+		startInfo.parentY = nStartCellY;
+		startInfo.closed = false;
+		nodes[AutoPathCellKey(nStartCellX, nStartCellY)] = startInfo;
+		open.push(OpenEntry(0, AutoPathCellKey(nStartCellX, nStartCellY)));
+
+		static const int dxs[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+		static const int dys[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
+
+		int nExpanded = 0;
+		bool bFound = false;
+
+		// The destination is very often outside the small area the client actually
+		// has real obstacle data for (KScenePlaceC::GetObstacleInfo hard-codes
+		// Obstacle_Normal - blocked - beyond SPWP_LOAD_EXTEND_RANGE of the player,
+		// permanently, not just "not loaded yet"). A* can then never reach the true
+		// goal no matter how many times it retries. Track the closest-by-heuristic
+		// node actually explored so we can walk as far as currently possible instead
+		// of refusing to move; once the player gets there, the valid-data window
+		// has moved with them and the next replan can push further.
+		long long bestKey = AutoPathCellKey(nStartCellX, nStartCellY);
+		{
+			int adx0 = abs(nDestCellX - nStartCellX);
+			int ady0 = abs(nDestCellY - nStartCellY);
+			nExpanded = 10 * (adx0 > ady0 ? adx0 : ady0) + 4 * (adx0 < ady0 ? adx0 : ady0);
+		}
+		int bestH = nExpanded;
+		nExpanded = 0;
+
+		while (!open.empty() && nExpanded < AUTO_PATH_MAX_NODES)
+		{
+			OpenEntry cur = open.top();
+			open.pop();
+			long long curKey = cur.second;
+
+			std::unordered_map<long long, AutoPathNodeInfo>::iterator itCur = nodes.find(curKey);
+			if (itCur == nodes.end() || itCur->second.closed)
+				continue;
+			itCur->second.closed = true;
+			nExpanded++;
+
+			int cx = (int)(unsigned int)(curKey >> 32);
+			int cy = (int)(unsigned int)(curKey & 0xffffffffu);
+
+			if (cx == nDestCellX && cy == nDestCellY)
+			{
+				bFound = true;
+				break;
+			}
+
+			{
+				int adx = abs(nDestCellX - cx);
+				int ady = abs(nDestCellY - cy);
+				int nH = 10 * (adx > ady ? adx : ady) + 4 * (adx < ady ? adx : ady);
+				if (nH < bestH)
+				{
+					bestH = nH;
+					bestKey = curKey;
+				}
+			}
+
+			int curG = itCur->second.g;
+
+			for (int i = 0; i < 8; i++)
+			{
+				int nx = cx + dxs[i];
+				int ny = cy + dys[i];
+
+				if (!AutoPathCellWalkable(nx, ny))
+					continue;
+
+				bool bDiagonal = (dxs[i] != 0 && dys[i] != 0);
+				if (bDiagonal &&
+					(!AutoPathCellWalkable(cx + dxs[i], cy) || !AutoPathCellWalkable(cx, cy + dys[i])))
+				{
+					continue; // don't let the path cut through a blocked corner
+				}
+
+				int nNewG = curG + (bDiagonal ? 14 : 10);
+
+				long long nKey = AutoPathCellKey(nx, ny);
+				std::unordered_map<long long, AutoPathNodeInfo>::iterator itN = nodes.find(nKey);
+				if (itN != nodes.end())
+				{
+					if (itN->second.closed || itN->second.g <= nNewG)
+						continue;
+					itN->second.g = nNewG;
+					itN->second.parentX = cx;
+					itN->second.parentY = cy;
+				}
+				else
+				{
+					AutoPathNodeInfo info;
+					info.g = nNewG;
+					info.parentX = cx;
+					info.parentY = cy;
+					info.closed = false;
+					nodes[nKey] = info;
+				}
+
+				int adx = abs(nDestCellX - nx);
+				int ady = abs(nDestCellY - ny);
+				int nH = 10 * (adx > ady ? adx : ady) + 4 * (adx < ady ? adx : ady);
+				open.push(OpenEntry(nNewG + nH, nKey));
+			}
+		}
+
+		if (!bFound)
+		{
+			long long startKey = AutoPathCellKey(nStartCellX, nStartCellY);
+			if (bestKey == startKey)
+			{
+				AutoRunLog("[AutoRun]   dbg A* FAILED, no progress possible at all (expanded %d nodes)\n", nExpanded);
+				return 0;
+			}
+			// True destination is unreachable (almost always because it's outside the
+			// small area the client has real obstacle data for) - route to the closest
+			// point actually explored instead. Once there, a later replan can push further.
+			nDestCellX = (int)(unsigned int)(bestKey >> 32);
+			nDestCellY = (int)(unsigned int)(bestKey & 0xffffffffu);
+			*pnAdjDestX = nDestCellX * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+			*pnAdjDestY = nDestCellY * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+			AutoRunLog("[AutoRun]   dbg A* can't reach true dest (expanded %d nodes) -> partial route to (%d,%d)\n",
+				nExpanded, nDestCellX, nDestCellY);
+		}
+
+		std::vector<POINT> cellPath;
+		int cx = nDestCellX, cy = nDestCellY;
+		int nGuard = 0;
+		while ((cx != nStartCellX || cy != nStartCellY) && nGuard < AUTO_PATH_MAX_NODES)
+		{
+			POINT pt;
+			pt.x = cx;
+			pt.y = cy;
+			cellPath.push_back(pt);
+			std::unordered_map<long long, AutoPathNodeInfo>::iterator it = nodes.find(AutoPathCellKey(cx, cy));
+			if (it == nodes.end())
+				break;
+			cx = it->second.parentX;
+			cy = it->second.parentY;
+			nGuard++;
+		}
+		std::reverse(cellPath.begin(), cellPath.end());
+
+		if (cellPath.empty())
+			return 0;
+
+		// Keep only the turn points (direction changes), plus the final (possibly snapped) destination.
+		int nOut = 0;
+		int nPrevDx = 0, nPrevDy = 0;
+		int nPrevCellX = nStartCellX, nPrevCellY = nStartCellY;
+		for (size_t i = 0; i < cellPath.size() && nOut < nMaxOut - 1; i++)
+		{
+			int dx = cellPath[i].x - nPrevCellX;
+			int dy = cellPath[i].y - nPrevCellY;
+			if (i > 0 && (dx != nPrevDx || dy != nPrevDy))
+			{
+				pOutPath[nOut].x = nPrevCellX * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+				pOutPath[nOut].y = nPrevCellY * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
+				nOut++;
+			}
+			nPrevDx = dx;
+			nPrevDy = dy;
+			nPrevCellX = cellPath[i].x;
+			nPrevCellY = cellPath[i].y;
+		}
+
+		if (nOut < nMaxOut)
+		{
+			pOutPath[nOut].x = *pnAdjDestX;
+			pOutPath[nOut].y = *pnAdjDestY;
+			nOut++;
+		}
+
+		return nOut;
+	}
+
+	// Self-contained equivalent of the engine's IR_IsTimePassed (that symbol isn't
+	// linked into Core) - true at most once per uInterval ms, re-arming on each fire.
+	inline bool AutoPathTimePassed(unsigned int uInterval, int& nLastTimeStore)
+	{
+		unsigned int now = IR_GetCurrentTime();
+		if (now - (unsigned int)nLastTimeStore >= uInterval)
+		{
+			nLastTimeStore = (int)now;
+			return true;
+		}
+		return false;
+	}
+
+	inline long AutoPathDistSq(int x1, int y1, int x2, int y2)
+	{
+		long dx = x1 - x2;
+		long dy = y1 - y2;
+		return dx * dx + dy * dy;
+	}
+
+	void AutoPathIssueWalk(int nIndex, int nDesX, int nDesY)
+	{
+		if (Player[CLIENT_PLAYER_INDEX].m_RunStatus)
+		{
+			Npc[nIndex].SendCommand(do_run, nDesX, nDesY);
+			SendClientCmdRun(nDesX, nDesY);
+		}
+		else
+		{
+			Npc[nIndex].SendCommand(do_walk, nDesX, nDesY);
+			SendClientCmdWalk(nDesX, nDesY);
+		}
+	}
+}
+
 void KScenePlaceMapC::AutoRunTo(int nX, int nY)
 {
+	if (Player[CLIENT_PLAYER_INDEX].CheckTrading())
+		return;
+
+	// Same viewport-to-map-pixel conversion as DirectFindPos's sync branch.
+	int nMapX = nX - m_MapPos.left + m_MapCoverArea.left + 1;
+	int nMapY = nY - m_MapPos.top + m_MapCoverArea.top + 1;
+
+	if (nMapX < m_MapCoverArea.left ||
+		nMapY < m_MapCoverArea.top ||
+		nMapX > m_MapCoverArea.right ||
+		nMapY > m_MapCoverArea.bottom)
+	{
+		return;
+	}
+
+	// Map-pixel -> real scene (Mps) coords: 1 map pixel = MAP_SCALE_H/V scene pixels.
+	int nDesX = nMapX * MAP_SCALE_H + MAP_SCALE_H / 2;
+	int nDesY = nMapY * MAP_SCALE_V + MAP_SCALE_V / 2;
+
+	int nIndex = Player[CLIENT_PLAYER_INDEX].m_nIndex;
+
+	// Region membership can be transiently invalid while crossing region boundaries
+	// (same guard KNpc::ServerMove and KNpcFindPath::CheckBarrier use before trusting
+	// SubWorld[0] data) - GetMpsPos() would otherwise silently report (0,0).
+	if (Npc[nIndex].m_RegionIndex < 0)
+		return;
+
+	int nCurX, nCurY;
+	Npc[nIndex].GetMpsPos(&nCurX, &nCurY);
+
+	m_nAutoTrueDestX = nDesX;	// the actual clicked point - never overwritten by partial hops
+	m_nAutoTrueDestY = nDesY;
+	m_nAutoReplanCooldown = (int)IR_GetCurrentTime();
+	m_nAutoReplanAttempts = 0;
+	m_nAutoStuckCheckX = nCurX;
+	m_nAutoStuckCheckY = nCurY;
+	m_nAutoStuckFrames = (int)IR_GetCurrentTime();
+	int nAdjDestX, nAdjDestY;
+	m_nAutoPathCount = AutoPathFind(nCurX, nCurY, nDesX, nDesY, m_AutoPath, MAX_AUTO_PATH, &nAdjDestX, &nAdjDestY);
+	m_nAutoDestX = nAdjDestX;	// current leg's practical target - may be snapped, or only partway there
+	m_nAutoDestY = nAdjDestY;
+	m_nAutoPathIdx = 0;
+	m_bAutoWalking = true;
+
+	AutoRunLog("[AutoRun] CLICK map(%d,%d) cur(%d,%d) -> dest(%d,%d) adjDest(%d,%d) : AutoPathFind=%d waypoints"
+		" | m_ProcessAI=%d m_RandMove.nTime=%d m_Doing=%d m_RunStatus=%d\n",
+		nX, nY, nCurX, nCurY, nDesX, nDesY, nAdjDestX, nAdjDestY, m_nAutoPathCount,
+		(int)Npc[nIndex].IsCanInput(), (int)Npc[nIndex].m_RandMove.nTime, (int)Npc[nIndex].m_Doing,
+		(int)Player[CLIENT_PLAYER_INDEX].m_RunStatus);
+	for (int i = 0; i < m_nAutoPathCount; i++)
+		AutoRunLog("[AutoRun]   waypoint[%d] = (%d,%d)\n", i, m_AutoPath[i].x, m_AutoPath[i].y);
+
+	if (m_nAutoPathCount > 0)
+		AutoPathIssueWalk(nIndex, m_AutoPath[0].x, m_AutoPath[0].y);
+	else
+		AutoPathIssueWalk(nIndex, nAdjDestX, nAdjDestY);	// no route found (yet) - walk straight, retry planning below
+}
+
+void KScenePlaceMapC::UpdateAutoRun()
+{
+	if (!m_bAutoWalking)
+		return;
+
+	int nIndex = Player[CLIENT_PLAYER_INDEX].m_nIndex;
+
+	// Same region-membership guard as AutoRunTo() - skip this tick rather than
+	// act on a bogus (0,0) position while the region index is transiently invalid.
+	if (Npc[nIndex].m_RegionIndex < 0)
+		return;
+
+	int nCurX, nCurY;
+	Npc[nIndex].GetMpsPos(&nCurX, &nCurY);
+
+	if (AutoPathDistSq(nCurX, nCurY, m_nAutoTrueDestX, m_nAutoTrueDestY) <= (long)AUTO_PATH_ARRIVE_DIST * AUTO_PATH_ARRIVE_DIST)
+	{
+		AutoRunLog("[AutoRun] ARRIVED at true destination (%d,%d)\n", m_nAutoTrueDestX, m_nAutoTrueDestY);
+		m_bAutoWalking = false;
+		return;
+	}
+
+	// Heartbeat: cheap once-a-second snapshot so we can see position/state even
+	// when nothing "eventful" (arrival/stuck/replan) happens this tick.
+	static int s_nHeartbeat = 0;
+	if (AutoPathTimePassed(1000, s_nHeartbeat))
+	{
+		AutoRunLog("[AutoRun] tick cur(%d,%d) dest(%d,%d) pathCount=%d idx=%d m_Doing=%d"
+			" m_ProcessAI=%d m_RandMove.nTime=%d m_nSendMoveFrames=%d\n",
+			nCurX, nCurY, m_nAutoDestX, m_nAutoDestY, m_nAutoPathCount, m_nAutoPathIdx,
+			(int)Npc[nIndex].m_Doing, (int)Npc[nIndex].IsCanInput(), (int)Npc[nIndex].m_RandMove.nTime,
+			Player[CLIENT_PLAYER_INDEX].m_nSendMoveFrames);
+	}
+
+	// Stuck detection: a dynamic obstacle (another NPC/player) can walk into the
+	// planned route after it was computed. If there's been no real progress over a
+	// real-time window, drop back to replan mode so AutoPathFind gets a fresh look -
+	// by then the blocker may have moved, or the fresh plan can route around it.
+	if (AutoPathTimePassed(AUTO_PATH_STUCK_CHECK_MS, m_nAutoStuckFrames))
+	{
+		long distSq = AutoPathDistSq(nCurX, nCurY, m_nAutoStuckCheckX, m_nAutoStuckCheckY);
+		AutoRunLog("[AutoRun] stuck-check: cur(%d,%d) lastCheck(%d,%d) distSq=%ld (threshold=%d)\n",
+			nCurX, nCurY, m_nAutoStuckCheckX, m_nAutoStuckCheckY, distSq,
+			AUTO_PATH_STUCK_MIN_PROGRESS * AUTO_PATH_STUCK_MIN_PROGRESS);
+		if (distSq < (long)AUTO_PATH_STUCK_MIN_PROGRESS * AUTO_PATH_STUCK_MIN_PROGRESS)
+		{
+			AutoRunLog("[AutoRun] STUCK detected -> demoting to replan mode (pathCount was %d)\n", m_nAutoPathCount);
+			m_nAutoPathCount = 0;
+			m_nAutoReplanCooldown = 0;
+			// NOTE: do NOT reset m_nAutoReplanAttempts here - it must keep counting
+			// across repeated stuck events, otherwise the give-up cap below never
+			// actually fires and a permanently unreachable destination retries forever.
+		}
+		m_nAutoStuckCheckX = nCurX;
+		m_nAutoStuckCheckY = nCurY;
+	}
+
+	// Same move-command cadence KCoreShell::GotoWhere() uses for mouse-drag walking.
+	// Retargeting faster than this can outrun the scene's region-focus streaming
+	// (KScenePlaceC::SetFocusPosition) and blank the whole view until it catches up.
+	bool bCanSendMove = Player[CLIENT_PLAYER_INDEX].m_nSendMoveFrames >= defMAX_PLAYER_SEND_MOVE_FRAME;
+
+	if (m_nAutoPathCount > 0)
+	{
+		POINT target = m_AutoPath[m_nAutoPathIdx];
+		if (bCanSendMove && AutoPathDistSq(nCurX, nCurY, target.x, target.y) <= (long)AUTO_PATH_WAYPOINT_DIST * AUTO_PATH_WAYPOINT_DIST)
+		{
+			AutoRunLog("[AutoRun] reached waypoint[%d]=(%d,%d) at cur(%d,%d)\n", m_nAutoPathIdx, target.x, target.y, nCurX, nCurY);
+			m_nAutoPathIdx++;
+			if (m_nAutoPathIdx >= m_nAutoPathCount)
+			{
+				if (AutoPathDistSq(m_nAutoDestX, m_nAutoDestY, m_nAutoTrueDestX, m_nAutoTrueDestY) <=
+					(long)AUTO_PATH_ARRIVE_DIST * AUTO_PATH_ARRIVE_DIST)
+				{
+					AutoRunLog("[AutoRun] last waypoint reached true destination, stopping\n");
+					m_bAutoWalking = false;
+					return;
+				}
+				// This leg's target was only a partial hop (true destination is still
+				// outside the client's real obstacle-data range) - force a fresh replan
+				// from here right away instead of ending the walk.
+				AutoRunLog("[AutoRun] reached end of partial leg (%d,%d) - forcing replan toward true dest (%d,%d)\n",
+					m_nAutoDestX, m_nAutoDestY, m_nAutoTrueDestX, m_nAutoTrueDestY);
+				m_nAutoPathCount = 0;
+				m_nAutoReplanCooldown = 0;
+				return;
+			}
+			AutoRunLog("[AutoRun] -> advancing to waypoint[%d]=(%d,%d)\n", m_nAutoPathIdx,
+				m_AutoPath[m_nAutoPathIdx].x, m_AutoPath[m_nAutoPathIdx].y);
+			AutoPathIssueWalk(nIndex, m_AutoPath[m_nAutoPathIdx].x, m_AutoPath[m_nAutoPathIdx].y);
+			Player[CLIENT_PLAYER_INDEX].m_nSendMoveFrames = 0;
+		}
+	}
+	else if (bCanSendMove && m_nAutoReplanAttempts < AUTO_PATH_MAX_REPLAN_ATTEMPTS &&
+		AutoPathTimePassed(AUTO_PATH_REPLAN_INTERVAL_MS, m_nAutoReplanCooldown))
+	{
+		// Walking toward the true destination; periodically (re)plan - each call finds
+		// the best currently-reachable route, which may only cover part of the total
+		// distance if the true destination is still outside the client's real obstacle
+		// data range (see AutoPathFind's partial-progress fallback).
+		m_nAutoReplanAttempts++;
+		int nAdjX, nAdjY;
+		int nCount = AutoPathFind(nCurX, nCurY, m_nAutoTrueDestX, m_nAutoTrueDestY, m_AutoPath, MAX_AUTO_PATH, &nAdjX, &nAdjY);
+		AutoRunLog("[AutoRun] replan attempt %d from (%d,%d) -> %d waypoints (adjDest %d,%d)\n",
+			m_nAutoReplanAttempts, nCurX, nCurY, nCount, nAdjX, nAdjY);
+		if (nCount > 0)
+		{
+			m_nAutoDestX = nAdjX;
+			m_nAutoDestY = nAdjY;
+			m_nAutoPathCount = nCount;
+			m_nAutoPathIdx = 0;
+			AutoPathIssueWalk(nIndex, m_AutoPath[0].x, m_AutoPath[0].y);
+			Player[CLIENT_PLAYER_INDEX].m_nSendMoveFrames = 0;
+		}
+	}
+	else if (m_nAutoPathCount == 0 && m_nAutoReplanAttempts >= AUTO_PATH_MAX_REPLAN_ATTEMPTS)
+	{
+		// Destination stayed unreachable across every retry window - give up
+		// instead of burning CPU on a full A* search forever.
+		AutoRunLog("[AutoRun] GAVE UP after %d replan attempts, still at (%d,%d)\n",
+			m_nAutoReplanAttempts, nCurX, nCurY);
+		m_bAutoWalking = false;
+	}
 }

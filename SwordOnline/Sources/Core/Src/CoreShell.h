@@ -925,6 +925,7 @@ struct _declspec (novtable) iCoreShell
 	virtual	void SetPaintMode(BOOL nIndex) = 0;
 	virtual	BOOL GetFlagMode() = 0;
 	virtual	void SetFlagMode(BOOL nIndex) = 0;
+	virtual void AutoRunTo(int nX, int nY) = 0;
 	virtual void GetSizeItem(unsigned int uItemId, int *nW, int *nH) = 0;
 	virtual int GetExtPoint() = 0;
 	virtual int GetNatureItem(unsigned int uItemId, unsigned int uGenre = 0) = 0;

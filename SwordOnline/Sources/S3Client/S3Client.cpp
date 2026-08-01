@@ -74,7 +74,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	 */
 #ifdef	TRUE
 
-	bool bOpenTracer = false;
+	bool bOpenTracer = true;	// TEMP debug: always open console, no need to pass -c
 
     while( lpCmdLine[0] == '-' || lpCmdLine[0] == '/' )
     {
@@ -94,9 +94,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
         }
     }
 	
-	if ( bOpenTracer ) 
+	if ( bOpenTracer )
 	{
 		AllocConsole();
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
+		setvbuf(stdout, NULL, _IONBF, 0);
 	}
 
 #endif // End of this function

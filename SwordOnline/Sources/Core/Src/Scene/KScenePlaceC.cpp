@@ -1042,6 +1042,7 @@ void KScenePlaceC::Breathe()
 		Preprocess();
 	}
 	m_ObjectsTree.Breathe();
+	m_Map.UpdateAutoRun();
 
 	if(m_pWeather)
 	{
@@ -1894,8 +1895,13 @@ void KScenePlaceC::DoDirectMap(int nX, int nY)
 }
 
 void KScenePlaceC::DirectFindPos(int nX, int nY, BOOL bSync, BOOL bPaintLine)
-{ 
+{
 	m_Map.DirectFindPos(nX, nY, bSync, bPaintLine);
+}
+
+void KScenePlaceC::AutoRunTo(int nX, int nY)
+{
+	m_Map.AutoRunTo(nX, nY);
 }
 
 void KScenePlaceC::LoadIni(KIniFile *pIni)

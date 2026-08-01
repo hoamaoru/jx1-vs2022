@@ -57,6 +57,7 @@ public:
 	BOOL OnDirectMap(int nX, int nY);
 	void DoDirectMap(int nX, int nY);
 	void AutoRunTo(int nX, int nY);
+	void UpdateAutoRun();
 	//////////////////////////////////////////////////////////////////////////
 	//获取地图覆盖的范围,返回值表示是否有地图
 	int	GetMapRect(RECT* pRect);
@@ -109,6 +110,20 @@ private:
 	BOOL bSearch;
 	RECT m_MapPos;
 	BOOL m_bPaintLine;
+	enum { MAX_AUTO_PATH = 64 };
+	POINT m_AutoPath[MAX_AUTO_PATH];
+	int m_nAutoPathCount;
+	int m_nAutoPathIdx;
+	bool m_bAutoWalking;
+	int m_nAutoDestX;
+	int m_nAutoDestY;
+	int m_nAutoReplanCooldown;
+	int m_nAutoReplanAttempts;
+	int m_nAutoStuckCheckX;
+	int m_nAutoStuckCheckY;
+	int m_nAutoStuckFrames;
+	int m_nAutoTrueDestX;
+	int m_nAutoTrueDestY;
 	char	m_szEntireMapFile[128];	//地图图文件名称
 	KSGImageContent*	m_pEntireMap;//完整的缩略地图
 

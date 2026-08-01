@@ -209,6 +209,7 @@ int KUiMiniMap::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			g_pCoreShell->SetPaintMode(TRUE);
 			g_pCoreShell->SetFlagMode(FALSE);
 			g_pCoreShell->DirectFindPos(nCursorX, nCursorY, TRUE, TRUE);
+			g_pCoreShell->AutoRunTo(nCursorX, nCursorY);
 		}
 		break;
 	case WM_LBUTTONUP:
