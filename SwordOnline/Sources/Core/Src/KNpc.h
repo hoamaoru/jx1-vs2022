@@ -318,6 +318,13 @@ public:
 	int					m_CurrentExpEnhance;
 
 	int					m_CurrentSkillEnhancePercent;
+
+	// Combo skill tracking, see KNpc::UpdateComboBonus
+	WORD				m_ComboSkillHistory[5];
+	int					m_nComboStepCount;
+	DWORD				m_dwComboLastCastTime;
+	WORD				m_wComboBonusSkillId;
+	int					m_nComboBonusPercent;
 	int					m_CurrentFiveElementsEnhance;
 	int					m_CurrentFiveElementsResist;
 	int					m_CurrentManaToSkillEnhanceP;
@@ -600,6 +607,7 @@ public:
 	BOOL				IsNpcSkillExist(int nId);
 	void				SetImmediatelySkillEffect(int nLauncher, void *pData, int nDataNum);
 	void				AppendSkillEffect(int nSkillID, BOOL bIsPhysical, BOOL bIsMelee, void *pSrcData, void *pDesData);
+	void				UpdateComboBonus(int nSkillId);
 	int					ModifyMissleLifeTime(int nLifeTime);
 	int					ModifyMissleSpeed(int nSpeed);
 	BOOL				ModifyMissleCollsion(BOOL bCollsion);

@@ -2381,6 +2381,20 @@ void	KProtocolProcess::s2cShowMsg(BYTE *pMsg)
 			CoreDataChanged(GDCNI_SYSTEM_MESSAGE, (unsigned int)&sMsg, 0);
 		}
 		break;
+	case enumMSG_ID_COMBO_BONUS:
+		{
+			SYSTEMTIME st;
+			GetLocalTime(&st);
+			printf("[%02d:%02d:%02d.%03d] [COMBO] Damage bonus: +%d%%\n", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, (int)pShowMsg->m_lpBuf);
+		}
+		break;
+	case enumMSG_ID_COMBO_END:
+		{
+			SYSTEMTIME st;
+			GetLocalTime(&st);
+			printf("[%02d:%02d:%02d.%03d] [COMBO] Combo ended.\n", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+		}
+		break;
 	case enumMSG_ID_SPAR_VICTORY:
 		{	
 			KSystemMessage	sMsg;

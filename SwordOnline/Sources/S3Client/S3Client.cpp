@@ -74,7 +74,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	 */
 #ifdef	TRUE
 
-	bool bOpenTracer = true;	// TEMP debug: always open console, no need to pass -c
+	bool bOpenTracer = true;	// Always open the debug console on startup; close it manually when not needed.
 
     while( lpCmdLine[0] == '-' || lpCmdLine[0] == '/' )
     {
@@ -97,8 +97,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	if ( bOpenTracer )
 	{
 		AllocConsole();
-		freopen("CONOUT$", "w", stdout);
-		freopen("CONOUT$", "w", stderr);
+		FILE* pConsoleOut = NULL;
+		FILE* pConsoleErr = NULL;
+		freopen_s(&pConsoleOut, "CONOUT$", "w", stdout);
+		freopen_s(&pConsoleErr, "CONOUT$", "w", stderr);
 		setvbuf(stdout, NULL, _IONBF, 0);
 	}
 
