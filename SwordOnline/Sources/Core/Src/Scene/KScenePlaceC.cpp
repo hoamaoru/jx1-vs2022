@@ -1904,6 +1904,11 @@ void KScenePlaceC::AutoRunTo(int nX, int nY)
 	m_Map.AutoRunTo(nX, nY);
 }
 
+void KScenePlaceC::CancelAutoRun()
+{
+	m_Map.CancelAutoRun();
+}
+
 void KScenePlaceC::LoadIni(KIniFile *pIni)
 {
 	m_nBGNum = 0;

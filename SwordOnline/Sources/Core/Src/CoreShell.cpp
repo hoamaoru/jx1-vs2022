@@ -3266,6 +3266,7 @@ int KCoreShell::UseSkill(int x, int y, int nSkillID)
 {
 	if (Player[CLIENT_PLAYER_INDEX].CheckTrading())
 		return 0;
+	g_ScenePlace.CancelAutoRun();
 	
 	int nX = x;
 	int nY = y;
@@ -3383,6 +3384,7 @@ int KCoreShell::LockSomeoneUseSkill(int nTargetIndex, int nSkillID)
 {
 	if (Player[CLIENT_PLAYER_INDEX].CheckTrading())
 		return 0;
+	g_ScenePlace.CancelAutoRun();
 	
 	int nIndex = Player[CLIENT_PLAYER_INDEX].m_nIndex;
 
@@ -3456,6 +3458,7 @@ void KCoreShell::GotoWhere(int x, int y, int mode)
 
 	if (Player[CLIENT_PLAYER_INDEX].CheckTrading())
 		return;
+	g_ScenePlace.CancelAutoRun();
 
 	if (mode < 0 || mode > 2)
 		return;
@@ -3509,6 +3512,7 @@ void KCoreShell::Goto(int nDir, int mode)
 
 	if (mode < 0 || mode > 2)
 		return;
+	g_ScenePlace.CancelAutoRun();
 
 	int bRun = false;
 

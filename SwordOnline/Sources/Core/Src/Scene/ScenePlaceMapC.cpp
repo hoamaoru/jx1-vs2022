@@ -1398,10 +1398,33 @@ namespace
 	}
 }
 
+// Stops auto-walk immediately and halts the character in place, rather than
+// letting it coast to whatever waypoint/leg target was last issued. Safe to
+// call whether or not a walk is currently active.
+void KScenePlaceMapC::CancelAutoRun()
+{
+	if (!m_bAutoWalking)
+		return;
+
+	m_bAutoWalking = false;
+	m_nAutoPathCount = 0;
+
+	int nIndex = Player[CLIENT_PLAYER_INDEX].m_nIndex;
+	Npc[nIndex].SendCommand(do_stand, 0, 0);
+}
+
 void KScenePlaceMapC::AutoRunTo(int nX, int nY)
 {
 	if (Player[CLIENT_PLAYER_INDEX].CheckTrading())
 		return;
+
+	// A minimap click while already auto-walking cancels the walk instead of
+	// redirecting - explicit, predictable "turn it off" behavior on request.
+	if (m_bAutoWalking)
+	{
+		CancelAutoRun();
+		return;
+	}
 
 	// Same viewport-to-map-pixel conversion as DirectFindPos's sync branch.
 	int nMapX = nX - m_MapPos.left + m_MapCoverArea.left + 1;

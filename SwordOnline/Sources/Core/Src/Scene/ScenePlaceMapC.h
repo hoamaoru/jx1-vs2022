@@ -57,6 +57,7 @@ public:
 	BOOL OnDirectMap(int nX, int nY);
 	void DoDirectMap(int nX, int nY);
 	void AutoRunTo(int nX, int nY);
+	void CancelAutoRun();
 	void UpdateAutoRun();
 	//////////////////////////////////////////////////////////////////////////
 	//获取地图覆盖的范围,返回值表示是否有地图
