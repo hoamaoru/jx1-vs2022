@@ -130,6 +130,7 @@ KMusic			*g_pMusic = NULL;
 KLuaScript g_WorldScript;
 
 void g_InitProtocol();
+void LoadSkillComboSetting();
 
 //---------------------------------------------------------------------------
 CORE_API void g_InitCore()
@@ -213,6 +214,7 @@ CORE_API void g_InitCore()
 	g_NpcSetting.Load(NPC_SETTING_FILE);
 	InitGameSetting();
 	InitSkillSetting();
+	LoadSkillComboSetting();
 	InitMissleSetting();
 	InitNpcSetting();
 

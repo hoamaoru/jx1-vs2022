@@ -1954,9 +1954,10 @@ void KNpc::OnSit()
 	}
 }
 
-// Thien Vuong (CharClass 1) weapon-branch combo chains. Casting the listed
-// skills in exact order, back to back within COMBO_TIME_WINDOW, grants each
-// step its own damage bonus (applied in KNpc::AppendSkillEffect).
+// Weapon-branch combo chains, loaded from settings\SkillCombos.txt (see
+// LoadSkillComboSetting below). Casting a chain's skills in exact order,
+// back to back within COMBO_TIME_WINDOW, grants each step its own damage
+// bonus (applied in KNpc::AppendSkillEffect).
 struct SComboStep
 {
 	WORD	SkillId;
@@ -1964,18 +1965,57 @@ struct SComboStep
 };
 
 static const int COMBO_CHAIN_LEN = 5;
-static const SComboStep g_ComboChains[][COMBO_CHAIN_LEN] =
-{
-	// Dao: Kinh Loi Tram -> Bat Phong Tram -> Vo Tam Tram -> Pha Thien Tram -> Hao Hung Tram
-	{ {34, 30}, {37, 50}, {32, 100}, {322, 500}, {1058, 800} },
-	// Thuong: Hoi Phong Lac Nhan -> Duong Quan Tam Diep -> Huyet Chien Bat Phuong -> Truy Tinh Truc Nguyet -> Ba Vuong Tam Kim
-	{ {30, 30}, {35, 50}, {41, 100}, {323, 500}, {1060, 800} },
-	// Chuy: Tram Long Quyet -> Hang Van Quyet -> Thua Long Quyet -> Truy Phong Quyet -> Tung Hoanh Bat Hoang
-	{ {29, 30}, {31, 50}, {324, 100}, {325, 500}, {1059, 800} },
-};
-static const int COMBO_CHAIN_COUNT = sizeof(g_ComboChains) / sizeof(g_ComboChains[0]);
+static const int MAX_COMBO_CHAINS = 64;
+static SComboStep g_ComboChains[MAX_COMBO_CHAINS][COMBO_CHAIN_LEN];
+static int g_nComboChainCount = 0;
 static const DWORD COMBO_TIME_WINDOW = 3 * GAME_FPS;	// max gap between consecutive combo steps
 static const DWORD COMBO_REPEAT_WINDOW = 3 * GAME_FPS;	// grace window to repeat the current step's skill
+
+void LoadSkillComboSetting()
+{
+	KTabFile ComboFile;
+	if (!ComboFile.Load(SKILLCOMBO_SETTING_FILE))
+	{
+		g_DebugLog("Can Not Load %s", SKILLCOMBO_SETTING_FILE);
+		return;
+	}
+
+	int nRowCount = ComboFile.GetHeight() - 1;
+	g_nComboChainCount = 0;
+	for (int i = 0; i < nRowCount && g_nComboChainCount < MAX_COMBO_CHAINS; i++)
+	{
+		int nRow = i + 2;
+		SComboStep* pChain = g_ComboChains[g_nComboChainCount];
+		int nSkillId = 0, nBonus = 0;
+
+		ComboFile.GetInteger(nRow, "Step1SkillId", 0, &nSkillId);
+		ComboFile.GetInteger(nRow, "Step1Bonus", 0, &nBonus);
+		pChain[0].SkillId = (WORD)nSkillId;
+		pChain[0].BonusPercent = nBonus;
+
+		ComboFile.GetInteger(nRow, "Step2SkillId", 0, &nSkillId);
+		ComboFile.GetInteger(nRow, "Step2Bonus", 0, &nBonus);
+		pChain[1].SkillId = (WORD)nSkillId;
+		pChain[1].BonusPercent = nBonus;
+
+		ComboFile.GetInteger(nRow, "Step3SkillId", 0, &nSkillId);
+		ComboFile.GetInteger(nRow, "Step3Bonus", 0, &nBonus);
+		pChain[2].SkillId = (WORD)nSkillId;
+		pChain[2].BonusPercent = nBonus;
+
+		ComboFile.GetInteger(nRow, "Step4SkillId", 0, &nSkillId);
+		ComboFile.GetInteger(nRow, "Step4Bonus", 0, &nBonus);
+		pChain[3].SkillId = (WORD)nSkillId;
+		pChain[3].BonusPercent = nBonus;
+
+		ComboFile.GetInteger(nRow, "Step5SkillId", 0, &nSkillId);
+		ComboFile.GetInteger(nRow, "Step5Bonus", 0, &nBonus);
+		pChain[4].SkillId = (WORD)nSkillId;
+		pChain[4].BonusPercent = nBonus;
+
+		g_nComboChainCount++;
+	}
+}
 
 void KNpc::UpdateComboBonus(int nSkillId)
 {
@@ -1997,7 +2037,7 @@ void KNpc::UpdateComboBonus(int nSkillId)
 	else if (bWasComboActive && m_nComboStepCount < COMBO_CHAIN_LEN &&
 		(dwNow - m_dwComboLastCastTime) <= COMBO_TIME_WINDOW)
 	{
-		for (int i = 0; i < COMBO_CHAIN_COUNT && !bMatched; i++)
+		for (int i = 0; i < g_nComboChainCount && !bMatched; i++)
 		{
 			BOOL bPrefixOk = TRUE;
 			for (int j = 0; j < m_nComboStepCount; j++)
@@ -2033,7 +2073,7 @@ void KNpc::UpdateComboBonus(int nSkillId)
 #endif
 		// Not a continuation of the current chain: try starting a fresh combo attempt
 		m_nComboStepCount = 0;
-		for (int i = 0; i < COMBO_CHAIN_COUNT; i++)
+		for (int i = 0; i < g_nComboChainCount; i++)
 		{
 			if (g_ComboChains[i][0].SkillId == (WORD)nSkillId)
 			{
