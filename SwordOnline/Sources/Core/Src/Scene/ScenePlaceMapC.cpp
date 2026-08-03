@@ -1127,11 +1127,18 @@ namespace
 	// walkable cells right at building/wall edges - exactly where players click.
 	// The fine per-step engine (KNpcFindPath::CheckBarrier) already navigates the
 	// diagonal boundary correctly during normal walking; A* only needs a rough route.
+	//
+	// Uses g_ScenePlace.GetObstacleInfo (static terrain only) rather than
+	// SubWorld[0].TestBarrier - the latter also folds in NPC/player occupancy
+	// (Obstacle_JumpFly) on the client, which would make the route dodge around
+	// other characters as if they were walls. NPCs move and auto-walk never
+	// attacks anything, so planning should just route through terrain and let
+	// the existing fine per-step steering sidestep whoever's briefly standing there.
 	inline bool AutoPathCellWalkable(int nCellX, int nCellY)
 	{
 		int nMpsX = nCellX * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
 		int nMpsY = nCellY * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
-		return SubWorld[0].TestBarrier(nMpsX, nMpsY) == Obstacle_NULL;
+		return g_ScenePlace.GetObstacleInfo(nMpsX, nMpsY) == Obstacle_NULL;
 	}
 
 	// Returns the number of waypoints written to pOutPath (Mps coords), 0 if no route found.
@@ -1171,9 +1178,10 @@ namespace
 			}
 			int nMpsSelfX = nStartCellX * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
 			int nMpsSelfY = nStartCellY * AUTO_PATH_CELL_SIZE + AUTO_PATH_CELL_SIZE / 2;
-			AutoRunLog("[AutoRun]   dbg startCell(%d,%d) destCell(%d,%d) selfWalkable=%d selfBarrier=%d neighbors[%s]\n",
+			AutoRunLog("[AutoRun]   dbg startCell(%d,%d) destCell(%d,%d) selfWalkable=%d selfObstacle=%d selfBarrierWithNpc=%d neighbors[%s]\n",
 				nStartCellX, nStartCellY, nDestCellX, nDestCellY,
 				(int)AutoPathCellWalkable(nStartCellX, nStartCellY),
+				(int)g_ScenePlace.GetObstacleInfo(nMpsSelfX, nMpsSelfY),
 				(int)SubWorld[0].TestBarrier(nMpsSelfX, nMpsSelfY), szNbr);
 		}
 
