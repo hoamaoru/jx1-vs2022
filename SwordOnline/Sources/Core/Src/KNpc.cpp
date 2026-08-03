@@ -138,6 +138,11 @@ void KNpc::Init()
 	m_SkillParam1 = 0;
 	m_SkillParam2 = 0;
 
+	m_nComboStepCount = 0;
+	m_dwComboLastCastTime = 0;
+	m_wComboBonusSkillId = 0;
+	m_nComboBonusPercent = 0;
+
 	m_bNpcRemoveDeath = FALSE;
 	m_nNpcTimeout = 0;
 	ZeroMemory(m_nNpcParam, sizeof(m_nNpcParam));
@@ -1949,6 +1954,137 @@ void KNpc::OnSit()
 	}
 }
 
+// Thien Vuong (CharClass 1) weapon-branch combo chains. Casting the listed
+// skills in exact order, back to back within COMBO_TIME_WINDOW, grants each
+// step its own damage bonus (applied in KNpc::AppendSkillEffect).
+struct SComboStep
+{
+	WORD	SkillId;
+	int		BonusPercent;
+};
+
+static const int COMBO_CHAIN_LEN = 5;
+static const SComboStep g_ComboChains[][COMBO_CHAIN_LEN] =
+{
+	// Dao: Kinh Loi Tram -> Bat Phong Tram -> Vo Tam Tram -> Pha Thien Tram -> Hao Hung Tram
+	{ {34, 30}, {37, 50}, {32, 100}, {322, 500}, {1058, 800} },
+	// Thuong: Hoi Phong Lac Nhan -> Duong Quan Tam Diep -> Huyet Chien Bat Phuong -> Truy Tinh Truc Nguyet -> Ba Vuong Tam Kim
+	{ {30, 30}, {35, 50}, {41, 100}, {323, 500}, {1060, 800} },
+	// Chuy: Tram Long Quyet -> Hang Van Quyet -> Thua Long Quyet -> Truy Phong Quyet -> Tung Hoanh Bat Hoang
+	{ {29, 30}, {31, 50}, {324, 100}, {325, 500}, {1059, 800} },
+};
+static const int COMBO_CHAIN_COUNT = sizeof(g_ComboChains) / sizeof(g_ComboChains[0]);
+static const DWORD COMBO_TIME_WINDOW = 3 * GAME_FPS;	// max gap between consecutive combo steps
+static const DWORD COMBO_REPEAT_WINDOW = 3 * GAME_FPS;	// grace window to repeat the current step's skill
+
+void KNpc::UpdateComboBonus(int nSkillId)
+{
+	DWORD dwNow = SubWorld[m_SubWorldIndex].m_dwCurrentTime;
+	int nBonus = 0;
+	BOOL bMatched = FALSE;
+	BOOL bIsRepeat = FALSE;
+	BOOL bWasComboActive = (m_nComboStepCount > 0);
+
+	if (bWasComboActive && m_wComboBonusSkillId == (WORD)nSkillId &&
+		(dwNow - m_dwComboLastCastTime) <= COMBO_REPEAT_WINDOW)
+	{
+		// Repeating the same skill you just landed on keeps its bonus alive
+		// at the current step instead of ending the combo.
+		nBonus = m_nComboBonusPercent;
+		bMatched = TRUE;
+		bIsRepeat = TRUE;
+	}
+	else if (bWasComboActive && m_nComboStepCount < COMBO_CHAIN_LEN &&
+		(dwNow - m_dwComboLastCastTime) <= COMBO_TIME_WINDOW)
+	{
+		for (int i = 0; i < COMBO_CHAIN_COUNT && !bMatched; i++)
+		{
+			BOOL bPrefixOk = TRUE;
+			for (int j = 0; j < m_nComboStepCount; j++)
+			{
+				if (g_ComboChains[i][j].SkillId != m_ComboSkillHistory[j])
+				{
+					bPrefixOk = FALSE;
+					break;
+				}
+			}
+			if (bPrefixOk && g_ComboChains[i][m_nComboStepCount].SkillId == (WORD)nSkillId)
+			{
+				nBonus = g_ComboChains[i][m_nComboStepCount].BonusPercent;
+				bMatched = TRUE;
+			}
+		}
+	}
+
+	if (!bMatched)
+	{
+#ifdef _SERVER
+		if (bWasComboActive && IsPlayer() && m_nPlayerIdx > 0)
+		{
+			// The combo chain that was in progress just ended (timed out,
+			// broken by an unrelated skill, or the chain's final step was
+			// already reached), so its damage bonus no longer applies.
+			SHOW_MSG_SYNC sMsg;
+			sMsg.ProtocolType = s2c_msgshow;
+			sMsg.m_wMsgID = enumMSG_ID_COMBO_END;
+			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID);
+			g_pServer->PackDataToClient(Player[m_nPlayerIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+		}
+#endif
+		// Not a continuation of the current chain: try starting a fresh combo attempt
+		m_nComboStepCount = 0;
+		for (int i = 0; i < COMBO_CHAIN_COUNT; i++)
+		{
+			if (g_ComboChains[i][0].SkillId == (WORD)nSkillId)
+			{
+				nBonus = g_ComboChains[i][0].BonusPercent;
+				bMatched = TRUE;
+				break;
+			}
+		}
+	}
+
+	if (bMatched)
+	{
+		if (!bIsRepeat)
+		{
+			// Only a real advance to a new step starts its clock. Repeating
+			// the current step's skill does NOT push this back, so the 3s
+			// grace window to use its bonus is fixed from the moment the
+			// step was reached, not renewed by each repeat.
+			if (m_nComboStepCount < COMBO_CHAIN_LEN)
+			{
+				m_ComboSkillHistory[m_nComboStepCount] = (WORD)nSkillId;
+				m_nComboStepCount++;
+			}
+			m_dwComboLastCastTime = dwNow;
+		}
+		m_wComboBonusSkillId = (WORD)nSkillId;
+		m_nComboBonusPercent = nBonus;
+
+#ifdef _SERVER
+		if (IsPlayer() && m_nPlayerIdx > 0)
+		{
+			// Let the caster know this hit's damage was boosted by the combo,
+			// via the system message console (private to this player), not a
+			// bubble over their head.
+			SHOW_MSG_SYNC sMsg;
+			sMsg.ProtocolType = s2c_msgshow;
+			sMsg.m_wMsgID = enumMSG_ID_COMBO_BONUS;
+			sMsg.m_lpBuf = (std::unique_ptr<BYTE[]> *)nBonus;
+			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
+			g_pServer->PackDataToClient(Player[m_nPlayerIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+		}
+#endif
+	}
+	else
+	{
+		m_nComboStepCount = 0;
+		m_wComboBonusSkillId = 0;
+		m_nComboBonusPercent = 0;
+	}
+}
+
 void KNpc::DoSkill(int nX, int nY)
 {
 	_ASSERT(m_RegionIndex >= 0);
@@ -2049,7 +2185,10 @@ void KNpc::DoSkill(int nX, int nY)
 							continue;
 						CONREGION(i).BroadCast(&NetCommand, sizeof(NetCommand), nMaxCount, m_MapX - POff[i].x, m_MapY - POff[i].y);
 					}
-#endif		
+#endif
+#ifdef _SERVER
+					UpdateComboBonus(m_ActiveSkillID);
+#endif
 					if (eStyle == SKILL_SS_Missles
 						|| eStyle == SKILL_SS_Melee
 						|| eStyle == SKILL_SS_InitiativeNpcState
@@ -3101,6 +3240,8 @@ void KNpc::AppendSkillEffect(int nSkillID, BOOL bIsPhysical, BOOL bIsMelee, void
 	int nAddDamageP = this->m_SkillList.GetAddSkillDamage(nSkillID) + this->m_CurrentSkillEnhancePercent;
 	if (m_CurrentMana == m_CurrentManaMax)
 		nAddDamageP += m_CurrentManaToSkillEnhanceP;
+	if (m_wComboBonusSkillId == (WORD)nSkillID)
+		nAddDamageP += m_nComboBonusPercent;
 
 	KMagicAttrib* pTemp = (KMagicAttrib*)pSrcData;
 	KMagicAttrib* pDes = (KMagicAttrib*)pDesData;

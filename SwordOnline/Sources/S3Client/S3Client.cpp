@@ -74,7 +74,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	 */
 #ifdef	TRUE
 
-	bool bOpenTracer = false;
+	bool bOpenTracer = true;	// Always open the debug console on startup; close it manually when not needed.
 
     while( lpCmdLine[0] == '-' || lpCmdLine[0] == '/' )
     {
@@ -94,9 +94,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
         }
     }
 	
-	if ( bOpenTracer ) 
+	if ( bOpenTracer )
 	{
 		AllocConsole();
+		FILE* pConsoleOut = NULL;
+		freopen_s(&pConsoleOut, "CONOUT$", "w", stdout);
 	}
 
 #endif // End of this function
