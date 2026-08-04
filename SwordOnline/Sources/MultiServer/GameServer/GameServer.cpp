@@ -7,6 +7,7 @@
 #endif
 #endif*/
 #include "StdAfx.h"
+#include <cstdio>
 #include "KSOServer.h"
 
 extern KSwordOnLineSever g_SOServer;
@@ -40,6 +41,11 @@ int g_nPort = 0;
 int main(int argc, char* argv[])
 {
 	BOOL bRunning = TRUE;
+	// Unbuffered stdout: when redirected to a pipe (not a real console), the CRT
+	// switches to full buffering, so fputs()-based output (e.g. Lua print()) can sit
+	// in the buffer indefinitely instead of reaching a log-capturing parent process.
+	setvbuf(stdout, NULL, _IONBF, 0);
+
 	if (argc == 2)
 	{
 		g_nPort = atoi(argv[1]);

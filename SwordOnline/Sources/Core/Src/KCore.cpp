@@ -7,6 +7,7 @@
 // Desc:	Core class
 //---------------------------------------------------------------------------
 #include "KCore.h"
+#include <cstdio>
 #include "KEngine.h"
 #include "KFilePath.h"
 #ifndef _SERVER
@@ -135,6 +136,13 @@ void LoadSkillComboSetting();
 //---------------------------------------------------------------------------
 CORE_API void g_InitCore()
 {
+	// Core.dll links its own (dynamic) CRT, separate from any static-CRT host exe
+	// (e.g. GameServer.exe), so it has its own independent buffered stdout. When
+	// that host redirects stdout to a pipe (e.g. JXStartup log capture), this
+	// buffer never flushes on its own since the process keeps running; force it
+	// unbuffered so these prints reach the pipe immediately.
+	setvbuf(stdout, NULL, _IONBF, 0);
+
 	time_t ltime;
 	time(&ltime);
 	printf("Starting Core.... %s", ctime( &ltime ));
