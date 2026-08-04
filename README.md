@@ -22,3 +22,5 @@
             * ... vài file liên quan nữa ae tìm theo tagSHOW_MSG_SYNC (https://github.com/duccom0123/jx1-vs2022/commit/a1f54536d17c66b02a2ad8a14e1a09a2dc07205d)
 	* 0.0.2:
         - Sửa lỗi khiến relay bị văng
+	* 0.0.3:
+        - Fix văng GS (không log) khi script Lua gọi AddProp/AddMagicPoint/SetLockState/SetEquipExpandTime/SetExpandBoxNum với giá trị khác 0 — chi tiết xem [fix-crash-s2c-player-sync.md](fix-crash-s2c-player-sync.md)

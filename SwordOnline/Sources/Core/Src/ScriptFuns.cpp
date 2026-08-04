@@ -7814,6 +7814,7 @@ int LuaAddMagicPoint(Lua_State * L)
 	sMsg.m_lpBuf = (LPVOID)Player[nPlayerIndex].m_nSkillPoint ;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_MAGICPOINT;
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	sMsg.m_lpBuf = 0;
 	return 0;
 }
 
@@ -7846,6 +7847,7 @@ int LuaAddPropPoint(Lua_State * L)
 	sMsg.m_lpBuf = (LPVOID)Player[nPlayerIndex].m_nAttributePoint ;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_PROPPOINT;
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	sMsg.m_lpBuf = 0;
 	return 0;
 }
 
@@ -8670,6 +8672,7 @@ int LuaInput(Lua_State * L)
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_INPUT;
 	sMsg.m_lpBuf = (LPVOID)max;
 	g_pServer->PackDataToClient(Player[nPlayerIndex].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	sMsg.m_lpBuf = 0;
 		
 	return 0;
 }

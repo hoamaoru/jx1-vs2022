@@ -7654,6 +7654,7 @@ void	KPlayer::SetLockState(BOOL bLock)
 		sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_LOCKSTATE;
 		if (g_pServer && m_nNetConnectIdx != -1)
 			g_pServer->PackDataToClient(this->m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+		sMsg.m_lpBuf = 0;
 #endif
 	}
 }
@@ -7675,6 +7676,7 @@ void	KPlayer::SetEquipExpandTime(int dwTime)
 	sMsg.m_lpBuf = (LPVOID)dwTime;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_EQUIPEXPAND;
 	g_pServer->PackDataToClient(this->m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	sMsg.m_lpBuf = 0;
 #endif
 }
 
@@ -7689,6 +7691,7 @@ void	KPlayer::SetExpandBoxNum(int nNum)
 	sMsg.m_lpBuf = (LPVOID)nNum;
 	sMsg.m_wMsgID = enumS2C_PLAYERSYNC_ID_EXPANDBOX;
 	g_pServer->PackDataToClient(this->m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+	sMsg.m_lpBuf = 0;
 #endif
 }
 
