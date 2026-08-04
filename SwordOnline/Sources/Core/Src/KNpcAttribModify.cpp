@@ -68,6 +68,7 @@ KNpcAttribModify::KNpcAttribModify()
 	ProcessFunc[magic_stuntimereduce_p] = &KNpcAttribModify::StunTimeReduceP;
 	ProcessFunc[magic_fastwalkrun_p] = &KNpcAttribModify::FastWalkRunP;
 	ProcessFunc[magic_fastwalkrun_yan_p] = &KNpcAttribModify::FastWalkRunP;
+	ProcessFunc[magic_fastwalkrun_ramp_p] = &KNpcAttribModify::FastWalkRunRampP;
 	ProcessFunc[magic_visionradius_p] = &KNpcAttribModify::VisionRadiusP;
 	ProcessFunc[magic_fasthitrecover_v] = &KNpcAttribModify::FastHitRecoverV;
 	ProcessFunc[magic_fasthitrecover_yan_v] = &KNpcAttribModify::FastHitRecoverV;
@@ -436,6 +437,24 @@ void KNpcAttribModify::FastWalkRunP(KNpc* pNpc, void* pData)
 	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
 	pNpc->m_CurrentWalkSpeed += ((float)(pNpc->m_WalkSpeed * pMagic->nValue[0]) / 100);
 	pNpc->m_CurrentRunSpeed += ((float)(pNpc->m_RunSpeed * pMagic->nValue[0]) / 100);
+}
+
+void KNpcAttribModify::FastWalkRunRampP(KNpc* pNpc, void* pData)
+{
+	KMagicAttrib* pMagic = (KMagicAttrib *)pData;
+	if (pMagic->nValue[1] > 0)
+	{
+		pNpc->m_SpeedRush.nMaxPercent = pMagic->nValue[0];
+		pNpc->m_SpeedRush.nRampTime = (pMagic->nValue[2] > 0) ? pMagic->nValue[2] : 1;
+		pNpc->m_SpeedRush.nElapsed = 0;
+		pNpc->m_SpeedRush.nCurPercent = 0;
+	}
+	else
+	{
+		pNpc->m_CurrentWalkSpeed -= ((float)(pNpc->m_WalkSpeed * pNpc->m_SpeedRush.nCurPercent) / 100);
+		pNpc->m_CurrentRunSpeed -= ((float)(pNpc->m_RunSpeed * pNpc->m_SpeedRush.nCurPercent) / 100);
+		ZeroMemory(&pNpc->m_SpeedRush, sizeof(pNpc->m_SpeedRush));
+	}
 }
 
 void KNpcAttribModify::FireArmorV(KNpc* pNpc, void* pData)

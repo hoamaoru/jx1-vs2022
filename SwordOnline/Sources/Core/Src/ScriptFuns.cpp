@@ -2764,6 +2764,35 @@ int LuaSetSkillLevel(Lua_State * L)
 	return 0;
 }
 
+int LuaLearnSkill(Lua_State * L)
+{
+	if (Lua_GetTopIndex(L) < 2)
+		return 0;
+
+	int nPlayerIndex = GetPlayerIndex(L);
+	if (nPlayerIndex <= 0)
+		return 0;
+	int nSkillId = 0;
+
+	if (Lua_IsNumber(L, 1))
+	{
+		nSkillId = (int)Lua_ValueToNumber (L, 1);
+	}
+	else
+	{
+		const char * sSkillName = Lua_ValueToString(L, 1);
+		g_OrdinSkillsSetting.GetInteger((char *)sSkillName, "SkillId", 0, &nSkillId);
+		if (nSkillId <= 0 ) return 0;
+	}
+	int nSkillLevel = (int)Lua_ValueToNumber(L, 2);
+	if (nSkillLevel > 0)
+	{
+		Npc[Player[nPlayerIndex].m_nIndex].m_SkillList.Add(nSkillId, nSkillLevel, 0);
+		Player[nPlayerIndex].SendSyncData_Skill();
+	}
+	return 0;
+}
+
 int LuaSetSkillTemp(Lua_State * L)
 {
 	if (Lua_GetTopIndex(L) < 2) 
@@ -10494,6 +10523,7 @@ TLua_Funcs GameScriptFuns[] =
 	{"KickOutAccount",	LuaKickOutAccount},
 	{"GetSkillId",		LuaGetSkillIdInSkillList},
 	{"SetSkillLevel",	LuaSetSkillLevel},
+	{"LearnSkill",		LuaLearnSkill},
 	{"SetSkillTemp",	LuaSetSkillTemp},
 	{"SetChatFlag",		LuaSetPlayerChatForbiddenFlag},
 	//------------------------------------------------

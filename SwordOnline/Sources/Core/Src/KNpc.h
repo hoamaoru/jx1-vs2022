@@ -132,6 +132,14 @@ struct KState
 	int	nTime;
 };
 
+struct KSpeedRush
+{
+	int	nMaxPercent;
+	int	nRampTime;
+	int	nElapsed;
+	int	nCurPercent;
+};
+
 class KStateNode : public KNode
 {
 public:
@@ -200,6 +208,7 @@ public:
 	KState				m_SilentState;
 	KState				m_RandMove;			// »ìÂÒ×´Ì¬
 	KState				m_WalkRun;
+	KSpeedRush			m_SpeedRush;
 
 	KState				m_PhysicsArmor;
 	KState				m_ColdArmor;

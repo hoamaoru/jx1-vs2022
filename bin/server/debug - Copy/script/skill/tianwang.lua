@@ -159,6 +159,15 @@ SKILLS={
 		attackratingenhance_p={{{1,45},{20,400}},{{1,18*120},{20,18*180}}},
 		skill_cost_v={{{1,5},{20,20}}}
 	},
+	jingxin_jue2={ --Tinh Tam Quyet 2
+		attackratingenhance_p={{{1,45},{20,400}},{{1,18*120},{20,18*180}}},
+		walkrunshadow={
+			[1]={{1,1},{20,1}},
+			[2]={{1,18*120},{20,18*180}}
+		},
+		fastwalkrun_ramp_p={{{1,9},{20,40}},{{1,18*120},{20,18*180}},{{1,18},{20,18}}},
+		skill_cost_v={{{1,5},{20,20}}}
+	},
 	jinglei_zhan={ --Kinh Loi Tram
 		physicsenhance_p={{{1,40},{20,200}}},
 		seriesdamage_p={{{1,1},{20,10}}},

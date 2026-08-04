@@ -1102,6 +1102,18 @@ BOOL KNpc::ProcessState()
 	{
 		m_WalkRun.nTime--;
 	}
+	if (m_SpeedRush.nRampTime > 0 && m_SpeedRush.nElapsed < m_SpeedRush.nRampTime)
+	{
+		m_SpeedRush.nElapsed++;
+		int nNewPercent = m_SpeedRush.nMaxPercent * m_SpeedRush.nElapsed / m_SpeedRush.nRampTime;
+		if (nNewPercent != m_SpeedRush.nCurPercent)
+		{
+			int nDeltaPercent = nNewPercent - m_SpeedRush.nCurPercent;
+			m_CurrentWalkSpeed += (float)(m_WalkSpeed * nDeltaPercent) / 100;
+			m_CurrentRunSpeed += (float)(m_RunSpeed * nDeltaPercent) / 100;
+			m_SpeedRush.nCurPercent = nNewPercent;
+		}
+	}
 #endif
 
 #ifndef _SERVER

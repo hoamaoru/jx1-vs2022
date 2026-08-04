@@ -53,6 +53,7 @@ private:
 	void	PoisonDamageReduceV(KNpc* pNpc, void* pData);
 	void	StunTimeReduceP(KNpc* pNpc, void* pData);
 	void	FastWalkRunP(KNpc* pNpc, void* pData);
+	void	FastWalkRunRampP(KNpc* pNpc, void* pData);
 	void	VisionRadiusP(KNpc* pNpc, void* pData);
 	void	FastHitRecoverV(KNpc* pNpc, void* pData);
 	void	AllresP(KNpc* pNpc, void* pData);

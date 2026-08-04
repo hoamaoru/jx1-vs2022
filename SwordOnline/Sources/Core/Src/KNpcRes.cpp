@@ -1617,7 +1617,7 @@ KNpcBlur::KNpcBlur()
 {
 	m_nActive = 0;
 	m_nCurNo = 0;
-	m_dwInterval = 3;
+	m_dwInterval = 4;		// was 3; +30% spacing between shadow afterimages
 	m_dwTimer = 0;
 }
 
