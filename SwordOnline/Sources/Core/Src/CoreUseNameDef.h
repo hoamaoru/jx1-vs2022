@@ -94,6 +94,7 @@
 //--------------- npc skill missles 设定文件，用于生成模板 -------------
 #define		SKILL_SETTING_FILE				"\\settings\\Skills.txt"
 #define		SKILLCOMBO_SETTING_FILE			"\\settings\\SkillCombos.txt"
+#define		COMBO_NAME_DISPLAY_SETTING_FILE	"\\settings\\ComboNameDisplay.ini"
 #define		MISSLES_SETTING_FILE			"\\settings\\Missles.txt"
 #define		NPC_SETTING_FILE				"\\settings\\NpcS.txt"
 #define		NPC_NAME_FILE					"\\settings\\NpcName.txt"

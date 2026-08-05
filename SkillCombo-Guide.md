@@ -94,22 +94,76 @@ Khi chạy `Game.exe` (mở console tự động kèm theo, xem mục 7), mỗi 
 
 `Game.exe` tự động mở kèm 1 cửa sổ console (terminal) để hiện log combo — không cần thêm cờ dòng lệnh. Đóng cửa sổ đó bất cứ lúc nào không ảnh hưởng tới game (không tự tắt game).
 
-## 8. File source liên quan (nếu cần đổi luật chơi, không chỉ đổi số liệu)
+## 8. Bubble tên combo trên đầu nhân vật
+
+Ngay khi đủ chuỗi (đánh xong bậc cuối lần đầu, hoặc lặp lại đúng skill đó trong 3s sau) — game hiện thêm 1 dòng chữ hoạt hình phía trên đầu nhân vật, lấy đúng nội dung cột **`ComboName`** trong `SkillCombos.txt` (không phải tên skill). Tên nhân vật/thanh HP vẫn hiện bình thường bên dưới, không bị che.
+
+Hiệu ứng: chữ bắt đầu màu đỏ, bay vào theo từng đơn vị (ký tự hoặc từ, tuỳ chế độ), khi đủ chữ thì phóng to + chuyển sang màu vàng, giữ 1 khoảng thời gian rồi biến mất.
+
+### File cấu hình: `settings/ComboNameDisplay.ini`
+
+Toàn bộ animation này đọc từ file ini phía **client** — sửa file, mở lại `Game.exe`, không cần build lại code.
+
+| Vị trí | Dùng cho |
+|---|---|
+| `bin/client/debug/settings/ComboNameDisplay.ini` | Game.exe (Client Debug) |
+| `bin/client/release/settings/ComboNameDisplay.ini` | Game.exe (Client Release) |
+
+> Đây là cấu hình phía **client only** — không cần copy vào các thư mục `bin/server/...`, và không cần restart GameServer khi chỉnh sửa.
+
+```ini
+[ComboNameBubble]
+; RevealMode: 0=CharByChar 1=WordByWord 2=SwordSlash 3=InkBlot
+RevealMode=1
+; Delay (ms) trước khi đơn vị (chữ/từ) kế tiếp bắt đầu bay vào
+CharStaggerMs=40
+; Thời gian (ms) để 1 đơn vị bay vào đúng vị trí
+CharFlyMs=180
+; Số đơn vị world-height mà 1 đơn vị di chuyển lúc bay vào
+FlyDistance=15
+; Thời gian (ms) chuyển size + màu khi đã đủ chữ
+GrowMs=250
+; Thời gian (ms) giữ nguyên ở size/màu cuối trước khi biến mất
+HoldMs=2000
+; Màu chữ lúc bắt đầu hiện (R,G,B)
+StartColor=255,0,0
+; Màu chữ khi đã phóng to xong (R,G,B)
+EndColor=255,255,0
+; Khoảng cách (world-height units) phía trên nameplate/HP bar để vẽ bubble
+VerticalOffset=50
+```
+
+### 4 kiểu animation (`RevealMode`)
+
+| Giá trị | Tên | Mô tả |
+|---|---|---|
+| 0 | CharByChar | Từng ký tự bay thẳng lên |
+| 1 | WordByWord | Từng từ (cách nhau bởi khoảng trắng) bay thẳng lên — mặc định |
+| 2 | SwordSlash | "Kiếm quang" — từng từ lướt chéo từ dưới-trái vào, kèm vệt sáng mờ theo sau |
+| 3 | InkBlot | "Bút mực thư pháp" — từng từ nở ra tại chỗ từ 1 chấm mực nhỏ, không di chuyển ngang/dọc |
+
+### Giới hạn kỹ thuật cần biết
+
+- **Cỡ chữ lúc phóng to KHÔNG cấu hình được qua ini.** Engine chỉ vẽ được cỡ chữ đã đăng ký sẵn trong `Ui/Ui3/UiPubLicSetting.ini` → `[FontList]` (hiện có: 10, 12, 13, 14, 16). Cỡ chữ nào không có trong danh sách này sẽ **âm thầm không vẽ gì** — đây là lỗi thật đã gặp phải khi cố phóng to 50% (12→18) lúc mới làm tính năng này. Nếu muốn cỡ khác 16, phải đăng ký thêm 1 mục `[FontList]` mới rồi sửa mảng `SKILLNAME_FONT_STEPS` trong code.
+- Đổi sang font chữ (typeface) khác hẳn cần có sẵn 1 file `.fnt` đúng định dạng nhị phân riêng của engine này (không phải `.ttf` thường) — hiện repo không có công cụ tự tạo file đó. Xem thêm nếu cần làm phần này sau.
+
+## 9. File source liên quan (nếu cần đổi luật chơi/animation, không chỉ đổi số liệu)
 
 | File | Vai trò |
 |---|---|
-| `SwordOnline/Sources/Core/Src/KNpc.h` | Khai báo state theo dõi combo trên mỗi `KNpc` |
-| `SwordOnline/Sources/Core/Src/KNpc.cpp` | `LoadSkillComboSetting()` (đọc file), `UpdateComboBonus()` (luật combo), áp dụng bonus trong `AppendSkillEffect()` |
+| `SwordOnline/Sources/Core/Src/KNpc.h` | Khai báo state theo dõi combo + bubble trên mỗi `KNpc` |
+| `SwordOnline/Sources/Core/Src/KNpc.cpp` | `LoadSkillComboSetting()` (đọc SkillCombos.txt), `UpdateComboBonus()` (luật combo), áp dụng bonus trong `AppendSkillEffect()`, `LoadComboDisplaySetting()` + `PaintSkillNameBubble()` (đọc ComboNameDisplay.ini + vẽ animation) |
+| `SwordOnline/Sources/Core/Src/CoreDrawGameObj.cpp` | Gọi `PaintSkillNameBubble()` mỗi frame, độc lập với logic vẽ tên/chat |
 | `SwordOnline/Sources/Core/Src/KCore.cpp` | Gọi `LoadSkillComboSetting()` lúc khởi động |
-| `SwordOnline/Sources/Core/Src/CoreUseNameDef.h` | Đường dẫn file (`SKILLCOMBO_SETTING_FILE`), mã thông báo (`enumMSG_ID_COMBO_BONUS`, `enumMSG_ID_COMBO_END`) |
+| `SwordOnline/Sources/Core/Src/CoreUseNameDef.h` | Đường dẫn file (`SKILLCOMBO_SETTING_FILE`, `COMBO_NAME_DISPLAY_SETTING_FILE`), mã thông báo (`enumMSG_ID_COMBO_BONUS`, `enumMSG_ID_COMBO_END`) |
 | `SwordOnline/Sources/Core/Src/KProtocolProcess.cpp` | Client nhận thông báo, in ra console kèm timestamp |
 | `SwordOnline/Sources/S3Client/S3Client.cpp` | Client tự mở console khi khởi động |
 
-Hai hằng số điều chỉnh nhịp độ combo nằm trong `KNpc.cpp` (gần đầu hàm `UpdateComboBonus`):
+Hai hằng số điều chỉnh nhịp độ combo (không phải animation bubble — xem mục 8 để chỉnh animation) nằm trong `KNpc.cpp` (gần đầu hàm `UpdateComboBonus`):
 
 ```cpp
 static const DWORD COMBO_TIME_WINDOW = 3 * GAME_FPS;   // thời gian để lên bậc kế tiếp
 static const DWORD COMBO_REPEAT_WINDOW = 3 * GAME_FPS;  // thời gian giữ bonus khi lặp lại skill hiện tại
 ```
 
-Đổi số `3` thành số giây khác nếu muốn chỉnh nhịp độ (cả 2 hằng số này đang cùng là 3s).
+Đổi số `3` thành số giây khác nếu muốn chỉnh nhịp độ (cả 2 hằng số này đang cùng là 3s, và hiện chưa đưa vào file cấu hình — nằm trong code vì ảnh hưởng luật chơi/sát thương, không chỉ hiển thị).

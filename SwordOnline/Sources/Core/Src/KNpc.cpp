@@ -142,6 +142,8 @@ void KNpc::Init()
 	m_dwComboLastCastTime = 0;
 	m_wComboBonusSkillId = 0;
 	m_nComboBonusPercent = 0;
+	m_bComboFinalStep = FALSE;
+	m_szComboName[0] = 0;
 
 	m_bNpcRemoveDeath = FALSE;
 	m_nNpcTimeout = 0;
@@ -157,6 +159,8 @@ void KNpc::Init()
 	m_nCurChatTime = 0;
 	m_nChatNumLine = 0;
 	m_nChatFontWidth = 0;
+	m_nSkillNameBubbleLen = 0;
+	m_dwSkillNameBubbleTime = 0;
 	m_nStature = 0;
 	m_dwTongNameID = 0;
 	ZeroMemory(m_szTongName, sizeof(m_szTongName));
@@ -1979,6 +1983,7 @@ struct SComboStep
 static const int COMBO_CHAIN_LEN = 5;
 static const int MAX_COMBO_CHAINS = 64;
 static SComboStep g_ComboChains[MAX_COMBO_CHAINS][COMBO_CHAIN_LEN];
+static char g_ComboChainNames[MAX_COMBO_CHAINS][64];
 static int g_nComboChainCount = 0;
 static const DWORD COMBO_TIME_WINDOW = 3 * GAME_FPS;	// max gap between consecutive combo steps
 static const DWORD COMBO_REPEAT_WINDOW = 3 * GAME_FPS;	// grace window to repeat the current step's skill
@@ -1999,6 +2004,8 @@ void LoadSkillComboSetting()
 		int nRow = i + 2;
 		SComboStep* pChain = g_ComboChains[g_nComboChainCount];
 		int nSkillId = 0, nBonus = 0;
+
+		ComboFile.GetString(nRow, "ComboName", "", g_ComboChainNames[g_nComboChainCount], sizeof(g_ComboChainNames[0]));
 
 		ComboFile.GetInteger(nRow, "Step1SkillId", 0, &nSkillId);
 		ComboFile.GetInteger(nRow, "Step1Bonus", 0, &nBonus);
@@ -2046,7 +2053,8 @@ void KNpc::UpdateComboBonus(int nSkillId)
 		bMatched = TRUE;
 		bIsRepeat = TRUE;
 	}
-	else if (bWasComboActive && m_nComboStepCount < COMBO_CHAIN_LEN &&
+	int nMatchedChainIndex = -1;
+	if (bWasComboActive && m_nComboStepCount < COMBO_CHAIN_LEN &&
 		(dwNow - m_dwComboLastCastTime) <= COMBO_TIME_WINDOW)
 	{
 		for (int i = 0; i < g_nComboChainCount && !bMatched; i++)
@@ -2064,6 +2072,7 @@ void KNpc::UpdateComboBonus(int nSkillId)
 			{
 				nBonus = g_ComboChains[i][m_nComboStepCount].BonusPercent;
 				bMatched = TRUE;
+				nMatchedChainIndex = i;
 			}
 		}
 	}
@@ -2091,6 +2100,7 @@ void KNpc::UpdateComboBonus(int nSkillId)
 			{
 				nBonus = g_ComboChains[i][0].BonusPercent;
 				bMatched = TRUE;
+				nMatchedChainIndex = i;
 				break;
 			}
 		}
@@ -2104,12 +2114,29 @@ void KNpc::UpdateComboBonus(int nSkillId)
 			// the current step's skill does NOT push this back, so the 3s
 			// grace window to use its bonus is fixed from the moment the
 			// step was reached, not renewed by each repeat.
+			int nReachedStep = m_nComboStepCount;
 			if (m_nComboStepCount < COMBO_CHAIN_LEN)
 			{
 				m_ComboSkillHistory[m_nComboStepCount] = (WORD)nSkillId;
 				m_nComboStepCount++;
 			}
 			m_dwComboLastCastTime = dwNow;
+
+			// Track whether this step is the last real step of its chain
+			// (chains shorter than COMBO_CHAIN_LEN are zero-padded), so
+			// repeats of it can be flagged as "chain complete" below. Also
+			// remember the chain's display name (SkillCombos.txt ComboName
+			// column) for the finisher bubble, instead of the skill's own name.
+			m_bComboFinalStep = FALSE;
+			m_szComboName[0] = 0;
+			if (nMatchedChainIndex >= 0)
+			{
+				int nNextStep = nReachedStep + 1;
+				m_bComboFinalStep = (nNextStep >= COMBO_CHAIN_LEN) ||
+					(g_ComboChains[nMatchedChainIndex][nNextStep].SkillId == 0);
+				strncpy(m_szComboName, g_ComboChainNames[nMatchedChainIndex], sizeof(m_szComboName) - 1);
+				m_szComboName[sizeof(m_szComboName) - 1] = 0;
+			}
 		}
 		m_wComboBonusSkillId = (WORD)nSkillId;
 		m_nComboBonusPercent = nBonus;
@@ -2126,6 +2153,34 @@ void KNpc::UpdateComboBonus(int nSkillId)
 			sMsg.m_lpBuf = (std::unique_ptr<BYTE[]> *)nBonus;
 			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
 			g_pServer->PackDataToClient(Player[m_nPlayerIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+
+			// The instant the chain's final step lands -- whether this is
+			// the cast that completes the combo, or a later repeat of that
+			// same finisher -- pop a yellow name bubble over the caster's
+			// head (in addition to the console log above).
+			if (m_bComboFinalStep && m_szComboName[0])
+			{
+				int nNameLen = (int)strlen(m_szComboName);
+				if (nNameLen > 80)
+					nNameLen = 80;
+
+				// 0x09=KTC_TAB + 0x01=SKILLNAME_BUBBLE_MARKER: tells the
+				// client (KNpc::SetChatInfo) to draw this as a standalone
+				// yellow name bubble above the nameplate, not as chat.
+				char szBuf[96];
+				int nOffset = 0;
+				szBuf[nOffset++] = (char)0x09;
+				szBuf[nOffset++] = (char)0x01;
+				memcpy(szBuf + nOffset, m_szComboName, nNameLen);
+				nOffset += nNameLen;
+
+				NPC_CHAT_SYNC NameChat;
+				NameChat.ProtocolType = s2c_npcchat;
+				NameChat.ID = m_dwID;
+				memcpy(NameChat.szMsg, szBuf, nOffset);
+				NameChat.nMsgLen = nOffset;
+				SendDataToNearRegion(&NameChat, sizeof(NPC_CHAT_SYNC));
+			}
 		}
 #endif
 	}
@@ -2134,6 +2189,7 @@ void KNpc::UpdateComboBonus(int nSkillId)
 		m_nComboStepCount = 0;
 		m_wComboBonusSkillId = 0;
 		m_nComboBonusPercent = 0;
+		m_bComboFinalStep = FALSE;
 	}
 }
 
@@ -5060,6 +5116,239 @@ void KNpc::PaintTop(int nHeightOffset, int nnHeightOffset, int nFontSize, DWORD 
 	}
 }
 
+// 0x01 right after KTC_TAB marks a chat packet as a combo "skill name" bubble
+// (see KNpc::UpdateComboBonus) instead of regular chat, so it is routed into
+// its own fields below rather than m_szChatBuffer -- this way it never
+// suppresses the normal nameplate/HP bar drawn by PaintInfo/PaintLife.
+#define SKILLNAME_BUBBLE_MARKER		0x01
+
+// Reveal granularity: which piece flies in as one animated unit.
+enum EComboTextRevealMode
+{
+	COMBO_REVEAL_CHAR_BY_CHAR,	// one letter at a time, floats straight up
+	COMBO_REVEAL_WORD_BY_WORD,	// one whole word (space-separated) at a time, floats straight up
+	COMBO_REVEAL_SWORD_SLASH,	// each word slashes in diagonally, trailing a fading streak
+	COMBO_REVEAL_INK_BLOT,		// each word unfurls in place from a small ink dot, calligraphy-style
+};
+
+// Animation timing/look, all in real milliseconds (re-evaluated fresh from
+// elapsed wall-clock time every draw call, so it stays smooth regardless of
+// the client's actual frame rate). This is all purely a client-side
+// presentation choice -- the server only ever sends the skill name text
+// (see KNpc::UpdateComboBonus), never any color/timing/animation detail.
+// Defaults below apply if settings\ComboNameDisplay.ini is missing/partial;
+// see LoadComboDisplaySetting.
+static EComboTextRevealMode SKILLNAME_REVEAL_MODE = COMBO_REVEAL_WORD_BY_WORD;
+static int SKILLNAME_CHAR_STAGGER_MS = 40;	// delay before each next unit starts flying in
+static int SKILLNAME_CHAR_FLY_MS = 180;	// time for one unit to fly up into place
+static int SKILLNAME_FLY_DISTANCE = 15;	// world-height units a unit starts below its landing spot
+static int SKILLNAME_GROW_MS = 250;		// color/size transition once the full word has landed
+static int SKILLNAME_HOLD_MS = 2000;		// how long to hold at final size/color before fading out
+static int SKILLNAME_START_COLOR_R = 255, SKILLNAME_START_COLOR_G = 0, SKILLNAME_START_COLOR_B = 0;	// red
+static int SKILLNAME_END_COLOR_R = 255, SKILLNAME_END_COLOR_G = 255, SKILLNAME_END_COLOR_B = 0;		// yellow
+static int SKILLNAME_VERTICAL_OFFSET = 50;	// world-height units above the nameplate/HP bar/chat, whichever was drawn last
+
+static void LoadComboDisplaySetting()
+{
+	static bool bLoaded = false;
+	if (bLoaded)
+		return;
+	bLoaded = true;
+
+	KIniFile IniFile;
+	if (!IniFile.Load(COMBO_NAME_DISPLAY_SETTING_FILE))
+		return;	// keep the hardcoded defaults above
+
+	int nMode = (int)SKILLNAME_REVEAL_MODE;
+	IniFile.GetInteger("ComboNameBubble", "RevealMode", nMode, &nMode);
+	if (nMode >= COMBO_REVEAL_CHAR_BY_CHAR && nMode <= COMBO_REVEAL_INK_BLOT)
+		SKILLNAME_REVEAL_MODE = (EComboTextRevealMode)nMode;
+
+	IniFile.GetInteger("ComboNameBubble", "CharStaggerMs", SKILLNAME_CHAR_STAGGER_MS, &SKILLNAME_CHAR_STAGGER_MS);
+	IniFile.GetInteger("ComboNameBubble", "CharFlyMs", SKILLNAME_CHAR_FLY_MS, &SKILLNAME_CHAR_FLY_MS);
+	IniFile.GetInteger("ComboNameBubble", "FlyDistance", SKILLNAME_FLY_DISTANCE, &SKILLNAME_FLY_DISTANCE);
+	IniFile.GetInteger("ComboNameBubble", "GrowMs", SKILLNAME_GROW_MS, &SKILLNAME_GROW_MS);
+	IniFile.GetInteger("ComboNameBubble", "HoldMs", SKILLNAME_HOLD_MS, &SKILLNAME_HOLD_MS);
+	IniFile.GetInteger3("ComboNameBubble", "StartColor", &SKILLNAME_START_COLOR_R, &SKILLNAME_START_COLOR_G, &SKILLNAME_START_COLOR_B);
+	IniFile.GetInteger3("ComboNameBubble", "EndColor", &SKILLNAME_END_COLOR_R, &SKILLNAME_END_COLOR_G, &SKILLNAME_END_COLOR_B);
+	IniFile.GetInteger("ComboNameBubble", "VerticalOffset", SKILLNAME_VERTICAL_OFFSET, &SKILLNAME_VERTICAL_OFFSET);
+}
+
+struct SRevealUnit
+{
+	int nStart;	// offset into the bubble text
+	int nLen;	// length in characters
+};
+static const int SKILLNAME_MAX_UNITS = 32;
+
+// Splits szText into the reveal units for the current SKILLNAME_REVEAL_MODE.
+// Word mode splits on spaces (spaces themselves aren't their own unit); char
+// mode just returns one unit per character. Same input always yields the
+// same units, so callers can independently re-derive them when needed.
+static int BuildComboTextRevealUnits(const char* szText, int nTextLen, SRevealUnit* pUnits)
+{
+	int nCount = 0;
+	if (SKILLNAME_REVEAL_MODE != COMBO_REVEAL_CHAR_BY_CHAR)
+	{
+		int i = 0;
+		while (i < nTextLen && nCount < SKILLNAME_MAX_UNITS)
+		{
+			while (i < nTextLen && szText[i] == ' ')
+				i++;
+			if (i >= nTextLen)
+				break;
+			int nStart = i;
+			while (i < nTextLen && szText[i] != ' ')
+				i++;
+			pUnits[nCount].nStart = nStart;
+			pUnits[nCount].nLen = i - nStart;
+			nCount++;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nTextLen && nCount < SKILLNAME_MAX_UNITS; i++)
+		{
+			pUnits[nCount].nStart = i;
+			pUnits[nCount].nLen = 1;
+			nCount++;
+		}
+	}
+	return nCount;
+}
+
+static DWORD GetSkillNameBubbleTotalDuration(int nUnitCount)
+{
+	DWORD dwRevealEnd = (DWORD)((nUnitCount - 1) * SKILLNAME_CHAR_STAGGER_MS + SKILLNAME_CHAR_FLY_MS);
+	return dwRevealEnd + SKILLNAME_GROW_MS + SKILLNAME_HOLD_MS;
+}
+
+int	KNpc::PaintSkillNameBubble(int nHeightOffset)
+{
+	int nCharCount = m_nSkillNameBubbleLen;
+	if (nCharCount <= 0)
+		return nHeightOffset;
+
+	LoadComboDisplaySetting();
+	nHeightOffset += SKILLNAME_VERTICAL_OFFSET;
+
+	SRevealUnit Units[SKILLNAME_MAX_UNITS];
+	int nUnitCount = BuildComboTextRevealUnits(m_szSkillNameBubble, nCharCount, Units);
+	if (nUnitCount <= 0)
+		return nHeightOffset;
+
+	DWORD dwElapsed = IR_GetCurrentTime() - m_dwSkillNameBubbleTime;
+	DWORD dwRevealEnd = (DWORD)((nUnitCount - 1) * SKILLNAME_CHAR_STAGGER_MS + SKILLNAME_CHAR_FLY_MS);
+	DWORD dwTotalShowTime = GetSkillNameBubbleTotalDuration(nUnitCount);
+
+	if (dwElapsed > dwTotalShowTime)
+	{
+		m_nSkillNameBubbleLen = 0;
+		return nHeightOffset;
+	}
+
+	// Whole-word grow + red->yellow transition, starts once every
+	// character has finished flying in.
+	float fGrow = 0.0f;
+	if (dwElapsed > dwRevealEnd)
+	{
+		fGrow = (float)(dwElapsed - dwRevealEnd) / (float)SKILLNAME_GROW_MS;
+		if (fGrow > 1.0f)
+			fGrow = 1.0f;
+	}
+
+	// g_pRepresent->OutputText looks up its font by exact size/id in a small
+	// pre-registered table (see UiPubLicSetting.ini [FontList]) -- any size
+	// not in that table silently draws nothing. Only 10/12/13/14/16 exist,
+	// so the "grow 50%" step ramps through the valid sizes instead of a
+	// continuous 12->18 interpolation (18 was never registered, which is why
+	// the bubble used to vanish the instant it finished growing).
+	static const int SKILLNAME_FONT_STEPS[] = { 12, 13, 14, 16 };
+	static const int SKILLNAME_FONT_STEP_COUNT = sizeof(SKILLNAME_FONT_STEPS) / sizeof(SKILLNAME_FONT_STEPS[0]);
+	int nStepIndex = (int)(fGrow * SKILLNAME_FONT_STEP_COUNT);
+	if (nStepIndex >= SKILLNAME_FONT_STEP_COUNT)
+		nStepIndex = SKILLNAME_FONT_STEP_COUNT - 1;
+	int nFontSize = SKILLNAME_FONT_STEPS[nStepIndex];
+	BYTE byR = (BYTE)(SKILLNAME_START_COLOR_R + (SKILLNAME_END_COLOR_R - SKILLNAME_START_COLOR_R) * fGrow);
+	BYTE byG = (BYTE)(SKILLNAME_START_COLOR_G + (SKILLNAME_END_COLOR_G - SKILLNAME_START_COLOR_G) * fGrow);
+	BYTE byB = (BYTE)(SKILLNAME_START_COLOR_B + (SKILLNAME_END_COLOR_B - SKILLNAME_START_COLOR_B) * fGrow);
+
+	int nCharStep = nFontSize / 2;
+	int nMpsX, nMpsY;
+	GetMpsPos(&nMpsX, &nMpsY);
+	int nStartX = nMpsX - (nCharStep * nCharCount) / 2;
+
+	for (int u = 0; u < nUnitCount; u++)
+	{
+		DWORD dwUnitStart = (DWORD)(u * SKILLNAME_CHAR_STAGGER_MS);
+		if (dwElapsed < dwUnitStart)
+			break;	// this and all later units have not appeared yet
+
+		DWORD dwUnitElapsed = dwElapsed - dwUnitStart;
+		float fFly = 1.0f;
+		if (dwUnitElapsed < (DWORD)SKILLNAME_CHAR_FLY_MS)
+		{
+			fFly = (float)dwUnitElapsed / (float)SKILLNAME_CHAR_FLY_MS;
+			fFly = 1.0f - (1.0f - fFly) * (1.0f - fFly);	// ease-out, for smooth motion
+		}
+
+		// Draw the whole unit (a word, or a single char in char-by-char mode)
+		// in one call so every character in it shares the same fly-in state.
+		// Position uses its ORIGINAL offset in the full string, so words land
+		// in the same spot they'd occupy in the plain, non-animated text.
+		char szUnit[SKILLNAME_MAX_UNITS + 1];
+		int nUnitLen = Units[u].nLen;
+		if (nUnitLen > SKILLNAME_MAX_UNITS)
+			nUnitLen = SKILLNAME_MAX_UNITS;
+		memcpy(szUnit, m_szSkillNameBubble + Units[u].nStart, nUnitLen);
+		szUnit[nUnitLen] = 0;
+		int nBaseX = nStartX + Units[u].nStart * nCharStep;
+
+		BYTE byAlpha = (BYTE)(255 * fFly);
+		DWORD dwColor = ((DWORD)byAlpha << 24) | ((DWORD)byR << 16) | ((DWORD)byG << 8) | byB;
+		int nUnitFontSize = nFontSize;
+		int nXOffset = 0;
+		int nZOffset = 0;
+
+		if (SKILLNAME_REVEAL_MODE == COMBO_REVEAL_SWORD_SLASH)
+		{
+			// Slashes in from below-left instead of straight up.
+			nXOffset = (int)(-40.0f * (1.0f - fFly));
+			nZOffset = (int)(SKILLNAME_FLY_DISTANCE * (1.0f - fFly));
+
+			// A single fainter "ghost" copy a little further back along the
+			// same path fakes a motion streak trailing the slash.
+			if (fFly < 1.0f)
+			{
+				float fTrail = fFly - 0.25f;
+				if (fTrail < 0.0f)
+					fTrail = 0.0f;
+				int nTrailXOffset = (int)(-40.0f * (1.0f - fTrail));
+				int nTrailZOffset = (int)(SKILLNAME_FLY_DISTANCE * (1.0f - fTrail));
+				BYTE byTrailAlpha = (BYTE)(byAlpha / 3);
+				DWORD dwTrailColor = ((DWORD)byTrailAlpha << 24) | 0x00ffffff;	// white streak
+				g_pRepresent->OutputText(nUnitFontSize, szUnit, KRF_ZERO_END,
+					nBaseX + nTrailXOffset, nMpsY, dwTrailColor, 0, nHeightOffset + nTrailZOffset, 0);
+			}
+		}
+		else if (SKILLNAME_REVEAL_MODE == COMBO_REVEAL_INK_BLOT)
+		{
+			// No motion -- the word blooms in place from a small ink dot,
+			// like a brush stroke landing on paper.
+			nUnitFontSize = (fFly < 0.5f) ? 10 : nFontSize;
+		}
+		else	// COMBO_REVEAL_CHAR_BY_CHAR / COMBO_REVEAL_WORD_BY_WORD
+		{
+			nZOffset = (int)(SKILLNAME_FLY_DISTANCE * (1.0f - fFly));
+		}
+
+		g_pRepresent->OutputText(nUnitFontSize, szUnit, KRF_ZERO_END,
+			nBaseX + nXOffset, nMpsY, dwColor, 0, nHeightOffset + nZOffset, 0);
+	}
+
+	return nHeightOffset;
+}
+
 int	KNpc::PaintChat(int nHeightOffset)
 {
 	if (m_Kind != kind_player && m_Kind != kind_dialoger && m_Kind != kind_normal)
@@ -5103,6 +5392,32 @@ int	KNpc::PaintChat(int nHeightOffset)
 #include "../../Engine/Src/Text.h"
 int	KNpc::SetChatInfo(const char* Name, const char* pMsgBuff, unsigned short nMsgLength)
 {
+	if (nMsgLength >= 2 && pMsgBuff[0] == KTC_TAB && (BYTE)pMsgBuff[1] == SKILLNAME_BUBBLE_MARKER)
+	{
+		LoadComboDisplaySetting();
+
+		// If a bubble is still actively playing (e.g. the player is spamming
+		// the combo finisher faster than the animation's full duration),
+		// ignore this repeat trigger instead of restarting the animation
+		// from scratch -- otherwise the hold phase never gets to finish.
+		if (m_nSkillNameBubbleLen > 0)
+		{
+			SRevealUnit ActiveUnits[SKILLNAME_MAX_UNITS];
+			int nActiveUnitCount = BuildComboTextRevealUnits(m_szSkillNameBubble, m_nSkillNameBubbleLen, ActiveUnits);
+			if ((IR_GetCurrentTime() - m_dwSkillNameBubbleTime) <= GetSkillNameBubbleTotalDuration(nActiveUnitCount))
+				return true;
+		}
+
+		int nNameLen = nMsgLength - 2;
+		if (nNameLen > (int)sizeof(m_szSkillNameBubble) - 1)
+			nNameLen = sizeof(m_szSkillNameBubble) - 1;
+		memcpy(m_szSkillNameBubble, pMsgBuff + 2, nNameLen);
+		m_szSkillNameBubble[nNameLen] = 0;
+		m_nSkillNameBubbleLen = nNameLen;
+		m_dwSkillNameBubbleTime = IR_GetCurrentTime();
+		return true;
+	}
+
 	int nFontSize = 12;
 
 	char szChatBuffer[MAX_SENTENCE_LENGTH];

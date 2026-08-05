@@ -106,6 +106,10 @@ void	CoreDrawGameObj(unsigned int uObjGenre, unsigned int uId, int x, int y, int
 						}
 					}
 				}
+				// Combo finisher name bubble: independent of the chat/name
+				// branching above. Vertical offset above nHeight is read from
+				// settings\ComboNameDisplay.ini (KNpc::LoadComboDisplaySetting).
+				Npc[uId].PaintSkillNameBubble(nHeight);
 			}
 			else if ((nParam & IPOT_RL_OBJECT) == IPOT_RL_OBJECT)
 			{

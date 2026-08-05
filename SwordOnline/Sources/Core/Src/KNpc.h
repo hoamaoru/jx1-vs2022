@@ -334,6 +334,8 @@ public:
 	DWORD				m_dwComboLastCastTime;
 	WORD				m_wComboBonusSkillId;
 	int					m_nComboBonusPercent;
+	BOOL				m_bComboFinalStep;
+	char				m_szComboName[64];
 	int					m_CurrentFiveElementsEnhance;
 	int					m_CurrentFiveElementsResist;
 	int					m_CurrentManaToSkillEnhanceP;
@@ -457,6 +459,9 @@ public:
 	int					m_nChatContentLen;
 	int					m_nChatNumLine;
 	int					m_nChatFontWidth;
+	char				m_szSkillNameBubble[64];
+	int				m_nSkillNameBubbleLen;
+	DWORD			m_dwSkillNameBubbleTime;
 	unsigned int		m_nCurChatTime;
 	int					m_nSleepFlag;
 	int					m_nHurtHeight;
@@ -695,6 +700,7 @@ public:
 	int					PaintInfo(int nHeightOffset, int nFontSize = 12, DWORD	dwBorderColor = 0);
 	void				PaintTop(int nHeightOffset, int nnHeightOffset, int nFontSize = 12, DWORD	dwBorderColor = 0);
 	int					PaintChat(int nHeightOffset);
+	int				PaintSkillNameBubble(int nHeightOffset);
 	int					SetChatInfo(const char* Name, const char* pMsgBuff, unsigned short nMsgLength);
 	int					PaintLife(int nHeightOffset, bool bSelect);
 	int					PaintMantle(int nHeightOff, int nFontSize, int nMpsX, int nMpsY);
