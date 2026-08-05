@@ -19,6 +19,7 @@
 #include "../UiBase.h"
 #include "../ShortcutKey.h"
 #include "../../../Core/src/CoreShell.h"
+#include "../../../Core/src/CoreObjGenreDef.h"
 #include "CommCtrl.h"
 
 extern iCoreShell*	g_pCoreShell;
@@ -264,6 +265,13 @@ void Wnd_ProcessInput(unsigned int uMsg, unsigned int uParam, int nParam)
 {
 	KWndWindow* pActiveWnd = NULL;
 	static bool bLastCursorEventProcessedByGameSpace = false;
+
+	if (uMsg == WM_RBUTTONDOWN && s_WndStation.DragInfo.bDragging &&
+		s_WndStation.DragInfo.DraggedObj.uGenre == CGOG_SKILL_FIGHT)//MrChuBo: click phai bat ky dau khi dang cam icon ky nang -> huy tha (icon bien mat)
+	{
+		Wnd_DragFinished();
+		return;
+	}
 
 	if(uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDOWN)
 	{

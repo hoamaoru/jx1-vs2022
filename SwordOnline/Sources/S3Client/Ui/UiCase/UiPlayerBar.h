@@ -66,6 +66,7 @@ public:
 	KImmediaItem() :m_nIndex(-1), m_nOrder(0), m_TextColor(0xFFFFFF00){}
 	void PaintWindow();
 	int	Init(KIniFile* pIniFile, const char* pSection);
+	int	WndProc(unsigned int uMsg, unsigned int uParam, int nParam);
 };
 
 struct KUiDraggedObject;

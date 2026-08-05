@@ -14,6 +14,7 @@
 #include "UiStatus.h"
 #include "UiGetString.h"
 #include "UiSkillTree.h"
+#include "../Elem/MouseHover.h"
 #include "UiEscDlg.h"
 #include "UiSelColor.h"
 #include "UiMsgCentrePad.h"
@@ -218,8 +219,50 @@ int	KImmediaItem::Init(KIniFile* pIniFile, const char* pSection)
 	return nRet;
 }
 
+int KImmediaItem::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
+{
+	if (uMsg == WM_LBUTTONDOWN && !Wnd_GetDragObj(NULL))
+	{
+		unsigned int uSkillGenre, uSkillId;
+		if (KUiSkillTree::GetShortcutSkill(m_nIndex, uSkillGenre, uSkillId))
+		{
+			KUiSkillTree::SetShortcutSkill(m_nIndex, CGOG_NOTHING, 0);
+
+			KUiDraggedObject Obj;
+			memset(&Obj, 0, sizeof(Obj));
+			Obj.uGenre = uSkillGenre;
+			Obj.uId = uSkillId;
+			Wnd_DragBegin(&Obj, DrawDraggingGameObjFunc);
+			return 0;
+		}
+	}
+	else if (uMsg == WM_MOUSEHOVER || uMsg == WM_MOUSEMOVE)
+	{
+		unsigned int uSkillGenre, uSkillId;
+		if (KUiSkillTree::GetShortcutSkill(m_nIndex, uSkillGenre, uSkillId))
+		{
+			m_Style |= OBJCONT_F_MOUSE_HOVER;
+			if (g_MouseOver.IsMoseHoverWndObj(this, 0) == 0)
+			{
+				SetMouseHoverObjectDesc(this, 0, uSkillGenre, uSkillId,
+					UOC_SKILL_LIST, LOWORD(nParam), HIWORD(nParam));
+			}
+			return 0;
+		}
+	}
+	return KWndObjectBox::WndProc(uMsg, uParam, nParam);
+}
+
 void KImmediaItem::PaintWindow()
 {
+	unsigned int uSkillGenre, uSkillId;
+	if (KUiSkillTree::GetShortcutSkill(m_nIndex, uSkillGenre, uSkillId))
+	{
+		if (g_pCoreShell)
+			g_pCoreShell->DrawGameObj(uSkillGenre, uSkillId,
+				m_nAbsoluteLeft, m_nAbsoluteTop, m_Width, m_Height, 0);
+		return;
+	}
 	KWndObjectBox::PaintWindow();
 	if (g_pCoreShell)
 	{
@@ -585,6 +628,20 @@ int KUiPlayerBar::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 			{
 				if (nParam == (int)(KWndWindow*)&m_ImmediaItem[i])
 					OnUseItem(i);
+			}
+		}
+		break;
+	case WND_N_SKILL_DROP:
+		if (uParam)
+		{
+			KUiDraggedObject* pObj = (KUiDraggedObject*)uParam;
+			for (int i = 0; i < UPB_IMMEDIA_ITEM_COUNT; i++)
+			{
+				if (nParam == (int)(KWndWindow*)&m_ImmediaItem[i])
+				{
+					KUiSkillTree::SetShortcutSkill(i, pObj->uGenre, pObj->uId);
+					break;
+				}
 			}
 		}
 		break;
@@ -1183,6 +1240,14 @@ void KUiPlayerBar::OnUseItem(int nIndex)
 {
 	if (m_pSelf && nIndex >= 0 && nIndex < UPB_IMMEDIA_ITEM_COUNT)
 	{
+		unsigned int uSkillGenre, uSkillId;
+		if (KUiSkillTree::GetShortcutSkill(nIndex, uSkillGenre, uSkillId))
+		{
+			int x, y;
+			Wnd_GetCursorPos(&x, &y);
+			g_pCoreShell->UseSkill(x, y, uSkillId);
+			return;
+		}
 		KUiDraggedObject Obj;
 		m_pSelf->m_ImmediaItem[nIndex].GetObject(Obj);
 		KUiObjAtRegion Info;

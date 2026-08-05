@@ -275,7 +275,18 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 				}
 				if (Wnd_GetDragObj(NULL))
 				{
-					DropObject(false);//MrChuBo: click chuột trái mang đồ
+					KUiDraggedObject	DragObj;
+					Wnd_GetDragObj(&DragObj);
+					if (m_nContainerId == UOC_IMMEDIA_ITEM && DragObj.uGenre == CGOG_SKILL_FIGHT)//MrChuBo: thả kỹ năng đang cầm vào ô đồ dùng nhanh -> gán phím tắt (thuần client, không đụng item thật)
+					{
+						m_pParentWnd->WndProc(WND_N_SKILL_DROP,
+							(unsigned int)&DragObj, (int)(KWndWindow*)this);
+						Wnd_DragFinished();
+					}
+					else
+					{
+						DropObject(false);//MrChuBo: click chuột trái mang đồ
+					}
 				}
 				else if (m_Object.uGenre != CGOG_NOTHING)//MrChuBo: click chuột trái tháo đồ
 				{
@@ -305,7 +316,16 @@ int KWndObjectBox::WndProc(unsigned int uMsg, unsigned int uParam, int nParam)
 	case WM_RBUTTONDOWN://MrChuBo: click chuột phải vào trang bị nhân vật
 		if (m_pParentWnd)
 		{
-			if (m_Object.uGenre != CGOG_NOTHING)//MrChuBo: click chuột phải vào đồ đang mặc
+			if (m_nContainerId == UOC_SKILL_LIST)//MrChuBo: click chuột phải vào kỹ năng -> nhấc icon theo con trỏ chuột (click phải lần nữa ở bất kỳ đâu để huỷ, xem Wnd_ProcessInput)
+			{
+				if (m_Object.uGenre != CGOG_NOTHING)
+				{
+					KUiDraggedObject	Obj;
+					Obj = m_Object;
+					Wnd_DragBegin(&Obj, DrawDraggingGameObjFunc);
+				}
+			}
+			else if (m_Object.uGenre != CGOG_NOTHING)//MrChuBo: click chuột phải vào đồ đang mặc
 			{
 				KUiDraggedObject	Obj;
 				Obj = m_Object;

@@ -27,6 +27,9 @@ public:
 	static void				SaveConfig(KIniFile* pIni);		//保存自定义配置
 
 	static void				DirectHandleShortcutKey(int nIndex);
+
+	static void				SetShortcutSkill(int nIndex, unsigned int uGenre, unsigned int uId);	//gan mot ky nang vao o phim tat (goi tu ben ngoai, vd: tha keo vao o item)
+	static bool				GetShortcutSkill(int nIndex, unsigned int& uGenre, unsigned int& uId);	//doc ky nang dang gan o o phim tat nIndex, tra ve false neu o trong
 private:
 	KUiSkillTree();
 	~KUiSkillTree() {}

@@ -474,6 +474,38 @@ void KUiSkillTree::DirectHandleShortcutKey(int nIndex)
 		g_pCoreShell->UseSkill(x, y, ms_ShortcutSkills[nIndex].uId);
 	}
 }
+
+void KUiSkillTree::SetShortcutSkill(int nIndex, unsigned int uGenre, unsigned int uId)
+{
+	if (nIndex < 0 || nIndex >= SKILLTREE_SHORTCUT_SKILL_COUNT)
+		return;
+
+	ms_ShortcutSkills[nIndex].uGenre = uGenre;
+	ms_ShortcutSkills[nIndex].uId = uId;
+	ms_ShortcutSkills[nIndex].IS_LEFT_SKILL = 0;
+
+	for (int i = 0; i < SKILLTREE_SHORTCUT_SKILL_COUNT; i++)
+	{
+		if (i != nIndex &&
+			ms_ShortcutSkills[nIndex].uId == ms_ShortcutSkills[i].uId &&
+			ms_ShortcutSkills[nIndex].IS_LEFT_SKILL == ms_ShortcutSkills[i].IS_LEFT_SKILL &&
+			ms_ShortcutSkills[nIndex].uGenre == ms_ShortcutSkills[i].uGenre)
+		{
+			ms_ShortcutSkills[i].uGenre = CGOG_NOTHING;
+			ms_ShortcutSkills[i].uId = 0;
+		}
+	}
+}
+
+bool KUiSkillTree::GetShortcutSkill(int nIndex, unsigned int& uGenre, unsigned int& uId)
+{
+	if (nIndex < 0 || nIndex >= SKILLTREE_SHORTCUT_SKILL_COUNT || ms_ShortcutSkills[nIndex].uGenre == CGOG_NOTHING)
+		return false;
+
+	uGenre = ms_ShortcutSkills[nIndex].uGenre;
+	uId = ms_ShortcutSkills[nIndex].uId;
+	return true;
+}
 // -------------------------------------------------------------------------
 // 功能	: 窗体绘制
 // -------------------------------------------------------------------------

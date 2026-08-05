@@ -74,6 +74,10 @@
 //	(short)((nParam >> 16) & 0xffff) = 纵向移动的距离
 //当nParam == 0 时，表示窗口的拖动操作结束了
 
+#define WND_N_SKILL_DROP		WND_M_BASE + 22				//tha 1 ky nang (dang keo bang chuot) vao 1 o doi tuong
+//(const KUiDraggedObject*)uParam = ky nang dang keo (uGenre/uId)
+//(KWndWindow*)nParam = con tro toi o doi tuong duoc tha vao
+
 //------------------------------------------------
 //	按键消息
 #define WND_M_BUTTON_BASE			WND_M_BASE + 100
