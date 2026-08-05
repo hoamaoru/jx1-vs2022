@@ -2036,6 +2036,151 @@ void LoadSkillComboSetting()
 	}
 }
 
+// Reveal granularity: which piece flies in as one animated unit.
+enum EComboTextRevealMode
+{
+	COMBO_REVEAL_CHAR_BY_CHAR,	// one letter at a time, floats straight up
+	COMBO_REVEAL_WORD_BY_WORD,	// one whole word (space-separated) at a time, floats straight up
+	COMBO_REVEAL_SWORD_SLASH,	// each word slashes in diagonally, trailing a fading streak
+	COMBO_REVEAL_INK_BLOT,		// each word unfurls in place from a small ink dot, calligraphy-style
+};
+
+// Animation timing/look, all in real milliseconds (re-evaluated fresh from
+// elapsed wall-clock time every draw call, so it stays smooth regardless of
+// the client's actual frame rate). This is all purely a client-side
+// presentation choice, derived independently by every client from the same
+// public data (skill-cast events + settings\SkillCombos.txt) -- the server
+// never sends anything about how (or whether) to display a combo.
+// Defaults below apply if settings\ComboNameDisplay.ini is missing/partial;
+// see LoadComboDisplaySetting.
+static EComboTextRevealMode SKILLNAME_REVEAL_MODE = COMBO_REVEAL_WORD_BY_WORD;
+static int SKILLNAME_CHAR_STAGGER_MS = 40;	// delay before each next unit starts flying in
+static int SKILLNAME_CHAR_FLY_MS = 180;	// time for one unit to fly up into place
+static int SKILLNAME_FLY_DISTANCE = 15;	// world-height units a unit starts below its landing spot
+static int SKILLNAME_GROW_MS = 250;		// color/size transition once the full word has landed
+static int SKILLNAME_HOLD_MS = 2000;		// how long to hold at final size/color before fading out
+static int SKILLNAME_START_COLOR_R = 255, SKILLNAME_START_COLOR_G = 0, SKILLNAME_START_COLOR_B = 0;	// red
+static int SKILLNAME_END_COLOR_R = 255, SKILLNAME_END_COLOR_G = 255, SKILLNAME_END_COLOR_B = 0;		// yellow, fallback for series_nil/unknown
+static int SKILLNAME_VERTICAL_OFFSET = 50;	// world-height units above the nameplate/HP bar/chat, whichever was drawn last
+
+// "Grown" color per Ngu Hanh (five elements) series, keyed by the caster's
+// own m_Series -- same RGB table the game's <color=Metal>/<color=Fire>/...
+// chat tags use (Engine/Src/Text.cpp s_ColorTable).
+static int SKILLNAME_END_COLOR_METAL_R = 246, SKILLNAME_END_COLOR_METAL_G = 255, SKILLNAME_END_COLOR_METAL_B = 117;
+static int SKILLNAME_END_COLOR_WOOD_R = 0, SKILLNAME_END_COLOR_WOOD_G = 255, SKILLNAME_END_COLOR_WOOD_B = 120;
+static int SKILLNAME_END_COLOR_WATER_R = 78, SKILLNAME_END_COLOR_WATER_G = 124, SKILLNAME_END_COLOR_WATER_B = 255;
+static int SKILLNAME_END_COLOR_FIRE_R = 255, SKILLNAME_END_COLOR_FIRE_G = 90, SKILLNAME_END_COLOR_FIRE_B = 0;
+static int SKILLNAME_END_COLOR_EARTH_R = 254, SKILLNAME_END_COLOR_EARTH_G = 207, SKILLNAME_END_COLOR_EARTH_B = 179;
+
+static void LoadComboDisplaySetting()
+{
+	static bool bLoaded = false;
+	if (bLoaded)
+		return;
+	bLoaded = true;
+
+	KIniFile IniFile;
+	if (!IniFile.Load(COMBO_NAME_DISPLAY_SETTING_FILE))
+		return;	// keep the hardcoded defaults above
+
+	int nMode = (int)SKILLNAME_REVEAL_MODE;
+	IniFile.GetInteger("ComboNameBubble", "RevealMode", nMode, &nMode);
+	if (nMode >= COMBO_REVEAL_CHAR_BY_CHAR && nMode <= COMBO_REVEAL_INK_BLOT)
+		SKILLNAME_REVEAL_MODE = (EComboTextRevealMode)nMode;
+
+	IniFile.GetInteger("ComboNameBubble", "CharStaggerMs", SKILLNAME_CHAR_STAGGER_MS, &SKILLNAME_CHAR_STAGGER_MS);
+	IniFile.GetInteger("ComboNameBubble", "CharFlyMs", SKILLNAME_CHAR_FLY_MS, &SKILLNAME_CHAR_FLY_MS);
+	IniFile.GetInteger("ComboNameBubble", "FlyDistance", SKILLNAME_FLY_DISTANCE, &SKILLNAME_FLY_DISTANCE);
+	IniFile.GetInteger("ComboNameBubble", "GrowMs", SKILLNAME_GROW_MS, &SKILLNAME_GROW_MS);
+	IniFile.GetInteger("ComboNameBubble", "HoldMs", SKILLNAME_HOLD_MS, &SKILLNAME_HOLD_MS);
+	IniFile.GetInteger3("ComboNameBubble", "StartColor", &SKILLNAME_START_COLOR_R, &SKILLNAME_START_COLOR_G, &SKILLNAME_START_COLOR_B);
+	IniFile.GetInteger3("ComboNameBubble", "EndColor", &SKILLNAME_END_COLOR_R, &SKILLNAME_END_COLOR_G, &SKILLNAME_END_COLOR_B);
+	IniFile.GetInteger("ComboNameBubble", "VerticalOffset", SKILLNAME_VERTICAL_OFFSET, &SKILLNAME_VERTICAL_OFFSET);
+
+	IniFile.GetInteger3("ComboNameBubble", "EndColorMetal", &SKILLNAME_END_COLOR_METAL_R, &SKILLNAME_END_COLOR_METAL_G, &SKILLNAME_END_COLOR_METAL_B);
+	IniFile.GetInteger3("ComboNameBubble", "EndColorWood", &SKILLNAME_END_COLOR_WOOD_R, &SKILLNAME_END_COLOR_WOOD_G, &SKILLNAME_END_COLOR_WOOD_B);
+	IniFile.GetInteger3("ComboNameBubble", "EndColorWater", &SKILLNAME_END_COLOR_WATER_R, &SKILLNAME_END_COLOR_WATER_G, &SKILLNAME_END_COLOR_WATER_B);
+	IniFile.GetInteger3("ComboNameBubble", "EndColorFire", &SKILLNAME_END_COLOR_FIRE_R, &SKILLNAME_END_COLOR_FIRE_G, &SKILLNAME_END_COLOR_FIRE_B);
+	IniFile.GetInteger3("ComboNameBubble", "EndColorEarth", &SKILLNAME_END_COLOR_EARTH_R, &SKILLNAME_END_COLOR_EARTH_G, &SKILLNAME_END_COLOR_EARTH_B);
+}
+
+// Picks the "grown" end color for a bubble based on the caster's own Ngu
+// Hanh series (m_Series), falling back to SKILLNAME_END_COLOR_* for
+// series_nil or any unrecognized value.
+static void GetComboEndColorForSeries(int nSeries, int* pnR, int* pnG, int* pnB)
+{
+	switch (nSeries)
+	{
+	case series_metal:
+		*pnR = SKILLNAME_END_COLOR_METAL_R; *pnG = SKILLNAME_END_COLOR_METAL_G; *pnB = SKILLNAME_END_COLOR_METAL_B;
+		break;
+	case series_wood:
+		*pnR = SKILLNAME_END_COLOR_WOOD_R; *pnG = SKILLNAME_END_COLOR_WOOD_G; *pnB = SKILLNAME_END_COLOR_WOOD_B;
+		break;
+	case series_water:
+		*pnR = SKILLNAME_END_COLOR_WATER_R; *pnG = SKILLNAME_END_COLOR_WATER_G; *pnB = SKILLNAME_END_COLOR_WATER_B;
+		break;
+	case series_fire:
+		*pnR = SKILLNAME_END_COLOR_FIRE_R; *pnG = SKILLNAME_END_COLOR_FIRE_G; *pnB = SKILLNAME_END_COLOR_FIRE_B;
+		break;
+	case series_earth:
+		*pnR = SKILLNAME_END_COLOR_EARTH_R; *pnG = SKILLNAME_END_COLOR_EARTH_G; *pnB = SKILLNAME_END_COLOR_EARTH_B;
+		break;
+	default:
+		*pnR = SKILLNAME_END_COLOR_R; *pnG = SKILLNAME_END_COLOR_G; *pnB = SKILLNAME_END_COLOR_B;
+		break;
+	}
+}
+
+struct SRevealUnit
+{
+	int nStart;	// offset into the bubble text
+	int nLen;	// length in characters
+};
+static const int SKILLNAME_MAX_UNITS = 32;
+
+// Splits szText into the reveal units for the current SKILLNAME_REVEAL_MODE.
+// Word mode splits on spaces (spaces themselves aren't their own unit); char
+// mode just returns one unit per character. Same input always yields the
+// same units, so callers can independently re-derive them when needed.
+static int BuildComboTextRevealUnits(const char* szText, int nTextLen, SRevealUnit* pUnits)
+{
+	int nCount = 0;
+	if (SKILLNAME_REVEAL_MODE != COMBO_REVEAL_CHAR_BY_CHAR)
+	{
+		int i = 0;
+		while (i < nTextLen && nCount < SKILLNAME_MAX_UNITS)
+		{
+			while (i < nTextLen && szText[i] == ' ')
+				i++;
+			if (i >= nTextLen)
+				break;
+			int nStart = i;
+			while (i < nTextLen && szText[i] != ' ')
+				i++;
+			pUnits[nCount].nStart = nStart;
+			pUnits[nCount].nLen = i - nStart;
+			nCount++;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nTextLen && nCount < SKILLNAME_MAX_UNITS; i++)
+		{
+			pUnits[nCount].nStart = i;
+			pUnits[nCount].nLen = 1;
+			nCount++;
+		}
+	}
+	return nCount;
+}
+
+static DWORD GetSkillNameBubbleTotalDuration(int nUnitCount)
+{
+	DWORD dwRevealEnd = (DWORD)((nUnitCount - 1) * SKILLNAME_CHAR_STAGGER_MS + SKILLNAME_CHAR_FLY_MS);
+	return dwRevealEnd + SKILLNAME_GROW_MS + SKILLNAME_HOLD_MS;
+}
+
 void KNpc::UpdateComboBonus(int nSkillId)
 {
 	DWORD dwNow = SubWorld[m_SubWorldIndex].m_dwCurrentTime;
@@ -2079,17 +2224,18 @@ void KNpc::UpdateComboBonus(int nSkillId)
 
 	if (!bMatched)
 	{
-#ifdef _SERVER
-		if (bWasComboActive && IsPlayer() && m_nPlayerIdx > 0)
+#ifndef _SERVER
+		// The combo chain that was in progress just ended (timed out, broken
+		// by an unrelated skill, or the chain's final step was already
+		// reached), so its damage bonus no longer applies. Every client
+		// derives this the same way from the same public skill-cast events,
+		// so only print it for the local player's own console -- it's not
+		// meaningful feedback about anyone else's combo.
+		if (bWasComboActive && m_Index == Player[CLIENT_PLAYER_INDEX].m_nIndex)
 		{
-			// The combo chain that was in progress just ended (timed out,
-			// broken by an unrelated skill, or the chain's final step was
-			// already reached), so its damage bonus no longer applies.
-			SHOW_MSG_SYNC sMsg;
-			sMsg.ProtocolType = s2c_msgshow;
-			sMsg.m_wMsgID = enumMSG_ID_COMBO_END;
-			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1 - sizeof(LPVOID);
-			g_pServer->PackDataToClient(Player[m_nPlayerIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+			SYSTEMTIME st;
+			GetLocalTime(&st);
+			printf("[%02d:%02d:%02d.%03d] [COMBO] Combo ended.\n", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 		}
 #endif
 		// Not a continuation of the current chain: try starting a fresh combo attempt
@@ -2141,45 +2287,49 @@ void KNpc::UpdateComboBonus(int nSkillId)
 		m_wComboBonusSkillId = (WORD)nSkillId;
 		m_nComboBonusPercent = nBonus;
 
-#ifdef _SERVER
-		if (IsPlayer() && m_nPlayerIdx > 0)
+#ifndef _SERVER
+		// Console log is private feedback, so only print it for the local
+		// player's own combo -- every nearby client independently derives
+		// the same nBonus for every character it can see, and would
+		// otherwise spam its own console with everyone else's combos too.
+		if (m_Index == Player[CLIENT_PLAYER_INDEX].m_nIndex)
 		{
-			// Let the caster know this hit's damage was boosted by the combo,
-			// via the system message console (private to this player), not a
-			// bubble over their head.
-			SHOW_MSG_SYNC sMsg;
-			sMsg.ProtocolType = s2c_msgshow;
-			sMsg.m_wMsgID = enumMSG_ID_COMBO_BONUS;
-			sMsg.m_lpBuf = (std::unique_ptr<BYTE[]> *)nBonus;
-			sMsg.m_wLength = sizeof(SHOW_MSG_SYNC) - 1;
-			g_pServer->PackDataToClient(Player[m_nPlayerIdx].m_nNetConnectIdx, &sMsg, sMsg.m_wLength + 1);
+			SYSTEMTIME st;
+			GetLocalTime(&st);
+			printf("[%02d:%02d:%02d.%03d] [COMBO] Damage bonus: +%d%%\n", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, nBonus);
+		}
 
-			// The instant the chain's final step lands -- whether this is
-			// the cast that completes the combo, or a later repeat of that
-			// same finisher -- pop a yellow name bubble over the caster's
-			// head (in addition to the console log above).
-			if (m_bComboFinalStep && m_szComboName[0])
+		// The instant the chain's final step lands -- whether this is the
+		// cast that completes the combo, or a later repeat of that same
+		// finisher -- pop a name bubble over the caster's head. Unlike the
+		// console log, this is visible for ANY nearby character (matches
+		// the old server-broadcast behavior), since every client watching
+		// them independently reaches the same conclusion.
+		if (m_bComboFinalStep && m_szComboName[0])
+		{
+			LoadComboDisplaySetting();
+
+			// Don't restart an animation that's still actively playing (e.g.
+			// the player spamming the finisher faster than the animation's
+			// full duration) -- let it finish its current cycle undisturbed.
+			BOOL bBubbleStillActive = FALSE;
+			if (m_nSkillNameBubbleLen > 0)
+			{
+				SRevealUnit ActiveUnits[SKILLNAME_MAX_UNITS];
+				int nActiveUnitCount = BuildComboTextRevealUnits(m_szSkillNameBubble, m_nSkillNameBubbleLen, ActiveUnits);
+				if ((IR_GetCurrentTime() - m_dwSkillNameBubbleTime) <= GetSkillNameBubbleTotalDuration(nActiveUnitCount))
+					bBubbleStillActive = TRUE;
+			}
+
+			if (!bBubbleStillActive)
 			{
 				int nNameLen = (int)strlen(m_szComboName);
-				if (nNameLen > 80)
-					nNameLen = 80;
-
-				// 0x09=KTC_TAB + 0x01=SKILLNAME_BUBBLE_MARKER: tells the
-				// client (KNpc::SetChatInfo) to draw this as a standalone
-				// yellow name bubble above the nameplate, not as chat.
-				char szBuf[96];
-				int nOffset = 0;
-				szBuf[nOffset++] = (char)0x09;
-				szBuf[nOffset++] = (char)0x01;
-				memcpy(szBuf + nOffset, m_szComboName, nNameLen);
-				nOffset += nNameLen;
-
-				NPC_CHAT_SYNC NameChat;
-				NameChat.ProtocolType = s2c_npcchat;
-				NameChat.ID = m_dwID;
-				memcpy(NameChat.szMsg, szBuf, nOffset);
-				NameChat.nMsgLen = nOffset;
-				SendDataToNearRegion(&NameChat, sizeof(NPC_CHAT_SYNC));
+				if (nNameLen > (int)sizeof(m_szSkillNameBubble) - 1)
+					nNameLen = sizeof(m_szSkillNameBubble) - 1;
+				memcpy(m_szSkillNameBubble, m_szComboName, nNameLen);
+				m_szSkillNameBubble[nNameLen] = 0;
+				m_nSkillNameBubbleLen = nNameLen;
+				m_dwSkillNameBubbleTime = IR_GetCurrentTime();
 			}
 		}
 #endif
@@ -2294,9 +2444,10 @@ void KNpc::DoSkill(int nX, int nY)
 						CONREGION(i).BroadCast(&NetCommand, sizeof(NetCommand), nMaxCount, m_MapX - POff[i].x, m_MapY - POff[i].y);
 					}
 #endif
-#ifdef _SERVER
+					// Every client (not just the server) walks this same
+					// state machine for every skill cast it observes -- see
+					// UpdateComboBonus's own comment for why.
 					UpdateComboBonus(m_ActiveSkillID);
-#endif
 					if (eStyle == SKILL_SS_Missles
 						|| eStyle == SKILL_SS_Melee
 						|| eStyle == SKILL_SS_InitiativeNpcState
@@ -5116,113 +5267,6 @@ void KNpc::PaintTop(int nHeightOffset, int nnHeightOffset, int nFontSize, DWORD 
 	}
 }
 
-// 0x01 right after KTC_TAB marks a chat packet as a combo "skill name" bubble
-// (see KNpc::UpdateComboBonus) instead of regular chat, so it is routed into
-// its own fields below rather than m_szChatBuffer -- this way it never
-// suppresses the normal nameplate/HP bar drawn by PaintInfo/PaintLife.
-#define SKILLNAME_BUBBLE_MARKER		0x01
-
-// Reveal granularity: which piece flies in as one animated unit.
-enum EComboTextRevealMode
-{
-	COMBO_REVEAL_CHAR_BY_CHAR,	// one letter at a time, floats straight up
-	COMBO_REVEAL_WORD_BY_WORD,	// one whole word (space-separated) at a time, floats straight up
-	COMBO_REVEAL_SWORD_SLASH,	// each word slashes in diagonally, trailing a fading streak
-	COMBO_REVEAL_INK_BLOT,		// each word unfurls in place from a small ink dot, calligraphy-style
-};
-
-// Animation timing/look, all in real milliseconds (re-evaluated fresh from
-// elapsed wall-clock time every draw call, so it stays smooth regardless of
-// the client's actual frame rate). This is all purely a client-side
-// presentation choice -- the server only ever sends the skill name text
-// (see KNpc::UpdateComboBonus), never any color/timing/animation detail.
-// Defaults below apply if settings\ComboNameDisplay.ini is missing/partial;
-// see LoadComboDisplaySetting.
-static EComboTextRevealMode SKILLNAME_REVEAL_MODE = COMBO_REVEAL_WORD_BY_WORD;
-static int SKILLNAME_CHAR_STAGGER_MS = 40;	// delay before each next unit starts flying in
-static int SKILLNAME_CHAR_FLY_MS = 180;	// time for one unit to fly up into place
-static int SKILLNAME_FLY_DISTANCE = 15;	// world-height units a unit starts below its landing spot
-static int SKILLNAME_GROW_MS = 250;		// color/size transition once the full word has landed
-static int SKILLNAME_HOLD_MS = 2000;		// how long to hold at final size/color before fading out
-static int SKILLNAME_START_COLOR_R = 255, SKILLNAME_START_COLOR_G = 0, SKILLNAME_START_COLOR_B = 0;	// red
-static int SKILLNAME_END_COLOR_R = 255, SKILLNAME_END_COLOR_G = 255, SKILLNAME_END_COLOR_B = 0;		// yellow
-static int SKILLNAME_VERTICAL_OFFSET = 50;	// world-height units above the nameplate/HP bar/chat, whichever was drawn last
-
-static void LoadComboDisplaySetting()
-{
-	static bool bLoaded = false;
-	if (bLoaded)
-		return;
-	bLoaded = true;
-
-	KIniFile IniFile;
-	if (!IniFile.Load(COMBO_NAME_DISPLAY_SETTING_FILE))
-		return;	// keep the hardcoded defaults above
-
-	int nMode = (int)SKILLNAME_REVEAL_MODE;
-	IniFile.GetInteger("ComboNameBubble", "RevealMode", nMode, &nMode);
-	if (nMode >= COMBO_REVEAL_CHAR_BY_CHAR && nMode <= COMBO_REVEAL_INK_BLOT)
-		SKILLNAME_REVEAL_MODE = (EComboTextRevealMode)nMode;
-
-	IniFile.GetInteger("ComboNameBubble", "CharStaggerMs", SKILLNAME_CHAR_STAGGER_MS, &SKILLNAME_CHAR_STAGGER_MS);
-	IniFile.GetInteger("ComboNameBubble", "CharFlyMs", SKILLNAME_CHAR_FLY_MS, &SKILLNAME_CHAR_FLY_MS);
-	IniFile.GetInteger("ComboNameBubble", "FlyDistance", SKILLNAME_FLY_DISTANCE, &SKILLNAME_FLY_DISTANCE);
-	IniFile.GetInteger("ComboNameBubble", "GrowMs", SKILLNAME_GROW_MS, &SKILLNAME_GROW_MS);
-	IniFile.GetInteger("ComboNameBubble", "HoldMs", SKILLNAME_HOLD_MS, &SKILLNAME_HOLD_MS);
-	IniFile.GetInteger3("ComboNameBubble", "StartColor", &SKILLNAME_START_COLOR_R, &SKILLNAME_START_COLOR_G, &SKILLNAME_START_COLOR_B);
-	IniFile.GetInteger3("ComboNameBubble", "EndColor", &SKILLNAME_END_COLOR_R, &SKILLNAME_END_COLOR_G, &SKILLNAME_END_COLOR_B);
-	IniFile.GetInteger("ComboNameBubble", "VerticalOffset", SKILLNAME_VERTICAL_OFFSET, &SKILLNAME_VERTICAL_OFFSET);
-}
-
-struct SRevealUnit
-{
-	int nStart;	// offset into the bubble text
-	int nLen;	// length in characters
-};
-static const int SKILLNAME_MAX_UNITS = 32;
-
-// Splits szText into the reveal units for the current SKILLNAME_REVEAL_MODE.
-// Word mode splits on spaces (spaces themselves aren't their own unit); char
-// mode just returns one unit per character. Same input always yields the
-// same units, so callers can independently re-derive them when needed.
-static int BuildComboTextRevealUnits(const char* szText, int nTextLen, SRevealUnit* pUnits)
-{
-	int nCount = 0;
-	if (SKILLNAME_REVEAL_MODE != COMBO_REVEAL_CHAR_BY_CHAR)
-	{
-		int i = 0;
-		while (i < nTextLen && nCount < SKILLNAME_MAX_UNITS)
-		{
-			while (i < nTextLen && szText[i] == ' ')
-				i++;
-			if (i >= nTextLen)
-				break;
-			int nStart = i;
-			while (i < nTextLen && szText[i] != ' ')
-				i++;
-			pUnits[nCount].nStart = nStart;
-			pUnits[nCount].nLen = i - nStart;
-			nCount++;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < nTextLen && nCount < SKILLNAME_MAX_UNITS; i++)
-		{
-			pUnits[nCount].nStart = i;
-			pUnits[nCount].nLen = 1;
-			nCount++;
-		}
-	}
-	return nCount;
-}
-
-static DWORD GetSkillNameBubbleTotalDuration(int nUnitCount)
-{
-	DWORD dwRevealEnd = (DWORD)((nUnitCount - 1) * SKILLNAME_CHAR_STAGGER_MS + SKILLNAME_CHAR_FLY_MS);
-	return dwRevealEnd + SKILLNAME_GROW_MS + SKILLNAME_HOLD_MS;
-}
-
 int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 {
 	int nCharCount = m_nSkillNameBubbleLen;
@@ -5269,9 +5313,15 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 	if (nStepIndex >= SKILLNAME_FONT_STEP_COUNT)
 		nStepIndex = SKILLNAME_FONT_STEP_COUNT - 1;
 	int nFontSize = SKILLNAME_FONT_STEPS[nStepIndex];
-	BYTE byR = (BYTE)(SKILLNAME_START_COLOR_R + (SKILLNAME_END_COLOR_R - SKILLNAME_START_COLOR_R) * fGrow);
-	BYTE byG = (BYTE)(SKILLNAME_START_COLOR_G + (SKILLNAME_END_COLOR_G - SKILLNAME_START_COLOR_G) * fGrow);
-	BYTE byB = (BYTE)(SKILLNAME_START_COLOR_B + (SKILLNAME_END_COLOR_B - SKILLNAME_START_COLOR_B) * fGrow);
+
+	// Each character's own Ngu Hanh series decides the "grown" color, so a
+	// Fire-series player's combo text ends up red-hot while a Water-series
+	// player's ends up blue, etc.
+	int nEndR, nEndG, nEndB;
+	GetComboEndColorForSeries(m_Series, &nEndR, &nEndG, &nEndB);
+	BYTE byR = (BYTE)(SKILLNAME_START_COLOR_R + (nEndR - SKILLNAME_START_COLOR_R) * fGrow);
+	BYTE byG = (BYTE)(SKILLNAME_START_COLOR_G + (nEndG - SKILLNAME_START_COLOR_G) * fGrow);
+	BYTE byB = (BYTE)(SKILLNAME_START_COLOR_B + (nEndB - SKILLNAME_START_COLOR_B) * fGrow);
 
 	int nCharStep = nFontSize / 2;
 	int nMpsX, nMpsY;
@@ -5392,31 +5442,6 @@ int	KNpc::PaintChat(int nHeightOffset)
 #include "../../Engine/Src/Text.h"
 int	KNpc::SetChatInfo(const char* Name, const char* pMsgBuff, unsigned short nMsgLength)
 {
-	if (nMsgLength >= 2 && pMsgBuff[0] == KTC_TAB && (BYTE)pMsgBuff[1] == SKILLNAME_BUBBLE_MARKER)
-	{
-		LoadComboDisplaySetting();
-
-		// If a bubble is still actively playing (e.g. the player is spamming
-		// the combo finisher faster than the animation's full duration),
-		// ignore this repeat trigger instead of restarting the animation
-		// from scratch -- otherwise the hold phase never gets to finish.
-		if (m_nSkillNameBubbleLen > 0)
-		{
-			SRevealUnit ActiveUnits[SKILLNAME_MAX_UNITS];
-			int nActiveUnitCount = BuildComboTextRevealUnits(m_szSkillNameBubble, m_nSkillNameBubbleLen, ActiveUnits);
-			if ((IR_GetCurrentTime() - m_dwSkillNameBubbleTime) <= GetSkillNameBubbleTotalDuration(nActiveUnitCount))
-				return true;
-		}
-
-		int nNameLen = nMsgLength - 2;
-		if (nNameLen > (int)sizeof(m_szSkillNameBubble) - 1)
-			nNameLen = sizeof(m_szSkillNameBubble) - 1;
-		memcpy(m_szSkillNameBubble, pMsgBuff + 2, nNameLen);
-		m_szSkillNameBubble[nNameLen] = 0;
-		m_nSkillNameBubbleLen = nNameLen;
-		m_dwSkillNameBubbleTime = IR_GetCurrentTime();
-		return true;
-	}
 
 	int nFontSize = 12;
 

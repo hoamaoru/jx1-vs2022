@@ -90,24 +90,26 @@ Khi chạy `Game.exe` (mở console tự động kèm theo, xem mục 7), mỗi 
 [22:13:44.303] [COMBO] Combo ended.
 ```
 
+Dòng này chỉ hiện cho **đúng người đang thi triển combo** (client tự lọc theo nhân vật đang điều khiển), không hiện cho combo của người khác.
+
 ## 7. Console debug tự mở khi chạy Game.exe
 
 `Game.exe` tự động mở kèm 1 cửa sổ console (terminal) để hiện log combo — không cần thêm cờ dòng lệnh. Đóng cửa sổ đó bất cứ lúc nào không ảnh hưởng tới game (không tự tắt game).
 
 ## 8. Bubble tên combo trên đầu nhân vật
 
-Ngay khi đủ chuỗi (đánh xong bậc cuối lần đầu, hoặc lặp lại đúng skill đó trong 3s sau) — game hiện thêm 1 dòng chữ hoạt hình phía trên đầu nhân vật, lấy đúng nội dung cột **`ComboName`** trong `SkillCombos.txt` (không phải tên skill). Tên nhân vật/thanh HP vẫn hiện bình thường bên dưới, không bị che.
+Ngay khi đủ chuỗi (đánh xong bậc cuối lần đầu, hoặc lặp lại đúng skill đó trong 3s sau) — game hiện thêm 1 dòng chữ hoạt hình phía trên đầu nhân vật, lấy đúng nội dung cột **`ComboName`** trong `SkillCombos.txt` (không phải tên skill). Tên nhân vật/thanh HP vẫn hiện bình thường bên dưới, không bị che. Khác với console log ở mục 6, bubble này hiện cho **bất kỳ ai gần đó cũng thấy được**, không riêng người thi triển.
 
-Hiệu ứng: chữ bắt đầu màu đỏ, bay vào theo từng đơn vị (ký tự hoặc từ, tuỳ chế độ), khi đủ chữ thì phóng to + chuyển sang màu vàng, giữ 1 khoảng thời gian rồi biến mất.
+Hiệu ứng: chữ bắt đầu màu đỏ, bay vào theo từng đơn vị (ký tự hoặc từ, tuỳ chế độ), khi đủ chữ thì phóng to + chuyển màu theo **hệ ngũ hành** của người thi triển (xem bảng màu bên dưới), giữ 1 khoảng thời gian rồi biến mất.
 
-### File cấu hình: `settings/ComboNameDisplay.ini`
+### File cấu hình: `Ui/ComboNameDisplay.ini`
 
 Toàn bộ animation này đọc từ file ini phía **client** — sửa file, mở lại `Game.exe`, không cần build lại code.
 
 | Vị trí | Dùng cho |
 |---|---|
-| `bin/client/debug/settings/ComboNameDisplay.ini` | Game.exe (Client Debug) |
-| `bin/client/release/settings/ComboNameDisplay.ini` | Game.exe (Client Release) |
+| `bin/client/debug/Ui/ComboNameDisplay.ini` | Game.exe (Client Debug) |
+| `bin/client/release/Ui/ComboNameDisplay.ini` | Game.exe (Client Release) |
 
 > Đây là cấu hình phía **client only** — không cần copy vào các thư mục `bin/server/...`, và không cần restart GameServer khi chỉnh sửa.
 
@@ -127,10 +129,19 @@ GrowMs=250
 HoldMs=2000
 ; Màu chữ lúc bắt đầu hiện (R,G,B)
 StartColor=255,0,0
-; Màu chữ khi đã phóng to xong (R,G,B)
+; Màu dự phòng nếu không xác định được hệ ngũ hành của người thi triển (R,G,B)
 EndColor=255,255,0
 ; Khoảng cách (world-height units) phía trên nameplate/HP bar để vẽ bubble
 VerticalOffset=50
+
+; Màu "đủ chữ" theo hệ ngũ hành của người thi triển (ghi đè EndColor ở trên),
+; khớp đúng bảng màu <color=Metal>/<color=Wood>/<color=Water>/<color=Fire>/<color=Earth>
+; game đã dùng sẵn cho chat (R,G,B)
+EndColorMetal=246,255,117
+EndColorWood=0,255,120
+EndColorWater=78,124,255
+EndColorFire=255,90,0
+EndColorEarth=254,207,179
 ```
 
 ### 4 kiểu animation (`RevealMode`)
@@ -145,18 +156,23 @@ VerticalOffset=50
 ### Giới hạn kỹ thuật cần biết
 
 - **Cỡ chữ lúc phóng to KHÔNG cấu hình được qua ini.** Engine chỉ vẽ được cỡ chữ đã đăng ký sẵn trong `Ui/Ui3/UiPubLicSetting.ini` → `[FontList]` (hiện có: 10, 12, 13, 14, 16). Cỡ chữ nào không có trong danh sách này sẽ **âm thầm không vẽ gì** — đây là lỗi thật đã gặp phải khi cố phóng to 50% (12→18) lúc mới làm tính năng này. Nếu muốn cỡ khác 16, phải đăng ký thêm 1 mục `[FontList]` mới rồi sửa mảng `SKILLNAME_FONT_STEPS` trong code.
-- Đổi sang font chữ (typeface) khác hẳn cần có sẵn 1 file `.fnt` đúng định dạng nhị phân riêng của engine này (không phải `.ttf` thường) — hiện repo không có công cụ tự tạo file đó. Xem thêm nếu cần làm phần này sau.
+- Đổi sang font chữ (typeface) khác hẳn cần có sẵn 1 file `.fnt` đúng định dạng nhị phân riêng của engine này (không phải `.ttf` thường) — hiện repo không có công cụ tự tạo file đó.
 
-## 9. File source liên quan (nếu cần đổi luật chơi/animation, không chỉ đổi số liệu)
+## 9. Kiến trúc: client tự suy luận, server không gửi gì về hiển thị
+
+Server (`GameServer`) **chỉ** tính `% bonus sát thương` để áp vào damage thật — không gửi bất kỳ gói tin nào về console log hay bubble. Mỗi client tự chạy **cùng một** logic đối chiếu chuỗi combo (`KNpc::UpdateComboBonus`) mỗi khi quan sát thấy bất kỳ nhân vật nào (không riêng bản thân) thi triển skill — dữ liệu dùng để đối chiếu (`SkillCombos.txt`, luật thời gian) đều là dữ liệu công khai client đã tự load sẵn, nên không cần server xác nhận thêm.
+
+Nguyên tắc chia việc: **damage/logic ảnh hưởng người khác → server xử lý; hiển thị (bubble, console log, màu sắc, animation) → client tự đọc dữ liệu công khai rồi tự hiển thị.**
+
+## 10. File source liên quan (nếu cần đổi luật chơi/animation, không chỉ đổi số liệu)
 
 | File | Vai trò |
 |---|---|
 | `SwordOnline/Sources/Core/Src/KNpc.h` | Khai báo state theo dõi combo + bubble trên mỗi `KNpc` |
-| `SwordOnline/Sources/Core/Src/KNpc.cpp` | `LoadSkillComboSetting()` (đọc SkillCombos.txt), `UpdateComboBonus()` (luật combo), áp dụng bonus trong `AppendSkillEffect()`, `LoadComboDisplaySetting()` + `PaintSkillNameBubble()` (đọc ComboNameDisplay.ini + vẽ animation) |
+| `SwordOnline/Sources/Core/Src/KNpc.cpp` | `LoadSkillComboSetting()` (đọc SkillCombos.txt), `UpdateComboBonus()` (luật combo + tự in console log/tự hiện bubble phía client), áp dụng bonus trong `AppendSkillEffect()`, `LoadComboDisplaySetting()` + `PaintSkillNameBubble()` (đọc ComboNameDisplay.ini + vẽ animation) |
 | `SwordOnline/Sources/Core/Src/CoreDrawGameObj.cpp` | Gọi `PaintSkillNameBubble()` mỗi frame, độc lập với logic vẽ tên/chat |
-| `SwordOnline/Sources/Core/Src/KCore.cpp` | Gọi `LoadSkillComboSetting()` lúc khởi động |
-| `SwordOnline/Sources/Core/Src/CoreUseNameDef.h` | Đường dẫn file (`SKILLCOMBO_SETTING_FILE`, `COMBO_NAME_DISPLAY_SETTING_FILE`), mã thông báo (`enumMSG_ID_COMBO_BONUS`, `enumMSG_ID_COMBO_END`) |
-| `SwordOnline/Sources/Core/Src/KProtocolProcess.cpp` | Client nhận thông báo, in ra console kèm timestamp |
+| `SwordOnline/Sources/Core/Src/KCore.cpp` | Gọi `LoadSkillComboSetting()` lúc khởi động (cả client lẫn server) |
+| `SwordOnline/Sources/Core/Src/CoreUseNameDef.h` | Đường dẫn file (`SKILLCOMBO_SETTING_FILE`, `COMBO_NAME_DISPLAY_SETTING_FILE`) |
 | `SwordOnline/Sources/S3Client/S3Client.cpp` | Client tự mở console khi khởi động |
 
 Hai hằng số điều chỉnh nhịp độ combo (không phải animation bubble — xem mục 8 để chỉnh animation) nằm trong `KNpc.cpp` (gần đầu hàm `UpdateComboBonus`):
