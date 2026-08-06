@@ -387,7 +387,7 @@ private:
 
 	enum RS2_FONT_ITEM_PARAM { 
         //## 接口最多可以维护的字体对象的数目，操过此数目时，创建字体对象将失败。
-        RS2_MAX_FONT_ITEM_NUM = 5 };
+        RS2_MAX_FONT_ITEM_NUM = 12 };
 
 private:
 	D3DGAMMARAMP m_ramp;				// 保存原始的gamma校准参数

@@ -53,14 +53,18 @@ Ví dụ nhánh Đao của Thiên Vương:
 | `Step4SkillId` / `Step4Bonus` | Bậc 4 |
 | `Step5SkillId` / `Step5Bonus` | Bậc 5 (cao nhất) |
 
-Dữ liệu hiện có (3 nhánh Thiên Vương):
+Dữ liệu hiện có (3 nhánh Thiên Vương + 2 nhánh Cái Bang):
 
 ```
 ComboId	ComboName	Step1SkillId	Step1Bonus	Step2SkillId	Step2Bonus	Step3SkillId	Step3Bonus	Step4SkillId	Step4Bonus	Step5SkillId	Step5Bonus
 1	Thien Vuong - Dao	34	30	37	50	32	100	322	500	1058	800
 2	Thien Vuong - Thuong	30	30	35	50	41	100	323	500	1060	800
 3	Thien Vuong - Chuy	29	30	31	50	324	100	325	500	1059	800
+4	Cai Bang - Chuong	122	30	128	50	357	100	1073	500
+5	Cai Bang - Bong	119	30	125	50	359	100	1074	500
 ```
+
+Combo 4/5 chỉ có 4 bậc (10→50→80→150, không phải 10→30→60→80→150 như Thiên Vương) — cột `Step5SkillId`/`Step5Bonus` để trống, đúng theo mục 5 bên dưới. SkillId của 2 chuỗi này lấy theo đúng chuỗi buff dame nội bộ mà `gaibang.lua` (script kỹ năng Cái Bang) đã tự liên kết sẵn giữa các skill, không phải đoán theo `ReqLevel`/`EqtLimit`.
 
 ## 4. Thêm 1 nhánh combo mới (môn phái khác / vũ khí khác)
 
@@ -133,6 +137,19 @@ StartColor=255,0,0
 EndColor=255,255,0
 ; Khoảng cách (world-height units) phía trên nameplate/HP bar để vẽ bubble
 VerticalOffset=50
+; Khoảng cách giữa các ký tự/từ, chỉ áp dụng cho phần cỡ chữ TRÊN 16 (cỡ
+; 10-16 là font gốc đã đúng khoảng cách sẵn, không đụng tới -- siết vào đó
+; sẽ làm chữ đè lên nhau). 100 = giữ nguyên khoảng cách của các cỡ >16,
+; số càng nhỏ càng sát lại để bù cho việc bitmap phóng to bị thưa ra.
+CharSpacing=70
+; Cỡ chữ lúc mới bay vào / lúc đã phóng to xong. Chỉ có 12 cỡ: 10, 12, 13, 14,
+; 16, 18, 20, 22, 24, 26, 28, 30 là đã đăng ký sẵn (xem Ui/Ui3/UiPubLicSetting.ini
+; [FontList]) -- điền số khác sẽ tự làm tròn về cỡ gần nhất trong danh sách này.
+; Các cỡ lớn hơn 16 dùng chung bitmap glyph của cỡ 16 rồi phóng to qua khung vẽ
+; (không có file .fnt độ phân giải cao hơn), nên càng to sẽ càng mờ/vỡ nét.
+; Có thể để FontSizeStart lớn hơn FontSizeEnd để chữ thu nhỏ dần thay vì phóng to.
+FontSizeStart=12
+FontSizeEnd=30
 
 ; Màu "đủ chữ" theo hệ ngũ hành của người thi triển (ghi đè EndColor ở trên),
 ; khớp đúng bảng màu <color=Metal>/<color=Wood>/<color=Water>/<color=Fire>/<color=Earth>
@@ -155,7 +172,8 @@ EndColorEarth=254,207,179
 
 ### Giới hạn kỹ thuật cần biết
 
-- **Cỡ chữ lúc phóng to KHÔNG cấu hình được qua ini.** Engine chỉ vẽ được cỡ chữ đã đăng ký sẵn trong `Ui/Ui3/UiPubLicSetting.ini` → `[FontList]` (hiện có: 10, 12, 13, 14, 16). Cỡ chữ nào không có trong danh sách này sẽ **âm thầm không vẽ gì** — đây là lỗi thật đã gặp phải khi cố phóng to 50% (12→18) lúc mới làm tính năng này. Nếu muốn cỡ khác 16, phải đăng ký thêm 1 mục `[FontList]` mới rồi sửa mảng `SKILLNAME_FONT_STEPS` trong code.
+- **Không có font đậm (bold) thật, và không giả lập được đẹp.** Engine vẽ chữ bằng bitmap glyph dựng sẵn (không phải font vector như Windows) và mỗi lần gọi vẽ chữ đều tự kèm 1 lớp viền đen riêng — từng thử giả lập đậm bằng cách vẽ đè cùng dòng chữ nhiều lần lệch vài pixel nhưng bị stack nhiều lớp viền đen chồng lên nhau thành hiệu ứng "chữ nổi khối" xấu, nên tính năng này đã bỏ.
+- **Cỡ chữ chỉ chọn được trong các cỡ đã đăng ký sẵn.** Engine chỉ vẽ được cỡ chữ đã đăng ký sẵn trong `Ui/Ui3/UiPubLicSetting.ini` → `[FontList]` (hiện có: 10, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 30 — 7 cỡ sau cùng là mục mới thêm, dùng chung bitmap của cỡ 16 phóng to lên vì không có file `.fnt` độ phân giải cao hơn nên sẽ hơi mờ/vỡ nét, đặc biệt ở cỡ 30). Cỡ chữ nào không có trong danh sách này sẽ **âm thầm không vẽ gì** — đây là lỗi thật đã gặp phải khi cố phóng to 50% (12→18) lúc mới làm tính năng này. `FontSizeStart`/`FontSizeEnd` trong ini tự làm tròn về cỡ gần nhất trong danh sách đó nên không bị lỗi này nữa. Muốn cỡ khác 30 (to hơn nữa) phải đăng ký thêm 1 mục `[FontList]` mới, tăng `RS2_MAX_FONT_ITEM_NUM` trong `KRepresentShell2.h`/`KRepresentShell3.h` nếu đã dùng hết 12 slot, rồi thêm vào mảng `SKILLNAME_VALID_FONT_SIZES` trong `KNpc.cpp`.
 - Đổi sang font chữ (typeface) khác hẳn cần có sẵn 1 file `.fnt` đúng định dạng nhị phân riêng của engine này (không phải `.ttf` thường) — hiện repo không có công cụ tự tạo file đó.
 
 ## 9. Kiến trúc: client tự suy luận, server không gửi gì về hiển thị

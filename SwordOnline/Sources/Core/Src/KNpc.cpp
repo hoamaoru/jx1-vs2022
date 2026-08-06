@@ -2063,6 +2063,27 @@ static int SKILLNAME_START_COLOR_R = 255, SKILLNAME_START_COLOR_G = 0, SKILLNAME
 static int SKILLNAME_END_COLOR_R = 255, SKILLNAME_END_COLOR_G = 255, SKILLNAME_END_COLOR_B = 0;		// yellow, fallback for series_nil/unknown
 static int SKILLNAME_VERTICAL_OFFSET = 50;	// world-height units above the nameplate/HP bar/chat, whichever was drawn last
 
+// Each unit (word, or single char in char-by-char mode) is externally
+// positioned nFontSize/2 pixels apart per string character it spans -- that
+// matches the font engine's own internal per-character advance exactly for
+// the natively-sized fonts (<=16), but sizes above that reuse the 16px
+// glyph bitmap blown up and start looking sparse at the unscaled advance.
+// CharSpacing dampens only the part of nFontSize above 16 (see its use in
+// PaintSkillNameBubble); 100 leaves it unscaled, lower pulls it tighter.
+static int SKILLNAME_CHAR_SPACING_PERCENT = 70;
+
+// g_pRepresent->OutputText looks up its font by exact size/id in a small
+// pre-registered table (see UiPubLicSetting.ini [FontList]) -- any size not
+// in that table silently draws nothing. FontSizeStart/FontSizeEnd below get
+// snapped to the nearest of these at load time, and only the sizes that fall
+// between them are used as the "grow" animation's steps.
+static const int SKILLNAME_VALID_FONT_SIZES[] = { 10, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 30 };
+static const int SKILLNAME_VALID_FONT_SIZE_COUNT = sizeof(SKILLNAME_VALID_FONT_SIZES) / sizeof(SKILLNAME_VALID_FONT_SIZES[0]);
+static int SKILLNAME_FONT_SIZE_START = 12;	// size while the text is still flying in
+static int SKILLNAME_FONT_SIZE_END = 16;	// size once fully grown
+static int SKILLNAME_FONT_STEPS[SKILLNAME_VALID_FONT_SIZE_COUNT] = { 12, 13, 14, 16 };
+static int SKILLNAME_FONT_STEP_COUNT = 4;
+
 // "Grown" color per Ngu Hanh (five elements) series, keyed by the caster's
 // own m_Series -- same RGB table the game's <color=Metal>/<color=Fire>/...
 // chat tags use (Engine/Src/Text.cpp s_ColorTable).
@@ -2071,6 +2092,55 @@ static int SKILLNAME_END_COLOR_WOOD_R = 0, SKILLNAME_END_COLOR_WOOD_G = 255, SKI
 static int SKILLNAME_END_COLOR_WATER_R = 78, SKILLNAME_END_COLOR_WATER_G = 124, SKILLNAME_END_COLOR_WATER_B = 255;
 static int SKILLNAME_END_COLOR_FIRE_R = 255, SKILLNAME_END_COLOR_FIRE_G = 90, SKILLNAME_END_COLOR_FIRE_B = 0;
 static int SKILLNAME_END_COLOR_EARTH_R = 254, SKILLNAME_END_COLOR_EARTH_G = 207, SKILLNAME_END_COLOR_EARTH_B = 179;
+
+// Rounds nSize to whichever entry of SKILLNAME_VALID_FONT_SIZES is closest,
+// since any unregistered size would otherwise silently draw nothing.
+static int SnapToValidFontSize(int nSize)
+{
+	int nBest = SKILLNAME_VALID_FONT_SIZES[0];
+	int nBestDiff = abs(nSize - nBest);
+	for (int i = 1; i < SKILLNAME_VALID_FONT_SIZE_COUNT; i++)
+	{
+		int nDiff = abs(nSize - SKILLNAME_VALID_FONT_SIZES[i]);
+		if (nDiff < nBestDiff)
+		{
+			nBest = SKILLNAME_VALID_FONT_SIZES[i];
+			nBestDiff = nDiff;
+		}
+	}
+	return nBest;
+}
+
+// Rebuilds SKILLNAME_FONT_STEPS from the registered sizes lying between
+// nStartSize and nEndSize (inclusive), ordered from start to end so the
+// "grow" animation in PaintSkillNameBubble can keep stepping through them
+// in order regardless of whether the text is growing or shrinking.
+static void BuildComboFontSteps(int nStartSize, int nEndSize)
+{
+	nStartSize = SnapToValidFontSize(nStartSize);
+	nEndSize = SnapToValidFontSize(nEndSize);
+
+	int nLo = (nStartSize < nEndSize) ? nStartSize : nEndSize;
+	int nHi = (nStartSize < nEndSize) ? nEndSize : nStartSize;
+
+	int nCount = 0;
+	for (int i = 0; i < SKILLNAME_VALID_FONT_SIZE_COUNT; i++)
+	{
+		int nSize = SKILLNAME_VALID_FONT_SIZES[i];
+		if (nSize >= nLo && nSize <= nHi)
+			SKILLNAME_FONT_STEPS[nCount++] = nSize;
+	}
+	if (nStartSize > nEndSize)
+	{
+		for (int i = 0; i < nCount / 2; i++)
+		{
+			int nTmp = SKILLNAME_FONT_STEPS[i];
+			SKILLNAME_FONT_STEPS[i] = SKILLNAME_FONT_STEPS[nCount - 1 - i];
+			SKILLNAME_FONT_STEPS[nCount - 1 - i] = nTmp;
+		}
+	}
+	SKILLNAME_FONT_STEP_COUNT = nCount;
+}
 
 static void LoadComboDisplaySetting()
 {
@@ -2096,6 +2166,15 @@ static void LoadComboDisplaySetting()
 	IniFile.GetInteger3("ComboNameBubble", "StartColor", &SKILLNAME_START_COLOR_R, &SKILLNAME_START_COLOR_G, &SKILLNAME_START_COLOR_B);
 	IniFile.GetInteger3("ComboNameBubble", "EndColor", &SKILLNAME_END_COLOR_R, &SKILLNAME_END_COLOR_G, &SKILLNAME_END_COLOR_B);
 	IniFile.GetInteger("ComboNameBubble", "VerticalOffset", SKILLNAME_VERTICAL_OFFSET, &SKILLNAME_VERTICAL_OFFSET);
+	IniFile.GetInteger("ComboNameBubble", "CharSpacing", SKILLNAME_CHAR_SPACING_PERCENT, &SKILLNAME_CHAR_SPACING_PERCENT);
+	if (SKILLNAME_CHAR_SPACING_PERCENT < 10)	// too far below this and units start overlapping/overwriting each other
+		SKILLNAME_CHAR_SPACING_PERCENT = 10;
+	if (SKILLNAME_CHAR_SPACING_PERCENT > 200)
+		SKILLNAME_CHAR_SPACING_PERCENT = 200;
+
+	IniFile.GetInteger("ComboNameBubble", "FontSizeStart", SKILLNAME_FONT_SIZE_START, &SKILLNAME_FONT_SIZE_START);
+	IniFile.GetInteger("ComboNameBubble", "FontSizeEnd", SKILLNAME_FONT_SIZE_END, &SKILLNAME_FONT_SIZE_END);
+	BuildComboFontSteps(SKILLNAME_FONT_SIZE_START, SKILLNAME_FONT_SIZE_END);
 
 	IniFile.GetInteger3("ComboNameBubble", "EndColorMetal", &SKILLNAME_END_COLOR_METAL_R, &SKILLNAME_END_COLOR_METAL_G, &SKILLNAME_END_COLOR_METAL_B);
 	IniFile.GetInteger3("ComboNameBubble", "EndColorWood", &SKILLNAME_END_COLOR_WOOD_R, &SKILLNAME_END_COLOR_WOOD_G, &SKILLNAME_END_COLOR_WOOD_B);
@@ -5301,14 +5380,10 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 			fGrow = 1.0f;
 	}
 
-	// g_pRepresent->OutputText looks up its font by exact size/id in a small
-	// pre-registered table (see UiPubLicSetting.ini [FontList]) -- any size
-	// not in that table silently draws nothing. Only 10/12/13/14/16 exist,
-	// so the "grow 50%" step ramps through the valid sizes instead of a
-	// continuous 12->18 interpolation (18 was never registered, which is why
-	// the bubble used to vanish the instant it finished growing).
-	static const int SKILLNAME_FONT_STEPS[] = { 12, 13, 14, 16 };
-	static const int SKILLNAME_FONT_STEP_COUNT = sizeof(SKILLNAME_FONT_STEPS) / sizeof(SKILLNAME_FONT_STEPS[0]);
+	// SKILLNAME_FONT_STEPS/SKILLNAME_FONT_STEP_COUNT are rebuilt from
+	// FontSizeStart/FontSizeEnd in LoadComboDisplaySetting -- ramping through
+	// them here instead of a continuous interpolation is what keeps every
+	// size actually hitting a registered font id (see BuildComboFontSteps).
 	int nStepIndex = (int)(fGrow * SKILLNAME_FONT_STEP_COUNT);
 	if (nStepIndex >= SKILLNAME_FONT_STEP_COUNT)
 		nStepIndex = SKILLNAME_FONT_STEP_COUNT - 1;
@@ -5323,7 +5398,17 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 	BYTE byG = (BYTE)(SKILLNAME_START_COLOR_G + (nEndG - SKILLNAME_START_COLOR_G) * fGrow);
 	BYTE byB = (BYTE)(SKILLNAME_START_COLOR_B + (nEndB - SKILLNAME_START_COLOR_B) * fGrow);
 
-	int nCharStep = nFontSize / 2;
+	// The natively-sized fonts (<=16, each with its own real .fnt glyph
+	// bitmap) are already spaced correctly at the engine's own nFontSize/2
+	// advance -- applying CharSpacing there too just overlaps letters that
+	// were never sparse to begin with. Only the stretched sizes above 16
+	// (which reuse the 16px bitmap blown up, and looked genuinely sparse at
+	// the unscaled advance) get dampened, and only for the part of their
+	// size that sits above that native ceiling.
+	int nSpacingBasisSize = nFontSize;
+	if (nSpacingBasisSize > 16)
+		nSpacingBasisSize = 16 + ((nFontSize - 16) * SKILLNAME_CHAR_SPACING_PERCENT) / 100;
+	int nCharStep = nSpacingBasisSize / 2;
 	int nMpsX, nMpsY;
 	GetMpsPos(&nMpsX, &nMpsY);
 	int nStartX = nMpsX - (nCharStep * nCharCount) / 2;

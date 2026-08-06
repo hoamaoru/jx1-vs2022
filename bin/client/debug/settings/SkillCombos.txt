@@ -2,3 +2,5 @@ ComboId	ComboName	Step1SkillId	Step1Bonus	Step2SkillId	Step2Bonus	Step3SkillId	S
 1	Thien Vuong - Dao	34	30	37	50	32	100	322	500	1058	800
 2	Thien Vuong - Thuong	30	30	35	50	41	100	323	500	1060	800
 3	Thien Vuong - Chuy	29	30	31	50	324	100	325	500	1059	800
+4	Hµng Long ThËp B¸t Ch­ëng	122	30								
+5	Cai Bang - Bong	119	30	125	50	359	100	1074	500		
