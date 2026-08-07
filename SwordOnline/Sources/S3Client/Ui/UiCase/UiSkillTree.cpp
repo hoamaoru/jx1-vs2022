@@ -122,6 +122,10 @@ void KUiSkillTree::LoadConfig(KIniFile* pIni)
 		}
 	}
 
+	KUiSkillData	AllLearnedSkills[50];	// 50 = FIGHT_SKILL_COUNT (UiSkills.h) = MAX_FIGHTSKILL_SORTLIST (KSkillList.cpp)
+	if (bEncounter && g_pCoreShell)
+		g_pCoreShell->GetGameData(GDI_FIGHT_SKILLS, (unsigned int)&AllLearnedSkills, 0);	// luu y: ham nay khong tra ve dung so luong, phai tu quet uGenre tung o
+
 	bool bLeft = false;
 	do
 	{
@@ -147,7 +151,20 @@ void KUiSkillTree::LoadConfig(KIniFile* pIni)
 					}
 				}
 				if (j >= nNum)
-					ms_ShortcutSkills[i].uGenre = CGOG_NOTHING;
+				{
+					// chua thay trong danh sach ky nang kich hoat trai/phai; kiem tra tiep
+					// trong toan bo ky nang da hoc (vd gan tu bang F5) truoc khi xoa
+					int k;
+					for (k = 0; k < 50; k++)
+					{
+						if (AllLearnedSkills[k].uGenre != CGOG_NOTHING &&
+							ms_ShortcutSkills[i].uId == AllLearnedSkills[k].uId &&
+							ms_ShortcutSkills[i].uGenre == AllLearnedSkills[k].uGenre)
+							break;
+					}
+					if (k >= 50)
+						ms_ShortcutSkills[i].uGenre = CGOG_NOTHING;
+				}
 			}
 		}
 

@@ -2142,13 +2142,13 @@ static void BuildComboFontSteps(int nStartSize, int nEndSize)
 	SKILLNAME_FONT_STEP_COUNT = nCount;
 }
 
+// Re-read every time a new bubble is triggered (see call site in
+// UpdateComboBonus) rather than caching after the first call, so tuning
+// ComboNameDisplay.ini takes effect on the next combo without restarting the
+// client. Not called from the per-frame paint path -- an already-flying
+// bubble keeps the settings it was triggered with for its whole lifetime.
 static void LoadComboDisplaySetting()
 {
-	static bool bLoaded = false;
-	if (bLoaded)
-		return;
-	bLoaded = true;
-
 	KIniFile IniFile;
 	if (!IniFile.Load(COMBO_NAME_DISPLAY_SETTING_FILE))
 		return;	// keep the hardcoded defaults above
@@ -5352,6 +5352,11 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 	if (nCharCount <= 0)
 		return nHeightOffset;
 
+	// Also reloaded at trigger time (see UpdateComboBonus), but reload here
+	// too on every paint frame while the bubble is visible -- cheap for an
+	// effect that's only on-screen a couple of seconds at a time, and it
+	// removes any dependency on that trigger-site call having run first for
+	// this particular bubble.
 	LoadComboDisplaySetting();
 	nHeightOffset += SKILLNAME_VERTICAL_OFFSET;
 
@@ -5427,10 +5432,10 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 			fFly = 1.0f - (1.0f - fFly) * (1.0f - fFly);	// ease-out, for smooth motion
 		}
 
-		// Draw the whole unit (a word, or a single char in char-by-char mode)
-		// in one call so every character in it shares the same fly-in state.
-		// Position uses its ORIGINAL offset in the full string, so words land
-		// in the same spot they'd occupy in the plain, non-animated text.
+		// Every character in the unit (a word, or a single char in
+		// char-by-char mode) shares the same fly-in state. Position uses its
+		// ORIGINAL offset in the full string, so words land in the same spot
+		// they'd occupy in the plain, non-animated text.
 		char szUnit[SKILLNAME_MAX_UNITS + 1];
 		int nUnitLen = Units[u].nLen;
 		if (nUnitLen > SKILLNAME_MAX_UNITS)
@@ -5444,6 +5449,9 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 		int nUnitFontSize = nFontSize;
 		int nXOffset = 0;
 		int nZOffset = 0;
+		bool bDrawTrail = false;
+		int nTrailXOffset = 0, nTrailZOffset = 0;
+		DWORD dwTrailColor = 0;
 
 		if (SKILLNAME_REVEAL_MODE == COMBO_REVEAL_SWORD_SLASH)
 		{
@@ -5458,12 +5466,11 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 				float fTrail = fFly - 0.25f;
 				if (fTrail < 0.0f)
 					fTrail = 0.0f;
-				int nTrailXOffset = (int)(-40.0f * (1.0f - fTrail));
-				int nTrailZOffset = (int)(SKILLNAME_FLY_DISTANCE * (1.0f - fTrail));
+				nTrailXOffset = (int)(-40.0f * (1.0f - fTrail));
+				nTrailZOffset = (int)(SKILLNAME_FLY_DISTANCE * (1.0f - fTrail));
 				BYTE byTrailAlpha = (BYTE)(byAlpha / 3);
-				DWORD dwTrailColor = ((DWORD)byTrailAlpha << 24) | 0x00ffffff;	// white streak
-				g_pRepresent->OutputText(nUnitFontSize, szUnit, KRF_ZERO_END,
-					nBaseX + nTrailXOffset, nMpsY, dwTrailColor, 0, nHeightOffset + nTrailZOffset, 0);
+				dwTrailColor = ((DWORD)byTrailAlpha << 24) | 0x00ffffff;	// white streak
+				bDrawTrail = true;
 			}
 		}
 		else if (SKILLNAME_REVEAL_MODE == COMBO_REVEAL_INK_BLOT)
@@ -5477,8 +5484,28 @@ int	KNpc::PaintSkillNameBubble(int nHeightOffset)
 			nZOffset = (int)(SKILLNAME_FLY_DISTANCE * (1.0f - fFly));
 		}
 
-		g_pRepresent->OutputText(nUnitFontSize, szUnit, KRF_ZERO_END,
-			nBaseX + nXOffset, nMpsY, dwColor, 0, nHeightOffset + nZOffset, 0);
+		// Draw one character at a time (instead of the whole unit string in
+		// a single call) so CharSpacing/nCharStep governs the gap between
+		// every glyph -- a bulk OutputText call for a multi-char unit would
+		// otherwise fall back to the font engine's own native per-character
+		// advance for the letters inside it, ignoring CharSpacing entirely.
+		// nUnitLen == 1 in char-by-char mode, so this loop runs once there,
+		// same as before.
+		char szChar[2] = { 0, 0 };
+		for (int c = 0; c < nUnitLen; c++)
+		{
+			szChar[0] = szUnit[c];
+			int nCharBaseX = nBaseX + c * nCharStep;
+
+			if (bDrawTrail)
+			{
+				g_pRepresent->OutputText(nUnitFontSize, szChar, KRF_ZERO_END,
+					nCharBaseX + nTrailXOffset, nMpsY, dwTrailColor, 0, nHeightOffset + nTrailZOffset, 0);
+			}
+
+			g_pRepresent->OutputText(nUnitFontSize, szChar, KRF_ZERO_END,
+				nCharBaseX + nXOffset, nMpsY, dwColor, 0, nHeightOffset + nZOffset, 0);
+		}
 	}
 
 	return nHeightOffset;

@@ -40,6 +40,7 @@ void KUiFightSkillSubPage::Initialize(/*int nSubPageIndex*/)
 	for (int i = 0; i < FIGHT_SKILL_COUNT_PER_PAGE; i ++)
 	{
 		AddChild(&m_FightSkills[i]);
+		AddChild(&m_AddSkillBtn[i]);
 		m_FightSkills[i].Celar();
 		m_FightSkills[i].SetContainerId((int)UOC_SKILL_LIST);
 	}
@@ -60,6 +61,8 @@ void KUiFightSkillSubPage::LoadScheme(const char* pScheme)
 			sprintf(Buff, "Skill_%d", i);
 			m_FightSkills[i].Init(&Ini, Buff);
 			m_FightSkills[i].EnablePickPut(false);
+			sprintf(Buff, "AddPointBtn_%d", i);
+			m_AddSkillBtn[i].Init(&Ini, Buff);
 		}
 		Ini.GetInteger("SkillText", "Font", 12, &m_SkillTextParam.nFont);
 		Ini.GetInteger2("SkillText", "Offset",
@@ -76,10 +79,20 @@ void KUiFightSkillSubPage::UpdateRemainPoint(int nPoint)
 }
 
 //¸üÐÂÉý¼¶µãÊý
+void KUiFightSkillSubPage::UpdateAddBtnVisible(int nIndex, unsigned int uGenre)
+{
+	if (uGenre != CGOG_NOTHING)
+		m_AddSkillBtn[nIndex].Show();
+	else
+		m_AddSkillBtn[nIndex].Hide();
+}
+
+//¸üÐÂÉý¼¶µãÊý
 void KUiFightSkillSubPage::UpdateSkill(KUiSkillData* pSkill, int nIndex)
 {
 	_ASSERT(pSkill && nIndex >= 0 && nIndex < FIGHT_SKILL_COUNT_PER_PAGE);
 	m_FightSkills[nIndex].HoldObject(pSkill->uGenre, pSkill->uId, 0, 0);
+	UpdateAddBtnVisible(nIndex, pSkill->uGenre);
 }
 
 //¸üÐÂÊý¾Ý
@@ -87,7 +100,10 @@ void KUiFightSkillSubPage::UpdateData(KUiSkillData* pSkills)
 {
 	_ASSERT(pSkills);
 	for (int i = 0; i < FIGHT_SKILL_COUNT_PER_PAGE; i++)
+	{
 		m_FightSkills[i].HoldObject(pSkills[i].uGenre, pSkills[i].uId, pSkills[i].nLevel, 0);
+		UpdateAddBtnVisible(i, pSkills[i].uGenre);
+	}
 }
 
 //´°¿Úº¯Êý
@@ -95,32 +111,33 @@ int	KUiFightSkillSubPage::WndProc(unsigned int uMsg, unsigned int uParam, int nP
 {
 	switch (uMsg)
 	{
-	case WND_N_LEFT_CLICK_ITEM:
+	case WND_N_BUTTON_CLICK:
 	{
-		if (uParam)
+		for (int i = 0; i < FIGHT_SKILL_COUNT_PER_PAGE; i++)
 		{
-			KUiDraggedObject* pObj = (KUiDraggedObject*)uParam;
-			if (pObj->uGenre != CGOG_NOTHING)
+			if (uParam == (unsigned int)(KWndWindow*)&m_AddSkillBtn[i])
 			{
-				if (m_nRemainSkillPoint > 0)
+				KUiDraggedObject Obj;
+				if (m_FightSkills[i].GetObject(Obj))
 				{
-					if (pObj->uGenre != CGOG_NOTHING)
+					if (m_nRemainSkillPoint > 0)
 					{
-						m_nRemainSkillPoint --;	// Ê¹ÓÃ¼¼ÄÜµãÊý
-						g_pCoreShell->OperationRequest(GOI_TONE_UP_SKILL, CGOG_SKILL_FIGHT, pObj->uId);
+						m_nRemainSkillPoint --;	// su dung diem ky nang
+						g_pCoreShell->OperationRequest(GOI_TONE_UP_SKILL, CGOG_SKILL_FIGHT, Obj.uId);
+					}
+					else
+					{
+						KSystemMessage	Msg;
+						Msg.byConfirmType = SMCT_NONE;
+						Msg.byParamSize = 0;
+						Msg.byPriority = 0;
+						Msg.eType = SMT_NORMAL;
+						Msg.uReservedForUi = 0;
+						strcpy(Msg.szMessage, "§iÓm kü n¨ng hiÖn t¹i kh«ng ®ñ!");
+						KUiSysMsgCentre::AMessageArrival(&Msg, NULL);
 					}
 				}
-				else
-				{
-					KSystemMessage	Msg;
-					Msg.byConfirmType = SMCT_NONE;
-					Msg.byParamSize = 0;
-					Msg.byPriority = 0;
-					Msg.eType = SMT_NORMAL;
-					Msg.uReservedForUi = 0;
-					strcpy(Msg.szMessage, "§iÓm kü n¨ng hiÖn t¹i kh«ng ®ñ!");
-					KUiSysMsgCentre::AMessageArrival(&Msg, NULL);
-				}
+				break;
 			}
 		}
 		break;
@@ -161,7 +178,6 @@ void KUiFightSkillSubPage::PaintWindow()
 				nLen = strlen(szLevel);
 				nLeft += m_SkillTextParam.Offset.cx;
 				nTop += m_SkillTextParam.Offset.cy;
-				nLeft += (nWidth - nLen * m_SkillTextParam.nFont / 2) / 2;
 
 				g_pRepresentShell->OutputText(m_SkillTextParam.nFont, szLevel, nLen, nLeft, nTop,
 					dwColor, 0);

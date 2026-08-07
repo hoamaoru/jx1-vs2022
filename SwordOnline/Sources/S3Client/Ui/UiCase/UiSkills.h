@@ -32,11 +32,13 @@ public:
 	void	UpdateData(KUiSkillData* pSkills);			//更新数据
 private:
 	int		WndProc(unsigned int uMsg, unsigned int uParam, int nParam);//窗口函数
+	void	UpdateAddBtnVisible(int nIndex, unsigned int uGenre);	// hien/an nut cong diem theo o co ky nang hay khong
 	void	PaintWindow();								//绘制窗口
 private:
 //	int			m_nSubPagIndex;
 	int			m_nRemainSkillPoint;
 	KWndObjectBox	m_FightSkills[FIGHT_SKILL_COUNT_PER_PAGE];
+	KWndButton	m_AddSkillBtn[FIGHT_SKILL_COUNT_PER_PAGE];
 //	KUiSkillData	m_Skills[FIGHT_SKILL_COUNT_PER_PAGE];
 	struct
 	{
